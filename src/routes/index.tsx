@@ -24,7 +24,11 @@ function App() {
 	}, []);
 
 	const columnDefs = [
-		{ field: "id", headerName: "ID", width: 60 },
+		{
+			field: "id",
+			headerName: "ID",
+			width: 80,
+		},
 		{ field: "name", headerName: "Name", width: 250 },
 		{
 			field: "category_name",
@@ -53,14 +57,14 @@ function App() {
 	];
 
 	return (
-		<div className="min-h-screen bg-slate-900 p-8">
+		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
 			<div className="max-w-6xl mx-auto">
-				<h1 className="text-4xl font-bold text-white mb-6">
+				<h1 className="text-2xl font-bold text-white mb-7">
 					Raw Materials Inventory
 				</h1>
 				<div
 					className="ag-theme-quartz-dark"
-					style={{ height: "600px", width: "100%" }}
+					style={{ height: "680px", width: "100%" }}
 				>
 					<AgGridReact
 						rowData={rawMaterials}

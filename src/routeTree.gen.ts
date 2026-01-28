@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 
+const AddRawMaterialRoute = AddRawMaterialRouteImport.update({
+  id: '/add-raw-material',
+  path: '/add-raw-material',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,56 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/categories' | '/api/raw-materials'
+  fullPaths:
+    | '/'
+    | '/add-raw-material'
+    | '/api/categories'
+    | '/api/raw-materials'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/categories' | '/api/raw-materials'
-  id: '__root__' | '/' | '/api/categories' | '/api/raw-materials'
+  to: '/' | '/add-raw-material' | '/api/categories' | '/api/raw-materials'
+  id:
+    | '__root__'
+    | '/'
+    | '/add-raw-material'
+    | '/api/categories'
+    | '/api/raw-materials'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRawMaterialRoute: typeof AddRawMaterialRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/add-raw-material': {
+      id: '/add-raw-material'
+      path: '/add-raw-material'
+      fullPath: '/add-raw-material'
+      preLoaderRoute: typeof AddRawMaterialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +113,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRawMaterialRoute: AddRawMaterialRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
 }
