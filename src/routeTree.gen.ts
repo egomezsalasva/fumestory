@@ -10,43 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiHealthRouteImport } from './routes/api.health'
+import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
+import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/health',
-  path: '/api/health',
+const ApiRawMaterialsRoute = ApiRawMaterialsRouteImport.update({
+  id: '/api/raw-materials',
+  path: '/api/raw-materials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
+  id: '/api/categories',
+  path: '/api/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/health': typeof ApiHealthRoute
+  '/api/categories': typeof ApiCategoriesRoute
+  '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/health': typeof ApiHealthRoute
+  '/api/categories': typeof ApiCategoriesRoute
+  '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/health': typeof ApiHealthRoute
+  '/api/categories': typeof ApiCategoriesRoute
+  '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/health'
+  fullPaths: '/' | '/api/categories' | '/api/raw-materials'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/health'
-  id: '__root__' | '/' | '/api/health'
+  to: '/' | '/api/categories' | '/api/raw-materials'
+  id: '__root__' | '/' | '/api/categories' | '/api/raw-materials'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiHealthRoute: typeof ApiHealthRoute
+  ApiCategoriesRoute: typeof ApiCategoriesRoute
+  ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +68,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/health': {
-      id: '/api/health'
-      path: '/api/health'
-      fullPath: '/api/health'
-      preLoaderRoute: typeof ApiHealthRouteImport
+    '/api/raw-materials': {
+      id: '/api/raw-materials'
+      path: '/api/raw-materials'
+      fullPath: '/api/raw-materials'
+      preLoaderRoute: typeof ApiRawMaterialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/categories': {
+      id: '/api/categories'
+      path: '/api/categories'
+      fullPath: '/api/categories'
+      preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +87,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiHealthRoute: ApiHealthRoute,
+  ApiCategoriesRoute: ApiCategoriesRoute,
+  ApiRawMaterialsRoute: ApiRawMaterialsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
