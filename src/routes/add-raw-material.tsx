@@ -20,7 +20,7 @@ function AddRawMaterial() {
 	const [notes, setNotes] = useState<string[]>([]);
 	const [error, setError] = useState("");
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
 		if (!name.trim()) {
@@ -44,15 +44,37 @@ function AddRawMaterial() {
 			return;
 		}
 
-		console.log("Submitting:", {
-			name,
-			category_id: selectedCategoryId,
-			note_type: noteType,
-			notes,
-		});
+		try {
+			const response = await fetch("/api/raw-materials", {
+				method: "POST",
+				headers: { "Content-Type": "applicaiton/json" },
+				body: JSON.stringify({
+					name,
+					category_id: selectedCategoryId,
+					note_type: noteType,
+					notes,
+				}),
+			});
 
-		// Show success message (temporary)
-		alert("Form validated successfully! Check console for data.");
+			const data = await response.json();
+
+			if (!response.ok) {
+				setError(data.error || "Failed to add raw material");
+				return;
+			}
+
+			//Success Reset
+			setName("");
+			setCategorySearch("");
+			setSelectedCategoryId(null);
+			setNoteType("");
+			setNotes([]);
+			alert("Raw material added successfully!");
+		} catch (error) {
+			setError(
+				"Network error: Failed to create raw material. Please try again.",
+			);
+		}
 	};
 
 	return (
