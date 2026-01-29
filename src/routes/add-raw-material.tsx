@@ -3,7 +3,8 @@ import { useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
-import { TagInput } from "@/components/TagInput";
+
+import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 
 export const Route = createFileRoute("/add-raw-material")({
 	component: AddRawMaterial,
@@ -97,14 +98,13 @@ function AddRawMaterial() {
 							placeholder="Select note type..."
 						/>
 						{/* Notes Field */}
-						<TagInput
+						<NotesAutocomplete
 							label="Notes"
-							values={notes}
-							onChange={(value) => {
+							selectedNotes={notes}
+							onNotesChange={(value) => {
 								setNotes(value);
 								setError("");
 							}}
-							placeholder="Add a note and press Enter or click Add"
 						/>
 
 						{/* Submit Button */}

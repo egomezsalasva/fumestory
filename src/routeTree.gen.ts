@@ -13,6 +13,7 @@ import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
 import { Route as AddDilutionRouteImport } from './routes/add-dilution'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
+import { Route as ApiNotesRouteImport } from './routes/api.notes'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 
@@ -36,6 +37,11 @@ const ApiRawMaterialsRoute = ApiRawMaterialsRouteImport.update({
   path: '/api/raw-materials',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiNotesRoute = ApiNotesRouteImport.update({
+  id: '/api/notes',
+  path: '/api/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDilutionsRoute = ApiDilutionsRouteImport.update({
   id: '/api/dilutions',
   path: '/api/dilutions',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/notes'
     | '/api/raw-materials'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/notes'
     | '/api/raw-materials'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/notes'
     | '/api/raw-materials'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   AddRawMaterialRoute: typeof AddRawMaterialRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiDilutionsRoute: typeof ApiDilutionsRoute
+  ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
 }
 
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRawMaterialsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/notes': {
+      id: '/api/notes'
+      path: '/api/notes'
+      fullPath: '/api/notes'
+      preLoaderRoute: typeof ApiNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/dilutions': {
       id: '/api/dilutions'
       path: '/api/dilutions'
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   AddRawMaterialRoute: AddRawMaterialRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiDilutionsRoute: ApiDilutionsRoute,
+  ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
 }
 export const routeTree = rootRouteImport

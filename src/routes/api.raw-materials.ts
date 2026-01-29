@@ -12,7 +12,7 @@ export type RawMaterial = {
 	created_at: string;
 };
 
-type RawMaterialFromDB = Omit<RawMaterial, 'notes' | 'category_name'>;
+type RawMaterialFromDB = Omit<RawMaterial, "notes" | "category_name">;
 
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
@@ -72,30 +72,26 @@ export const Route = createFileRoute("/api/raw-materials")({
 						`INSERT INTO raw_materials (name, category_id, note_type)
                     VALUES ($1, $2, $3)
                     RETURNING id, name, category_id, note_type, created_at`,
-						[
-							name.trim(),
-							category_id || null,
-							note_type || null,
-						],
+						[name.trim(), category_id || null, note_type || null],
 					)) as RawMaterialFromDB[];
 
-					const noteNames: string[] = []
+					const noteNames: string[] = [];
 					if (notes && Array.isArray(notes) && notes.length > 0) {
 						for (const noteName of notes) {
-							if(noteName && typeof noteName === "string" && noteName.trim()){
-								const trimmedNote = noteName.trim()
+							if (noteName && typeof noteName === "string" && noteName.trim()) {
+								const trimmedNote = noteName.trim();
 								await client.query(
 									`INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
-									[trimmedNote]
-								)
+									[trimmedNote],
+								);
 								await client.query(
 									`INSERT INTO raw_material_notes (raw_material_id, note_id)
 									SELECT $1, id FROM notes WHERE name = $2
 									ON CONFLICT (raw_material_id, note_id) DO NOTHING
 									`,
-									[rawMaterial.id, trimmedNote]
-								)
-								noteNames.push(trimmedNote)
+									[rawMaterial.id, trimmedNote],
+								);
+								noteNames.push(trimmedNote);
 							}
 						}
 					}
@@ -103,8 +99,8 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const result = {
 						...rawMaterial,
 						notes: noteNames,
-						category_name: null
-					}
+						category_name: null,
+					};
 
 					return jsonResponse({ success: true, data: result }, 201);
 				} catch (error) {
