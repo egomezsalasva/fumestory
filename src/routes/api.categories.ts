@@ -34,7 +34,7 @@ export const Route = createFileRoute("/api/categories")({
 					if (!client) return noClientResponse;
 					const body = await request.json();
 					const { name } = body as { name: Category["name"] };
-					if (!name || name != "string" || name.trim() === "") {
+					if (!name || typeof name !== "string" || name.trim() === "") {
 						return jsonResponse({ error: "Category name is required" }, 400);
 					}
 					const [result] = (await client.query(
