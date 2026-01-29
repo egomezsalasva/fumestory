@@ -12,6 +12,8 @@ export type RawMaterial = {
 	created_at: string;
 };
 
+type RawMaterialFromDB = Omit<RawMaterial, 'notes' | 'category_name'>;
+
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
 		handlers: {
@@ -26,10 +28,15 @@ export const Route = createFileRoute("/api/raw-materials")({
                         rm.category_id,
                         c.name as category_name,
                         rm.note_type,
-                        rm.notes,
-                        rm.created_at
+                        rm.created_at,
+						COALESCE(
+							json_agg(n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
+						) as notes
                     FROM raw_materials rm
                     LEFT JOIN categories c ON rm.category_id = c.id
+					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
+					LEFT JOIN notes n ON rmn.note_id = n.id
+					GROUP BY rm.id, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
                     ORDER BY rm.id DESC
                 `)) as RawMaterial[];
 
@@ -61,17 +68,43 @@ export const Route = createFileRoute("/api/raw-materials")({
 						);
 					}
 
-					const [result] = (await client.query(
-						`INSERT INTO raw_materials (name, category_id, note_type, notes)
-                    VALUES ($1, $2, $3, $4)
-                    RETURNING id, name, category_id, note_type, notes, created_at`,
+					const [rawMaterial] = (await client.query(
+						`INSERT INTO raw_materials (name, category_id, note_type)
+                    VALUES ($1, $2, $3)
+                    RETURNING id, name, category_id, note_type, created_at`,
 						[
 							name.trim(),
 							category_id || null,
 							note_type || null,
-							JSON.stringify(notes || []),
 						],
-					)) as RawMaterial[];
+					)) as RawMaterialFromDB[];
+
+					const noteNames: string[] = []
+					if (notes && Array.isArray(notes) && notes.length > 0) {
+						for (const noteName of notes) {
+							if(noteName && typeof noteName === "string" && noteName.trim()){
+								const trimmedNote = noteName.trim()
+								await client.query(
+									`INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
+									[trimmedNote]
+								)
+								await client.query(
+									`INSERT INTO raw_material_notes (raw_material_id, note_id)
+									SELECT $1, id FROM notes WHERE name = $2
+									ON CONFLICT (raw_material_id, note_id) DO NOTHING
+									`,
+									[rawMaterial.id, trimmedNote]
+								)
+								noteNames.push(trimmedNote)
+							}
+						}
+					}
+
+					const result = {
+						...rawMaterial,
+						notes: noteNames,
+						category_name: null
+					}
 
 					return jsonResponse({ success: true, data: result }, 201);
 				} catch (error) {
