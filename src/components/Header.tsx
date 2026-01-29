@@ -20,6 +20,13 @@ const Header = () => {
 						>
 							Add Raw Material
 						</Link>
+						<Link
+							to="/add-dilution"
+							className="text-gray-300 hover:text-white transition-colors"
+							activeProps={{ className: "text-white font-semibold" }}
+						>
+							Add Dilution
+						</Link>
 					</nav>
 				</div>
 			</div>
