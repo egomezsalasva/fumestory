@@ -41,7 +41,7 @@ export function CategoryAutocomplete({
 
 	const handleCreateCategory = async () => {
 		try {
-			const response = await fetch("", {
+			const response = await fetch("/api/categories", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ name: search.trim() }),
