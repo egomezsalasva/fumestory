@@ -28,7 +28,6 @@ export const Route = createFileRoute("/api/raw-materials")({
                         c.name as category_name,
                         rm.note_type,
                         rm.notes,
-                        rm.prepared_dilution_percentages,
                         rm.created_at
                     FROM raw_materials rm
                     LEFT JOIN categories c ON rm.category_id = c.id
@@ -54,13 +53,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const client = await getClient();
 					if (!client) return noClientResponse;
 					const body = await request.json();
-					const {
-						name,
-						category_id,
-						note_type,
-						notes,
-						prepared_dilution_percentages,
-					} = body;
+					const { name, category_id, note_type, notes } = body;
 
 					if (!name || typeof name !== "string" || name.trim() === "") {
 						return jsonResponse(
@@ -70,15 +63,14 @@ export const Route = createFileRoute("/api/raw-materials")({
 					}
 
 					const [result] = (await client.query(
-						`INSERT INTO raw_materials (name, category_id, note_type, notes, prepared_dilution_percentages)
-                    VALUES ($1, $2, $3, $4, $5)
-                    RETURNING id, name, category_id, note_type, notes, prepared_dilution_percentages, created_at`,
+						`INSERT INTO raw_materials (name, category_id, note_type, notes)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING id, name, category_id, note_type, notes, created_at`,
 						[
 							name.trim(),
 							category_id || null,
 							note_type || null,
 							JSON.stringify(notes || []),
-							prepared_dilution_percentages || [],
 						],
 					)) as RawMaterial[];
 

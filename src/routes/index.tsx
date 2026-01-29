@@ -52,6 +52,7 @@ function App() {
 			field: "prepared_dilution_percentages",
 			headerName: "Dilutions (%)",
 			width: 120,
+			valueFormatter: () => "—"
 		},
 		// { field: "created_at", headerName: "Created At", width: 180 },
 	];
