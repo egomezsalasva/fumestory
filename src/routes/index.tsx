@@ -24,12 +24,17 @@ function App() {
 	}, []);
 
 	const columnDefs = [
+		// {
+		// 	field: "id",
+		// 	headerName: "ID",
+		// 	width: 80,
+		// },
 		{
-			field: "id",
-			headerName: "ID",
-			width: 80,
+			field: "label",
+			headerName: "Label",
+			width: 100,
 		},
-		{ field: "name", headerName: "Name", width: 250 },
+		{ field: "name", headerName: "Name", width: 220 },
 		{
 			field: "category_name",
 			headerName: "Category",
@@ -44,6 +49,9 @@ function App() {
 			field: "notes",
 			headerName: "Notes",
 			flex: 1,
+			wrapText: true,
+			autoHeight: true,
+			cellClass: "notes-cell",
 			valueFormatter: (params: ValueFormatterParams<string>) =>
 				params.value ? params.value.join(", ") : "",
 			filter: true,
@@ -51,7 +59,7 @@ function App() {
 		{
 			field: "prepared_dilution_percentages",
 			headerName: "Dilutions (%)",
-			width: 120,
+			width: 160,
 			valueFormatter: (params: ValueFormatterParams<number[]>) =>
 				params.value && params.value.length > 0
 					? params.value.map((v: number) => `${v}%`).join(", ")

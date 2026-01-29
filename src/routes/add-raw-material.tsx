@@ -5,6 +5,7 @@ import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
 
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
+import { LabelInput } from "@/components/LabelInput";
 
 export const Route = createFileRoute("/add-raw-material")({
 	component: AddRawMaterial,
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/add-raw-material")({
 
 function AddRawMaterial() {
 	const [name, setName] = useState("");
+	const [label, setLabel] = useState("");
 	const [categorySearch, setCategorySearch] = useState("");
 	const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
 		null,
@@ -49,6 +51,7 @@ function AddRawMaterial() {
 				method: "POST",
 				headers: { "Content-Type": "applicaiton/json" },
 				body: JSON.stringify({
+					label,
 					name,
 					category_id: selectedCategoryId,
 					note_type: noteType,
@@ -65,6 +68,7 @@ function AddRawMaterial() {
 
 			//Success Reset
 			setName("");
+			setLabel("");
 			setCategorySearch("");
 			setSelectedCategoryId(null);
 			setNoteType("");
@@ -83,6 +87,17 @@ function AddRawMaterial() {
 				<h1 className="text-2xl font-bold text-white mb-7">Add Raw Material</h1>
 				<form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg p-6">
 					<div className="space-y-6">
+						{/* Label Field */}
+						<LabelInput
+							label="Label *"
+							value={label}
+							onChange={(value) => {
+								setLabel(value);
+								setError("");
+							}}
+							placeholder="e.g., LB1"
+							required
+						/>
 						{/* Name Field */}
 						<TextInput
 							label="Name"

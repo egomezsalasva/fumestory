@@ -4,6 +4,7 @@ import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 
 export type RawMaterial = {
 	id: number;
+	label: string;
 	name: string;
 	category_id: number;
 	category_name: string;
@@ -13,7 +14,10 @@ export type RawMaterial = {
 	created_at: string;
 };
 
-type RawMaterialFromDB = Omit<RawMaterial, "notes" | "category_name">;
+type RawMaterialFromDB = Omit<
+	RawMaterial,
+	"notes" | "category_name" | "prepared_dilution_percentages"
+>;
 
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
@@ -25,6 +29,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const result = (await client.query(`
                     SELECT
                         rm.id,
+						rm.label,
                         rm.name ,
                         rm.category_id,
                         c.name as category_name,
@@ -41,7 +46,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
 					LEFT JOIN notes n ON rmn.note_id = n.id
 					LEFT JOIN dilutions d ON rm.id = d.raw_material_id
-					GROUP BY rm.id, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
+					GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
                     ORDER BY rm.id DESC
                 `)) as RawMaterial[];
 
@@ -64,7 +69,16 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const client = await getClient();
 					if (!client) return noClientResponse;
 					const body = await request.json();
-					const { name, category_id, note_type, notes } = body;
+					const { label, name, category_id, note_type, notes } = body;
+
+					if (!label || typeof label !== "string" || label.trim() === "") {
+						return jsonResponse(
+							{
+								error: "Label is required",
+							},
+							400,
+						);
+					}
 
 					if (!name || typeof name !== "string" || name.trim() === "") {
 						return jsonResponse(
@@ -74,10 +88,10 @@ export const Route = createFileRoute("/api/raw-materials")({
 					}
 
 					const [rawMaterial] = (await client.query(
-						`INSERT INTO raw_materials (name, category_id, note_type)
-                    VALUES ($1, $2, $3)
+						`INSERT INTO raw_materials (label,name, category_id, note_type)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING id, name, category_id, note_type, created_at`,
-						[name.trim(), category_id || null, note_type || null],
+						[label.trim(), name.trim(), category_id || null, note_type || null],
 					)) as RawMaterialFromDB[];
 
 					const noteNames: string[] = [];
@@ -105,6 +119,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 						...rawMaterial,
 						notes: noteNames,
 						category_name: null,
+						prepared_dilution_percentages: [],
 					};
 
 					return jsonResponse({ success: true, data: result }, 201);
