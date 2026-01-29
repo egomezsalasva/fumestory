@@ -40,28 +40,21 @@ export function CategoryAutocomplete({
 	);
 
 	const handleCreateCategory = async () => {
-		console.log("Would create category:", search.trim());
-		// TODO: Uncomment when ready to save to database
-		/*
-        try {
-            const response = await fetch("/api/categories", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: search.trim() }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                setCategories([...categories, data.data]);
-                onSelect(data.data.id, data.data.name);
-                setShowDropdown(false);
-            }
-        } catch (err) {
-            console.error("Error creating category:", err);
-        }
-        */
-
-		// For now, just close dropdown
-		setShowDropdown(false);
+		try {
+			const response = await fetch("", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name: search.trim() }),
+			});
+			const data = await response.json();
+			if (data.success) {
+				setCategories([...categories, data.data]);
+				onSelect(data.data.id, data.data.name);
+				setShowDropdown(false);
+			}
+		} catch (error) {
+			console.error("Error creating category:", error);
+		}
 	};
 
 	return (
