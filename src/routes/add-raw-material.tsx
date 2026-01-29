@@ -113,9 +113,9 @@ function AddRawMaterial() {
 								setError("");
 							}}
 							options={[
-								{ value: "top", label: "Top" },
-								{ value: "mid", label: "Mid" },
-								{ value: "base", label: "Base" },
+								{ value: "High", label: "High" },
+								{ value: "Mid(Heart)", label: "Mid(Heart)" },
+								{ value: "Base", label: "Base" },
 							]}
 							placeholder="Select note type..."
 						/>
