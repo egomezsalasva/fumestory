@@ -9,7 +9,6 @@ export type RawMaterial = {
 	category_name: string;
 	note_type: string;
 	notes: string[];
-	prepared_dilution_percentages: number[];
 	created_at: string;
 };
 
