@@ -52,7 +52,10 @@ function App() {
 			field: "prepared_dilution_percentages",
 			headerName: "Dilutions (%)",
 			width: 120,
-			valueFormatter: () => "—",
+			valueFormatter: (params: ValueFormatterParams<number[]>) =>
+				params.value && params.value.length > 0
+					? params.value.map((v: number) => `${v}%`).join(", ")
+					: "—",
 		},
 		// { field: "created_at", headerName: "Created At", width: 180 },
 	];
