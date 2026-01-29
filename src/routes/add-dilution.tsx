@@ -18,7 +18,7 @@ function AddDilution() {
 
 	const [error, setError] = useState("");
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!selectedRawMaterialId) {
 			setError("Raw material is required");
@@ -33,11 +33,32 @@ function AddDilution() {
 			setError("Percentage must be between 0 and 100");
 			return;
 		}
-		console.log("Dilution data:", {
-			raw_material_id: selectedRawMaterialId,
-			percentage: parseFloat(percentage),
-			dilution_date: dilutionDate || null,
-		});
+		try {
+			const response = await fetch("/api/dilutions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					raw_material_id: selectedRawMaterialId,
+					percentage: percentageNum,
+					dilution_date: dilutionDate || null,
+				}),
+			});
+
+			const data = await response.json();
+			if (!response.ok) {
+				setError(data.error || "Failed to add dilution");
+				return;
+			}
+
+			//Success Reset
+			setSelectedRawMaterialId(null);
+			setRawMaterialSearch("");
+			setPercentage("");
+			setDilutionDate("");
+			alert("Dilution added successfully!");
+		} catch (error) {
+			setError("Network error: Failed to add dilution. Please try again.");
+		}
 	};
 
 	return (
