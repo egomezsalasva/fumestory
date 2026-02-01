@@ -75,46 +75,62 @@ export function NotesAutocomplete({
 				</div>
 			)}
 
-			{/* Input with autocomplete */}
-			<div className="relative">
-				<input
-					type="text"
-					value={inputValue}
-					onChange={(e) => {
-						setInputValue(e.target.value);
-						setShowDropdown(true);
-					}}
-					onFocus={() => setShowDropdown(true)}
-					onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-					onKeyDown={(e) => {
-						if (e.key === "Enter") {
-							e.preventDefault();
-							if (filteredNotes.length > 0) {
-								handleAddNote(filteredNotes[0].name);
-							} else if (inputValue.trim()) {
-								handleAddNote(inputValue);
+			{/* Input with autocomplete and Add button */}
+			<div className="flex gap-2">
+				<div className="relative flex-1">
+					<input
+						type="text"
+						value={inputValue}
+						onChange={(e) => {
+							setInputValue(e.target.value);
+							setShowDropdown(true);
+						}}
+						onFocus={() => setShowDropdown(true)}
+						onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.preventDefault();
+								if (filteredNotes.length > 0) {
+									handleAddNote(filteredNotes[0].name);
+								} else if (inputValue.trim()) {
+									handleAddNote(inputValue);
+								}
 							}
+						}}
+						placeholder="Type to search or add new note..."
+						className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-blue-500"
+					/>
+
+					{/* Dropdown - only shows when there are filtered results */}
+					{showDropdown && inputValue && filteredNotes.length > 0 && (
+						<div className="absolute z-10 w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+							{filteredNotes.map((note) => (
+								<button
+									key={note.id}
+									type="button"
+									onClick={() => handleAddNote(note.name)}
+									className="w-full text-left px-4 py-2 hover:bg-slate-600 text-white"
+								>
+									{note.name}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+
+				{/* Add button on the side */}
+				<button
+					type="button"
+					onClick={() => {
+						if (inputValue.trim()) {
+							handleAddNote(inputValue);
 						}
 					}}
-					placeholder="Type to search or add new note..."
-					className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-blue-500"
-				/>
-
-				{/* Dropdown */}
-				{showDropdown && inputValue && filteredNotes.length > 0 && (
-					<div className="absolute z-10 w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-						{filteredNotes.map((note) => (
-							<button
-								key={note.id}
-								type="button"
-								onClick={() => handleAddNote(note.name)}
-								className="w-full text-left px-4 py-2 hover:bg-slate-600 text-white"
-							>
-								{note.name}
-							</button>
-						))}
-					</div>
-				)}
+					disabled={!inputValue.trim()}
+					className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed"
+				>
+					Add
+				</button>
 			</div>
 		</div>
 	);

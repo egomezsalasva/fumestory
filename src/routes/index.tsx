@@ -32,13 +32,13 @@ function App() {
 		{
 			field: "label",
 			headerName: "Label",
-			width: 100,
+			width: 80,
 		},
-		{ field: "name", headerName: "Name", width: 220 },
+		{ field: "name", headerName: "Name", width: 240 },
 		{
 			field: "category_name",
 			headerName: "Category",
-			width: 120,
+			width: 100,
 			valueFormatter: (params: ValueFormatterParams<string>) =>
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
@@ -58,8 +58,8 @@ function App() {
 		},
 		{
 			field: "prepared_dilution_percentages",
-			headerName: "Dilutions (%)",
-			width: 160,
+			headerName: "Available Dilutions (%)",
+			width: 190,
 			valueFormatter: (params: ValueFormatterParams<number[]>) =>
 				params.value && params.value.length > 0
 					? params.value.map((v: number) => `${v}%`).join(", ")
@@ -70,7 +70,7 @@ function App() {
 
 	return (
 		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-7xl mx-auto">
+			<div className="max-w-8xl mx-auto">
 				<h1 className="text-2xl font-bold text-white mb-7">
 					Raw Materials Inventory
 				</h1>

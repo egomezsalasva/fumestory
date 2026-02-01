@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/raw-materials")({
                         rm.note_type,
                         rm.created_at,
 						COALESCE(
-							json_agg(n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
+							json_agg(DISTINCT n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
 						) as notes,
 						COALESCE(
 							json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL), '[]'
