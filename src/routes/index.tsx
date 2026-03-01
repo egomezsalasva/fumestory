@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import {
 	AllCommunityModule,
@@ -19,7 +19,10 @@ function App() {
 	useEffect(() => {
 		fetch("/api/raw-materials")
 			.then((res) => res.json())
-			.then((data) => setRawMaterials(data.data as RawMaterial[]))
+			.then((data) => {
+				console.log("Fetched raw materials:", data.data);
+				setRawMaterials(data.data as RawMaterial[]);
+			})
 			.catch((err) => console.error("Raw materials error:", err));
 	}, []);
 
@@ -57,13 +60,31 @@ function App() {
 			filter: true,
 		},
 		{
-			field: "prepared_dilution_percentages",
+			field: "available_dilutions",
 			headerName: "Available Dilutions (%)",
 			width: 190,
-			valueFormatter: (params: ValueFormatterParams<number[]>) =>
-				params.value && params.value.length > 0
-					? params.value.map((v: number) => `${v}%`).join(", ")
-					: "—",
+			cellRenderer: (params: any) => {
+				const percentages = params.value as number[] | undefined;
+				const hasPercentages = percentages && percentages.length > 0;
+				const material = params.data as RawMaterial;
+
+				return (
+					<div className="flex items-center justify-between h-full gap-2 pr-2">
+						<span className="flex-1">
+							{hasPercentages
+								? percentages.map((v: number) => `${v}%`).join(", ")
+								: "—"}
+						</span>
+						<Link
+							to="/manage-dilutions/$materialId"
+							params={{ materialId: String(material.id) }}
+							className="px-2 py-1 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors text-sm border border-blue-500/30"
+						>
+							👁️
+						</Link>
+					</div>
+				);
+			},
 		},
 		// { field: "created_at", headerName: "Created At", width: 180 },
 	];

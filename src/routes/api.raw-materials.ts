@@ -10,13 +10,13 @@ export type RawMaterial = {
 	category_name: string;
 	note_type: string;
 	notes: string[];
-	prepared_dilution_percentages: number[];
+	available_dilutions: number[];
 	created_at: string;
 };
 
 type RawMaterialFromDB = Omit<
 	RawMaterial,
-	"notes" | "category_name" | "prepared_dilution_percentages"
+	"notes" | "category_name" | "available_dilutions"
 >;
 
 export const Route = createFileRoute("/api/raw-materials")({
@@ -39,8 +39,8 @@ export const Route = createFileRoute("/api/raw-materials")({
 							json_agg(DISTINCT n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
 						) as notes,
 						COALESCE(
-							json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL), '[]'
-						) as prepared_dilution_percentages
+							json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL AND d.available = TRUE), '[]'
+						) as available_dilutions
                     FROM raw_materials rm
                     LEFT JOIN categories c ON rm.category_id = c.id
 					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
@@ -119,7 +119,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 						...rawMaterial,
 						notes: noteNames,
 						category_name: null,
-						prepared_dilution_percentages: [],
+						available_dilutions: [],
 					};
 
 					return jsonResponse({ success: true, data: result }, 201);
