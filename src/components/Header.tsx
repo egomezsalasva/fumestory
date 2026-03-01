@@ -8,7 +8,8 @@ const Header = () => {
 	const isInventory =
 		currentPath === "/" ||
 		currentPath.startsWith("/add-raw-material") ||
-		currentPath.startsWith("/add-dilution");
+		currentPath.startsWith("/add-dilution") ||
+		currentPath.startsWith("/add-feedback");
 
 	return (
 		<header className="h-15 bg-slate-800 border-b border-slate-700">
@@ -44,6 +45,13 @@ const Header = () => {
 									activeProps={{ className: "text-white font-semibold" }}
 								>
 									+ Add Dilution
+								</Link>
+								<Link
+									to="/add-feedback"
+									className="text-gray-300 hover:text-white transition-colors"
+									activeProps={{ className: "text-white font-semibold" }}
+								>
+									+ Add Feedback
 								</Link>
 							</>
 						)}

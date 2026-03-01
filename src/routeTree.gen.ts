@@ -10,17 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
+import { Route as AddFeedbackRouteImport } from './routes/add-feedback'
 import { Route as AddDilutionRouteImport } from './routes/add-dilution'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManageDilutionsMaterialIdRouteImport } from './routes/manage-dilutions.$materialId'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
+import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 
 const AddRawMaterialRoute = AddRawMaterialRouteImport.update({
   id: '/add-raw-material',
   path: '/add-raw-material',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddFeedbackRoute = AddFeedbackRouteImport.update({
+  id: '/add-feedback',
+  path: '/add-feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddDilutionRoute = AddDilutionRouteImport.update({
@@ -49,6 +56,11 @@ const ApiNotesRoute = ApiNotesRouteImport.update({
   path: '/api/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFeedbackRoute = ApiFeedbackRouteImport.update({
+  id: '/api/feedback',
+  path: '/api/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDilutionsRoute = ApiDilutionsRouteImport.update({
   id: '/api/dilutions',
   path: '/api/dilutions',
@@ -63,9 +75,11 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
+  '/add-feedback': typeof AddFeedbackRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -73,9 +87,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
+  '/add-feedback': typeof AddFeedbackRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -84,9 +100,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
+  '/add-feedback': typeof AddFeedbackRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
+  '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -96,9 +114,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/add-dilution'
+    | '/add-feedback'
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -106,9 +126,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/add-dilution'
+    | '/add-feedback'
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -116,9 +138,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/add-dilution'
+    | '/add-feedback'
     | '/add-raw-material'
     | '/api/categories'
     | '/api/dilutions'
+    | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -127,9 +151,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddDilutionRoute: typeof AddDilutionRoute
+  AddFeedbackRoute: typeof AddFeedbackRoute
   AddRawMaterialRoute: typeof AddRawMaterialRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiDilutionsRoute: typeof ApiDilutionsRoute
+  ApiFeedbackRoute: typeof ApiFeedbackRoute
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
@@ -142,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/add-raw-material'
       fullPath: '/add-raw-material'
       preLoaderRoute: typeof AddRawMaterialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add-feedback': {
+      id: '/add-feedback'
+      path: '/add-feedback'
+      fullPath: '/add-feedback'
+      preLoaderRoute: typeof AddFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/add-dilution': {
@@ -179,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/feedback': {
+      id: '/api/feedback'
+      path: '/api/feedback'
+      fullPath: '/api/feedback'
+      preLoaderRoute: typeof ApiFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/dilutions': {
       id: '/api/dilutions'
       path: '/api/dilutions'
@@ -199,9 +239,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddDilutionRoute: AddDilutionRoute,
+  AddFeedbackRoute: AddFeedbackRoute,
   AddRawMaterialRoute: AddRawMaterialRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiDilutionsRoute: ApiDilutionsRoute,
+  ApiFeedbackRoute: ApiFeedbackRoute,
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,
