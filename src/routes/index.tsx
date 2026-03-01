@@ -50,13 +50,14 @@ function App() {
 		{ field: "note_type", headerName: "Note Type", width: 120 },
 		{
 			field: "aggregated_note_counts",
-			headerName: "Notes",
+			headerName: "Notes (* = from friend feedback only)",
 			flex: 1,
 			wrapText: true,
 			autoHeight: true,
 			cellClass: "notes-cell",
 			cellRenderer: (params: any) => {
 				const noteCounts = params.value as Record<string, number> | undefined;
+				const originalNotes = params.data.notes as string[] | undefined;
 
 				if (!noteCounts || Object.keys(noteCounts).length === 0) {
 					return <span className="text-slate-500">—</span>;
@@ -65,18 +66,21 @@ function App() {
 				const entries = Object.entries(noteCounts);
 				const maxCount = Math.max(...entries.map(([, count]) => count));
 
-				// Function to calculate gradient color from white to green
 				const getBorderColor = (count: number) => {
-					if (maxCount === 1) return "rgb(255, 255, 255)"; // All white if max is 1
+					if (maxCount === 1) return "rgb(255, 255, 255)";
 
-					const percentage = (count - 1) / (maxCount - 1); // 0 to 1
+					const percentage = (count - 1) / (maxCount - 1);
 
-					// Interpolate between white (255,255,255) and green (34,197,94)
 					const r = Math.round(255 - (255 - 34) * percentage);
 					const g = Math.round(255 - (255 - 197) * percentage);
 					const b = Math.round(255 - (255 - 94) * percentage);
 
 					return `rgb(${r}, ${g}, ${b})`;
+				};
+
+				// Check if note is from feedback only (not in original notes)
+				const isFeedbackOnly = (noteName: string) => {
+					return !originalNotes || !originalNotes.includes(noteName);
 				};
 
 				return (
@@ -94,6 +98,7 @@ function App() {
 									}}
 								>
 									{note}
+									{isFeedbackOnly(note) && "*"}
 									{count > 1 && <span className="font-semibold">×{count}</span>}
 								</span>
 							))}
