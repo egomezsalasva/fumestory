@@ -11,12 +11,13 @@ export type RawMaterial = {
 	note_type: string;
 	notes: string[];
 	available_dilutions: number[];
+	aggregated_note_counts: Record<string, number>;
 	created_at: string;
 };
 
 type RawMaterialFromDB = Omit<
 	RawMaterial,
-	"notes" | "category_name" | "available_dilutions"
+	"notes" | "category_name" | "available_dilutions" | "aggregated_note_counts"
 >;
 
 export const Route = createFileRoute("/api/raw-materials")({
@@ -40,7 +41,33 @@ export const Route = createFileRoute("/api/raw-materials")({
 						) as notes,
 						COALESCE(
 							json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL AND d.available = TRUE), '[]'
-						) as available_dilutions
+						) as available_dilutions,
+						COALESCE(
+							(
+								SELECT json_object_agg(note_name, note_count)
+								FROM (
+									SELECT 
+										note_name,
+										SUM(note_count) as note_count
+									FROM (
+										SELECT n2.name as note_name, 1 as note_count
+										FROM raw_material_notes rmn2
+										JOIN notes n2 ON rmn2.note_id = n2.id
+										WHERE rmn2.raw_material_id = rm.id
+										UNION ALL
+										SELECT n3.name as note_name, COUNT(*) as note_count
+										FROM dilutions d2
+										JOIN feedback f ON f.dilution_id = d2.id
+										JOIN feedback_notes fn ON fn.feedback_id = f.id
+										JOIN notes n3 ON fn.note_id = n3.id
+										WHERE d2.raw_material_id = rm.id
+										GROUP BY n3.name
+									) combined_notes
+									GROUP BY note_name
+								) aggregated
+							),
+							'{}'::json
+						) as aggregated_note_counts
                     FROM raw_materials rm
                     LEFT JOIN categories c ON rm.category_id = c.id
 					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
@@ -120,6 +147,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 						notes: noteNames,
 						category_name: null,
 						available_dilutions: [],
+						aggregated_note_counts: {},
 					};
 
 					return jsonResponse({ success: true, data: result }, 201);
