@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManageDilutionsMaterialIdRouteImport } from './routes/manage-dilutions.$materialId'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
+import { Route as ApiFormulasRouteImport } from './routes/api.formulas'
 import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
@@ -68,6 +69,11 @@ const ApiNotesRoute = ApiNotesRouteImport.update({
   path: '/api/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFormulasRoute = ApiFormulasRouteImport.update({
+  id: '/api/formulas',
+  path: '/api/formulas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFeedbackRoute = ApiFeedbackRouteImport.update({
   id: '/api/feedback',
   path: '/api/feedback',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
+  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
+  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
+  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
+    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
+    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
+    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiDilutionsRoute: typeof ApiDilutionsRoute
   ApiFeedbackRoute: typeof ApiFeedbackRoute
+  ApiFormulasRoute: typeof ApiFormulasRoute
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/formulas': {
+      id: '/api/formulas'
+      path: '/api/formulas'
+      fullPath: '/api/formulas'
+      preLoaderRoute: typeof ApiFormulasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/feedback': {
       id: '/api/feedback'
       path: '/api/feedback'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiDilutionsRoute: ApiDilutionsRoute,
   ApiFeedbackRoute: ApiFeedbackRoute,
+  ApiFormulasRoute: ApiFormulasRoute,
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,

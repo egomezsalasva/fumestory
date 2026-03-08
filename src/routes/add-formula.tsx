@@ -35,6 +35,9 @@ function AddFormula() {
 			displayText: "",
 		},
 	]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState(false);
 
 	const addIngredient = () => {
 		setIngredients([
@@ -237,24 +240,45 @@ function AddFormula() {
 		setIngredients(updatedIngredients);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setIsSubmitting(true);
+		setError(null);
+		setSuccess(false);
+
 		const formulaData = {
 			name,
 			type,
 			ingredients: ingredients
 				.filter((ing) => ing.dilution_id !== null)
 				.map((ing) => ({
-					raw_material_id: ing.raw_material_id,
-					raw_material_name: ing.raw_material_name,
 					dilution_id: ing.dilution_id,
-					dilution_percentage: ing.dilution_percentage,
 					weight_grams: parseFloat(ing.weight_grams) || 0,
 					formula_percentage: parseFloat(ing.formula_percentage) || 0,
 				})),
 		};
-		console.log(formulaData);
-		// TODO: Save to database
+
+		try {
+			const response = await fetch("/api/formulas", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formulaData),
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				setError(result.error || "Failed to create formula");
+				setIsSubmitting(false);
+				return;
+			}
+
+			setSuccess(true);
+			setIsSubmitting(false);
+		} catch (err) {
+			setError("An error occurred while creating the formula");
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -392,12 +416,23 @@ function AddFormula() {
 
 					<button
 						type="submit"
-						disabled={!name}
+						disabled={!name || isSubmitting}
 						className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Create Formula
+						{isSubmitting ? "Submitting..." : "Create Formula"}
 					</button>
 				</form>
+				{error && (
+					<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+						{error}
+					</div>
+				)}
+
+				{success && (
+					<div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+						Formula created successfully!
+					</div>
+				)}
 			</div>
 		</div>
 	);
