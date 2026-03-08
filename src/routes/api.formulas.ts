@@ -17,15 +17,26 @@ export const Route = createFileRoute("/api/formulas")({
 				if (!client) return noClientResponse;
 
 				const formulas = await client.query(`
-                    SELECT 
-                        f.*,
-                        COUNT(fd.id)::int as ingredient_count,
-                        COALESCE(SUM(fd.weight_grams), 0) as total_weight
-                    FROM formulas f
-                    LEFT JOIN formula_dilutions fd ON f.id = fd.formula_id
-                    GROUP BY f.id
-                    ORDER BY f.created_at DESC
-                `);
+					SELECT 
+						f.*,
+						COUNT(fd.id)::int as ingredient_count,
+						COALESCE(SUM(fd.weight_grams), 0) as total_weight,
+						COALESCE(
+							json_agg(
+								json_build_object(
+									'material_name', rm.name,
+									'percentage', fd.percentage
+								) ORDER BY fd.percentage DESC
+							) FILTER (WHERE fd.id IS NOT NULL),
+							'[]'
+						) as ingredients
+					FROM formulas f
+					LEFT JOIN formula_dilutions fd ON f.id = fd.formula_id
+					LEFT JOIN dilutions d ON fd.dilution_id = d.id
+					LEFT JOIN raw_materials rm ON d.raw_material_id = rm.id
+					GROUP BY f.id
+					ORDER BY f.created_at DESC
+				`);
 
 				return jsonResponse({ success: true, data: formulas }, 200);
 			},
