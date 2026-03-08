@@ -11,6 +11,12 @@ const Header = () => {
 		currentPath.startsWith("/add-dilution") ||
 		currentPath.startsWith("/add-feedback");
 
+	const isFormulas =
+		currentPath.startsWith("/formulas") ||
+		currentPath.startsWith("/add-trial") ||
+		currentPath.startsWith("/add-accord") ||
+		currentPath.startsWith("/add-perfume");
+
 	return (
 		<header className="h-15 bg-slate-800 border-b border-slate-700">
 			<div className="h-full max-w-7xl mx-auto px-8">
@@ -24,8 +30,13 @@ const Header = () => {
 						>
 							Inventory
 						</Link>
-						<span className="text-gray-600 cursor-not-allowed">Accords</span>
-						<span className="text-gray-600 cursor-not-allowed">Perfumes</span>
+						<Link
+							to="/formulas"
+							className="text-gray-300 hover:text-white transition-colors"
+							activeProps={{ className: "text-white font-semibold" }}
+						>
+							Formulas
+						</Link>
 					</nav>
 
 					{/* Right: Conditional Actions */}
@@ -37,21 +48,32 @@ const Header = () => {
 									className="text-gray-300 hover:text-white transition-colors"
 									activeProps={{ className: "text-white font-semibold" }}
 								>
-									+ Add Material
+									+ Raw Material
 								</Link>
 								<Link
 									to="/add-dilution"
 									className="text-gray-300 hover:text-white transition-colors"
 									activeProps={{ className: "text-white font-semibold" }}
 								>
-									+ Add Dilution
+									+ Dilution
 								</Link>
 								<Link
 									to="/add-feedback"
 									className="text-gray-300 hover:text-white transition-colors"
 									activeProps={{ className: "text-white font-semibold" }}
 								>
-									+ Add Feedback
+									+ Friends' Feedback
+								</Link>
+							</>
+						)}
+						{isFormulas && (
+							<>
+								<Link
+									to="/add-formula"
+									className="text-gray-300 hover:text-white transition-colors"
+									activeProps={{ className: "text-white font-semibold" }}
+								>
+									+ Formula
 								</Link>
 							</>
 						)}

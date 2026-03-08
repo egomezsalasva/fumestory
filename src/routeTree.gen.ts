@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as FormulasRouteImport } from './routes/formulas'
 import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
+import { Route as AddFormulaRouteImport } from './routes/add-formula'
 import { Route as AddFeedbackRouteImport } from './routes/add-feedback'
 import { Route as AddDilutionRouteImport } from './routes/add-dilution'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,9 +22,19 @@ import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 
+const FormulasRoute = FormulasRouteImport.update({
+  id: '/formulas',
+  path: '/formulas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AddRawMaterialRoute = AddRawMaterialRouteImport.update({
   id: '/add-raw-material',
   path: '/add-raw-material',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddFormulaRoute = AddFormulaRouteImport.update({
+  id: '/add-formula',
+  path: '/add-formula',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddFeedbackRoute = AddFeedbackRouteImport.update({
@@ -76,7 +88,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
+  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
+  '/formulas': typeof FormulasRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -88,7 +102,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
+  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
+  '/formulas': typeof FormulasRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -101,7 +117,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
+  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
+  '/formulas': typeof FormulasRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -115,7 +133,9 @@ export interface FileRouteTypes {
     | '/'
     | '/add-dilution'
     | '/add-feedback'
+    | '/add-formula'
     | '/add-raw-material'
+    | '/formulas'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -127,7 +147,9 @@ export interface FileRouteTypes {
     | '/'
     | '/add-dilution'
     | '/add-feedback'
+    | '/add-formula'
     | '/add-raw-material'
+    | '/formulas'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -139,7 +161,9 @@ export interface FileRouteTypes {
     | '/'
     | '/add-dilution'
     | '/add-feedback'
+    | '/add-formula'
     | '/add-raw-material'
+    | '/formulas'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -152,7 +176,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddDilutionRoute: typeof AddDilutionRoute
   AddFeedbackRoute: typeof AddFeedbackRoute
+  AddFormulaRoute: typeof AddFormulaRoute
   AddRawMaterialRoute: typeof AddRawMaterialRoute
+  FormulasRoute: typeof FormulasRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiDilutionsRoute: typeof ApiDilutionsRoute
   ApiFeedbackRoute: typeof ApiFeedbackRoute
@@ -163,11 +189,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/formulas': {
+      id: '/formulas'
+      path: '/formulas'
+      fullPath: '/formulas'
+      preLoaderRoute: typeof FormulasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/add-raw-material': {
       id: '/add-raw-material'
       path: '/add-raw-material'
       fullPath: '/add-raw-material'
       preLoaderRoute: typeof AddRawMaterialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add-formula': {
+      id: '/add-formula'
+      path: '/add-formula'
+      fullPath: '/add-formula'
+      preLoaderRoute: typeof AddFormulaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/add-feedback': {
@@ -240,7 +280,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddDilutionRoute: AddDilutionRoute,
   AddFeedbackRoute: AddFeedbackRoute,
+  AddFormulaRoute: AddFormulaRoute,
   AddRawMaterialRoute: AddRawMaterialRoute,
+  FormulasRoute: FormulasRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiDilutionsRoute: ApiDilutionsRoute,
   ApiFeedbackRoute: ApiFeedbackRoute,
