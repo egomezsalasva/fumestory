@@ -86,14 +86,24 @@ function AddFeedback() {
 	return (
 		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
 			<div className="max-w-2xl mx-auto">
-				<div className="flex items-center gap-4 mb-7">
-					<Link
-						to="/"
-						className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
-					>
-						← Back
-					</Link>
-					<h1 className="text-2xl font-bold text-white">Add Feedback</h1>
+				<div className="mb-7">
+					<div className="flex items-center gap-4 mb-4">
+						<Link
+							to="/"
+							className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
+						>
+							← Back
+						</Link>
+						<h1 className="text-2xl font-bold text-white">
+							Add Guest Feedback
+						</h1>
+					</div>
+					<p className="text-sm text-slate-400">
+						This form can be used to get some direct feedback from when you have
+						a guest over. Use a scent strip with any of your dilutions and give
+						it to your guest without giving them any guidance. See what notes
+						they pick up on and what they think of the scent.
+					</p>
 				</div>
 
 				{error && (
@@ -106,6 +116,15 @@ function AddFeedback() {
 					onSubmit={handleSubmit}
 					className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
 				>
+					{/* Person Name */}
+					{/* Person Name */}
+					<TextInput
+						label="Guest Name *"
+						value={personName}
+						onChange={setPersonName}
+						placeholder="Enter your guest/friend's name"
+					/>
+
 					{/* Raw Material Selection */}
 					<div>
 						<RawMaterialAutocomplete
@@ -147,14 +166,6 @@ function AddFeedback() {
 							No dilutions found for this material. Please add a dilution first.
 						</div>
 					)}
-
-					{/* Person Name */}
-					<TextInput
-						label="Your Name *"
-						value={personName}
-						onChange={setPersonName}
-						placeholder="Enter your name"
-					/>
 
 					{/* Notes Selection */}
 					<div>

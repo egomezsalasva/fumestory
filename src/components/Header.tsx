@@ -62,7 +62,7 @@ const Header = () => {
 									className="text-gray-300 hover:text-white transition-colors"
 									activeProps={{ className: "text-white font-semibold" }}
 								>
-									+ Friends' Feedback
+									+ Guest Feedback
 								</Link>
 							</>
 						)}
