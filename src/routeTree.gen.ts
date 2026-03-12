@@ -22,6 +22,7 @@ import { Route as ApiFormulasRouteImport } from './routes/api.formulas'
 import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
+import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
 
 const FormulasRoute = FormulasRouteImport.update({
   id: '/formulas',
@@ -89,6 +90,11 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   path: '/api/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
+  id: '/api/agent/raw-material-chat',
+  path: '/api/agent/raw-material-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
+    | '/api/agent/raw-material-chat'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
+    | '/api/agent/raw-material-chat'
   id:
     | '__root__'
     | '/'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/manage-dilutions/$materialId'
+    | '/api/agent/raw-material-chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
+  ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agent/raw-material-chat': {
+      id: '/api/agent/raw-material-chat'
+      path: '/api/agent/raw-material-chat'
+      fullPath: '/api/agent/raw-material-chat'
+      preLoaderRoute: typeof ApiAgentRawMaterialChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -310,6 +330,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,
+  ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
