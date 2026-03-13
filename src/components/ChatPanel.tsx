@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export type ChatMessage = {
 	role: "user" | "assistant";
@@ -66,7 +67,41 @@ export function ChatPanel({
 										: "bg-slate-700 text-slate-200"
 								}`}
 							>
-								{msg.content}
+								{msg.role === "assistant" ? (
+									<div className="prose prose-invert prose-sm max-w-none">
+										<ReactMarkdown
+											components={{
+												h3: ({ children }) => (
+													<h3 className="text-base font-semibold mt-3 mb-2 text-slate-100">
+														{children}
+													</h3>
+												),
+												strong: ({ children }) => (
+													<strong className="font-semibold text-slate-50">
+														{children}
+													</strong>
+												),
+												ul: ({ children }) => (
+													<ul className="list-disc list-inside space-y-1 my-2">
+														{children}
+													</ul>
+												),
+												li: ({ children }) => (
+													<li className="text-slate-200">{children}</li>
+												),
+												p: ({ children }) => (
+													<p className="mb-2 leading-relaxed">{children}</p>
+												),
+											}}
+										>
+											{msg.content}
+										</ReactMarkdown>
+									</div>
+								) : (
+									<p className="whitespace-pre-wrap leading-relaxed">
+										{msg.content}
+									</p>
+								)}
 							</div>
 						</div>
 					))}
