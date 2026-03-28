@@ -3,6 +3,8 @@ import {
 	Scripts,
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { NeonAuthUIProvider } from "@neondatabase/neon-js/auth/react";
+import { authClient } from "../../auth";
 
 import appCss from "../styles.css?url";
 
@@ -45,8 +47,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<Header />
-				{children}
+				<NeonAuthUIProvider authClient={authClient}>
+					<Header />
+					{children}
+				</NeonAuthUIProvider>
 				<Scripts />
 			</body>
 		</html>

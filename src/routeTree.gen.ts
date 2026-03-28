@@ -16,6 +16,7 @@ import { Route as AddFeedbackRouteImport } from './routes/add-feedback'
 import { Route as AddDilutionRouteImport } from './routes/add-dilution'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManageDilutionsMaterialIdRouteImport } from './routes/manage-dilutions.$materialId'
+import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
 import { Route as ApiFormulasRouteImport } from './routes/api.formulas'
@@ -60,6 +61,11 @@ const ManageDilutionsMaterialIdRoute =
     path: '/manage-dilutions/$materialId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthPathnameRoute = AuthPathnameRouteImport.update({
+  id: '/auth/$pathname',
+  path: '/auth/$pathname',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRawMaterialsRoute = ApiRawMaterialsRouteImport.update({
   id: '/api/raw-materials',
   path: '/api/raw-materials',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/auth/$pathname': typeof AuthPathnameRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/auth/$pathname': typeof AuthPathnameRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/auth/$pathname': typeof AuthPathnameRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
 }
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/auth/$pathname'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
   fileRoutesByTo: FileRoutesByTo
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/auth/$pathname'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
   id:
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/auth/$pathname'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
   fileRoutesById: FileRoutesById
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   ApiFormulasRoute: typeof ApiFormulasRoute
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
+  AuthPathnameRoute: typeof AuthPathnameRoute
   ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
@@ -262,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/manage-dilutions/$materialId'
       fullPath: '/manage-dilutions/$materialId'
       preLoaderRoute: typeof ManageDilutionsMaterialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/$pathname': {
+      id: '/auth/$pathname'
+      path: '/auth/$pathname'
+      fullPath: '/auth/$pathname'
+      preLoaderRoute: typeof AuthPathnameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/raw-materials': {
@@ -329,6 +349,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFormulasRoute: ApiFormulasRoute,
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
+  AuthPathnameRoute: AuthPathnameRoute,
   ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }
