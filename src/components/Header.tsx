@@ -1,4 +1,20 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { authClient } from "../../auth";
+
+function SignOutAction() {
+	const navigate = useNavigate();
+	return (
+		<button
+			onClick={async () => {
+				await authClient.signOut();
+				navigate({ to: "/", replace: true });
+			}}
+			className="px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm"
+		>
+			Sign out
+		</button>
+	);
+}
 
 const Header = () => {
 	const routerState = useRouterState();
@@ -6,7 +22,7 @@ const Header = () => {
 
 	// Check which section we're in
 	const isInventory =
-		currentPath === "/" ||
+		currentPath === "/inventory" ||
 		currentPath.startsWith("/add-raw-material") ||
 		currentPath.startsWith("/add-dilution") ||
 		currentPath.startsWith("/add-feedback");
@@ -22,9 +38,9 @@ const Header = () => {
 			<div className="h-full max-w-7xl mx-auto px-8">
 				<div className="h-full flex items-center justify-between">
 					{/* Left: Navigation */}
-					<nav className="flex gap-6">
+					<nav className="flex gap-5">
 						<Link
-							to="/"
+							to="/inventory"
 							className="text-gray-300 hover:text-white transition-colors"
 							activeProps={{ className: "text-white font-semibold" }}
 						>
@@ -40,7 +56,7 @@ const Header = () => {
 					</nav>
 
 					{/* Right: Conditional Actions */}
-					<nav className="flex gap-6">
+					<nav className="flex gap-5">
 						{isInventory && (
 							<>
 								<Link
@@ -78,6 +94,10 @@ const Header = () => {
 							</>
 						)}
 					</nav>
+
+					<div className="flex items-center gap-2">
+						<SignOutAction />
+					</div>
 				</div>
 			</div>
 		</header>

@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AuthView } from "@neondatabase/neon-js/auth/react/ui";
+import { authClient } from "../../auth";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/auth/$pathname")({
 	component: Auth,
@@ -7,6 +9,15 @@ export const Route = createFileRoute("/auth/$pathname")({
 
 function Auth() {
 	const { pathname } = Route.useParams();
+	const { data } = authClient.useSession();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (data?.session) {
+			navigate({ to: "/inventory", replace: true });
+		}
+	}, [data?.session, navigate]);
+
 	return (
 		<div
 			style={{

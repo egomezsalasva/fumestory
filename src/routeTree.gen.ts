@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as FormulasRouteImport } from './routes/formulas'
 import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
 import { Route as AddFormulaRouteImport } from './routes/add-formula'
@@ -23,8 +24,14 @@ import { Route as ApiFormulasRouteImport } from './routes/api.formulas'
 import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
+import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
 
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormulasRoute = FormulasRouteImport.update({
   id: '/formulas',
   path: '/formulas',
@@ -96,6 +103,11 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   path: '/api/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountPathnameRoute = AccountPathnameRouteImport.update({
+  id: '/account/$pathname',
+  path: '/account/$pathname',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
   id: '/api/agent/raw-material-chat',
   path: '/api/agent/raw-material-chat',
@@ -109,6 +121,8 @@ export interface FileRoutesByFullPath {
   '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/formulas': typeof FormulasRoute
+  '/inventory': typeof InventoryRoute
+  '/account/$pathname': typeof AccountPathnameRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -126,6 +140,8 @@ export interface FileRoutesByTo {
   '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/formulas': typeof FormulasRoute
+  '/inventory': typeof InventoryRoute
+  '/account/$pathname': typeof AccountPathnameRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -144,6 +160,8 @@ export interface FileRoutesById {
   '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
   '/formulas': typeof FormulasRoute
+  '/inventory': typeof InventoryRoute
+  '/account/$pathname': typeof AccountPathnameRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
@@ -163,6 +181,8 @@ export interface FileRouteTypes {
     | '/add-formula'
     | '/add-raw-material'
     | '/formulas'
+    | '/inventory'
+    | '/account/$pathname'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -180,6 +200,8 @@ export interface FileRouteTypes {
     | '/add-formula'
     | '/add-raw-material'
     | '/formulas'
+    | '/inventory'
+    | '/account/$pathname'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -197,6 +219,8 @@ export interface FileRouteTypes {
     | '/add-formula'
     | '/add-raw-material'
     | '/formulas'
+    | '/inventory'
+    | '/account/$pathname'
     | '/api/categories'
     | '/api/dilutions'
     | '/api/feedback'
@@ -215,6 +239,8 @@ export interface RootRouteChildren {
   AddFormulaRoute: typeof AddFormulaRoute
   AddRawMaterialRoute: typeof AddRawMaterialRoute
   FormulasRoute: typeof FormulasRoute
+  InventoryRoute: typeof InventoryRoute
+  AccountPathnameRoute: typeof AccountPathnameRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiDilutionsRoute: typeof ApiDilutionsRoute
   ApiFeedbackRoute: typeof ApiFeedbackRoute
@@ -228,6 +254,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/formulas': {
       id: '/formulas'
       path: '/formulas'
@@ -326,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/$pathname': {
+      id: '/account/$pathname'
+      path: '/account/$pathname'
+      fullPath: '/account/$pathname'
+      preLoaderRoute: typeof AccountPathnameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agent/raw-material-chat': {
       id: '/api/agent/raw-material-chat'
       path: '/api/agent/raw-material-chat'
@@ -343,6 +383,8 @@ const rootRouteChildren: RootRouteChildren = {
   AddFormulaRoute: AddFormulaRoute,
   AddRawMaterialRoute: AddRawMaterialRoute,
   FormulasRoute: FormulasRoute,
+  InventoryRoute: InventoryRoute,
+  AccountPathnameRoute: AccountPathnameRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiDilutionsRoute: ApiDilutionsRoute,
   ApiFeedbackRoute: ApiFeedbackRoute,
