@@ -8,10 +8,6 @@ import {
 	ValueFormatterParams,
 } from "ag-grid-community";
 import { RawMaterial } from "./api.raw-materials";
-import {
-	SignedIn,
-	RedirectToSignIn,
-} from "@neondatabase/neon-js/auth/react/ui";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -39,19 +35,19 @@ function App() {
 		{
 			field: "label",
 			headerName: "Label",
-			width: 80,
+			width: 110,
 		},
 		{ field: "name", headerName: "Name", width: 240 },
 		{
 			field: "category_name",
 			headerName: "Category",
-			width: 100,
+			width: 140,
 			valueFormatter: (params: ValueFormatterParams<string>) =>
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
 					: "",
 		},
-		{ field: "note_type", headerName: "Note Type", width: 120 },
+		{ field: "note_type", headerName: "Note Type", width: 140 },
 		{
 			field: "aggregated_note_counts",
 			headerName: "Notes (* = from friend feedback only)",
@@ -59,33 +55,34 @@ function App() {
 			wrapText: true,
 			autoHeight: true,
 			cellClass: "notes-cell",
-			cellRenderer: (params: any) => {
-				const noteCounts = params.value as Record<string, number> | undefined;
-				const originalNotes = params.data.notes as string[] | undefined;
-
-				if (!noteCounts || Object.keys(noteCounts).length === 0) {
-					return <span className="text-slate-500">—</span>;
-				}
-
+			filter: "agTextColumnFilter",
+			valueGetter: (p: any) => {
+				const m = p.data?.aggregated_note_counts as
+					| Record<string, number>
+					| undefined;
+				return m ? Object.keys(m).join(", ") : "";
+			},
+			cellRenderer: (p: any) => {
+				const noteCounts = (p.data?.aggregated_note_counts ?? {}) as Record<
+					string,
+					number
+				>;
+				const originalNotes = p.data?.notes as string[] | undefined;
 				const entries = Object.entries(noteCounts);
-				const maxCount = Math.max(...entries.map(([, count]) => count));
+				if (entries.length === 0)
+					return <span className="text-slate-500">—</span>;
 
-				const getBorderColor = (count: number) => {
-					if (maxCount === 1) return "rgb(255, 255, 255)";
-
-					const percentage = (count - 1) / (maxCount - 1);
-
-					const r = Math.round(255 - (255 - 34) * percentage);
-					const g = Math.round(255 - (255 - 197) * percentage);
-					const b = Math.round(255 - (255 - 94) * percentage);
-
+				const max = Math.max(...entries.map(([, c]) => c));
+				const color = (c: number) => {
+					if (max === 1) return "rgb(255, 255, 255)";
+					const t = (c - 1) / (max - 1);
+					const r = Math.round(255 - (255 - 34) * t);
+					const g = Math.round(255 - (255 - 197) * t);
+					const b = Math.round(255 - (255 - 94) * t);
 					return `rgb(${r}, ${g}, ${b})`;
 				};
-
-				// Check if note is from feedback only (not in original notes)
-				const isFeedbackOnly = (noteName: string) => {
-					return !originalNotes || !originalNotes.includes(noteName);
-				};
+				const isFeedbackOnly = (n: string) =>
+					!originalNotes || !originalNotes.includes(n);
 
 				return (
 					<div className="flex flex-wrap gap-2 py-2">
@@ -98,7 +95,7 @@ function App() {
 									style={{
 										borderWidth: "1px",
 										borderStyle: "solid",
-										borderColor: getBorderColor(count),
+										borderColor: color(count),
 									}}
 								>
 									{note}
@@ -113,7 +110,7 @@ function App() {
 		{
 			field: "available_dilutions",
 			headerName: "Available Dilutions (%)",
-			width: 190,
+			width: 230,
 			cellRenderer: (params: any) => {
 				const percentages = params.value as number[] | undefined;
 				const hasPercentages = percentages && percentages.length > 0;
@@ -153,6 +150,11 @@ function App() {
 					<AgGridReact
 						rowData={rawMaterials}
 						columnDefs={columnDefs as ColDef<RawMaterial>[]}
+						defaultColDef={{
+							filter: true,
+							sortable: true,
+							resizable: true,
+						}}
 						pagination={true}
 						paginationPageSize={20}
 						theme="legacy"
