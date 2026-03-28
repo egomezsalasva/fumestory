@@ -90,7 +90,7 @@ export function ChatPanel({
 													<li className="text-slate-200">{children}</li>
 												),
 												p: ({ children }) => (
-													<p className="mb-2 leading-relaxed">{children}</p>
+													<p className="mb-2 last:mb-0 leading-relaxed">{children}</p>
 												),
 											}}
 										>
