@@ -4,6 +4,7 @@ import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { TextInput } from "@/components/TextInput";
 import { Dilution } from "./api.dilutions";
+import { authedFetch } from "@/utils/authed-fetch";
 
 export const Route = createFileRoute("/add-feedback")({
 	component: AddFeedback,
@@ -27,15 +28,17 @@ function AddFeedback() {
 			return;
 		}
 
-		fetch("/api/dilutions")
+		authedFetch("/api/dilutions")
 			.then((res) => res.json())
 			.then((data) => {
-				const filtered = (data.data as Dilution[]).filter(
+				const allDilutions = Array.isArray(data?.data)
+					? (data.data as Dilution[])
+					: [];
+				const filtered = allDilutions.filter(
 					(d) => d.raw_material_id === rawMaterialId,
 				);
 				setAvailableDilutions(filtered);
 
-				// Reset dilution selection if previous selection is not in new list
 				if (dilutionId && !filtered.find((d) => d.id === dilutionId)) {
 					setDilutionId(null);
 				}
@@ -58,7 +61,7 @@ function AddFeedback() {
 		setLoading(true);
 
 		try {
-			const response = await fetch("/api/feedback", {
+			const response = await authedFetch("/api/feedback", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

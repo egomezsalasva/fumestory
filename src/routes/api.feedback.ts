@@ -1,6 +1,7 @@
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import { createFileRoute } from "@tanstack/react-router";
+import { requireCurrentUserId } from "@/utils/current-user";
 
 export type Feedback = {
 	id: number;
@@ -20,6 +21,9 @@ export const Route = createFileRoute("/api/feedback")({
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
 					const url = new URL(request.url);
 					const dilutionId = url.searchParams.get("dilutionId");
 					if (!dilutionId || isNaN(Number(dilutionId))) {
@@ -39,13 +43,16 @@ export const Route = createFileRoute("/api/feedback")({
                             json_agg(n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
                         ) as notes
                     FROM feedback f
+					JOIN dilutions d ON d.id = f.dilution_id
+					JOIN raw_materials rm ON rm.id = d.raw_material_id
                     LEFT JOIN feedback_notes fn ON f.id = fn.feedback_id
                     LEFT JOIN notes n ON fn.note_id = n.id
                     WHERE f.dilution_id = $1
+  						AND rm.owner_id = $2
                     GROUP BY f.id, f.dilution_id, f.person_name, f.created_at
                     ORDER BY f.created_at DESC
                 `,
-						[Number(dilutionId)],
+						[Number(dilutionId), currentUserId],
 					)) as FeedbackWithNotes[];
 					return jsonResponse(
 						{ success: true, data: result as FeedbackWithNotes[] },
@@ -65,6 +72,9 @@ export const Route = createFileRoute("/api/feedback")({
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
 					const body = await request.json();
 					const { dilution_id, person_name, notes } = body as {
 						dilution_id: Feedback["dilution_id"];
@@ -91,6 +101,20 @@ export const Route = createFileRoute("/api/feedback")({
 						if (!note || typeof note !== "string" || note.trim() === "") {
 							return jsonResponse({ error: "Note is required" }, 400);
 						}
+					}
+					const ownsDilution = (await client.query(
+						`SELECT 1
+						 FROM dilutions d
+						 JOIN raw_materials rm ON rm.id = d.raw_material_id
+						 WHERE d.id = $1 AND rm.owner_id = $2`,
+						[dilution_id, currentUserId],
+					)) as { "?column?": number }[];
+
+					if (ownsDilution.length === 0) {
+						return jsonResponse(
+							{ error: "Not allowed for this dilution" },
+							403,
+						);
 					}
 					const [feedback] = (await client.query(
 						`

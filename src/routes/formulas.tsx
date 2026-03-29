@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
+import { authedFetch } from "@/utils/authed-fetch";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -50,7 +51,7 @@ function Formulas() {
 	const [formulas, setFormulas] = useState<Formula[]>([]);
 
 	useEffect(() => {
-		fetch("/api/formulas")
+		authedFetch("/api/formulas")
 			.then((res) => res.json())
 			.then((data) => {
 				console.log("Fetched formulas:", data.data);

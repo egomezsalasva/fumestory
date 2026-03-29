@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterial = {
 	id: number;
@@ -21,7 +22,7 @@ export function RawMaterialAutocomplete({
 	const [showDropdown, setShowDropdown] = useState(false);
 
 	useEffect(() => {
-		fetch("/api/raw-materials")
+		authedFetch("/api/raw-materials")
 			.then((res) => res.json())
 			.then((data) => {
 				if (data.success) {

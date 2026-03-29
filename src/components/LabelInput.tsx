@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { authedFetch } from "@/utils/authed-fetch";
 
 type LabelInputProps = {
 	label: string;
@@ -27,7 +28,7 @@ export function LabelInput({
 
 	// Fetch existing labels
 	useEffect(() => {
-		fetch("/api/raw-materials")
+		authedFetch("/api/raw-materials")
 			.then((res) => res.json())
 			.then((data) => {
 				if (data.success) {

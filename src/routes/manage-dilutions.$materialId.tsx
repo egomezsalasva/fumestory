@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Dilution } from "./api.dilutions";
 import { FeedbackWithNotes } from "./api.feedback";
+import { authedFetch } from "@/utils/authed-fetch";
 
 export const Route = createFileRoute("/manage-dilutions/$materialId")({
 	component: ManageDilutions,
@@ -19,10 +20,12 @@ function ManageDilutions() {
 
 	useEffect(() => {
 		// Fetch all dilutions for this material
-		fetch("/api/dilutions")
+		authedFetch("/api/dilutions")
 			.then((res) => res.json())
 			.then((data) => {
-				const allDilutions = data.data as Dilution[];
+				const allDilutions = Array.isArray(data?.data)
+					? (data.data as Dilution[])
+					: [];
 				const filtered = allDilutions.filter(
 					(d) => d.raw_material_id === Number(materialId),
 				);
@@ -34,10 +37,11 @@ function ManageDilutions() {
 			.catch((err) => console.error("Error:", err));
 
 		// Fetch material info
-		fetch("/api/raw-materials")
+		authedFetch("/api/raw-materials")
 			.then((res) => res.json())
 			.then((data) => {
-				const material = data.data.find(
+				const materials = Array.isArray(data?.data) ? data.data : [];
+				const material = materials.find(
 					(m: any) => m.id === Number(materialId),
 				);
 				if (material) {
@@ -54,7 +58,7 @@ function ManageDilutions() {
 	) => {
 		setLoading(true);
 		try {
-			const response = await fetch("/api/dilutions", {
+			const response = await authedFetch("/api/dilutions", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -86,7 +90,7 @@ function ManageDilutions() {
 
 		for (const id of dilutionIds) {
 			try {
-				const response = await fetch(`/api/feedback?dilutionId=${id}`);
+				const response = await authedFetch(`/api/feedback?dilutionId=${id}`);
 				const data = await response.json();
 				feedbackData[id] = data.data || [];
 			} catch (err) {

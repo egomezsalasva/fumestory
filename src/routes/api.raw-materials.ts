@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import { requireCurrentUserId } from "@/utils/current-user";
 
 export type RawMaterial = {
 	id: number;
@@ -23,11 +24,15 @@ type RawMaterialFromDB = Omit<
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
 		handlers: {
-			GET: async () => {
+			GET: async ({ request }) => {
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
-					const result = (await client.query(`
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
+					const result = (await client.query(
+						`
                     SELECT
                         rm.id,
 						rm.label,
@@ -73,9 +78,12 @@ export const Route = createFileRoute("/api/raw-materials")({
 					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
 					LEFT JOIN notes n ON rmn.note_id = n.id
 					LEFT JOIN dilutions d ON rm.id = d.raw_material_id
+					WHERE rm.owner_id = $1
 					GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
                     ORDER BY rm.id DESC
-                `)) as RawMaterial[];
+                `,
+						[currentUserId],
+					)) as RawMaterial[];
 
 					return jsonResponse(
 						{ success: true, data: result as RawMaterial[] },
@@ -95,6 +103,9 @@ export const Route = createFileRoute("/api/raw-materials")({
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
 					const body = await request.json();
 					const { label, name, category_id, note_type, notes } = body;
 
@@ -115,10 +126,16 @@ export const Route = createFileRoute("/api/raw-materials")({
 					}
 
 					const [rawMaterial] = (await client.query(
-						`INSERT INTO raw_materials (label,name, category_id, note_type)
-                    VALUES ($1, $2, $3, $4)
+						`INSERT INTO raw_materials (label,name, category_id, note_type, owner_id)
+                    VALUES ($1, $2, $3, $4, $5)
                     RETURNING id, name, category_id, note_type, created_at`,
-						[label.trim(), name.trim(), category_id || null, note_type || null],
+						[
+							label.trim(),
+							name.trim(),
+							category_id || null,
+							note_type || null,
+							currentUserId,
+						],
 					)) as RawMaterialFromDB[];
 
 					const noteNames: string[] = [];

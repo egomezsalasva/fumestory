@@ -1,6 +1,7 @@
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import { createFileRoute } from "@tanstack/react-router";
+import { requireCurrentUserId } from "@/utils/current-user";
 
 export type Dilution = {
 	id: number;
@@ -14,21 +15,29 @@ export type Dilution = {
 export const Route = createFileRoute("/api/dilutions")({
 	server: {
 		handlers: {
-			GET: async () => {
+			GET: async ({ request }) => {
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
-
-					const result = (await client.query(`
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
+					const result = (await client.query(
+						`
                         SELECT
-                            id,
-                            raw_material_id,
-                            percentage,
-                            dilution_date,
-							available,
-                            created_at
-                        FROM dilutions
-                    `)) as Dilution[];
+                            d.id,
+							d.raw_material_id,
+							d.percentage,
+							d.dilution_date,
+							d.available,
+							d.created_at
+                        FROM dilutions d
+						JOIN raw_materials rm ON rm.id = d.raw_material_id
+						WHERE rm.owner_id = $1
+						ORDER BY d.created_at DESC
+                    `,
+						[currentUserId],
+					)) as Dilution[];
 
 					return jsonResponse({ success: true, data: result }, 200);
 				} catch (error) {
@@ -45,6 +54,9 @@ export const Route = createFileRoute("/api/dilutions")({
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
 					const body = await request.json();
 					const { raw_material_id, percentage, dilution_date } = body as {
 						raw_material_id: Dilution["raw_material_id"];
@@ -62,6 +74,20 @@ export const Route = createFileRoute("/api/dilutions")({
 					) {
 						return jsonResponse({ error: "Valid percentage is required" }, 400);
 					}
+					const owns = (await client.query(
+						`SELECT 1
+						 FROM raw_materials
+						 WHERE id = $1 AND owner_id = $2`,
+						[raw_material_id, currentUserId],
+					)) as { "?column?": number }[];
+
+					if (owns.length === 0) {
+						return jsonResponse(
+							{ error: "Not allowed for this raw material" },
+							403,
+						);
+					}
+
 					const [result] = (await client.query(
 						`
                         INSERT INTO dilutions (raw_material_id, percentage, dilution_date)
@@ -85,6 +111,9 @@ export const Route = createFileRoute("/api/dilutions")({
 				try {
 					const client = await getClient();
 					if (!client) return noClientResponse;
+					const auth = requireCurrentUserId(request);
+					if (auth.errorResponse) return auth.errorResponse;
+					const currentUserId = auth.userId!;
 					const body = await request.json();
 					const { id, available } = body as {
 						id: Dilution["id"];
@@ -98,12 +127,15 @@ export const Route = createFileRoute("/api/dilutions")({
 					}
 					const [result] = (await client.query(
 						`
-					UPDATE dilutions
+					UPDATE dilutions d
 					SET available = $2
-					WHERE id = $1
-					RETURNING id, raw_material_id, percentage, dilution_date, available, created_at
+					FROM raw_materials rm
+					WHERE d.id = $1
+					  AND rm.id = d.raw_material_id
+					  AND rm.owner_id = $3
+					RETURNING d.id, d.raw_material_id, d.percentage, d.dilution_date, d.available, d.created_at
 					`,
-						[id, available],
+						[id, available, currentUserId],
 					)) as Dilution[];
 					if (!result) {
 						return jsonResponse({ error: "Dilution not found" }, 404);

@@ -4,6 +4,7 @@ import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
 import { DilutionAutocomplete } from "@/components/DilutionAutocomplete";
 import { NumberInput } from "@/components/NumberInput";
+import { authedFetch } from "@/utils/authed-fetch";
 
 export const Route = createFileRoute("/add-formula")({
 	component: AddFormula,
@@ -259,7 +260,7 @@ function AddFormula() {
 		};
 
 		try {
-			const response = await fetch("/api/formulas", {
+			const response = await authedFetch("/api/formulas", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(formulaData),

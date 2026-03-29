@@ -6,6 +6,7 @@ import { Select } from "@/components/Select";
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { LabelInput } from "@/components/LabelInput";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
+import { authedFetch } from "@/utils/authed-fetch";
 
 export const Route = createFileRoute("/add-raw-material")({
 	component: AddRawMaterial,
@@ -48,7 +49,7 @@ function AddRawMaterial() {
 		}
 
 		try {
-			const response = await fetch("/api/raw-materials", {
+			const response = await authedFetch("/api/raw-materials", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

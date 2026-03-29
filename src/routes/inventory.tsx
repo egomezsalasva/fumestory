@@ -8,6 +8,7 @@ import {
 	ValueFormatterParams,
 } from "ag-grid-community";
 import { RawMaterial } from "./api.raw-materials";
+import { authedFetch } from "@/utils/authed-fetch";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -17,7 +18,7 @@ function App() {
 	const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
 
 	useEffect(() => {
-		fetch("/api/raw-materials")
+		authedFetch("/api/raw-materials")
 			.then((res) => res.json())
 			.then((data) => {
 				console.log("Fetched raw materials:", data.data);

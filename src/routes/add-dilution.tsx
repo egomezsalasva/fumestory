@@ -3,6 +3,7 @@ import { NumberInput } from "@/components/NumberInput";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { authedFetch } from "@/utils/authed-fetch";
 
 export const Route = createFileRoute("/add-dilution")({
 	component: AddDilution,
@@ -34,7 +35,7 @@ function AddDilution() {
 			return;
 		}
 		try {
-			const response = await fetch("/api/dilutions", {
+			const response = await authedFetch("/api/dilutions", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

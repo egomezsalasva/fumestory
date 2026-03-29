@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterial = {
 	id: number;
@@ -47,8 +48,8 @@ export function DilutionAutocomplete({
 
 	useEffect(() => {
 		Promise.all([
-			fetch("/api/raw-materials").then((res) => res.json()),
-			fetch("/api/dilutions").then((res) => res.json()),
+			authedFetch("/api/raw-materials").then((res) => res.json()),
+			authedFetch("/api/dilutions").then((res) => res.json()),
 		])
 			.then(([materialsData, dilutionsData]) => {
 				if (materialsData.success && dilutionsData.success) {
