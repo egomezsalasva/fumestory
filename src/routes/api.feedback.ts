@@ -32,8 +32,7 @@ export const Route = createFileRoute("/api/feedback")({
 							400,
 						);
 					}
-					const result = (await client.query(
-						`
+					const selectSql = `
                     SELECT
                         f.id,
                         f.dilution_id,
@@ -51,9 +50,14 @@ export const Route = createFileRoute("/api/feedback")({
   						AND rm.owner_id = $2
                     GROUP BY f.id, f.dilution_id, f.person_name, f.created_at
                     ORDER BY f.created_at DESC
-                `,
-						[Number(dilutionId), currentUserId],
-					)) as FeedbackWithNotes[];
+                `;
+					const txResults = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(selectSql, [Number(dilutionId), currentUserId]),
+					]);
+					const result = txResults[1] as FeedbackWithNotes[];
 					return jsonResponse(
 						{ success: true, data: result as FeedbackWithNotes[] },
 						200,
@@ -97,18 +101,28 @@ export const Route = createFileRoute("/api/feedback")({
 							400,
 						);
 					}
+					const validNotes: string[] = [];
 					for (const note of notes) {
 						if (!note || typeof note !== "string" || note.trim() === "") {
 							return jsonResponse({ error: "Note is required" }, 400);
 						}
+						validNotes.push(note.trim());
 					}
-					const ownsDilution = (await client.query(
-						`SELECT 1
+
+					const ownTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`SELECT 1
 						 FROM dilutions d
 						 JOIN raw_materials rm ON rm.id = d.raw_material_id
 						 WHERE d.id = $1 AND rm.owner_id = $2`,
-						[dilution_id, currentUserId],
-					)) as { "?column?": number }[];
+							[dilution_id, currentUserId],
+						),
+					]);
+
+					const ownsDilution = ownTx[1] as { "?column?"?: number }[];
 
 					if (ownsDilution.length === 0) {
 						return jsonResponse(
@@ -116,39 +130,50 @@ export const Route = createFileRoute("/api/feedback")({
 							403,
 						);
 					}
-					const [feedback] = (await client.query(
-						`
+
+					const insertFeedbackTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`
                         INSERT INTO feedback (dilution_id, person_name)
                         VALUES ($1, $2)
                         RETURNING id, dilution_id, person_name, created_at
                     `,
-						[dilution_id, person_name],
-					)) as Feedback[];
+							[dilution_id, person_name.trim()],
+						),
+					]);
 
-					const noteNames: FeedbackWithNotes["notes"] = [];
-					for (const noteName of notes) {
-						if (noteName && typeof noteName === "string" && noteName.trim()) {
-							const trimmedNote = noteName.trim();
-							await client.query(
+					const feedback = (insertFeedbackTx[1] as Feedback[])[0];
+					if (!feedback) {
+						return jsonResponse({ error: "Failed to create feedback" }, 500);
+					}
+
+					await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						...validNotes.flatMap((trimmedNote) => [
+							txn.query(
 								`
                                 INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING
                             `,
 								[trimmedNote],
-							);
-							await client.query(
+							),
+							txn.query(
 								`
                                 INSERT INTO feedback_notes (feedback_id, note_id)
                                 SELECT $1, id FROM notes WHERE name = $2    
                             `,
 								[feedback.id, trimmedNote],
-							);
-							noteNames.push(trimmedNote);
-						}
-					}
+							),
+						]),
+					]);
 
 					const result: FeedbackWithNotes = {
 						...feedback,
-						notes: noteNames,
+						notes: validNotes,
 					} as FeedbackWithNotes;
 
 					return jsonResponse({ success: true, data: result }, 201);

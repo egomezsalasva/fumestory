@@ -22,8 +22,7 @@ export const Route = createFileRoute("/api/dilutions")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
-					const result = (await client.query(
-						`
+					const selectSql = `
                         SELECT
                             d.id,
 							d.raw_material_id,
@@ -35,9 +34,14 @@ export const Route = createFileRoute("/api/dilutions")({
 						JOIN raw_materials rm ON rm.id = d.raw_material_id
 						WHERE rm.owner_id = $1
 						ORDER BY d.created_at DESC
-                    `,
-						[currentUserId],
-					)) as Dilution[];
+                    `;
+					const txResults = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(selectSql, [currentUserId]),
+					]);
+					const result = txResults[1] as Dilution[];
 
 					return jsonResponse({ success: true, data: result }, 200);
 				} catch (error) {
@@ -74,12 +78,20 @@ export const Route = createFileRoute("/api/dilutions")({
 					) {
 						return jsonResponse({ error: "Valid percentage is required" }, 400);
 					}
-					const owns = (await client.query(
-						`SELECT 1
+
+					const ownTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`SELECT 1
 						 FROM raw_materials
 						 WHERE id = $1 AND owner_id = $2`,
-						[raw_material_id, currentUserId],
-					)) as { "?column?": number }[];
+							[raw_material_id, currentUserId],
+						),
+					]);
+
+					const owns = ownTx[1] as { "?column?"?: number }[];
 
 					if (owns.length === 0) {
 						return jsonResponse(
@@ -88,14 +100,21 @@ export const Route = createFileRoute("/api/dilutions")({
 						);
 					}
 
-					const [result] = (await client.query(
-						`
+					const insertTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`
                         INSERT INTO dilutions (raw_material_id, percentage, dilution_date)
                         VALUES($1, $2, $3)
                         RETURNING id, raw_material_id, percentage, dilution_date    
                     `,
-						[raw_material_id, percentage, dilution_date || null],
-					)) as Dilution[];
+							[raw_material_id, percentage, dilution_date || null],
+						),
+					]);
+
+					const [result] = insertTx[1] as Dilution[];
 					return jsonResponse({ success: true, data: result }, 201);
 				} catch (error) {
 					return jsonResponse(
@@ -125,8 +144,7 @@ export const Route = createFileRoute("/api/dilutions")({
 					if (typeof available !== "boolean") {
 						return jsonResponse({ error: "Available must be a boolean" }, 400);
 					}
-					const [result] = (await client.query(
-						`
+					const updateSql = `
 					UPDATE dilutions d
 					SET available = $2
 					FROM raw_materials rm
@@ -134,9 +152,15 @@ export const Route = createFileRoute("/api/dilutions")({
 					  AND rm.id = d.raw_material_id
 					  AND rm.owner_id = $3
 					RETURNING d.id, d.raw_material_id, d.percentage, d.dilution_date, d.available, d.created_at
-					`,
-						[id, available, currentUserId],
-					)) as Dilution[];
+					`;
+					const patchTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(updateSql, [id, available, currentUserId]),
+					]);
+					const rows = patchTx[1] as Dilution[];
+					const [result] = rows;
 					if (!result) {
 						return jsonResponse({ error: "Dilution not found" }, 404);
 					}

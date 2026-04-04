@@ -21,6 +21,8 @@ type RawMaterialFromDB = Omit<
 	"notes" | "category_name" | "available_dilutions" | "aggregated_note_counts"
 >;
 
+const MAX_NOTES_PER_RAW_MATERIAL = 25;
+
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
 		handlers: {
@@ -31,59 +33,63 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
-					const result = (await client.query(
-						`
-                    SELECT
-                        rm.id,
-						rm.label,
-                        rm.name ,
-                        rm.category_id,
-                        c.name as category_name,
-                        rm.note_type,
-                        rm.created_at,
-						COALESCE(
-							json_agg(DISTINCT n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
-						) as notes,
-						COALESCE(
-							json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL AND d.available = TRUE), '[]'
-						) as available_dilutions,
-						COALESCE(
-							(
-								SELECT json_object_agg(note_name, note_count)
-								FROM (
-									SELECT 
-										note_name,
-										SUM(note_count) as note_count
+					const selectSql = `
+						SELECT
+							rm.id,
+							rm.label,
+							rm.name ,
+							rm.category_id,
+							c.name as category_name,
+							rm.note_type,
+							rm.created_at,
+							COALESCE(
+								json_agg(DISTINCT n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
+							) as notes,
+							COALESCE(
+								json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL AND d.available = TRUE), '[]'
+							) as available_dilutions,
+							COALESCE(
+								(
+									SELECT json_object_agg(note_name, note_count)
 									FROM (
-										SELECT n2.name as note_name, 1 as note_count
-										FROM raw_material_notes rmn2
-										JOIN notes n2 ON rmn2.note_id = n2.id
-										WHERE rmn2.raw_material_id = rm.id
-										UNION ALL
-										SELECT n3.name as note_name, COUNT(*) as note_count
-										FROM dilutions d2
-										JOIN feedback f ON f.dilution_id = d2.id
-										JOIN feedback_notes fn ON fn.feedback_id = f.id
-										JOIN notes n3 ON fn.note_id = n3.id
-										WHERE d2.raw_material_id = rm.id
-										GROUP BY n3.name
-									) combined_notes
-									GROUP BY note_name
-								) aggregated
-							),
-							'{}'::json
-						) as aggregated_note_counts
-                    FROM raw_materials rm
-                    LEFT JOIN categories c ON rm.category_id = c.id
-					LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
-					LEFT JOIN notes n ON rmn.note_id = n.id
-					LEFT JOIN dilutions d ON rm.id = d.raw_material_id
-					WHERE rm.owner_id = $1
-					GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
-                    ORDER BY rm.id DESC
-                `,
-						[currentUserId],
-					)) as RawMaterial[];
+										SELECT 
+											note_name,
+											SUM(note_count) as note_count
+										FROM (
+											SELECT n2.name as note_name, 1 as note_count
+											FROM raw_material_notes rmn2
+											JOIN notes n2 ON rmn2.note_id = n2.id
+											WHERE rmn2.raw_material_id = rm.id
+											UNION ALL
+											SELECT n3.name as note_name, COUNT(*) as note_count
+											FROM dilutions d2
+											JOIN feedback f ON f.dilution_id = d2.id
+											JOIN feedback_notes fn ON fn.feedback_id = f.id
+											JOIN notes n3 ON fn.note_id = n3.id
+											WHERE d2.raw_material_id = rm.id
+											GROUP BY n3.name
+										) combined_notes
+										GROUP BY note_name
+									) aggregated
+								),
+								'{}'::json
+							) as aggregated_note_counts
+						FROM raw_materials rm
+						LEFT JOIN categories c ON rm.category_id = c.id
+						LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
+						LEFT JOIN notes n ON rmn.note_id = n.id
+						LEFT JOIN dilutions d ON rm.id = d.raw_material_id
+						WHERE rm.owner_id = $1
+						GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
+						ORDER BY rm.id DESC
+					`;
+					const txResults = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(selectSql, [currentUserId]),
+					]);
+					const result = txResults[1] as RawMaterial[];
 
 					return jsonResponse(
 						{ success: true, data: result as RawMaterial[] },
@@ -125,40 +131,71 @@ export const Route = createFileRoute("/api/raw-materials")({
 						);
 					}
 
-					const [rawMaterial] = (await client.query(
-						`INSERT INTO raw_materials (label,name, category_id, note_type, owner_id)
-                    VALUES ($1, $2, $3, $4, $5)
-                    RETURNING id, name, category_id, note_type, created_at`,
-						[
-							label.trim(),
-							name.trim(),
-							category_id || null,
-							note_type || null,
-							currentUserId,
-						],
-					)) as RawMaterialFromDB[];
-
-					const noteNames: string[] = [];
+					const validNotes: string[] = [];
 					if (notes && Array.isArray(notes) && notes.length > 0) {
 						for (const noteName of notes) {
 							if (noteName && typeof noteName === "string" && noteName.trim()) {
-								const trimmedNote = noteName.trim();
-								await client.query(
+								validNotes.push(noteName.trim());
+							}
+						}
+					}
+					if (validNotes.length > MAX_NOTES_PER_RAW_MATERIAL) {
+						return jsonResponse(
+							{
+								error: `Too many notes (max ${MAX_NOTES_PER_RAW_MATERIAL})`,
+							},
+							400,
+						);
+					}
+
+					const insertTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`INSERT INTO raw_materials (label,name, category_id, note_type, owner_id)
+                    VALUES ($1, $2, $3, $4, $5)
+                    RETURNING id, name, category_id, note_type, created_at`,
+							[
+								label.trim(),
+								name.trim(),
+								category_id || null,
+								note_type || null,
+								currentUserId,
+							],
+						),
+					]);
+
+					const rawMaterial = (insertTx[1] as RawMaterialFromDB[])[0];
+					if (!rawMaterial) {
+						return jsonResponse(
+							{ error: "Failed to create raw material" },
+							500,
+						);
+					}
+
+					const noteNames: string[] = [];
+					if (validNotes.length > 0) {
+						await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
+							...validNotes.flatMap((trimmedNote) => [
+								txn.query(
 									`INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
 									[trimmedNote],
-								);
-								await client.query(
+								),
+								txn.query(
 									`INSERT INTO raw_material_notes (raw_material_id, note_id)
 									SELECT $1, id FROM notes WHERE name = $2
 									ON CONFLICT (raw_material_id, note_id) DO NOTHING
 									`,
 									[rawMaterial.id, trimmedNote],
-								);
-								noteNames.push(trimmedNote);
-							}
-						}
+								),
+							]),
+						]);
+						noteNames.push(...validNotes);
 					}
-
 					const result = {
 						...rawMaterial,
 						notes: noteNames,
