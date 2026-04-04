@@ -1,22 +1,27 @@
 import { getClient } from "@/db";
 
 export async function searchUserInventory(
+	userId: string,
 	materialName: string,
-	userInput: string, // Original user input for the message
+	userInput: string,
 ): Promise<{ found: boolean; message: string | null }> {
 	const client = await getClient();
 	if (!client) {
 		return { found: false, message: null };
 	}
 
-	const results = (await client.query(
-		`SELECT name
+	const selectSql = `SELECT name
 		FROM raw_materials
 		WHERE name ILIKE $1
-		ORDER BY name
-		`,
-		[`%${materialName}%`],
-	)) as Array<{ name: string }>;
+		  AND owner_id = $2::uuid
+		ORDER BY name`;
+
+	const txResults = await client.transaction((txn) => [
+		txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [userId]),
+		txn.query(selectSql, [`%${materialName}%`, userId]),
+	]);
+
+	const results = txResults[1] as Array<{ name: string }>;
 
 	if (results.length === 0) {
 		return { found: false, message: null };

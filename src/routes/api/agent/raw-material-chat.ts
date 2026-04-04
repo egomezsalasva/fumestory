@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { jsonResponse } from "@/utils/api";
+import { requireCurrentUserId } from "@/utils/current-user";
 import { PERFUMERY_AGENT_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
 
@@ -9,6 +10,10 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 	server: {
 		handlers: {
 			POST: async ({ request }) => {
+				const auth = requireCurrentUserId(request);
+				if (auth.errorResponse) return auth.errorResponse;
+				const userId = auth.userId!;
+
 				const body = await request.json().catch(() => ({}));
 				const userMessage = body?.message ?? "";
 
@@ -25,6 +30,7 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 
 				try {
 					const inventoryCheck = await searchUserInventory(
+						userId,
 						materialName,
 						userMessage,
 					);

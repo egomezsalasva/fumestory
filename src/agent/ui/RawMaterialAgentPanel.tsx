@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChatPanel, type ChatMessage } from "@/components/ChatPanel";
+import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterialAgentPanelProps = {
 	onMaterialFound?: (materialName: string) => void;
@@ -17,31 +18,44 @@ export function RawMaterialAgentPanel({
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleSendMessage = async (message: string) => {
-		// Add user message immediately
 		setMessages((prev) => [...prev, { role: "user", content: message }]);
 		setIsLoading(true);
 
 		try {
-			const response = await fetch("/api/agent/raw-material-chat", {
+			const response = await authedFetch("/api/agent/raw-material-chat", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ message }),
 			});
 
-			const data = await response.json();
+			const data = (await response.json()) as {
+				success?: boolean;
+				reply?: string;
+				error?: string;
+				materialName?: string;
+			};
 
-			if (data.success && data.reply) {
+			if (!response.ok) {
 				setMessages((prev) => [
 					...prev,
-					{ role: "assistant", content: data.reply },
+					{
+						role: "assistant",
+						content:
+							data.error ??
+							"Something went wrong. Please sign in and try again.",
+					},
 				]);
+				return;
+			}
 
-				// If material found, notify parent
+			const reply = data.reply;
+			if (data.success && reply) {
+				setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 				if (onMaterialFound && data.materialName) {
 					onMaterialFound(data.materialName);
 				}
 			}
-		} catch (error) {
+		} catch {
 			setMessages((prev) => [
 				...prev,
 				{
