@@ -2,9 +2,9 @@
 -- PostgreSQL database dump
 --
 
-\restrict sS2wCf9bBL029x9AJZDABcRhuDIkgBcjFA5R7GkEwWeg3OLF7xTXvXJNUQo6kb4
+\restrict ocPAgC2xqnfd0J9BaLkLY47TrbeUyt8D1LIFwmn7BGdT8aJMcArSZFJhLq3GxaO
 
--- Dumped from database version 17.8 (a284a84)
+-- Dumped from database version 17.8 (a48d9ca)
 -- Dumped by pg_dump version 17.6 (Homebrew)
 
 SET statement_timeout = 0;
@@ -24,6 +24,20 @@ SET row_security = off;
 --
 
 CREATE SCHEMA neon_auth;
+
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA public;
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 SET default_tablespace = '';
@@ -121,7 +135,9 @@ CREATE TABLE neon_auth.project_config (
     social_providers jsonb NOT NULL,
     email_provider jsonb,
     email_and_password jsonb,
-    allow_localhost boolean NOT NULL
+    allow_localhost boolean NOT NULL,
+    plugin_configs jsonb,
+    webhook_config jsonb
 );
 
 
@@ -219,6 +235,8 @@ CREATE TABLE public.dilutions (
     available boolean DEFAULT true
 );
 
+ALTER TABLE ONLY public.dilutions FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: dilutions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -251,6 +269,8 @@ CREATE TABLE public.feedback (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE ONLY public.feedback FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: feedback_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -281,6 +301,8 @@ CREATE TABLE public.feedback_notes (
     note_id integer NOT NULL
 );
 
+ALTER TABLE ONLY public.feedback_notes FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: formula_dilutions; Type: TABLE; Schema: public; Owner: -
@@ -296,6 +318,8 @@ CREATE TABLE public.formula_dilutions (
     CONSTRAINT formula_dilutions_percentage_check CHECK (((percentage > (0)::numeric) AND (percentage <= (100)::numeric))),
     CONSTRAINT formula_dilutions_weight_grams_check CHECK ((weight_grams > (0)::numeric))
 );
+
+ALTER TABLE ONLY public.formula_dilutions FORCE ROW LEVEL SECURITY;
 
 
 --
@@ -327,8 +351,11 @@ CREATE TABLE public.formulas (
     name text NOT NULL,
     type text NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
+    owner_id uuid NOT NULL,
     CONSTRAINT formulas_type_check CHECK ((type = ANY (ARRAY['trial'::text, 'accord'::text, 'perfume'::text])))
 );
+
+ALTER TABLE ONLY public.formulas FORCE ROW LEVEL SECURITY;
 
 
 --
@@ -391,6 +418,8 @@ CREATE TABLE public.raw_material_notes (
     note_id integer NOT NULL
 );
 
+ALTER TABLE ONLY public.raw_material_notes FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: raw_material_notes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -423,8 +452,11 @@ CREATE TABLE public.raw_materials (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     note_type text,
     label character varying(10) NOT NULL,
+    owner_id uuid,
     CONSTRAINT raw_materials_note_type_check CHECK ((note_type = ANY (ARRAY['High'::text, 'Mid(Heart)'::text, 'Base'::text])))
 );
+
+ALTER TABLE ONLY public.raw_materials FORCE ROW LEVEL SECURITY;
 
 
 --
@@ -704,14 +736,6 @@ ALTER TABLE ONLY public.raw_materials
 
 
 --
--- Name: raw_materials raw_materials_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.raw_materials
-    ADD CONSTRAINT raw_materials_name_key UNIQUE (name);
-
-
---
 -- Name: raw_materials raw_materials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -773,6 +797,20 @@ CREATE INDEX "session_userId_idx" ON neon_auth.session USING btree ("userId");
 --
 
 CREATE INDEX verification_identifier_idx ON neon_auth.verification USING btree (identifier);
+
+
+--
+-- Name: formulas_owner_name_uidx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX formulas_owner_name_uidx ON public.formulas USING btree (owner_id, name);
+
+
+--
+-- Name: raw_materials_owner_name_uidx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX raw_materials_owner_name_uidx ON public.raw_materials USING btree (owner_id, name);
 
 
 --
@@ -872,6 +910,14 @@ ALTER TABLE ONLY public.formula_dilutions
 
 
 --
+-- Name: formulas formulas_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.formulas
+    ADD CONSTRAINT formulas_owner_fkey FOREIGN KEY (owner_id) REFERENCES neon_auth."user"(id);
+
+
+--
 -- Name: raw_material_notes raw_material_notes_note_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -896,8 +942,319 @@ ALTER TABLE ONLY public.raw_materials
 
 
 --
+-- Name: raw_materials raw_materials_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.raw_materials
+    ADD CONSTRAINT raw_materials_owner_fkey FOREIGN KEY (owner_id) REFERENCES neon_auth."user"(id);
+
+
+--
+-- Name: dilutions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dilutions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dilutions dilutions_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dilutions_delete_own ON public.dilutions FOR DELETE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = dilutions.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: dilutions dilutions_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dilutions_insert_own ON public.dilutions FOR INSERT TO neondb_owner WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = dilutions.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: dilutions dilutions_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dilutions_select_own ON public.dilutions FOR SELECT TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = dilutions.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: dilutions dilutions_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dilutions_update_own ON public.dilutions FOR UPDATE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = dilutions.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = dilutions.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: feedback feedback_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_delete_own ON public.feedback FOR DELETE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM (public.dilutions d
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((d.id = feedback.dilution_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback feedback_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_insert_own ON public.feedback FOR INSERT TO neondb_owner WITH CHECK ((EXISTS ( SELECT 1
+   FROM (public.dilutions d
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((d.id = feedback.dilution_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback_notes; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.feedback_notes ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: feedback_notes feedback_notes_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_notes_delete_own ON public.feedback_notes FOR DELETE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM ((public.feedback f
+     JOIN public.dilutions d ON ((d.id = f.dilution_id)))
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((f.id = feedback_notes.feedback_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback_notes feedback_notes_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_notes_insert_own ON public.feedback_notes FOR INSERT TO neondb_owner WITH CHECK ((EXISTS ( SELECT 1
+   FROM ((public.feedback f
+     JOIN public.dilutions d ON ((d.id = f.dilution_id)))
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((f.id = feedback_notes.feedback_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback_notes feedback_notes_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_notes_select_own ON public.feedback_notes FOR SELECT TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM ((public.feedback f
+     JOIN public.dilutions d ON ((d.id = f.dilution_id)))
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((f.id = feedback_notes.feedback_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback_notes feedback_notes_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_notes_update_own ON public.feedback_notes FOR UPDATE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM ((public.feedback f
+     JOIN public.dilutions d ON ((d.id = f.dilution_id)))
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((f.id = feedback_notes.feedback_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM ((public.feedback f
+     JOIN public.dilutions d ON ((d.id = f.dilution_id)))
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((f.id = feedback_notes.feedback_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback feedback_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_select_own ON public.feedback FOR SELECT TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM (public.dilutions d
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((d.id = feedback.dilution_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: feedback feedback_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY feedback_update_own ON public.feedback FOR UPDATE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM (public.dilutions d
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((d.id = feedback.dilution_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM (public.dilutions d
+     JOIN public.raw_materials rm ON ((rm.id = d.raw_material_id)))
+  WHERE ((d.id = feedback.dilution_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: formula_dilutions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.formula_dilutions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: formula_dilutions formula_dilutions_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formula_dilutions_delete_own ON public.formula_dilutions FOR DELETE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.formulas f
+  WHERE ((f.id = formula_dilutions.formula_id) AND (f.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: formula_dilutions formula_dilutions_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formula_dilutions_insert_own ON public.formula_dilutions FOR INSERT TO neondb_owner WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.formulas f
+  WHERE ((f.id = formula_dilutions.formula_id) AND (f.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: formula_dilutions formula_dilutions_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formula_dilutions_select_own ON public.formula_dilutions FOR SELECT TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.formulas f
+  WHERE ((f.id = formula_dilutions.formula_id) AND (f.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: formula_dilutions formula_dilutions_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formula_dilutions_update_own ON public.formula_dilutions FOR UPDATE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.formulas f
+  WHERE ((f.id = formula_dilutions.formula_id) AND (f.owner_id = (current_setting('app.current_user_id'::text, true))::uuid))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.formulas f
+  WHERE ((f.id = formula_dilutions.formula_id) AND (f.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: formulas; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.formulas ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: formulas formulas_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formulas_delete_own ON public.formulas FOR DELETE TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: formulas formulas_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formulas_insert_own ON public.formulas FOR INSERT TO neondb_owner WITH CHECK ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: formulas formulas_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formulas_select_own ON public.formulas FOR SELECT TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: formulas formulas_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY formulas_update_own ON public.formulas FOR UPDATE TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid)) WITH CHECK ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: raw_material_notes; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.raw_material_notes ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: raw_material_notes raw_material_notes_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_material_notes_delete_own ON public.raw_material_notes FOR DELETE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = raw_material_notes.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: raw_material_notes raw_material_notes_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_material_notes_insert_own ON public.raw_material_notes FOR INSERT TO neondb_owner WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = raw_material_notes.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: raw_material_notes raw_material_notes_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_material_notes_select_own ON public.raw_material_notes FOR SELECT TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = raw_material_notes.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: raw_material_notes raw_material_notes_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_material_notes_update_own ON public.raw_material_notes FOR UPDATE TO neondb_owner USING ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = raw_material_notes.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.raw_materials rm
+  WHERE ((rm.id = raw_material_notes.raw_material_id) AND (rm.owner_id = (current_setting('app.current_user_id'::text, true))::uuid)))));
+
+
+--
+-- Name: raw_materials; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.raw_materials ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: raw_materials raw_materials_delete_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_materials_delete_own ON public.raw_materials FOR DELETE TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: raw_materials raw_materials_insert_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_materials_insert_own ON public.raw_materials FOR INSERT TO neondb_owner WITH CHECK ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: raw_materials raw_materials_select_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_materials_select_own ON public.raw_materials FOR SELECT TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
+-- Name: raw_materials raw_materials_update_own; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY raw_materials_update_own ON public.raw_materials FOR UPDATE TO neondb_owner USING ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid)) WITH CHECK ((owner_id = (current_setting('app.current_user_id'::text, true))::uuid));
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict sS2wCf9bBL029x9AJZDABcRhuDIkgBcjFA5R7GkEwWeg3OLF7xTXvXJNUQo6kb4
+\unrestrict ocPAgC2xqnfd0J9BaLkLY47TrbeUyt8D1LIFwmn7BGdT8aJMcArSZFJhLq3GxaO
 
