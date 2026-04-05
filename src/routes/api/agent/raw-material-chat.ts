@@ -3,7 +3,7 @@ import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { jsonResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
-import { PERFUMERY_AGENT_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
+import { RAW_MATERIAL_ENTRY_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
 
 const DUPLICATE_CHOICE_INTERACTION = {
@@ -52,7 +52,7 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 							messages: [
 								{
 									role: "system",
-									content: PERFUMERY_AGENT_SYSTEM_PROMPT,
+									content: RAW_MATERIAL_ENTRY_SYSTEM_PROMPT,
 								},
 								{
 									role: "user",
@@ -111,7 +111,7 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 						messages: [
 							{
 								role: "system",
-								content: PERFUMERY_AGENT_SYSTEM_PROMPT,
+								content: RAW_MATERIAL_ENTRY_SYSTEM_PROMPT,
 							},
 							{
 								role: "user",

@@ -115,6 +115,9 @@ export function ChatPanel({
 														{children}
 													</p>
 												),
+												hr: () => (
+													<hr className="mt-6 mb-2 w-full border-0 border-t border-slate-500/50 py-2" />
+												),
 											}}
 										>
 											{msg.content}
