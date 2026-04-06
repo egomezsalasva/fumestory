@@ -37,6 +37,7 @@ export function ChatPanel({
 	const [input, setInput] = useState("");
 	const [choiceFocusIndex, setChoiceFocusIndex] = useState(0);
 	const choiceListRef = useRef<HTMLDivElement>(null);
+	const messagesEndRef = useRef<HTMLDivElement>(null);
 
 	const showChoices = Boolean(choiceOptions?.length && onChoice);
 
@@ -49,6 +50,10 @@ export function ChatPanel({
 		if (!showChoices || isLoading) return;
 		choiceListRef.current?.focus();
 	}, [showChoices, isLoading]);
+
+	useEffect(() => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, [messages, isLoading, showChoices]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -138,6 +143,11 @@ export function ChatPanel({
 							</div>
 						</div>
 					)}
+					<div
+						ref={messagesEndRef}
+						aria-hidden
+						className="h-px w-full shrink-0"
+					/>
 				</div>
 
 				{showChoices ? (

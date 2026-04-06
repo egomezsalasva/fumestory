@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { generateText } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { jsonResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
-import { RAW_MATERIAL_ENTRY_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
+import { RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
+import { rawMaterialProposalSchema } from "@/agent/schemas/rawMaterialProposal";
+import { proposalToMarkdown } from "@/agent/utils/proposalToMarkdown";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
 
 const DUPLICATE_CHOICE_INTERACTION = {
@@ -13,6 +15,18 @@ const DUPLICATE_CHOICE_INTERACTION = {
 		{ id: "no", label: "No" },
 	],
 };
+
+async function structuredProposalReply(userMessage: string) {
+	const result = await generateText({
+		model: openai("gpt-4o-mini"),
+		output: Output.object({ schema: rawMaterialProposalSchema }),
+		system: RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT,
+		prompt: userMessage,
+	});
+	const proposal = result.output;
+	if (!proposal) return null;
+	return proposalToMarkdown(proposal);
+}
 
 export const Route = createFileRoute("/api/agent/raw-material-chat")({
 	server: {
@@ -27,13 +41,6 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 				const choiceId =
 					typeof body?.choiceId === "string" ? body.choiceId : undefined;
 
-				console.log(
-					"[raw-material-chat] userMessage:",
-					userMessage,
-					"choiceId:",
-					choiceId,
-				);
-
 				if (choiceId === "no") {
 					return jsonResponse(
 						{
@@ -47,26 +54,18 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 
 				if (choiceId === "yes" && userMessage.trim()) {
 					try {
-						const { text } = await generateText({
-							model: openai("gpt-4o-mini"),
-							messages: [
+						const reply = await structuredProposalReply(userMessage.trim());
+						if (!reply) {
+							return jsonResponse(
 								{
-									role: "system",
-									content: RAW_MATERIAL_ENTRY_SYSTEM_PROMPT,
+									success: false,
+									reply: "Sorry, I encountered an error. Please try again.",
 								},
-								{
-									role: "user",
-									content: userMessage.trim(),
-								},
-							],
-						});
-						console.log(
-							"[raw-material-chat] modelReply (after duplicate yes):",
-							text,
-						);
-						return jsonResponse({ success: true, reply: text }, 200);
-					} catch (error) {
-						console.error("Raw Material Chat Error:", error);
+								500,
+							);
+						}
+						return jsonResponse({ success: true, reply }, 200);
+					} catch {
 						return jsonResponse(
 							{
 								success: false,
@@ -93,8 +92,6 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 						userMessage,
 					);
 
-					console.log("[raw-material-chat] inventoryCheck:", inventoryCheck);
-
 					if (inventoryCheck.found) {
 						return jsonResponse(
 							{
@@ -106,25 +103,19 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 						);
 					}
 
-					const { text } = await generateText({
-						model: openai("gpt-4o-mini"),
-						messages: [
+					const reply = await structuredProposalReply(userMessage);
+					if (!reply) {
+						return jsonResponse(
 							{
-								role: "system",
-								content: RAW_MATERIAL_ENTRY_SYSTEM_PROMPT,
+								success: false,
+								reply: "Sorry, I encountered an error. Please try again.",
 							},
-							{
-								role: "user",
-								content: userMessage,
-							},
-						],
-					});
-
-					console.log("[raw-material-chat] modelReply:", text);
-
-					return jsonResponse({ success: true, reply: text }, 200);
-				} catch (error) {
-					console.error("Raw Material Chat Error:", error);
+							500,
+						);
+					}
+					console.log("[raw-material-chat] modelReply (structured):", reply);
+					return jsonResponse({ success: true, reply }, 200);
+				} catch {
 					return jsonResponse(
 						{
 							success: false,

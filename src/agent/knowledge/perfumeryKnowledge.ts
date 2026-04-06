@@ -1,9 +1,9 @@
-type MaterialProperty = {
-	name: string;
-	category: string;
-	noteType: "top" | "mid" | "base" | null;
-	notes: Array<{ name: string; aggregate: number }>;
-};
+// type MaterialProperty = {
+// 	name: string;
+// 	category: string;
+// 	noteType: "top" | "mid" | "base" | null;
+// 	notes: Array<{ name: string; aggregate: number }>;
+// };
 
 export const PERFUMERY_KNOWLEDGE = {
 	noteTypes: {

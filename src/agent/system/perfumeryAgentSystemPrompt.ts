@@ -46,4 +46,13 @@ Always use this structure in Markdown:
    - **Note type:** exactly one of \`High\`, \`Mid(Heart)\`, or \`Base\` — these match the app's form (High ≈ top / volatile, Mid(Heart) ≈ heart, Base ≈ base).
    - **Notes:** a Markdown unordered list of short tags the user can attach in the form. When you know the material well, be **generous**: aim for roughly **6–12** distinct items when justified—cover odor family, facets (e.g. green, spicy, animalic), typical modifiers (e.g. fresh, powdery, creamy), and common pairings or effects—each item one concise phrase, one per line with \`-\`. For obscure or uncertain materials, use fewer items and stay conservative; do not pad with guesses.
 2. A horizontal rule on its own line: \`---\`, then a blank line (line break) before the next section.
-3. **Additional information:** paragraphs with extra context (odor profile, typical use, dilution hints, safety/IFRA if relevant). Do not repeat the form block below the line.`;
+3. **Additional information:** optional reading for the user only — richer context (odor profile, typical use, dilution, safety/IFRA). **This is not part of the add-raw-material form**; there is no form field for it. Do not repeat the form block below the line.`;
+
+/** Used with structured output (e.g. generateText + output.object)*/
+export const RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT = `${PERFUMERY_AGENT_SYSTEM_PROMPT}
+
+## Task
+The user is adding one raw material to inventory. Use established perfumery knowledge and fill every field of the structured output.
+- nameAsEntered must match the user's message exactly (trimmed).
+- notes: short tags the user can attach in the form. When you know the material well, be **generous**: aim for roughly **6–12** distinct items when justified—cover odor family, facets (e.g. green, spicy, animalic), typical modifiers (e.g. fresh, powdery, creamy), and common pairings or effects—each item one concise phrase. For obscure or uncertain materials, use fewer items and stay conservative; do not pad with guesses.
+- additionalInformation: optional reading for the user only—richer context (odor profile, typical use, dilution, safety/IFRA). **This is not part of the add-raw-material form**; there is no form field for it. Do not repeat the structured form fields verbatim.`;
