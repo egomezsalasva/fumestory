@@ -54,7 +54,6 @@ function Formulas() {
 		authedFetch("/api/formulas")
 			.then((res) => res.json())
 			.then((data) => {
-				console.log("Fetched formulas:", data.data);
 				setFormulas(data.data as Formula[]);
 			})
 			.catch((err) => console.error("Formulas error:", err));

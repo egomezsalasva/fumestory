@@ -21,7 +21,6 @@ function App() {
 		authedFetch("/api/raw-materials")
 			.then((res) => res.json())
 			.then((data) => {
-				console.log("Fetched raw materials:", data.data);
 				setRawMaterials(data.data as RawMaterial[]);
 			})
 			.catch((err) => console.error("Raw materials error:", err));

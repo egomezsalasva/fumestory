@@ -4,7 +4,10 @@ import { openai } from "@ai-sdk/openai";
 import { jsonResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
 import { RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
-import { rawMaterialProposalSchema } from "@/agent/schemas/rawMaterialProposal";
+import {
+	type RawMaterialProposal,
+	rawMaterialProposalSchema,
+} from "@/agent/schemas/rawMaterialProposal";
 import { proposalToMarkdown } from "@/agent/utils/proposalToMarkdown";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
 
@@ -16,16 +19,24 @@ const DUPLICATE_CHOICE_INTERACTION = {
 	],
 };
 
-async function structuredProposalReply(userMessage: string) {
+const ADD_TO_FORM_CHOICE_INTERACTION = {
+	kind: "choice" as const,
+	options: [
+		{ id: "add_to_form", label: "Add to form" },
+		{ id: "different_material", label: "Add different material" },
+	],
+};
+
+async function generateStructuredProposal(
+	userMessage: string,
+): Promise<RawMaterialProposal | null> {
 	const result = await generateText({
 		model: openai("gpt-4o-mini"),
 		output: Output.object({ schema: rawMaterialProposalSchema }),
 		system: RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT,
 		prompt: userMessage,
 	});
-	const proposal = result.output;
-	if (!proposal) return null;
-	return proposalToMarkdown(proposal);
+	return result.output ?? null;
 }
 
 export const Route = createFileRoute("/api/agent/raw-material-chat")({
@@ -54,8 +65,10 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 
 				if (choiceId === "yes" && userMessage.trim()) {
 					try {
-						const reply = await structuredProposalReply(userMessage.trim());
-						if (!reply) {
+						const proposal = await generateStructuredProposal(
+							userMessage.trim(),
+						);
+						if (!proposal) {
 							return jsonResponse(
 								{
 									success: false,
@@ -64,6 +77,7 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 								500,
 							);
 						}
+						const reply = proposalToMarkdown(proposal);
 						return jsonResponse({ success: true, reply }, 200);
 					} catch {
 						return jsonResponse(
@@ -103,8 +117,8 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 						);
 					}
 
-					const reply = await structuredProposalReply(userMessage);
-					if (!reply) {
+					const proposal = await generateStructuredProposal(userMessage);
+					if (!proposal) {
 						return jsonResponse(
 							{
 								success: false,
@@ -113,8 +127,16 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 							500,
 						);
 					}
-					console.log("[raw-material-chat] modelReply (structured):", reply);
-					return jsonResponse({ success: true, reply }, 200);
+					const reply = proposalToMarkdown(proposal);
+					return jsonResponse(
+						{
+							success: true,
+							reply,
+							proposal,
+							interaction: ADD_TO_FORM_CHOICE_INTERACTION,
+						},
+						200,
+					);
 				} catch {
 					return jsonResponse(
 						{

@@ -7,6 +7,7 @@ import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { LabelInput } from "@/components/LabelInput";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 
 export const Route = createFileRoute("/add-raw-material")({
 	component: AddRawMaterial,
@@ -22,6 +23,43 @@ function AddRawMaterial() {
 	const [noteType, setNoteType] = useState("");
 	const [notes, setNotes] = useState<string[]>([]);
 	const [error, setError] = useState("");
+
+	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
+		setLabel(proposal.suggestedLabel);
+		setName(proposal.nameAsEntered);
+		setNoteType(proposal.noteType);
+		setNotes(proposal.notes);
+		setError("");
+
+		try {
+			const response = await authedFetch("/api/categories");
+			const data = await response.json();
+			const suggested = proposal.suggestedCategory.trim().toLowerCase();
+			if (!response.ok || !data.success || !Array.isArray(data.data)) {
+				setCategorySearch(proposal.suggestedCategory);
+				setSelectedCategoryId(null);
+				return;
+			}
+			const categories = data.data as { id: number; name: string }[];
+			const match =
+				categories.find((c) => c.name.toLowerCase() === suggested) ??
+				categories.find(
+					(c) =>
+						c.name.toLowerCase().includes(suggested) ||
+						suggested.includes(c.name.toLowerCase()),
+				);
+			if (match) {
+				setSelectedCategoryId(match.id);
+				setCategorySearch(match.name);
+			} else {
+				setCategorySearch(proposal.suggestedCategory);
+				setSelectedCategoryId(null);
+			}
+		} catch {
+			setCategorySearch(proposal.suggestedCategory);
+			setSelectedCategoryId(null);
+		}
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -173,7 +211,7 @@ function AddRawMaterial() {
 				</div>
 
 				{/* Right: Chatbox */}
-				<RawMaterialAgentPanel />
+				<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
 			</div>
 		</div>
 	);

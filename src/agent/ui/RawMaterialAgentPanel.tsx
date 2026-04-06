@@ -4,10 +4,12 @@ import {
 	type ChatChoiceOption,
 	type ChatMessage,
 } from "@/components/ChatPanel";
+import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterialAgentPanelProps = {
 	onMaterialFound?: (materialName: string) => void;
+	onApplyProposal?: (proposal: RawMaterialProposal) => void;
 };
 
 type ChatResponse = {
@@ -16,6 +18,7 @@ type ChatResponse = {
 	error?: string;
 	materialName?: string;
 	resetConversation?: boolean;
+	proposal?: RawMaterialProposal;
 	interaction?: {
 		kind: "choice";
 		options: ChatChoiceOption[];
@@ -24,6 +27,7 @@ type ChatResponse = {
 
 export function RawMaterialAgentPanel({
 	onMaterialFound,
+	onApplyProposal,
 }: RawMaterialAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([
 		{
@@ -38,6 +42,8 @@ export function RawMaterialAgentPanel({
 	const [pendingMaterialQuery, setPendingMaterialQuery] = useState<
 		string | null
 	>(null);
+	const [pendingProposal, setPendingProposal] =
+		useState<RawMaterialProposal | null>(null);
 
 	const sendToApi = async (body: Record<string, string>) => {
 		const response = await authedFetch("/api/agent/raw-material-chat", {
@@ -57,10 +63,12 @@ export function RawMaterialAgentPanel({
 			]);
 			setChoiceOptions(null);
 			setPendingMaterialQuery(null);
+			setPendingProposal(null);
 			return;
 		}
 		const reply = data.reply;
 		if (data.success && reply !== undefined) {
+			setPendingProposal(data.proposal ?? null);
 			if (data.resetConversation) {
 				setMessages([{ role: "assistant", content: reply }]);
 			} else {
@@ -85,6 +93,7 @@ export function RawMaterialAgentPanel({
 		setMessages((prev) => [...prev, { role: "user", content: message }]);
 		setIsLoading(true);
 		setPendingMaterialQuery(message);
+		setPendingProposal(null);
 
 		try {
 			await sendToApi({ message });
@@ -98,14 +107,41 @@ export function RawMaterialAgentPanel({
 			]);
 			setChoiceOptions(null);
 			setPendingMaterialQuery(null);
+			setPendingProposal(null);
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	const handleChoice = async (choiceId: string) => {
+		if (choiceId === "add_to_form") {
+			if (!pendingProposal || !onApplyProposal) return;
+			const label =
+				choiceOptions?.find((o) => o.id === choiceId)?.label ?? "Add to form";
+			setChoiceOptions(null);
+			setMessages((prev) => [...prev, { role: "user", content: label }]);
+			onApplyProposal(pendingProposal);
+			setPendingProposal(null);
+			setPendingMaterialQuery(null);
+			return;
+		}
+
+		if (choiceId === "different_material") {
+			setChoiceOptions(null);
+			setPendingProposal(null);
+			setPendingMaterialQuery(null);
+			setMessages([
+				{
+					role: "assistant",
+					content: "What raw material do you want to add?",
+				},
+			]);
+			return;
+		}
+
 		const query = pendingMaterialQuery;
 		if (!query) return;
+		const optionsSnapshot = choiceOptions;
 		setIsLoading(true);
 		setChoiceOptions(null);
 
@@ -127,7 +163,7 @@ export function RawMaterialAgentPanel({
 		}
 
 		const label =
-			choiceOptions?.find((o) => o.id === choiceId)?.label ?? choiceId;
+			optionsSnapshot?.find((o) => o.id === choiceId)?.label ?? choiceId;
 		setMessages((prev) => [...prev, { role: "user", content: label }]);
 		try {
 			await sendToApi({ message: query, choiceId });
