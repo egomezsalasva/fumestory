@@ -5,8 +5,8 @@ import { jsonResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
 import { RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT } from "@/agent/system/perfumeryAgentSystemPrompt";
 import {
-	type RawMaterialProposal,
-	rawMaterialProposalSchema,
+	type RawMaterialAgentResult,
+	rawMaterialAgentResultSchema,
 } from "@/agent/schemas/rawMaterialProposal";
 import { proposalToMarkdown } from "@/agent/utils/proposalToMarkdown";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
@@ -29,15 +29,18 @@ const ADD_TO_FORM_CHOICE_INTERACTION = {
 
 async function generateStructuredProposal(
 	userMessage: string,
-): Promise<RawMaterialProposal | null> {
+): Promise<RawMaterialAgentResult | null> {
 	const result = await generateText({
 		model: openai("gpt-4o-mini"),
-		output: Output.object({ schema: rawMaterialProposalSchema }),
+		output: Output.object({ schema: rawMaterialAgentResultSchema }),
 		system: RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT,
 		prompt: userMessage,
 	});
 	return result.output ?? null;
 }
+
+const OUT_OF_TOPIC_FALLBACK =
+	"That seems outside perfumery raw materials. Please enter a fragrance raw material name.";
 
 export const Route = createFileRoute("/api/agent/raw-material-chat")({
 	server: {
@@ -65,10 +68,8 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 
 				if (choiceId === "yes" && userMessage.trim()) {
 					try {
-						const proposal = await generateStructuredProposal(
-							userMessage.trim(),
-						);
-						if (!proposal) {
+						const result = await generateStructuredProposal(userMessage.trim());
+						if (!result) {
 							return jsonResponse(
 								{
 									success: false,
@@ -77,7 +78,27 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 								500,
 							);
 						}
-						const reply = proposalToMarkdown(proposal);
+
+						if (result.kind === "out_of_topic") {
+							return jsonResponse(
+								{
+									success: true,
+									reply: result.reply ?? OUT_OF_TOPIC_FALLBACK,
+								},
+								200,
+							);
+						}
+
+						if (!result.proposal) {
+							return jsonResponse(
+								{
+									success: true,
+									reply: OUT_OF_TOPIC_FALLBACK,
+								},
+								200,
+							);
+						}
+						const reply = proposalToMarkdown(result.proposal);
 						return jsonResponse({ success: true, reply }, 200);
 					} catch {
 						return jsonResponse(
@@ -117,8 +138,8 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 						);
 					}
 
-					const proposal = await generateStructuredProposal(userMessage);
-					if (!proposal) {
+					const result = await generateStructuredProposal(userMessage);
+					if (!result) {
 						return jsonResponse(
 							{
 								success: false,
@@ -127,17 +148,36 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 							500,
 						);
 					}
-					const reply = proposalToMarkdown(proposal);
+					if (result.kind === "out_of_topic") {
+						return jsonResponse(
+							{
+								success: true,
+								reply: result.reply ?? OUT_OF_TOPIC_FALLBACK,
+							},
+							200,
+						);
+					}
+					if (!result.proposal) {
+						return jsonResponse(
+							{
+								success: true,
+								reply: OUT_OF_TOPIC_FALLBACK,
+							},
+							200,
+						);
+					}
+					const reply = proposalToMarkdown(result.proposal);
 					return jsonResponse(
 						{
 							success: true,
 							reply,
-							proposal,
+							proposal: result.proposal,
 							interaction: ADD_TO_FORM_CHOICE_INTERACTION,
 						},
 						200,
 					);
-				} catch {
+				} catch (error) {
+					console.error("[raw-material-chat] error:", error);
 					return jsonResponse(
 						{
 							success: false,

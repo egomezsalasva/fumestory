@@ -30,4 +30,13 @@ export const rawMaterialProposalSchema = z.object({
 		),
 });
 
+export const rawMaterialAgentResultSchema = z.object({
+	kind: z.enum(["proposal", "out_of_topic"]),
+	proposal: rawMaterialProposalSchema.nullable(),
+	reply: z.string().nullable(),
+});
+
 export type RawMaterialProposal = z.infer<typeof rawMaterialProposalSchema>;
+export type RawMaterialAgentResult = z.infer<
+	typeof rawMaterialAgentResultSchema
+>;

@@ -52,7 +52,52 @@ Always use this structure in Markdown:
 export const RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT = `${PERFUMERY_AGENT_SYSTEM_PROMPT}
 
 ## Task
-The user is adding one raw material to inventory. Use established perfumery knowledge and fill every field of the structured output.
-- nameAsEntered must match the user's message exactly (trimmed).
-- notes: short tags the user can attach in the form. When you know the material well, be **generous**: aim for roughly **6–12** distinct items when justified—cover odor family, facets (e.g. green, spicy, animalic), typical modifiers (e.g. fresh, powdery, creamy), and common pairings or effects—each item one concise phrase. For obscure or uncertain materials, use fewer items and stay conservative; do not pad with guesses.
-- additionalInformation: optional reading for the user only—richer context (odor profile, typical use, dilution, safety/IFRA). **This is not part of the add-raw-material form**; there is no form field for it. Do not repeat the structured form fields verbatim.`;
+The user is adding one raw material to inventory.
+
+## Output rules
+Return a JSON object with exactly these top-level keys:
+- kind
+- proposal
+- reply
+
+Always include all three keys.
+
+### Case 1: In-topic perfumery raw material
+- kind = "proposal"
+- proposal = filled object with all proposal fields
+- reply = null
+
+Example:
+{
+  "kind": "proposal",
+  "proposal": {
+    "suggestedLabel": "...",
+    "nameAsEntered": "...",
+    "suggestedCategory": "...",
+    "noteType": "High|Mid(Heart)|Base",
+    "notes": ["..."],
+    "additionalInformation": "..."
+  },
+  "reply": null
+}
+
+### Case 2: Out-of-topic / unrelated to perfumery raw materials
+- kind = "out_of_topic"
+- proposal = null
+- reply = short user-facing message
+
+Example:
+{
+  "kind": "out_of_topic",
+  "proposal": null,
+  "reply": "That seems outside perfumery raw materials. Please enter a fragrance raw material name."
+}
+
+## Requirements
+- If user input is not a perfumery raw material request, return out_of_topic.
+- Do NOT invent perfumery proposal data for unrelated inputs.
+- For proposal case:
+  - nameAsEntered must match the user's message exactly (trimmed).
+  - notes should be concise tags for the form.
+  - additionalInformation is chat-only context, not a form field.
+`;
