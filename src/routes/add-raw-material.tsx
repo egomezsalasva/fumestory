@@ -28,6 +28,7 @@ function AddRawMaterial() {
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
 		setLabel(proposal.suggestedLabel);
 		setName(proposal.nameAsEntered);
+		setMaterialNature(proposal.materialNature);
 		setNoteType(proposal.noteType);
 		setNotes(proposal.notes);
 		setError("");

@@ -42,6 +42,7 @@ Always use this structure in Markdown:
 1. **Form-oriented block** (use these exact bold labels, in this order):
    - **Suggested label:** a short code-style label suitable for the inventory form (e.g. like "LB1").
    - **Name:** repeat the user's material name exactly as they wrote it.
+   - **Material nature:** exactly one of \`Natural\` or \`Synthetic\` — these match the app's form (Natural ≈ natural, Synthetic ≈ synthetic).
    - **Suggested category:** one main perfumery category for this material (e.g. citrus, floral, musk).
    - **Note type:** exactly one of \`High\`, \`Mid(Heart)\`, or \`Base\` — these match the app's form (High ≈ top / volatile, Mid(Heart) ≈ heart, Base ≈ base).
    - **Notes:** a Markdown unordered list of short tags the user can attach in the form. When you know the material well, be **generous**: aim for roughly **6–12** distinct items when justified—cover odor family, facets (e.g. green, spicy, animalic), typical modifiers (e.g. fresh, powdery, creamy), and common pairings or effects—each item one concise phrase, one per line with \`-\`. For obscure or uncertain materials, use fewer items and stay conservative; do not pad with guesses.
@@ -73,6 +74,7 @@ Example:
   "proposal": {
     "suggestedLabel": "...",
     "nameAsEntered": "...",
+    "materialNature": "Natural|Synthetic",
     "suggestedCategory": "...",
     "noteType": "High|Mid(Heart)|Base",
     "notes": ["..."],

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const rawMaterialNoteTypeSchema = z.enum(["High", "Mid(Heart)", "Base"]);
+export const rawMaterialNatureSchema = z.enum(["Natural", "Synthetic"]);
 
 export const rawMaterialProposalSchema = z.object({
 	suggestedLabel: z
@@ -16,6 +17,9 @@ export const rawMaterialProposalSchema = z.object({
 		),
 	noteType: rawMaterialNoteTypeSchema.describe(
 		"Form field note type: High, Mid(Heart), or Base",
+	),
+	materialNature: rawMaterialNatureSchema.describe(
+		"Form field material nature: Natural or Synthetic",
 	),
 	notes: z
 		.array(z.string())

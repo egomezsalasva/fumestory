@@ -47,7 +47,7 @@ function App() {
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
 					: "",
-		},	
+		},
 		{ field: "note_type", headerName: "Note Type", width: 140 },
 		{
 			field: "aggregated_note_counts",

@@ -19,6 +19,8 @@ export function proposalToMarkdown(proposal: RawMaterialProposal): string {
 		"",
 		`**Name:** ${proposal.nameAsEntered}`,
 		"",
+		`**Material nature:** ${proposal.materialNature}`,
+		"",
 		`**Suggested category:** ${proposal.suggestedCategory}`,
 		"",
 		`**Note type:** \`${proposal.noteType}\``,
