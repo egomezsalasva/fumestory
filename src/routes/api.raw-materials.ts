@@ -8,6 +8,7 @@ export type RawMaterial = {
 	label: string;
 	name: string;
 	category_id: number;
+	material_nature: string;
 	category_name: string;
 	note_type: string;
 	notes: string[];
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 							rm.id,
 							rm.label,
 							rm.name ,
+							rm.material_nature,
 							rm.category_id,
 							c.name as category_name,
 							rm.note_type,
@@ -80,7 +82,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 						LEFT JOIN notes n ON rmn.note_id = n.id
 						LEFT JOIN dilutions d ON rm.id = d.raw_material_id
 						WHERE rm.owner_id = $1
-						GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at
+						GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at, rm.material_nature
 						ORDER BY rm.id DESC
 					`;
 					const txResults = await client.transaction((txn) => [
@@ -113,7 +115,14 @@ export const Route = createFileRoute("/api/raw-materials")({
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
 					const body = await request.json();
-					const { label, name, category_id, note_type, notes } = body;
+					const {
+						label,
+						name,
+						category_id,
+						note_type,
+						notes,
+						material_nature,
+					} = body;
 
 					if (!label || typeof label !== "string" || label.trim() === "") {
 						return jsonResponse(
@@ -127,6 +136,17 @@ export const Route = createFileRoute("/api/raw-materials")({
 					if (!name || typeof name !== "string" || name.trim() === "") {
 						return jsonResponse(
 							{ error: "Raw material name is required " },
+							400,
+						);
+					}
+
+					if (
+						!material_nature ||
+						typeof material_nature !== "string" ||
+						!["Natural", "Synthetic"].includes(material_nature)
+					) {
+						return jsonResponse(
+							{ error: "Material nature must be Natural or Synthetic" },
 							400,
 						);
 					}
@@ -153,14 +173,15 @@ export const Route = createFileRoute("/api/raw-materials")({
 							currentUserId,
 						]),
 						txn.query(
-							`INSERT INTO raw_materials (label,name, category_id, note_type, owner_id)
-                    VALUES ($1, $2, $3, $4, $5)
-                    RETURNING id, name, category_id, note_type, created_at`,
+							`INSERT INTO raw_materials (label,name, category_id, note_type, material_nature, owner_id)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                    RETURNING id, name, category_id, note_type, material_nature, created_at`,
 							[
 								label.trim(),
 								name.trim(),
 								category_id || null,
 								note_type || null,
+								material_nature,
 								currentUserId,
 							],
 						),

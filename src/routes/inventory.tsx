@@ -37,6 +37,7 @@ function App() {
 			headerName: "Label",
 			width: 110,
 		},
+		{ field: "material_nature", headerName: "Material Nature", width: 160 },
 		{ field: "name", headerName: "Name", width: 240 },
 		{
 			field: "category_name",
@@ -46,7 +47,7 @@ function App() {
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
 					: "",
-		},
+		},	
 		{ field: "note_type", headerName: "Note Type", width: 140 },
 		{
 			field: "aggregated_note_counts",

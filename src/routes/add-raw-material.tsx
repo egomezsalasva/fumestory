@@ -22,6 +22,7 @@ function AddRawMaterial() {
 	);
 	const [noteType, setNoteType] = useState("");
 	const [notes, setNotes] = useState<string[]>([]);
+	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
@@ -81,6 +82,10 @@ function AddRawMaterial() {
 			setError("Note type is required");
 			return;
 		}
+		if (!materialNature) {
+			setError("Material nature is required");
+			return;
+		}
 		if (error) {
 			setError(error);
 			return;
@@ -95,6 +100,7 @@ function AddRawMaterial() {
 					name,
 					category_id: selectedCategoryId,
 					note_type: noteType,
+					material_nature: materialNature,
 					notes,
 				}),
 			});
@@ -112,6 +118,7 @@ function AddRawMaterial() {
 			setCategorySearch("");
 			setSelectedCategoryId(null);
 			setNoteType("");
+			setMaterialNature("");
 			setNotes([]);
 			alert("Raw material added successfully!");
 		} catch (error) {
@@ -152,6 +159,22 @@ function AddRawMaterial() {
 									setError("");
 								}}
 								placeholder="Enter raw material name"
+								required
+							/>
+
+							{/* Material Nature Field */}
+							<Select
+								label="Material Nature"
+								value={materialNature}
+								onChange={(value) => {
+									setMaterialNature(value);
+									setError("");
+								}}
+								options={[
+									{ value: "Natural", label: "Natural" },
+									{ value: "Synthetic", label: "Synthetic" },
+								]}
+								placeholder="Select material nature..."
 								required
 							/>
 
