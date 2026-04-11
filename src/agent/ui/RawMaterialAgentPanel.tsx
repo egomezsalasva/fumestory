@@ -8,7 +8,6 @@ import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterialAgentPanelProps = {
-	onMaterialFound?: (materialName: string) => void;
 	onApplyProposal?: (proposal: RawMaterialProposal) => void;
 };
 
@@ -26,7 +25,6 @@ type ChatResponse = {
 };
 
 export function RawMaterialAgentPanel({
-	onMaterialFound,
 	onApplyProposal,
 }: RawMaterialAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([
@@ -82,9 +80,6 @@ export function RawMaterialAgentPanel({
 			} else {
 				setChoiceOptions(null);
 				setPendingMaterialQuery(null);
-			}
-			if (onMaterialFound && data.materialName) {
-				onMaterialFound(data.materialName);
 			}
 		}
 	};
