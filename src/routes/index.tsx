@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { authClient } from "../../auth";
 import { useEffect } from "react";
+import MarketingHomePage from "@/components/home-page/MarketingHomePage";
 
 export const Route = createFileRoute("/")({
 	component: Index,
@@ -15,14 +16,8 @@ function Index() {
 
 		if (data?.session) {
 			navigate({ to: "/inventory", replace: true });
-		} else {
-			navigate({
-				to: "/auth/$pathname",
-				params: { pathname: "sign-in" },
-				replace: true,
-			});
 		}
 	}, [data, navigate]);
 
-	return null;
+	return <MarketingHomePage />;
 }
