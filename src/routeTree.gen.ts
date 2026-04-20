@@ -10,21 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as FormulasRouteImport } from './routes/formulas'
+import { Route as CompositionsRouteImport } from './routes/compositions'
 import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
-import { Route as AddFormulaRouteImport } from './routes/add-formula'
 import { Route as AddFeedbackRouteImport } from './routes/add-feedback'
 import { Route as AddDilutionRouteImport } from './routes/add-dilution'
+import { Route as AddCompositionRouteImport } from './routes/add-composition'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManageDilutionsMaterialIdRouteImport } from './routes/manage-dilutions.$materialId'
+import { Route as CompositionCompositionIdRouteImport } from './routes/composition.$compositionId'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
-import { Route as ApiFormulasRouteImport } from './routes/api.formulas'
 import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
+import { Route as ApiCompositionsRouteImport } from './routes/api.compositions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
+import { Route as AddFormulaCompositionIdRouteImport } from './routes/add-formula.$compositionId'
 import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
+import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
 
 const InventoryRoute = InventoryRouteImport.update({
@@ -32,19 +35,14 @@ const InventoryRoute = InventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FormulasRoute = FormulasRouteImport.update({
-  id: '/formulas',
-  path: '/formulas',
+const CompositionsRoute = CompositionsRouteImport.update({
+  id: '/compositions',
+  path: '/compositions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddRawMaterialRoute = AddRawMaterialRouteImport.update({
   id: '/add-raw-material',
   path: '/add-raw-material',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddFormulaRoute = AddFormulaRouteImport.update({
-  id: '/add-formula',
-  path: '/add-formula',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddFeedbackRoute = AddFeedbackRouteImport.update({
@@ -57,6 +55,11 @@ const AddDilutionRoute = AddDilutionRouteImport.update({
   path: '/add-dilution',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AddCompositionRoute = AddCompositionRouteImport.update({
+  id: '/add-composition',
+  path: '/add-composition',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -66,6 +69,12 @@ const ManageDilutionsMaterialIdRoute =
   ManageDilutionsMaterialIdRouteImport.update({
     id: '/manage-dilutions/$materialId',
     path: '/manage-dilutions/$materialId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CompositionCompositionIdRoute =
+  CompositionCompositionIdRouteImport.update({
+    id: '/composition/$compositionId',
+    path: '/composition/$compositionId',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
@@ -83,11 +92,6 @@ const ApiNotesRoute = ApiNotesRouteImport.update({
   path: '/api/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiFormulasRoute = ApiFormulasRouteImport.update({
-  id: '/api/formulas',
-  path: '/api/formulas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiFeedbackRoute = ApiFeedbackRouteImport.update({
   id: '/api/feedback',
   path: '/api/feedback',
@@ -98,9 +102,19 @@ const ApiDilutionsRoute = ApiDilutionsRouteImport.update({
   path: '/api/dilutions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCompositionsRoute = ApiCompositionsRouteImport.update({
+  id: '/api/compositions',
+  path: '/api/compositions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   id: '/api/categories',
   path: '/api/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddFormulaCompositionIdRoute = AddFormulaCompositionIdRouteImport.update({
+  id: '/add-formula/$compositionId',
+  path: '/add-formula/$compositionId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountPathnameRoute = AccountPathnameRouteImport.update({
@@ -108,6 +122,12 @@ const AccountPathnameRoute = AccountPathnameRouteImport.update({
   path: '/account/$pathname',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCompositionsCompositionIdRoute =
+  ApiCompositionsCompositionIdRouteImport.update({
+    id: '/$compositionId',
+    path: '/$compositionId',
+    getParentRoute: () => ApiCompositionsRoute,
+  } as any)
 const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
   id: '/api/agent/raw-material-chat',
   path: '/api/agent/raw-material-chat',
@@ -116,138 +136,158 @@ const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add-composition': typeof AddCompositionRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
-  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
-  '/formulas': typeof FormulasRoute
+  '/compositions': typeof CompositionsRoute
   '/inventory': typeof InventoryRoute
   '/account/$pathname': typeof AccountPathnameRoute
+  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
   '/api/categories': typeof ApiCategoriesRoute
+  '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
-  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/composition/$compositionId': typeof CompositionCompositionIdRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add-composition': typeof AddCompositionRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
-  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
-  '/formulas': typeof FormulasRoute
+  '/compositions': typeof CompositionsRoute
   '/inventory': typeof InventoryRoute
   '/account/$pathname': typeof AccountPathnameRoute
+  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
   '/api/categories': typeof ApiCategoriesRoute
+  '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
-  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/composition/$compositionId': typeof CompositionCompositionIdRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add-composition': typeof AddCompositionRoute
   '/add-dilution': typeof AddDilutionRoute
   '/add-feedback': typeof AddFeedbackRoute
-  '/add-formula': typeof AddFormulaRoute
   '/add-raw-material': typeof AddRawMaterialRoute
-  '/formulas': typeof FormulasRoute
+  '/compositions': typeof CompositionsRoute
   '/inventory': typeof InventoryRoute
   '/account/$pathname': typeof AccountPathnameRoute
+  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
   '/api/categories': typeof ApiCategoriesRoute
+  '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
   '/api/feedback': typeof ApiFeedbackRoute
-  '/api/formulas': typeof ApiFormulasRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/composition/$compositionId': typeof CompositionCompositionIdRoute
   '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
-    | '/add-formula'
     | '/add-raw-material'
-    | '/formulas'
+    | '/compositions'
     | '/inventory'
     | '/account/$pathname'
+    | '/add-formula/$compositionId'
     | '/api/categories'
+    | '/api/compositions'
     | '/api/dilutions'
     | '/api/feedback'
-    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
+    | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
+    | '/api/compositions/$compositionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
-    | '/add-formula'
     | '/add-raw-material'
-    | '/formulas'
+    | '/compositions'
     | '/inventory'
     | '/account/$pathname'
+    | '/add-formula/$compositionId'
     | '/api/categories'
+    | '/api/compositions'
     | '/api/dilutions'
     | '/api/feedback'
-    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
+    | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
+    | '/api/compositions/$compositionId'
   id:
     | '__root__'
     | '/'
+    | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
-    | '/add-formula'
     | '/add-raw-material'
-    | '/formulas'
+    | '/compositions'
     | '/inventory'
     | '/account/$pathname'
+    | '/add-formula/$compositionId'
     | '/api/categories'
+    | '/api/compositions'
     | '/api/dilutions'
     | '/api/feedback'
-    | '/api/formulas'
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
+    | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
+    | '/api/compositions/$compositionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddCompositionRoute: typeof AddCompositionRoute
   AddDilutionRoute: typeof AddDilutionRoute
   AddFeedbackRoute: typeof AddFeedbackRoute
-  AddFormulaRoute: typeof AddFormulaRoute
   AddRawMaterialRoute: typeof AddRawMaterialRoute
-  FormulasRoute: typeof FormulasRoute
+  CompositionsRoute: typeof CompositionsRoute
   InventoryRoute: typeof InventoryRoute
   AccountPathnameRoute: typeof AccountPathnameRoute
+  AddFormulaCompositionIdRoute: typeof AddFormulaCompositionIdRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
+  ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
   ApiFeedbackRoute: typeof ApiFeedbackRoute
-  ApiFormulasRoute: typeof ApiFormulasRoute
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
+  CompositionCompositionIdRoute: typeof CompositionCompositionIdRoute
   ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
@@ -261,11 +301,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/formulas': {
-      id: '/formulas'
-      path: '/formulas'
-      fullPath: '/formulas'
-      preLoaderRoute: typeof FormulasRouteImport
+    '/compositions': {
+      id: '/compositions'
+      path: '/compositions'
+      fullPath: '/compositions'
+      preLoaderRoute: typeof CompositionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/add-raw-material': {
@@ -273,13 +313,6 @@ declare module '@tanstack/react-router' {
       path: '/add-raw-material'
       fullPath: '/add-raw-material'
       preLoaderRoute: typeof AddRawMaterialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add-formula': {
-      id: '/add-formula'
-      path: '/add-formula'
-      fullPath: '/add-formula'
-      preLoaderRoute: typeof AddFormulaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/add-feedback': {
@@ -296,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddDilutionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/add-composition': {
+      id: '/add-composition'
+      path: '/add-composition'
+      fullPath: '/add-composition'
+      preLoaderRoute: typeof AddCompositionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -308,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: '/manage-dilutions/$materialId'
       fullPath: '/manage-dilutions/$materialId'
       preLoaderRoute: typeof ManageDilutionsMaterialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/composition/$compositionId': {
+      id: '/composition/$compositionId'
+      path: '/composition/$compositionId'
+      fullPath: '/composition/$compositionId'
+      preLoaderRoute: typeof CompositionCompositionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/$pathname': {
@@ -331,13 +378,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/formulas': {
-      id: '/api/formulas'
-      path: '/api/formulas'
-      fullPath: '/api/formulas'
-      preLoaderRoute: typeof ApiFormulasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/feedback': {
       id: '/api/feedback'
       path: '/api/feedback'
@@ -352,11 +392,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDilutionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/compositions': {
+      id: '/api/compositions'
+      path: '/api/compositions'
+      fullPath: '/api/compositions'
+      preLoaderRoute: typeof ApiCompositionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/categories': {
       id: '/api/categories'
       path: '/api/categories'
       fullPath: '/api/categories'
       preLoaderRoute: typeof ApiCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add-formula/$compositionId': {
+      id: '/add-formula/$compositionId'
+      path: '/add-formula/$compositionId'
+      fullPath: '/add-formula/$compositionId'
+      preLoaderRoute: typeof AddFormulaCompositionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/$pathname': {
@@ -365,6 +419,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account/$pathname'
       preLoaderRoute: typeof AccountPathnameRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/compositions/$compositionId': {
+      id: '/api/compositions/$compositionId'
+      path: '/$compositionId'
+      fullPath: '/api/compositions/$compositionId'
+      preLoaderRoute: typeof ApiCompositionsCompositionIdRouteImport
+      parentRoute: typeof ApiCompositionsRoute
     }
     '/api/agent/raw-material-chat': {
       id: '/api/agent/raw-material-chat'
@@ -376,22 +437,36 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ApiCompositionsRouteChildren {
+  ApiCompositionsCompositionIdRoute: typeof ApiCompositionsCompositionIdRoute
+}
+
+const ApiCompositionsRouteChildren: ApiCompositionsRouteChildren = {
+  ApiCompositionsCompositionIdRoute: ApiCompositionsCompositionIdRoute,
+}
+
+const ApiCompositionsRouteWithChildren = ApiCompositionsRoute._addFileChildren(
+  ApiCompositionsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddCompositionRoute: AddCompositionRoute,
   AddDilutionRoute: AddDilutionRoute,
   AddFeedbackRoute: AddFeedbackRoute,
-  AddFormulaRoute: AddFormulaRoute,
   AddRawMaterialRoute: AddRawMaterialRoute,
-  FormulasRoute: FormulasRoute,
+  CompositionsRoute: CompositionsRoute,
   InventoryRoute: InventoryRoute,
   AccountPathnameRoute: AccountPathnameRoute,
+  AddFormulaCompositionIdRoute: AddFormulaCompositionIdRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
+  ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,
   ApiFeedbackRoute: ApiFeedbackRoute,
-  ApiFormulasRoute: ApiFormulasRoute,
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
+  CompositionCompositionIdRoute: CompositionCompositionIdRoute,
   ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }

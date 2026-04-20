@@ -1,0 +1,114 @@
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AgGridReact } from "ag-grid-react";
+import {
+	AllCommunityModule,
+	ColDef,
+	ICellRendererParams,
+	ModuleRegistry,
+} from "ag-grid-community";
+import { authedFetch } from "@/utils/authed-fetch";
+
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+export const Route = createFileRoute("/compositions")({
+	component: Compositions,
+});
+
+type Composition = {
+	id: number;
+	name: string;
+	type: "trial" | "accord" | "perfume";
+	created_at: string;
+};
+
+const gridStyles = `
+	.nested-grid .ag-header {
+		background-color: rgb(51, 65, 85) !important;
+	}
+	.nested-grid .ag-header-cell {
+		background-color: rgb(51, 65, 85) !important;
+		color: rgb(226, 232, 240) !important;
+		font-size: 13px !important;
+	}
+	.nested-grid .ag-header-cell-text {
+		color: rgb(226, 232, 240) !important;
+	}
+	.nested-grid .ag-paging-panel,
+	.nested-grid .ag-paging-row-summary-panel,
+	.nested-grid .ag-paging-page-summary-panel {
+		display: none !important;
+	}
+	.nested-grid .ag-root-wrapper {
+		border-bottom: none !important;
+	}
+`;
+
+function Compositions() {
+	const [compositions, setCompositions] = useState<Composition[]>([]);
+
+	useEffect(() => {
+		authedFetch("/api/compositions")
+			.then((res) => res.json())
+			.then((data) => {
+				setCompositions(data.data as Composition[]);
+			})
+			.catch((err) => console.error("Compositions error:", err));
+	}, []);
+
+	const columnDefs: ColDef<Composition>[] = [
+		{ field: "name", headerName: "Name", width: 220 },
+		{
+			field: "type",
+			headerName: "Type",
+			flex: 1,
+			minWidth: 220,
+			valueFormatter: (params) =>
+				params.value
+					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
+					: "",
+		},
+		{
+			headerName: "",
+			width: 130,
+			sortable: false,
+			filter: false,
+			cellRenderer: (params: ICellRendererParams<Composition>) => {
+				const id = params.data?.id;
+				if (!id) return null;
+				return (
+					<Link
+						to="/composition/$compositionId"
+						params={{ compositionId: String(id) }}
+						className="text-sky-300 hover:underline"
+					>
+						Details
+					</Link>
+				);
+			},
+		},
+	];
+
+	return (
+		<>
+			<style>{gridStyles}</style>
+			<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
+				<div className="max-w-8xl mx-auto">
+					<h1 className="text-2xl font-bold text-white mb-7">Compositions</h1>
+					<div
+						className="ag-theme-quartz-dark"
+						style={{ height: "680px", width: "100%" }}
+					>
+						<AgGridReact
+							rowData={compositions}
+							columnDefs={columnDefs}
+							pagination={true}
+							paginationPageSize={20}
+							theme="legacy"
+						/>
+					</div>
+				</div>
+			</div>
+		</>
+	);
+}

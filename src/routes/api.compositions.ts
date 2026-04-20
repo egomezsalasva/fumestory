@@ -3,14 +3,21 @@ import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
-export type Formula = {
+export type Composition = {
 	id: number;
 	name: string;
 	type: "trial" | "accord" | "perfume";
 	created_at: string;
 };
 
-export const Route = createFileRoute("/api/formulas")({
+export type Formula = {
+	id: number;
+	composition_id: number;
+	mods: string;
+	created_at: string;
+};
+
+export const Route = createFileRoute("/api/compositions")({
 	server: {
 		handlers: {
 			GET: async ({ request }) => {
@@ -23,27 +30,15 @@ export const Route = createFileRoute("/api/formulas")({
 					const currentUserId = auth.userId!;
 
 					const selectSql = `
-					SELECT 
-						f.*,
-						COUNT(fd.id)::int as ingredient_count,
-						COALESCE(SUM(fd.weight_grams), 0) as total_weight,
-						COALESCE(
-							json_agg(
-								json_build_object(
-									'material_name', rm.name,
-									'percentage', fd.percentage
-								) ORDER BY fd.percentage DESC
-							) FILTER (WHERE fd.id IS NOT NULL),
-							'[]'
-						) as ingredients
-					FROM formulas f
-					LEFT JOIN formula_dilutions fd ON f.id = fd.formula_id
-					LEFT JOIN dilutions d ON fd.dilution_id = d.id
-					LEFT JOIN raw_materials rm ON d.raw_material_id = rm.id
-					WHERE f.owner_id = $1
-					GROUP BY f.id
-					ORDER BY f.created_at DESC
-				`;
+					SELECT
+						c.id,
+						c.name,
+						c.type,
+						c.created_at
+					FROM compositions c
+					WHERE c.owner_id = $1
+					ORDER BY c.created_at DESC
+					`;
 
 					const txResults = await client.transaction((txn) => [
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
@@ -52,13 +47,13 @@ export const Route = createFileRoute("/api/formulas")({
 						txn.query(selectSql, [currentUserId]),
 					]);
 
-					const formulas = txResults[1];
+					const compositions = txResults[1];
 
-					return jsonResponse({ success: true, data: formulas }, 200);
+					return jsonResponse({ success: true, data: compositions }, 200);
 				} catch (error) {
 					return jsonResponse(
 						{
-							error: "Failed to load formulas",
+							error: "Failed to load compositions",
 							details: getErrorDetails(error),
 						},
 						500,
@@ -75,9 +70,15 @@ export const Route = createFileRoute("/api/formulas")({
 					const currentUserId = auth.userId!;
 
 					const body = await request.json();
-					const { name, type, ingredients } = body as {
-						name: string;
-						type: Formula["type"];
+					const {
+						name,
+						type,
+						mods = "1",
+						ingredients,
+					} = body as {
+						name: Composition["name"];
+						type: Composition["type"];
+						mods: Formula["mods"];
 						ingredients: {
 							dilution_id: number;
 							weight_grams: number;
@@ -90,7 +91,7 @@ export const Route = createFileRoute("/api/formulas")({
 					}
 
 					if (!["trial", "accord", "perfume"].includes(type)) {
-						return jsonResponse({ error: "Invalid formula type" }, 400);
+						return jsonResponse({ error: "Invalid composition type" }, 400);
 					}
 
 					if (
@@ -134,7 +135,6 @@ export const Route = createFileRoute("/api/formulas")({
 					]);
 
 					const ownedDilutions = ownTx[1] as { id: number }[];
-
 					const ownedSet = new Set(ownedDilutions.map((d) => d.id));
 					const unauthorized = dilutionIds.filter((id) => !ownedSet.has(id));
 
@@ -147,21 +147,45 @@ export const Route = createFileRoute("/api/formulas")({
 						);
 					}
 
-					const insertFormulaTx = await client.transaction((txn) => [
+					const createTx = await client.transaction((txn) => [
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
 							currentUserId,
 						]),
 						txn.query(
-							`INSERT INTO formulas (name, type, owner_id)
-						 VALUES ($1, $2, $3)
-						 RETURNING *`,
-							[name.trim(), type, currentUserId],
+							`
+						INSERT INTO compositions (owner_id, name, type)
+						VALUES ($1, $2, $3)
+						RETURNING id, owner_id, name, type, created_at
+						`,
+							[currentUserId, name.trim(), type],
 						),
 					]);
 
-					const formula = (insertFormulaTx[1] as Formula[])[0];
+					const composition = (createTx[1] as Composition[])[0];
+					if (!composition) {
+						return jsonResponse({ error: "Failed to create composition" }, 500);
+					}
+
+					const formulaTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(
+							`
+						INSERT INTO formulas (composition_id, mods)
+						VALUES ($1, $2)
+						RETURNING id, composition_id, mods, created_at
+						`,
+							[composition.id, mods],
+						),
+					]);
+
+					const formula = (formulaTx[1] as Formula[])[0];
 					if (!formula) {
-						return jsonResponse({ error: "Failed to create formula" }, 500);
+						return jsonResponse(
+							{ error: "Failed to create initial formula" },
+							500,
+						);
 					}
 
 					await client.transaction((txn) => [
@@ -170,8 +194,10 @@ export const Route = createFileRoute("/api/formulas")({
 						]),
 						...ingredients.map((ing) =>
 							txn.query(
-								`INSERT INTO formula_dilutions (formula_id, dilution_id, weight_grams, percentage)
-							 VALUES ($1, $2, $3, $4)`,
+								`
+							INSERT INTO formula_dilutions (formula_id, dilution_id, weight_grams, percentage)
+							VALUES ($1, $2, $3, $4)
+							`,
 								[
 									formula.id,
 									ing.dilution_id,
@@ -182,11 +208,14 @@ export const Route = createFileRoute("/api/formulas")({
 						),
 					]);
 
-					return jsonResponse({ success: true, data: formula }, 201);
+					return jsonResponse(
+						{ success: true, data: { composition, formula } },
+						201,
+					);
 				} catch (error) {
 					return jsonResponse(
 						{
-							error: "Failed to create formula",
+							error: "Failed to create composition",
 							details: getErrorDetails(error),
 						},
 						500,

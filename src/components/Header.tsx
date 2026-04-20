@@ -27,11 +27,11 @@ const Header = () => {
 		currentPath.startsWith("/add-dilution") ||
 		currentPath.startsWith("/add-feedback");
 
-	const isFormulas =
-		currentPath.startsWith("/formulas") ||
-		currentPath.startsWith("/add-trial") ||
-		currentPath.startsWith("/add-accord") ||
-		currentPath.startsWith("/add-perfume");
+	const isCompositions =
+		currentPath.startsWith("/compositions") ||
+		currentPath.startsWith("/add-composition") ||
+		currentPath.startsWith("/composition") ||
+		currentPath.startsWith("/add-formula");
 
 	return (
 		<header className="h-15 bg-slate-800 border-b border-slate-700">
@@ -47,11 +47,11 @@ const Header = () => {
 							Inventory
 						</Link>
 						<Link
-							to="/formulas"
+							to="/compositions"
 							className="text-gray-300 hover:text-white transition-colors"
 							activeProps={{ className: "text-white font-semibold" }}
 						>
-							Formulas
+							Compositions
 						</Link>
 					</nav>
 
@@ -82,14 +82,14 @@ const Header = () => {
 								</Link>
 							</>
 						)}
-						{isFormulas && (
+						{isCompositions && (
 							<>
 								<Link
-									to="/add-formula"
+									to="/add-composition"
 									className="text-gray-300 hover:text-white transition-colors"
 									activeProps={{ className: "text-white font-semibold" }}
 								>
-									+ Formula
+									+ Composition
 								</Link>
 							</>
 						)}
