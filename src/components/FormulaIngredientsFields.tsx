@@ -220,8 +220,6 @@ export function FormulaIngredientsFields({
 									value={ingredient.weight_grams}
 									onChange={(value) => updateWeight(ingredient.id, value)}
 									placeholder="0"
-									min={0}
-									step={0.01}
 									disabled={isPercentMode}
 								/>
 							</div>
@@ -247,14 +245,6 @@ export function FormulaIngredientsFields({
 										handlePercentageOnChange(ingredient.id, value)
 									}
 									placeholder="0"
-									min={0}
-									max={Math.max(
-										0,
-										100 -
-											(totalPercentage -
-												(parseFloat(ingredient.formula_percentage) || 0)),
-									)}
-									step={0.01}
 									disabled={!isPercentMode}
 									onBlur={(e) =>
 										handlePercentageOnBlur(ingredient.id, e.currentTarget)
@@ -309,7 +299,7 @@ export function FormulaIngredientsFields({
 						<p className="text-xs text-slate-300">
 							{formatTrimmed(remainingPercent)}% remaining —{" "}
 							{formatTrimmed(liveTotalPercentage)}% added (
-							{formatTrimmed(addedGrams)}g / {formatTrimmed(totalWeightNum)}g
+							{formatTrimmed(addedGrams)}g / {formatTrimmed(totalWeightNum)}g)
 						</p>
 					)}
 				{isPercentMode && percentLimitWarning && (
