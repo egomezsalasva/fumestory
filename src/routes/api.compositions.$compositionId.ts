@@ -167,6 +167,19 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						);
 					}
 
+					const totalPercent = ingredients.reduce(
+						(sum, ing) => sum + (Number(ing.formula_percentage) || 0),
+						0,
+					);
+					if (Math.abs(totalPercent - 100) > 0.0001) {
+						return jsonResponse(
+							{
+								error: `Formula percentages must total 100%. Current total: ${totalPercent.toFixed(2)}%`,
+							},
+							400,
+						);
+					}
+
 					const dilutionIds = ingredients.map((ing) => ing.dilution_id);
 					if (
 						dilutionIds.some(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export type Ingredient = {
 	id: string;
@@ -26,6 +26,14 @@ export function useFormulaIngredients(initial?: Ingredient[]) {
 	const [ingredients, setIngredients] = useState<Ingredient[]>(
 		initial?.length ? initial : [emptyIngredient()],
 	);
+	const [targetTotalWeight, setTargetTotalWeight] = useState(() =>
+		(
+			initial?.reduce(
+				(sum, ing) => sum + (parseFloat(ing.weight_grams) || 0),
+				0,
+			) ?? 0
+		).toString(),
+	);
 
 	const addIngredient = () =>
 		setIngredients((prev) => [...prev, emptyIngredient()]);
@@ -36,6 +44,7 @@ export function useFormulaIngredients(initial?: Ingredient[]) {
 			(sum, ing) => sum + (parseFloat(ing.weight_grams) || 0),
 			0,
 		);
+		setTargetTotalWeight(newTotal.toString());
 		setIngredients(
 			remaining.map((ing) => {
 				const w = parseFloat(ing.weight_grams) || 0;
@@ -78,11 +87,6 @@ export function useFormulaIngredients(initial?: Ingredient[]) {
 		return true;
 	};
 
-	const totalWeight = ingredients.reduce(
-		(sum, ing) => sum + (parseFloat(ing.weight_grams) || 0),
-		0,
-	);
-
 	const updateWeight = (ingredientId: string, weight: string) => {
 		const weightNum = weight === "" ? 0 : parseFloat(weight);
 		if (isNaN(weightNum)) return;
@@ -106,69 +110,17 @@ export function useFormulaIngredients(initial?: Ingredient[]) {
 			return { ...ing, formula_percentage: p };
 		});
 		setIngredients(updated);
-	};
-
-	const updatePercentage = (ingredientId: string, percentage: string) => {
-		const percentNum = percentage === "" ? 0 : parseFloat(percentage);
-		if (isNaN(percentNum) || percentNum < 0 || percentNum > 100) return;
-
-		const otherTotal = ingredients.reduce((sum, ing) => {
-			if (ing.id !== ingredientId)
-				return sum + (parseFloat(ing.weight_grams) || 0);
-			return sum;
-		}, 0);
-
-		if (percentNum === 0 || percentNum === 100) {
-			let newWeight = "0";
-			if (percentNum === 100 && otherTotal === 0) {
-				const currentWeight = parseFloat(
-					ingredients.find((i) => i.id === ingredientId)?.weight_grams || "1",
-				);
-				newWeight =
-					isNaN(currentWeight) || currentWeight === 0
-						? "1"
-						: currentWeight.toString();
-			}
-			const updated = ingredients.map((ing) => {
-				if (ing.id === ingredientId)
-					return {
-						...ing,
-						weight_grams: newWeight,
-						formula_percentage: percentage,
-					};
-				const w = parseFloat(ing.weight_grams) || 0;
-				const total = parseFloat(newWeight) + otherTotal;
-				return {
-					...ing,
-					formula_percentage: total > 0 ? ((w / total) * 100).toString() : "0",
-				};
-			});
-			setIngredients(updated);
-			return;
-		}
-
-		const newWeight = (otherTotal * percentNum) / (100 - percentNum);
-		const updated = ingredients.map((ing) => {
-			if (ing.id === ingredientId)
-				return {
-					...ing,
-					weight_grams: newWeight.toString(),
-					formula_percentage: percentage,
-				};
-			const w = parseFloat(ing.weight_grams) || 0;
-			const total = newWeight + otherTotal;
-			return {
-				...ing,
-				formula_percentage: total > 0 ? ((w / total) * 100).toString() : "0",
-			};
-		});
-		setIngredients(updated);
+		setTargetTotalWeight(
+			updated
+				.reduce((sum, ing) => sum + (parseFloat(ing.weight_grams) || 0), 0)
+				.toString(),
+		);
 	};
 
 	const updateTotalWeight = (newTotalStr: string) => {
 		const newTotal = newTotalStr === "" ? 0 : parseFloat(newTotalStr);
 		if (isNaN(newTotal) || newTotal < 0) return;
-
+		setTargetTotalWeight(newTotalStr);
 		setIngredients((prev) =>
 			prev.map((ing) => {
 				const p = parseFloat(ing.formula_percentage) || 0;
@@ -177,15 +129,69 @@ export function useFormulaIngredients(initial?: Ingredient[]) {
 		);
 	};
 
+	const getTotalPercentage = (list: Ingredient[]) =>
+		list.reduce(
+			(sum, ing) => sum + (parseFloat(ing.formula_percentage) || 0),
+			0,
+		);
+
+	const totalPercentage = getTotalPercentage(ingredients);
+
+	const updatePercentageFromTotal = (
+		ingredientId: string,
+		percentage: string,
+	) => {
+		const percentNum = percentage === "" ? 0 : parseFloat(percentage);
+		if (isNaN(percentNum) || percentNum < 0 || percentNum > 100) return;
+		const newWeight = ((parseFloat(targetTotalWeight) || 0) * percentNum) / 100;
+		setIngredients((prev) =>
+			prev.map((ing) =>
+				ing.id === ingredientId
+					? {
+							...ing,
+							formula_percentage: percentage,
+							weight_grams: newWeight.toString(),
+						}
+					: ing,
+			),
+		);
+	};
+
+	const recalculatePercentagesFromWeights = () =>
+		setIngredients((prev) => {
+			const total = prev.reduce(
+				(sum, ing) => sum + (parseFloat(ing.weight_grams) || 0),
+				0,
+			);
+			if (total <= 0) return prev;
+			setTargetTotalWeight(total.toString());
+			return prev.map((ing) => {
+				const w = parseFloat(ing.weight_grams) || 0;
+				return { ...ing, formula_percentage: ((w / total) * 100).toString() };
+			});
+		});
+
+	const setAllIngredients = useCallback((next: Ingredient[]) => {
+		setIngredients(next);
+		setTargetTotalWeight(
+			next
+				.reduce((sum, ing) => sum + (parseFloat(ing.weight_grams) || 0), 0)
+				.toString(),
+		);
+	}, []);
+
 	return {
 		ingredients,
 		setIngredients,
-		totalWeight,
+		totalWeight: targetTotalWeight,
 		addIngredient,
 		removeIngredient,
 		updateIngredient,
 		updateWeight,
-		updatePercentage,
 		updateTotalWeight,
+		totalPercentage,
+		updatePercentageFromTotal,
+		recalculatePercentagesFromWeights,
+		setAllIngredients,
 	};
 }

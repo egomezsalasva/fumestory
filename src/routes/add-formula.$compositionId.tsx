@@ -84,6 +84,21 @@ function AddFormula() {
 		setError(null);
 		setSuccess(false);
 
+		const activeIngredients = ingredients.filter(
+			(ing) => ing.dilution_id !== null,
+		);
+		const totalPercent = activeIngredients.reduce(
+			(sum, ing) => sum + (parseFloat(ing.formula_percentage) || 0),
+			0,
+		);
+		if (Math.abs(totalPercent - 100) > 0.0001) {
+			setError(
+				`Formula must total 100%. Current total: ${totalPercent.toFixed(2)}%.`,
+			);
+			setIsSubmitting(false);
+			return;
+		}
+
 		const formulaData = {
 			ingredients: ingredients
 				.filter((ing) => ing.dilution_id !== null)
