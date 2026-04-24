@@ -9,15 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as CompositionsRouteImport } from './routes/compositions'
-import { Route as AddRawMaterialRouteImport } from './routes/add-raw-material'
-import { Route as AddFeedbackRouteImport } from './routes/add-feedback'
-import { Route as AddDilutionRouteImport } from './routes/add-dilution'
-import { Route as AddCompositionRouteImport } from './routes/add-composition'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ManageDilutionsMaterialIdRouteImport } from './routes/manage-dilutions.$materialId'
-import { Route as CompositionCompositionIdRouteImport } from './routes/composition.$compositionId'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
@@ -25,39 +18,22 @@ import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCompositionsRouteImport } from './routes/api.compositions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
-import { Route as AddFormulaCompositionIdRouteImport } from './routes/add-formula.$compositionId'
-import { Route as AccountPathnameRouteImport } from './routes/account.$pathname'
+import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
+import { Route as DashboardInventoryRouteImport } from './routes/_dashboard.inventory'
+import { Route as DashboardCompositionsRouteImport } from './routes/_dashboard.compositions'
+import { Route as DashboardAddRawMaterialRouteImport } from './routes/_dashboard.add-raw-material'
+import { Route as DashboardAddFeedbackRouteImport } from './routes/_dashboard.add-feedback'
+import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.add-dilution'
+import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
+import { Route as DashboardManageDilutionsMaterialIdRouteImport } from './routes/_dashboard.manage-dilutions.$materialId'
+import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/_dashboard.composition.$compositionId'
+import { Route as DashboardAddFormulaCompositionIdRouteImport } from './routes/_dashboard.add-formula.$compositionId'
+import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboard.account.$pathname'
 
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompositionsRoute = CompositionsRouteImport.update({
-  id: '/compositions',
-  path: '/compositions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddRawMaterialRoute = AddRawMaterialRouteImport.update({
-  id: '/add-raw-material',
-  path: '/add-raw-material',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddFeedbackRoute = AddFeedbackRouteImport.update({
-  id: '/add-feedback',
-  path: '/add-feedback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddDilutionRoute = AddDilutionRouteImport.update({
-  id: '/add-dilution',
-  path: '/add-dilution',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddCompositionRoute = AddCompositionRouteImport.update({
-  id: '/add-composition',
-  path: '/add-composition',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -65,18 +41,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ManageDilutionsMaterialIdRoute =
-  ManageDilutionsMaterialIdRouteImport.update({
-    id: '/manage-dilutions/$materialId',
-    path: '/manage-dilutions/$materialId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const CompositionCompositionIdRoute =
-  CompositionCompositionIdRouteImport.update({
-    id: '/composition/$compositionId',
-    path: '/composition/$compositionId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
   id: '/auth/$pathname',
   path: '/auth/$pathname',
@@ -112,15 +76,41 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   path: '/api/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AddFormulaCompositionIdRoute = AddFormulaCompositionIdRouteImport.update({
-  id: '/add-formula/$compositionId',
-  path: '/add-formula/$compositionId',
-  getParentRoute: () => rootRouteImport,
+const DashboardProjectSettingsRoute =
+  DashboardProjectSettingsRouteImport.update({
+    id: '/project-settings',
+    path: '/project-settings',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardInventoryRoute = DashboardInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const AccountPathnameRoute = AccountPathnameRouteImport.update({
-  id: '/account/$pathname',
-  path: '/account/$pathname',
-  getParentRoute: () => rootRouteImport,
+const DashboardCompositionsRoute = DashboardCompositionsRouteImport.update({
+  id: '/compositions',
+  path: '/compositions',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAddRawMaterialRoute = DashboardAddRawMaterialRouteImport.update({
+  id: '/add-raw-material',
+  path: '/add-raw-material',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAddFeedbackRoute = DashboardAddFeedbackRouteImport.update({
+  id: '/add-feedback',
+  path: '/add-feedback',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAddDilutionRoute = DashboardAddDilutionRouteImport.update({
+  id: '/add-dilution',
+  path: '/add-dilution',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAddCompositionRoute = DashboardAddCompositionRouteImport.update({
+  id: '/add-composition',
+  path: '/add-composition',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const ApiCompositionsCompositionIdRoute =
   ApiCompositionsCompositionIdRouteImport.update({
@@ -133,17 +123,40 @@ const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
   path: '/api/agent/raw-material-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardManageDilutionsMaterialIdRoute =
+  DashboardManageDilutionsMaterialIdRouteImport.update({
+    id: '/manage-dilutions/$materialId',
+    path: '/manage-dilutions/$materialId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardCompositionCompositionIdRoute =
+  DashboardCompositionCompositionIdRouteImport.update({
+    id: '/composition/$compositionId',
+    path: '/composition/$compositionId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAddFormulaCompositionIdRoute =
+  DashboardAddFormulaCompositionIdRouteImport.update({
+    id: '/add-formula/$compositionId',
+    path: '/add-formula/$compositionId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAccountPathnameRoute =
+  DashboardAccountPathnameRouteImport.update({
+    id: '/account/$pathname',
+    path: '/account/$pathname',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/add-composition': typeof AddCompositionRoute
-  '/add-dilution': typeof AddDilutionRoute
-  '/add-feedback': typeof AddFeedbackRoute
-  '/add-raw-material': typeof AddRawMaterialRoute
-  '/compositions': typeof CompositionsRoute
-  '/inventory': typeof InventoryRoute
-  '/account/$pathname': typeof AccountPathnameRoute
-  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
+  '/add-composition': typeof DashboardAddCompositionRoute
+  '/add-dilution': typeof DashboardAddDilutionRoute
+  '/add-feedback': typeof DashboardAddFeedbackRoute
+  '/add-raw-material': typeof DashboardAddRawMaterialRoute
+  '/compositions': typeof DashboardCompositionsRoute
+  '/inventory': typeof DashboardInventoryRoute
+  '/project-settings': typeof DashboardProjectSettingsRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -151,21 +164,22 @@ export interface FileRoutesByFullPath {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/composition/$compositionId': typeof CompositionCompositionIdRoute
-  '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/account/$pathname': typeof DashboardAccountPathnameRoute
+  '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
+  '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
+  '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/add-composition': typeof AddCompositionRoute
-  '/add-dilution': typeof AddDilutionRoute
-  '/add-feedback': typeof AddFeedbackRoute
-  '/add-raw-material': typeof AddRawMaterialRoute
-  '/compositions': typeof CompositionsRoute
-  '/inventory': typeof InventoryRoute
-  '/account/$pathname': typeof AccountPathnameRoute
-  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
+  '/add-composition': typeof DashboardAddCompositionRoute
+  '/add-dilution': typeof DashboardAddDilutionRoute
+  '/add-feedback': typeof DashboardAddFeedbackRoute
+  '/add-raw-material': typeof DashboardAddRawMaterialRoute
+  '/compositions': typeof DashboardCompositionsRoute
+  '/inventory': typeof DashboardInventoryRoute
+  '/project-settings': typeof DashboardProjectSettingsRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -173,22 +187,24 @@ export interface FileRoutesByTo {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/composition/$compositionId': typeof CompositionCompositionIdRoute
-  '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/account/$pathname': typeof DashboardAccountPathnameRoute
+  '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
+  '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
+  '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/add-composition': typeof AddCompositionRoute
-  '/add-dilution': typeof AddDilutionRoute
-  '/add-feedback': typeof AddFeedbackRoute
-  '/add-raw-material': typeof AddRawMaterialRoute
-  '/compositions': typeof CompositionsRoute
-  '/inventory': typeof InventoryRoute
-  '/account/$pathname': typeof AccountPathnameRoute
-  '/add-formula/$compositionId': typeof AddFormulaCompositionIdRoute
+  '/_dashboard': typeof DashboardRouteWithChildren
+  '/_dashboard/add-composition': typeof DashboardAddCompositionRoute
+  '/_dashboard/add-dilution': typeof DashboardAddDilutionRoute
+  '/_dashboard/add-feedback': typeof DashboardAddFeedbackRoute
+  '/_dashboard/add-raw-material': typeof DashboardAddRawMaterialRoute
+  '/_dashboard/compositions': typeof DashboardCompositionsRoute
+  '/_dashboard/inventory': typeof DashboardInventoryRoute
+  '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -196,8 +212,10 @@ export interface FileRoutesById {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/composition/$compositionId': typeof CompositionCompositionIdRoute
-  '/manage-dilutions/$materialId': typeof ManageDilutionsMaterialIdRoute
+  '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
+  '/_dashboard/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
+  '/_dashboard/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
+  '/_dashboard/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
@@ -211,8 +229,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
-    | '/account/$pathname'
-    | '/add-formula/$compositionId'
+    | '/project-settings'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -220,6 +237,8 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
+    | '/account/$pathname'
+    | '/add-formula/$compositionId'
     | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
@@ -233,8 +252,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
-    | '/account/$pathname'
-    | '/add-formula/$compositionId'
+    | '/project-settings'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -242,6 +260,8 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
+    | '/account/$pathname'
+    | '/add-formula/$compositionId'
     | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
@@ -249,14 +269,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/add-composition'
-    | '/add-dilution'
-    | '/add-feedback'
-    | '/add-raw-material'
-    | '/compositions'
-    | '/inventory'
-    | '/account/$pathname'
-    | '/add-formula/$compositionId'
+    | '/_dashboard'
+    | '/_dashboard/add-composition'
+    | '/_dashboard/add-dilution'
+    | '/_dashboard/add-feedback'
+    | '/_dashboard/add-raw-material'
+    | '/_dashboard/compositions'
+    | '/_dashboard/inventory'
+    | '/_dashboard/project-settings'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -264,22 +284,17 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/auth/$pathname'
-    | '/composition/$compositionId'
-    | '/manage-dilutions/$materialId'
+    | '/_dashboard/account/$pathname'
+    | '/_dashboard/add-formula/$compositionId'
+    | '/_dashboard/composition/$compositionId'
+    | '/_dashboard/manage-dilutions/$materialId'
     | '/api/agent/raw-material-chat'
     | '/api/compositions/$compositionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AddCompositionRoute: typeof AddCompositionRoute
-  AddDilutionRoute: typeof AddDilutionRoute
-  AddFeedbackRoute: typeof AddFeedbackRoute
-  AddRawMaterialRoute: typeof AddRawMaterialRoute
-  CompositionsRoute: typeof CompositionsRoute
-  InventoryRoute: typeof InventoryRoute
-  AccountPathnameRoute: typeof AccountPathnameRoute
-  AddFormulaCompositionIdRoute: typeof AddFormulaCompositionIdRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
@@ -287,53 +302,16 @@ export interface RootRouteChildren {
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
-  CompositionCompositionIdRoute: typeof CompositionCompositionIdRoute
-  ManageDilutionsMaterialIdRoute: typeof ManageDilutionsMaterialIdRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compositions': {
-      id: '/compositions'
-      path: '/compositions'
-      fullPath: '/compositions'
-      preLoaderRoute: typeof CompositionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add-raw-material': {
-      id: '/add-raw-material'
-      path: '/add-raw-material'
-      fullPath: '/add-raw-material'
-      preLoaderRoute: typeof AddRawMaterialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add-feedback': {
-      id: '/add-feedback'
-      path: '/add-feedback'
-      fullPath: '/add-feedback'
-      preLoaderRoute: typeof AddFeedbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add-dilution': {
-      id: '/add-dilution'
-      path: '/add-dilution'
-      fullPath: '/add-dilution'
-      preLoaderRoute: typeof AddDilutionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add-composition': {
-      id: '/add-composition'
-      path: '/add-composition'
-      fullPath: '/add-composition'
-      preLoaderRoute: typeof AddCompositionRouteImport
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -341,20 +319,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/manage-dilutions/$materialId': {
-      id: '/manage-dilutions/$materialId'
-      path: '/manage-dilutions/$materialId'
-      fullPath: '/manage-dilutions/$materialId'
-      preLoaderRoute: typeof ManageDilutionsMaterialIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/composition/$compositionId': {
-      id: '/composition/$compositionId'
-      path: '/composition/$compositionId'
-      fullPath: '/composition/$compositionId'
-      preLoaderRoute: typeof CompositionCompositionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/$pathname': {
@@ -406,19 +370,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/add-formula/$compositionId': {
-      id: '/add-formula/$compositionId'
-      path: '/add-formula/$compositionId'
-      fullPath: '/add-formula/$compositionId'
-      preLoaderRoute: typeof AddFormulaCompositionIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_dashboard/project-settings': {
+      id: '/_dashboard/project-settings'
+      path: '/project-settings'
+      fullPath: '/project-settings'
+      preLoaderRoute: typeof DashboardProjectSettingsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/account/$pathname': {
-      id: '/account/$pathname'
-      path: '/account/$pathname'
-      fullPath: '/account/$pathname'
-      preLoaderRoute: typeof AccountPathnameRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_dashboard/inventory': {
+      id: '/_dashboard/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof DashboardInventoryRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/compositions': {
+      id: '/_dashboard/compositions'
+      path: '/compositions'
+      fullPath: '/compositions'
+      preLoaderRoute: typeof DashboardCompositionsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/add-raw-material': {
+      id: '/_dashboard/add-raw-material'
+      path: '/add-raw-material'
+      fullPath: '/add-raw-material'
+      preLoaderRoute: typeof DashboardAddRawMaterialRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/add-feedback': {
+      id: '/_dashboard/add-feedback'
+      path: '/add-feedback'
+      fullPath: '/add-feedback'
+      preLoaderRoute: typeof DashboardAddFeedbackRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/add-dilution': {
+      id: '/_dashboard/add-dilution'
+      path: '/add-dilution'
+      fullPath: '/add-dilution'
+      preLoaderRoute: typeof DashboardAddDilutionRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/add-composition': {
+      id: '/_dashboard/add-composition'
+      path: '/add-composition'
+      fullPath: '/add-composition'
+      preLoaderRoute: typeof DashboardAddCompositionRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/api/compositions/$compositionId': {
       id: '/api/compositions/$compositionId'
@@ -434,8 +433,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentRawMaterialChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard/manage-dilutions/$materialId': {
+      id: '/_dashboard/manage-dilutions/$materialId'
+      path: '/manage-dilutions/$materialId'
+      fullPath: '/manage-dilutions/$materialId'
+      preLoaderRoute: typeof DashboardManageDilutionsMaterialIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/composition/$compositionId': {
+      id: '/_dashboard/composition/$compositionId'
+      path: '/composition/$compositionId'
+      fullPath: '/composition/$compositionId'
+      preLoaderRoute: typeof DashboardCompositionCompositionIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/add-formula/$compositionId': {
+      id: '/_dashboard/add-formula/$compositionId'
+      path: '/add-formula/$compositionId'
+      fullPath: '/add-formula/$compositionId'
+      preLoaderRoute: typeof DashboardAddFormulaCompositionIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/account/$pathname': {
+      id: '/_dashboard/account/$pathname'
+      path: '/account/$pathname'
+      fullPath: '/account/$pathname'
+      preLoaderRoute: typeof DashboardAccountPathnameRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardAddCompositionRoute: typeof DashboardAddCompositionRoute
+  DashboardAddDilutionRoute: typeof DashboardAddDilutionRoute
+  DashboardAddFeedbackRoute: typeof DashboardAddFeedbackRoute
+  DashboardAddRawMaterialRoute: typeof DashboardAddRawMaterialRoute
+  DashboardCompositionsRoute: typeof DashboardCompositionsRoute
+  DashboardInventoryRoute: typeof DashboardInventoryRoute
+  DashboardProjectSettingsRoute: typeof DashboardProjectSettingsRoute
+  DashboardAccountPathnameRoute: typeof DashboardAccountPathnameRoute
+  DashboardAddFormulaCompositionIdRoute: typeof DashboardAddFormulaCompositionIdRoute
+  DashboardCompositionCompositionIdRoute: typeof DashboardCompositionCompositionIdRoute
+  DashboardManageDilutionsMaterialIdRoute: typeof DashboardManageDilutionsMaterialIdRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAddCompositionRoute: DashboardAddCompositionRoute,
+  DashboardAddDilutionRoute: DashboardAddDilutionRoute,
+  DashboardAddFeedbackRoute: DashboardAddFeedbackRoute,
+  DashboardAddRawMaterialRoute: DashboardAddRawMaterialRoute,
+  DashboardCompositionsRoute: DashboardCompositionsRoute,
+  DashboardInventoryRoute: DashboardInventoryRoute,
+  DashboardProjectSettingsRoute: DashboardProjectSettingsRoute,
+  DashboardAccountPathnameRoute: DashboardAccountPathnameRoute,
+  DashboardAddFormulaCompositionIdRoute: DashboardAddFormulaCompositionIdRoute,
+  DashboardCompositionCompositionIdRoute:
+    DashboardCompositionCompositionIdRoute,
+  DashboardManageDilutionsMaterialIdRoute:
+    DashboardManageDilutionsMaterialIdRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 interface ApiCompositionsRouteChildren {
   ApiCompositionsCompositionIdRoute: typeof ApiCompositionsCompositionIdRoute
@@ -451,14 +512,7 @@ const ApiCompositionsRouteWithChildren = ApiCompositionsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AddCompositionRoute: AddCompositionRoute,
-  AddDilutionRoute: AddDilutionRoute,
-  AddFeedbackRoute: AddFeedbackRoute,
-  AddRawMaterialRoute: AddRawMaterialRoute,
-  CompositionsRoute: CompositionsRoute,
-  InventoryRoute: InventoryRoute,
-  AccountPathnameRoute: AccountPathnameRoute,
-  AddFormulaCompositionIdRoute: AddFormulaCompositionIdRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,
@@ -466,8 +520,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
-  CompositionCompositionIdRoute: CompositionCompositionIdRoute,
-  ManageDilutionsMaterialIdRoute: ManageDilutionsMaterialIdRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }
 export const routeTree = rootRouteImport

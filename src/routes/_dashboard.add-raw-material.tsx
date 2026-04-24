@@ -8,8 +8,9 @@ import { LabelInput } from "@/components/LabelInput";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
-export const Route = createFileRoute("/add-raw-material")({
+export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	component: AddRawMaterial,
 });
 
@@ -130,114 +131,107 @@ function AddRawMaterial() {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="flex gap-6 max-w-7xl mx-auto relative">
-				{/* Left: Form */}
-				<div className="flex-1 max-w-2xl">
-					<h1 className="text-2xl font-bold text-white mb-7">
+		<DashboardLayout
+			title="Raw Materials Inventory / Add Raw Material"
+			backButton={{ to: "/inventory" }}
+		>
+			<form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg p-6">
+				<div className="space-y-6">
+					{/* Label Field */}
+					<LabelInput
+						label="Label *"
+						value={label}
+						onChange={(value) => {
+							setLabel(value);
+							setError("");
+						}}
+						placeholder="e.g., LB1"
+						required
+					/>
+
+					{/* Name Field */}
+					<TextInput
+						label="Name"
+						value={name}
+						onChange={(value) => {
+							setName(value);
+							setError("");
+						}}
+						placeholder="Enter raw material name"
+						required
+					/>
+
+					{/* Material Nature Field */}
+					<Select
+						label="Material Nature"
+						value={materialNature}
+						onChange={(value) => {
+							setMaterialNature(value);
+							setError("");
+						}}
+						options={[
+							{ value: "Natural", label: "Natural" },
+							{ value: "Synthetic", label: "Synthetic" },
+						]}
+						placeholder="Select material nature..."
+						required
+					/>
+
+					{/* Category Field with Autocomplete */}
+					<CategoryAutocomplete
+						label="Category"
+						value={categorySearch}
+						onSelect={(id, name) => {
+							setSelectedCategoryId(id);
+							setCategorySearch(name);
+							setError("");
+						}}
+					/>
+
+					{/* Note Type Field */}
+					<Select
+						label="Note Type"
+						value={noteType}
+						onChange={(value) => {
+							setNoteType(value);
+							setError("");
+						}}
+						options={[
+							{ value: "High", label: "High" },
+							{ value: "Mid(Heart)", label: "Mid(Heart)" },
+							{ value: "Base", label: "Base" },
+						]}
+						placeholder="Select note type..."
+					/>
+
+					{/* Notes Field */}
+					<NotesAutocomplete
+						label="Notes"
+						selectedNotes={notes}
+						onNotesChange={(value) => {
+							setNotes(value);
+							setError("");
+						}}
+					/>
+
+					{/* Submit Button */}
+					<button
+						type="submit"
+						className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+					>
 						Add Raw Material
-					</h1>
-					<form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg p-6">
-						<div className="space-y-6">
-							{/* Label Field */}
-							<LabelInput
-								label="Label *"
-								value={label}
-								onChange={(value) => {
-									setLabel(value);
-									setError("");
-								}}
-								placeholder="e.g., LB1"
-								required
-							/>
+					</button>
 
-							{/* Name Field */}
-							<TextInput
-								label="Name"
-								value={name}
-								onChange={(value) => {
-									setName(value);
-									setError("");
-								}}
-								placeholder="Enter raw material name"
-								required
-							/>
-
-							{/* Material Nature Field */}
-							<Select
-								label="Material Nature"
-								value={materialNature}
-								onChange={(value) => {
-									setMaterialNature(value);
-									setError("");
-								}}
-								options={[
-									{ value: "Natural", label: "Natural" },
-									{ value: "Synthetic", label: "Synthetic" },
-								]}
-								placeholder="Select material nature..."
-								required
-							/>
-
-							{/* Category Field with Autocomplete */}
-							<CategoryAutocomplete
-								label="Category"
-								value={categorySearch}
-								onSelect={(id, name) => {
-									setSelectedCategoryId(id);
-									setCategorySearch(name);
-									setError("");
-								}}
-							/>
-
-							{/* Note Type Field */}
-							<Select
-								label="Note Type"
-								value={noteType}
-								onChange={(value) => {
-									setNoteType(value);
-									setError("");
-								}}
-								options={[
-									{ value: "High", label: "High" },
-									{ value: "Mid(Heart)", label: "Mid(Heart)" },
-									{ value: "Base", label: "Base" },
-								]}
-								placeholder="Select note type..."
-							/>
-
-							{/* Notes Field */}
-							<NotesAutocomplete
-								label="Notes"
-								selectedNotes={notes}
-								onNotesChange={(value) => {
-									setNotes(value);
-									setError("");
-								}}
-							/>
-
-							{/* Submit Button */}
-							<button
-								type="submit"
-								className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-							>
-								Add Raw Material
-							</button>
-
-							{/* Error Message */}
-							{error && (
-								<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-									{error}
-								</div>
-							)}
+					{/* Error Message */}
+					{error && (
+						<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+							{error}
 						</div>
-					</form>
+					)}
 				</div>
-
-				{/* Right: Chatbox */}
-				<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
-			</div>
-		</div>
+			</form>
+			<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
+		</DashboardLayout>
 	);
 }
 

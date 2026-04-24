@@ -5,8 +5,9 @@ import { Select } from "@/components/Select";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
-export const Route = createFileRoute("/add-composition")({
+export const Route = createFileRoute("/_dashboard/add-composition")({
 	component: AddComposition,
 });
 
@@ -60,63 +61,54 @@ function AddComposition() {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-4xl mx-auto">
-				<div className="flex items-center gap-4 mb-7">
-					<Link
-						to="/compositions"
-						className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
-					>
-						← Back
-					</Link>
-					<h1 className="text-2xl font-bold text-white">Create Composition</h1>
-				</div>
+		<DashboardLayout
+			title="Compositions / Add Composition"
+			backButton={{ to: "/compositions" }}
+		>
+			<form
+				onSubmit={handleSubmit}
+				className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700 max-w-170 mx-auto"
+			>
+				<TextInput
+					label="Composition Name"
+					value={name}
+					onChange={setName}
+					placeholder="e.g., Trial 1, My Accord"
+				/>
 
-				<form
-					onSubmit={handleSubmit}
-					className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
+				<Select
+					label="Composition Type"
+					value={type}
+					onChange={(value) => setType(value as typeof type)}
+					options={[
+						{ value: "trial", label: "Trial" },
+						{ value: "accord", label: "Accord" },
+						{ value: "perfume", label: "Perfume" },
+					]}
+				/>
+
+				<FormulaIngredientsFields onIngredientsChange={setIngredients} />
+
+				<button
+					type="submit"
+					disabled={!name || isSubmitting}
+					className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 				>
-					<TextInput
-						label="Composition Name"
-						value={name}
-						onChange={setName}
-						placeholder="e.g., Trial 1, My Accord"
-					/>
+					{isSubmitting ? "Submitting..." : "Create Composition"}
+				</button>
+			</form>
 
-					<Select
-						label="Composition Type"
-						value={type}
-						onChange={(value) => setType(value as typeof type)}
-						options={[
-							{ value: "trial", label: "Trial" },
-							{ value: "accord", label: "Accord" },
-							{ value: "perfume", label: "Perfume" },
-						]}
-					/>
+			{error && (
+				<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+					{error}
+				</div>
+			)}
 
-					<FormulaIngredientsFields onIngredientsChange={setIngredients} />
-
-					<button
-						type="submit"
-						disabled={!name || isSubmitting}
-						className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-					>
-						{isSubmitting ? "Submitting..." : "Create Composition"}
-					</button>
-				</form>
-
-				{error && (
-					<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-						{error}
-					</div>
-				)}
-
-				{success && (
-					<div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
-						Composition created successfully!
-					</div>
-				)}
-			</div>
-		</div>
+			{success && (
+				<div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+					Composition created successfully!
+				</div>
+			)}
+		</DashboardLayout>
 	);
 }

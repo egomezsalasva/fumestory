@@ -8,10 +8,11 @@ import {
 	ModuleRegistry,
 } from "ag-grid-community";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export const Route = createFileRoute("/compositions")({
+export const Route = createFileRoute("/_dashboard/compositions")({
 	component: Compositions,
 });
 
@@ -92,23 +93,23 @@ function Compositions() {
 	return (
 		<>
 			<style>{gridStyles}</style>
-			<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-				<div className="max-w-8xl mx-auto">
-					<h1 className="text-2xl font-bold text-white mb-7">Compositions</h1>
-					<div
-						className="ag-theme-quartz-dark"
-						style={{ height: "680px", width: "100%" }}
-					>
-						<AgGridReact
-							rowData={compositions}
-							columnDefs={columnDefs}
-							pagination={true}
-							paginationPageSize={20}
-							theme="legacy"
-						/>
-					</div>
+			<DashboardLayout
+				title="Compositions"
+				plusButton={{ to: "/add-composition" }}
+			>
+				<div
+					className="ag-theme-quartz-dark"
+					style={{ height: "100%", width: "100%", minHeight: "680px" }}
+				>
+					<AgGridReact
+						rowData={compositions}
+						columnDefs={columnDefs}
+						pagination={true}
+						paginationPageSize={20}
+						theme="legacy"
+					/>
 				</div>
-			</div>
+			</DashboardLayout>
 		</>
 	);
 }

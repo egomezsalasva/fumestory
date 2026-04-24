@@ -12,7 +12,6 @@ import {
 import { authClient } from "../../auth";
 import appCss from "../styles.css?url";
 import type { QueryClient } from "@tanstack/react-query";
-import Header from "@/components/Header";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -44,11 +43,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<NeonAuthUIProvider authClient={authClient}>
-					{/* Hide header when signed out */}
-					<SignedIn>
-						<Header />
-					</SignedIn>
-
 					{isPublic ? (
 						children
 					) : (

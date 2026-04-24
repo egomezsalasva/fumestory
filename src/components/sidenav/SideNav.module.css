@@ -1,0 +1,117 @@
+.container {
+	background-color: #070707;
+	min-height: 100vh;
+	min-width: 15.25rem;
+	min-width: 15rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.navHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.5rem;
+}
+
+.logo {
+	font-family: "Aspekta";
+	font-style: normal;
+	font-weight: 900;
+	font-size: 1rem;
+	line-height: 1;
+	color: #ffffff;
+}
+
+.accountIcon {
+	width: 2rem;
+	height: 2rem;
+	background: linear-gradient(135deg, #0b172d 0%, #174060 100%);
+	border: 1px solid rgba(7, 7, 7, 0.25);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.navBody {
+	padding: 0.75rem;
+}
+
+.navBodySection {
+	margin-bottom: 1.75rem;
+}
+
+.navBodySectionTitle {
+	font-family: "Aspekta";
+	font-weight: 550;
+	font-size: 0.625rem;
+	line-height: 1;
+	color: #ffffff;
+	padding: 0 0.75rem;
+}
+
+.navBodySectionItems {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-height: 1.25rem;
+	padding: 0.75rem 0;
+}
+
+.navBodySectionItem {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0.75rem;
+}
+.navBodySectionItem:hover:not(.navBodySectionItem_active) {
+	background: rgba(11, 23, 45, 0.5);
+	border-radius: 8px;
+}
+
+.navBodySectionItem_active {
+	background: #0b172d;
+	border-radius: 8px;
+}
+
+.navBodySectionItemTitle {
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: #ffffff;
+}
+
+.navFooterSection {
+	padding: 0 0.75rem;
+}
+
+.navFooterSectionCollapse {
+	height: 2.25rem;
+	padding: 0 0.75rem;
+}
+
+.collapseButton {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0.75rem;
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 0.75rem;
+	line-height: 1;
+}
+
+.addOnPill {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-radius: 1.25rem;
+	padding: 0.25rem 0.5rem;
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 0.5rem;
+	line-height: 1;
+	color: #ffffff;
+}

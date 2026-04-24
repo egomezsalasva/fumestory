@@ -1,0 +1,81 @@
+.container {
+	--bottom-bar-height: 2.25rem;
+	padding-bottom: var(--bottom-bar-height);
+	max-height: calc(100vh - 1rem);
+	height: 100%;
+}
+
+.innerContainer {
+	background: #0f0f11;
+	border: 1px solid #1b2837;
+	border-radius: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: calc(100vh - 1rem - var(--bottom-bar-height));
+	overflow: hidden;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 2.75rem;
+	padding: 0 1.5rem;
+	border-bottom: 1px solid #1b2837;
+}
+
+.headerLeft {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.headerRight {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.header h1 {
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: #ffffff;
+}
+
+.body {
+	padding: 1.5rem;
+	flex: 1;
+	/* min-height: 0; */
+	overflow-y: scroll;
+}
+
+.footer {
+	height: var(--bottom-bar-height);
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: right;
+	padding-right: 1.5rem;
+}
+
+.tourButton {
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 0.75rem;
+	line-height: 1;
+	color: #ffffff;
+}
+
+.backButton {
+	width: 1.5rem;
+	height: 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border: 1px solid #fff;
+	border-radius: 50%;
+}

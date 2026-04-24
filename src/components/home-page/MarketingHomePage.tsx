@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router";
-import styles from "./MarketingHomePage.module.css";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { authClient } from "../../../auth";
+import styles from "./MarketingHomePage.module.css";
 
 type InterfaceTab = {
 	title: string;
@@ -127,6 +128,8 @@ const RoadmapFeature = ({
 };
 
 const MarketingHomePage = () => {
+	const { data } = authClient.useSession();
+	const isLoggedIn = !!data?.session;
 	const [activeIndex, setActiveIndex] = useState(0);
 	const activeTab = INTERFACE_TABS[activeIndex];
 	const [slideProgress, setSlideProgress] = useState(0);
@@ -170,13 +173,19 @@ const MarketingHomePage = () => {
 					<a href="#roadmap" className={styles.link}>
 						Roadmap
 					</a>
-					<Link
-						to="/auth/$pathname"
-						params={{ pathname: "sign-in" }}
-						className={styles.linkButton}
-					>
-						Login
-					</Link>
+					{isLoggedIn ? (
+						<Link to="/inventory" className={styles.linkButton}>
+							Dashboard
+						</Link>
+					) : (
+						<Link
+							to="/auth/$pathname"
+							params={{ pathname: "sign-in" }}
+							className={styles.linkButton}
+						>
+							Login
+						</Link>
+					)}
 				</div>
 			</header>
 			<div className={styles.content}>
@@ -189,13 +198,19 @@ const MarketingHomePage = () => {
 						Organized
 					</h1>
 					<div className={styles.buttonContainer}>
-						<Link
-							to="/auth/$pathname"
-							params={{ pathname: "sign-up" }}
-							className={styles.buttonHero}
-						>
-							Get Started
-						</Link>
+						{isLoggedIn ? (
+							<Link to="/inventory" className={styles.buttonHero}>
+								Dashboard
+							</Link>
+						) : (
+							<Link
+								to="/auth/$pathname"
+								params={{ pathname: "sign-up" }}
+								className={styles.buttonHero}
+							>
+								Get Started
+							</Link>
+						)}
 						<a href="#features" className={styles.buttonSecondaryHero}>
 							See Features
 						</a>

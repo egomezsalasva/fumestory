@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
-export const Route = createFileRoute("/add-formula/$compositionId")({
+export const Route = createFileRoute("/_dashboard/add-formula/$compositionId")({
 	component: AddFormula,
 });
 
@@ -132,19 +133,14 @@ function AddFormula() {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-4xl mx-auto">
-				<div className="flex items-center gap-4 mb-7">
-					<Link
-						to="/composition/$compositionId"
-						params={{ compositionId }}
-						className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
-					>
-						← Back
-					</Link>
-					<h1 className="text-2xl font-bold text-white">Add Formula</h1>
-				</div>
-
+		<DashboardLayout
+			title="Compositions / Composition Details / Add Formula"
+			backButton={{
+				to: "/composition/$compositionId",
+				params: { compositionId },
+			}}
+		>
+			<div className="max-w-170 mx-auto">
 				<form
 					onSubmit={handleSubmit}
 					className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
@@ -186,6 +182,6 @@ function AddFormula() {
 					</div>
 				)}
 			</div>
-		</div>
+		</DashboardLayout>
 	);
 }

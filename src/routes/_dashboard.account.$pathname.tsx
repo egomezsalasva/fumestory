@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AccountView } from "@neondatabase/neon-js/auth/react/ui";
-export const Route = createFileRoute("/account/$pathname")({
+export const Route = createFileRoute("/_dashboard/account/$pathname")({
 	component: Account,
 });
 function Account() {

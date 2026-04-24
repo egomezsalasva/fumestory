@@ -9,10 +9,13 @@ import {
 } from "ag-grid-community";
 import { RawMaterial } from "./api.raw-materials";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export const Route = createFileRoute("/inventory")({ component: App });
+export const Route = createFileRoute("/_dashboard/inventory")({
+	component: App,
+});
 
 function App() {
 	const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
@@ -139,29 +142,27 @@ function App() {
 	];
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-8xl mx-auto">
-				<h1 className="text-2xl font-bold text-white mb-7">
-					Raw Materials Inventory
-				</h1>
-				<div
-					className="ag-theme-quartz-dark"
-					style={{ height: "680px", width: "100%" }}
-				>
-					<AgGridReact
-						rowData={rawMaterials}
-						columnDefs={columnDefs as ColDef<RawMaterial>[]}
-						defaultColDef={{
-							filter: true,
-							sortable: true,
-							resizable: true,
-						}}
-						pagination={true}
-						paginationPageSize={20}
-						theme="legacy"
-					/>
-				</div>
+		<DashboardLayout
+			title="Raw Materials Inventory"
+			plusButton={{ to: "/add-raw-material" }}
+		>
+			<div
+				className="ag-theme-quartz-dark"
+				style={{ height: "100%", width: "100%", minHeight: "680px" }}
+			>
+				<AgGridReact
+					rowData={rawMaterials}
+					columnDefs={columnDefs as ColDef<RawMaterial>[]}
+					defaultColDef={{
+						filter: true,
+						sortable: true,
+						resizable: true,
+					}}
+					pagination={true}
+					paginationPageSize={20}
+					theme="legacy"
+				/>
 			</div>
-		</div>
+		</DashboardLayout>
 	);
 }

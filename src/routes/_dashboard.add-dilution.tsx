@@ -4,8 +4,9 @@ import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
-export const Route = createFileRoute("/add-dilution")({
+export const Route = createFileRoute("/_dashboard/add-dilution")({
 	component: AddDilution,
 });
 
@@ -63,57 +64,60 @@ function AddDilution() {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-2xl mx-auto">
-				<h1 className="text-2xl font-bold text-white mb-7">Add Dilution</h1>
-				<form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg p-6">
-					<div className="space-y-6">
-						{/* Raw Material Selector */}
-						<RawMaterialAutocomplete
-							label="Raw Material *"
-							value={rawMaterialSearch}
-							onSelect={(id, name) => {
-								setSelectedRawMaterialId(id);
-								setRawMaterialSearch(name);
-								setError("");
-							}}
-						/>
-						{/* Percentage Field */}
-						<NumberInput
-							label="Percentage"
-							value={percentage}
-							onChange={(value) => {
-								setPercentage(value);
-								setError("");
-							}}
-							placeholder="e.g., 10"
-							required
-							min={0}
-							max={100}
-						/>
-						{/* Dilution Date Field */}
-						<DateTimeInput
-							label="Dilution Date (Optional)"
-							value={dilutionDate}
-							onChange={setDilutionDate}
-						/>
+		<DashboardLayout
+			title="Raw Materials Inventory / Add Dilution"
+			backButton={{ to: "/inventory" }}
+		>
+			<form
+				onSubmit={handleSubmit}
+				className="bg-slate-800 rounded-lg p-6 max-w-170 mx-auto"
+			>
+				<div className="space-y-6">
+					{/* Raw Material Selector */}
+					<RawMaterialAutocomplete
+						label="Raw Material *"
+						value={rawMaterialSearch}
+						onSelect={(id, name) => {
+							setSelectedRawMaterialId(id);
+							setRawMaterialSearch(name);
+							setError("");
+						}}
+					/>
+					{/* Percentage Field */}
+					<NumberInput
+						label="Percentage"
+						value={percentage}
+						onChange={(value) => {
+							setPercentage(value);
+							setError("");
+						}}
+						placeholder="e.g., 10"
+						required
+						min={0}
+						max={100}
+					/>
+					{/* Dilution Date Field */}
+					<DateTimeInput
+						label="Dilution Date (Optional)"
+						value={dilutionDate}
+						onChange={setDilutionDate}
+					/>
 
-						{/* Submit Button */}
-						<button
-							type="submit"
-							className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-						>
-							Add Dilution
-						</button>
-						{/* Error Message */}
-						{error && (
-							<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-								{error}
-							</div>
-						)}
-					</div>
-				</form>
-			</div>
-		</div>
+					{/* Submit Button */}
+					<button
+						type="submit"
+						className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+					>
+						Add Dilution
+					</button>
+					{/* Error Message */}
+					{error && (
+						<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+							{error}
+						</div>
+					)}
+				</div>
+			</form>
+		</DashboardLayout>
 	);
 }

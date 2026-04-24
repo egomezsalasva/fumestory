@@ -5,8 +5,9 @@ import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { TextInput } from "@/components/TextInput";
 import { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
-export const Route = createFileRoute("/add-feedback")({
+export const Route = createFileRoute("/_dashboard/add-feedback")({
 	component: AddFeedback,
 });
 
@@ -87,28 +88,17 @@ function AddFeedback() {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8">
-			<div className="max-w-2xl mx-auto">
-				<div className="mb-7">
-					<div className="flex items-center gap-4 mb-4">
-						<Link
-							to="/"
-							className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
-						>
-							← Back
-						</Link>
-						<h1 className="text-2xl font-bold text-white">
-							Add Guest Feedback
-						</h1>
-					</div>
-					<p className="text-sm text-slate-400">
-						This form can be used to get some direct feedback from when you have
-						a guest over. Use a scent strip with any of your dilutions and give
-						it to your guest without giving them any guidance. See what notes
-						they pick up on and what they think of the scent.
-					</p>
-				</div>
-
+		<DashboardLayout
+			title="Raw Materials Inventory / Add Feedback"
+			backButton={{ to: "/inventory" }}
+		>
+			<div className="max-w-170 mx-auto">
+				<p className="text-sm text-slate-400 mb-6">
+					This form can be used to get some direct feedback from when you have a
+					guest over. Use a scent strip with any of your dilutions and give it
+					to your guest without giving them any guidance. See what notes they
+					pick up on and what they think of the scent.
+				</p>
 				{error && (
 					<div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300">
 						{error}
@@ -198,6 +188,6 @@ function AddFeedback() {
 					</button>
 				</form>
 			</div>
-		</div>
+		</DashboardLayout>
 	);
 }

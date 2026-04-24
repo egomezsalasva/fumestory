@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import { authedFetch } from "@/utils/authed-fetch";
+import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export const Route = createFileRoute("/composition/$compositionId")({
+export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
 	component: CompositionDetail,
 });
 
@@ -106,10 +107,10 @@ function CompositionDetail() {
 	return (
 		<>
 			<style>{gridStyles}</style>
-			<div className="min-h-[calc(100vh-60px)] bg-slate-900 p-8 text-white">
-				<Link to="/compositions" className="text-sky-300 hover:underline">
-					← Back
-				</Link>
+			<DashboardLayout
+				title="Compositions / Composition Details"
+				backButton={{ to: "/compositions" }}
+			>
 				{err && <p className="mt-4 text-red-400">{err}</p>}
 				{!payload && !err && <p className="mt-4 text-slate-400">Loading…</p>}
 				{payload && (
@@ -157,7 +158,7 @@ function CompositionDetail() {
 														rowData={lines}
 														columnDefs={columnDefs}
 														getRowId={(p) =>
-															`${f.id}-${String(p.data?.dilution_id)}`
+															"${f.id}-${String(p.data?.dilution_id)}"
 														}
 														domLayout="autoHeight"
 														theme="legacy"
@@ -170,7 +171,7 @@ function CompositionDetail() {
 						)}
 					</div>
 				)}
-			</div>
+			</DashboardLayout>
 		</>
 	);
 }
