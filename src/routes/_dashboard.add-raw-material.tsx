@@ -135,102 +135,113 @@ function AddRawMaterial() {
 			title="Raw Materials Inventory / Add Raw Material"
 			backButton={{ to: "/inventory" }}
 		>
-			<form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg p-6">
-				<div className="space-y-6">
-					{/* Label Field */}
-					<LabelInput
-						label="Label *"
-						value={label}
-						onChange={(value) => {
-							setLabel(value);
-							setError("");
-						}}
-						placeholder="e.g., LB1"
-						required
-					/>
-
-					{/* Name Field */}
-					<TextInput
-						label="Name"
-						value={name}
-						onChange={(value) => {
-							setName(value);
-							setError("");
-						}}
-						placeholder="Enter raw material name"
-						required
-					/>
-
-					{/* Material Nature Field */}
-					<Select
-						label="Material Nature"
-						value={materialNature}
-						onChange={(value) => {
-							setMaterialNature(value);
-							setError("");
-						}}
-						options={[
-							{ value: "Natural", label: "Natural" },
-							{ value: "Synthetic", label: "Synthetic" },
-						]}
-						placeholder="Select material nature..."
-						required
-					/>
-
-					{/* Category Field with Autocomplete */}
-					<CategoryAutocomplete
-						label="Category"
-						value={categorySearch}
-						onSelect={(id, name) => {
-							setSelectedCategoryId(id);
-							setCategorySearch(name);
-							setError("");
-						}}
-					/>
-
-					{/* Note Type Field */}
-					<Select
-						label="Note Type"
-						value={noteType}
-						onChange={(value) => {
-							setNoteType(value);
-							setError("");
-						}}
-						options={[
-							{ value: "High", label: "High" },
-							{ value: "Mid(Heart)", label: "Mid(Heart)" },
-							{ value: "Base", label: "Base" },
-						]}
-						placeholder="Select note type..."
-					/>
-
-					{/* Notes Field */}
-					<NotesAutocomplete
-						label="Notes"
-						selectedNotes={notes}
-						onNotesChange={(value) => {
-							setNotes(value);
-							setError("");
-						}}
-					/>
-
-					{/* Submit Button */}
-					<button
-						type="submit"
-						className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
+				<div className="w-full max-w-170 mx-auto">
+					<form
+						onSubmit={handleSubmit}
+						className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
 					>
-						Add Raw Material
-					</button>
+						<div className="space-y-6">
+							{/* Label Field */}
+							<LabelInput
+								label="Label *"
+								value={label}
+								onChange={(value) => {
+									setLabel(value);
+									setError("");
+								}}
+								placeholder="e.g., LB1"
+								required
+							/>
 
-					{/* Error Message */}
-					{error && (
-						<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-							{error}
+							{/* Name Field */}
+							<TextInput
+								label="Name"
+								value={name}
+								onChange={(value) => {
+									setName(value);
+									setError("");
+								}}
+								placeholder="Enter raw material name"
+								required
+							/>
+
+							{/* Material Nature Field */}
+							<Select
+								label="Material Nature"
+								value={materialNature}
+								onChange={(value) => {
+									setMaterialNature(value);
+									setError("");
+								}}
+								options={[
+									{ value: "Natural", label: "Natural" },
+									{ value: "Synthetic", label: "Synthetic" },
+								]}
+								placeholder="Select material nature..."
+								required
+							/>
+
+							{/* Category Field with Autocomplete */}
+							<CategoryAutocomplete
+								label="Category"
+								value={categorySearch}
+								onSelect={(id, name) => {
+									setSelectedCategoryId(id);
+									setCategorySearch(name);
+									setError("");
+								}}
+							/>
+
+							{/* Note Type Field */}
+							<Select
+								label="Note Type"
+								value={noteType}
+								onChange={(value) => {
+									setNoteType(value);
+									setError("");
+								}}
+								options={[
+									{ value: "High", label: "High" },
+									{ value: "Mid(Heart)", label: "Mid(Heart)" },
+									{ value: "Base", label: "Base" },
+								]}
+								placeholder="Select note type..."
+							/>
+
+							{/* Notes Field */}
+							<NotesAutocomplete
+								label="Notes"
+								selectedNotes={notes}
+								onNotesChange={(value) => {
+									setNotes(value);
+									setError("");
+								}}
+							/>
+
+							{/* Submit Button */}
+							<button
+								type="submit"
+								className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+							>
+								Add Raw Material
+							</button>
+
+							{/* Error Message */}
+							{error && (
+								<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+									{error}
+								</div>
+							)}
 						</div>
-					)}
+					</form>
 				</div>
-			</form>
-			<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
+				<div className="hidden xl:block min-h-0">
+					<div className="sticky top-0 h-full min-h-0">
+						<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
+					</div>
+				</div>
+			</div>
 		</DashboardLayout>
 	);
 }

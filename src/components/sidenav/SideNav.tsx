@@ -34,17 +34,16 @@ function SignOutAction() {
 const NavBodySectionItem: React.FC<{
 	icon: React.ReactNode;
 	to: string;
+	hash?: string;
 	title: string;
 	addOnPill?: boolean;
-}> = ({ icon, to, title, addOnPill = false }) => {
+}> = ({ icon, to, hash, title, addOnPill = false }) => {
 	const matchRoute = useMatchRoute();
 	const { location } = useRouterState();
 
-	const [toPath, toHash = ""] = to.split("#");
-	const targetHash = toHash ? `#${toHash}` : "";
-
-	const pathMatches = !!matchRoute({ to: toPath, fuzzy: false });
-
+	const [toPath] = to.split("#");
+	const targetHash = hash ?? "";
+	const pathMatches = !!matchRoute({ to, fuzzy: false });
 	const active = targetHash
 		? pathMatches && location.hash === targetHash
 		: pathMatches && !location.hash;
@@ -52,7 +51,7 @@ const NavBodySectionItem: React.FC<{
 	return (
 		<Link
 			to={toPath}
-			hash={targetHash || undefined}
+			hash={targetHash ? targetHash.replace(/^#/, "") : undefined}
 			className={`${styles.navBodySectionItem} ${active ? styles.navBodySectionItem_active : ""}`}
 		>
 			{icon}
@@ -129,7 +128,8 @@ const SideNav = () => {
 							/>
 							<NavBodySectionItem
 								icon={<StarIcon />}
-								to="/project-settings#add-on-features"
+								to="/project-settings"
+								hash="#add-on-features"
 								title="Add-on Features"
 							/>
 						</div>
@@ -147,7 +147,8 @@ const SideNav = () => {
 							/> */}
 							<NavBodySectionItem
 								icon={<UpcomingFeaturesIcon />}
-								to="/#roadmap"
+								to="/"
+								hash="#roadmap"
 								title="Upcoming Features"
 							/>
 						</div>

@@ -65,7 +65,7 @@ export function ChatPanel({
 	};
 
 	return (
-		<div className={`w-96 fixed right-9 top-20 bottom-8 ${className}`}>
+		<div className={`w-full h-full min-h-0 ${className}`}>
 			<div className="bg-slate-800 rounded-lg border border-slate-700 h-full flex flex-col shadow-xl">
 				{(title || subtitle) && (
 					<div className="p-4 border-b border-slate-700">

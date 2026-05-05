@@ -183,6 +183,7 @@ export function RawMaterialAgentPanel({
 			placeholder="Type material name..."
 			choiceOptions={choiceOptions}
 			onChoice={handleChoice}
+			className="h-full min-h-0"
 		/>
 	);
 }

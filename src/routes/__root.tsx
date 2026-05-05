@@ -46,10 +46,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					{isPublic ? (
 						children
 					) : (
-						<>
+						<div
+							style={{
+								position: "fixed",
+								inset: 0,
+								overflow: "hidden",
+							}}
+						>
 							<SignedIn>{children}</SignedIn>
 							<RedirectToSignIn />
-						</>
+						</div>
 					)}
 				</NeonAuthUIProvider>
 				<Scripts />
