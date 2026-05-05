@@ -237,10 +237,7 @@ const MarketingHomePage = () => {
 				<div className={styles.featuresContainer} id="features">
 					<h2>How Fumestory Can Help You</h2>
 					<div className={styles.featuresGrid}>
-						<FeatureItem
-							title="Raw Material Inventory"
-							image="/public/inventory.png"
-						>
+						<FeatureItem title="Raw Material Inventory" image="/inventory.png">
 							<p>
 								A overview table to view all your raw material information. This
 								information includes custom labels for your materials, the
@@ -271,7 +268,7 @@ const MarketingHomePage = () => {
 							</p>
 							<p>This significantly speeds up the data entry process.</p>
 						</FeatureItem>
-						<FeatureItem title="Formulas Agent" image="/public/formulas.png">
+						<FeatureItem title="Formulas Agent" image="/formulas.png">
 							<p>
 								The Formulas Agent is a AI assistant that helps with creating
 								compositions and formulas. You can let the agent know what your
@@ -286,10 +283,7 @@ const MarketingHomePage = () => {
 								you with iterations to fine-tune the formula to your liking.
 							</p>
 						</FeatureItem>
-						<FeatureItem
-							title="From Idea To Formula"
-							image="/public/formulas.png"
-						>
+						<FeatureItem title="From Idea To Formula" image="/formulas.png">
 							<p>
 								Keep your composition ideas organized. Pick the composition
 								type, be it a perfume, and accord or just a trial. In each
