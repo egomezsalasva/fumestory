@@ -14,7 +14,7 @@ function Auth() {
 
 	useEffect(() => {
 		if (data?.session) {
-			navigate({ to: "/inventory", replace: true });
+			navigate({ to: "/compositions", replace: true });
 		}
 	}, [data?.session, navigate]);
 
@@ -28,7 +28,7 @@ function Auth() {
 				padding: "2rem",
 			}}
 		>
-			<AuthView pathname={pathname} />
+			<AuthView pathname={pathname} redirectTo="/compositions" />
 		</div>
 	);
 }

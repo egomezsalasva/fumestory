@@ -12,24 +12,10 @@ import CompositionIcon from "./svgs/CompositionIcon";
 import BoxIcon from "./svgs/BoxIcon";
 import LayersIcon from "./svgs/LayersIcon";
 import CupIcon from "./svgs/CupIcon";
-import CogIcon from "../svgs/CogIcon";
-import StarIcon from "./svgs/StarIcon";
+// import CogIcon from "../svgs/CogIcon";
+// import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
-
-function SignOutAction() {
-	const navigate = useNavigate();
-	return (
-		<button
-			onClick={async () => {
-				await authClient.signOut();
-				navigate({ to: "/", replace: true });
-			}}
-			className="px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm"
-		>
-			Sign out
-		</button>
-	);
-}
+import { useState } from "react";
 
 const NavBodySectionItem: React.FC<{
 	icon: React.ReactNode;
@@ -62,15 +48,55 @@ const NavBodySectionItem: React.FC<{
 };
 
 const SideNav = () => {
+	const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+	const navigate = useNavigate();
+	const handleSignOut = async () => {
+		await authClient.signOut();
+		navigate({ to: "/", replace: true });
+	};
+	const handleAccountMenuOpen = () => {
+		setIsAccountMenuOpen(true);
+	};
+
+	const handleAccountMenuClose = () => {
+		setIsAccountMenuOpen(false);
+	};
 	return (
 		<header className={styles.container}>
 			<nav>
 				<div className={styles.navHeader}>
 					<div className={styles.logo}>FUMESTORY</div>
-					<div className={styles.accountIcon}>
+					<div className={styles.accountIcon} onClick={handleAccountMenuOpen}>
 						<ProfileIcon />
 					</div>
+
+					{isAccountMenuOpen && (
+						<div className={styles.accountMenu}>
+							<div className={styles.accountMenuSpace} />
+							<Link
+								to="/account/$pathname"
+								params={{ pathname: "profile" }}
+								className={styles.accountMenuItem}
+								onClick={handleAccountMenuClose}
+							>
+								Account Settings
+							</Link>
+							<div className={styles.accountMenuItemSeparator}>
+								<div className={styles.accountMenuItemSeparatorLine} />
+							</div>
+							<div className={styles.accountMenuItem} onClick={handleSignOut}>
+								Logout
+							</div>
+							<div className={styles.accountMenuSpace} />
+						</div>
+					)}
 				</div>
+				{isAccountMenuOpen && (
+					<div
+						className={styles.accountMenuOverlay}
+						onClick={handleAccountMenuClose}
+					/>
+				)}
 				<div className={styles.navBody}>
 					<div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>COMPOSITIONS</div>
@@ -118,7 +144,7 @@ const SideNav = () => {
 							/>
 						</div>
 					</div>
-					<div className={styles.navBodySection}>
+					{/* <div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>PROJECT</div>
 						<div className={styles.navBodySectionItems}>
 							<NavBodySectionItem
@@ -133,7 +159,7 @@ const SideNav = () => {
 								title="Add-on Features"
 							/>
 						</div>
-					</div>
+					</div> */}
 				</div>
 			</nav>
 			<div className={styles.navFooter}>
