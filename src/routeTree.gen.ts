@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
+import { Route as ApiRoadmapRouteImport } from './routes/api.roadmap'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
 import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
@@ -44,6 +45,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
   id: '/auth/$pathname',
   path: '/auth/$pathname',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRoadmapRoute = ApiRoadmapRouteImport.update({
+  id: '/api/roadmap',
+  path: '/api/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRawMaterialsRoute = ApiRawMaterialsRouteImport.update({
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/api/roadmap': typeof ApiRoadmapRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/api/roadmap': typeof ApiRoadmapRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/api/feedback': typeof ApiFeedbackRoute
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
+  '/api/roadmap': typeof ApiRoadmapRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
   '/_dashboard/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/api/roadmap'
     | '/auth/$pathname'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
     | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/api/roadmap'
     | '/auth/$pathname'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/api/feedback'
     | '/api/notes'
     | '/api/raw-materials'
+    | '/api/roadmap'
     | '/auth/$pathname'
     | '/_dashboard/account/$pathname'
     | '/_dashboard/add-formula/$compositionId'
@@ -301,6 +313,7 @@ export interface RootRouteChildren {
   ApiFeedbackRoute: typeof ApiFeedbackRoute
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
+  ApiRoadmapRoute: typeof ApiRoadmapRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
@@ -326,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/$pathname'
       fullPath: '/auth/$pathname'
       preLoaderRoute: typeof AuthPathnameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/roadmap': {
+      id: '/api/roadmap'
+      path: '/api/roadmap'
+      fullPath: '/api/roadmap'
+      preLoaderRoute: typeof ApiRoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/raw-materials': {
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFeedbackRoute: ApiFeedbackRoute,
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
+  ApiRoadmapRoute: ApiRoadmapRoute,
   AuthPathnameRoute: AuthPathnameRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }

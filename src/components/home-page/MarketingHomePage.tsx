@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { authClient } from "../../../auth";
+import { authedFetch } from "@/utils/authed-fetch";
+import type {
+	RoadmapItem,
+	RoadmapGetResponse,
+	RoadmapToggleResponse,
+} from "@/routes/api.roadmap";
 import styles from "./MarketingHomePage.module.css";
 
 type InterfaceTab = {
@@ -10,10 +16,7 @@ type InterfaceTab = {
 
 const INTERFACE_TABS: InterfaceTab[] = [
 	{ title: "Inventory", image: "/inventory.png" },
-	{
-		title: "Add Raw Material",
-		image: "/add-raw-material.png",
-	},
+	{ title: "Add Raw Material", image: "/add-raw-material.png" },
 	{ title: "Add Dilution", image: "/add-dilution.png" },
 	{ title: "Compositions", image: "/formulas.png" },
 	{ title: "Formulas", image: "/formulas.png" },
@@ -97,16 +100,22 @@ const FeatureItem = ({
 const RoadmapFeature = ({
 	title,
 	upvotes,
+	hasUpvoted,
+	disabled,
+	onToggle,
 }: {
 	title: string;
 	upvotes: number;
+	hasUpvoted: boolean;
+	disabled: boolean;
+	onToggle: () => void;
 }) => {
 	return (
 		<div className={styles.roadmapFeatureItem}>
 			<h3>{title}</h3>
 			<div className={styles.roadmapFeatureUpvotes}>
 				<p className={styles.roadmapFeatureUpvotesCount}>{upvotes}</p>
-				<button>
+				<button type="button" onClick={onToggle} disabled={disabled}>
 					<svg
 						width="18"
 						height="10"
@@ -116,9 +125,9 @@ const RoadmapFeature = ({
 					>
 						<path
 							d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
-							stroke="#F5F7FA"
-							stroke-width="2"
-							stroke-linecap="round"
+							stroke={hasUpvoted ? "#7FD1A7" : "#F5F7FA"}
+							strokeWidth="2"
+							strokeLinecap="round"
 						/>
 					</svg>
 				</button>
@@ -134,6 +143,26 @@ const MarketingHomePage = () => {
 	const activeTab = INTERFACE_TABS[activeIndex];
 	const [slideProgress, setSlideProgress] = useState(0);
 	const slideStartRef = useRef<number>(performance.now());
+
+	const [roadmapFeatures, setRoadmapFeatures] = useState<RoadmapItem[]>([]);
+	const [roadmapLoading, setRoadmapLoading] = useState(true);
+	const [pendingFeatureId, setPendingFeatureId] = useState<number | null>(null);
+
+	const loadRoadmap = async (cancelled?: () => boolean) => {
+		try {
+			setRoadmapLoading(true);
+			const response = await fetch("/api/roadmap");
+			if (!response.ok) return;
+			const json = (await response.json()) as RoadmapGetResponse;
+			if (json.success && !(cancelled?.() ?? false)) {
+				setRoadmapFeatures(json.data);
+			}
+		} finally {
+			if (!(cancelled?.() ?? false)) {
+				setRoadmapLoading(false);
+			}
+		}
+	};
 
 	useEffect(() => {
 		let raf = 0;
@@ -153,10 +182,48 @@ const MarketingHomePage = () => {
 		return () => cancelAnimationFrame(raf);
 	}, []);
 
+	useEffect(() => {
+		let isCancelled = false;
+		void loadRoadmap(() => isCancelled);
+		return () => {
+			isCancelled = true;
+		};
+	}, []);
+
 	const handleTabClick = (index: number) => {
 		setActiveIndex(index);
 		slideStartRef.current = performance.now();
 		setSlideProgress(0);
+	};
+
+	const handleToggleUpvote = async (featureId: number) => {
+		if (!isLoggedIn) return;
+
+		setPendingFeatureId(featureId);
+		try {
+			const response = await authedFetch("/api/roadmap", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ featureId }),
+			});
+			if (!response.ok) throw new Error("Toggle failed");
+
+			(await response.json()) as RoadmapToggleResponse;
+
+			// Refresh values from server truth, but keep current visible order.
+			const refreshResponse = await fetch("/api/roadmap");
+			if (!refreshResponse.ok) throw new Error("Refresh failed");
+
+			const refreshJson = (await refreshResponse.json()) as RoadmapGetResponse;
+			if (refreshJson.success) {
+				setRoadmapFeatures((prev) => {
+					const byId = new Map(refreshJson.data.map((item) => [item.id, item]));
+					return prev.map((item) => byId.get(item.id) ?? item);
+				});
+			}
+		} finally {
+			setPendingFeatureId(null);
+		}
 	};
 
 	return (
@@ -167,9 +234,6 @@ const MarketingHomePage = () => {
 					<a href="#features" className={styles.link}>
 						Features
 					</a>
-					{/* <a href="#pricing" className={styles.link}>
-						Pricing
-					</a> */}
 					<a href="#roadmap" className={styles.link}>
 						Roadmap
 					</a>
@@ -188,6 +252,7 @@ const MarketingHomePage = () => {
 					)}
 				</div>
 			</header>
+
 			<div className={styles.content}>
 				<div className={styles.contentHero}>
 					<h1>
@@ -216,6 +281,7 @@ const MarketingHomePage = () => {
 						</a>
 					</div>
 				</div>
+
 				<div className={styles.interfaceContainer}>
 					<div className={styles.interfaceList}>
 						{INTERFACE_TABS.map((tab, index) => (
@@ -234,6 +300,7 @@ const MarketingHomePage = () => {
 						</div>
 					</div>
 				</div>
+
 				<div className={styles.featuresContainer} id="features">
 					<h2>How Fumestory Can Help You</h2>
 					<div className={styles.featuresGrid}>
@@ -248,6 +315,7 @@ const MarketingHomePage = () => {
 							</p>
 							<p>Easily add new entries with help of the inventory AI agent.</p>
 						</FeatureItem>
+
 						<FeatureItem title="Track Your Dilutions">
 							<p>
 								Add dilutions of the raw materials so you can easily track when
@@ -259,6 +327,7 @@ const MarketingHomePage = () => {
 								was used from the dilution.
 							</p>
 						</FeatureItem>
+
 						<FeatureItem title="Inventory Agent">
 							<p>
 								The Inventory Agent is a AI assistant that helps with adding new
@@ -268,6 +337,7 @@ const MarketingHomePage = () => {
 							</p>
 							<p>This significantly speeds up the data entry process.</p>
 						</FeatureItem>
+
 						<FeatureItem title="Formulas Agent" image="/formulas.png">
 							<p>
 								The Formulas Agent is a AI assistant that helps with creating
@@ -283,6 +353,7 @@ const MarketingHomePage = () => {
 								you with iterations to fine-tune the formula to your liking.
 							</p>
 						</FeatureItem>
+
 						<FeatureItem title="From Idea To Formula" image="/formulas.png">
 							<p>
 								Keep your composition ideas organized. Pick the composition
@@ -297,6 +368,7 @@ const MarketingHomePage = () => {
 								you have a formula you like.
 							</p>
 						</FeatureItem>
+
 						<FeatureItem title="Add-On Features">
 							<p>
 								Fumestory dashboard is customizable and lets you pick additional
@@ -311,6 +383,7 @@ const MarketingHomePage = () => {
 						</FeatureItem>
 					</div>
 				</div>
+
 				<div className={styles.roadmapContainer} id="roadmap">
 					<h2>Roadmap</h2>
 					<div className={styles.roadmapDescriptionContainer}>
@@ -323,24 +396,22 @@ const MarketingHomePage = () => {
 							upvote the ones you would like to see soonest.
 						</p>
 					</div>
+
 					<div className={styles.roadmapFeatures}>
-						<RoadmapFeature
-							title="Make Compositions Parent Wrapper"
-							upvotes={20}
-						/>
-						<RoadmapFeature title="Add Formulas Agent" upvotes={12} />
-						<RoadmapFeature
-							title="Add Blind Scent Test To Dilutions"
-							upvotes={8}
-						/>
-						<RoadmapFeature title="Add Dilution Total Weight" upvotes={5} />
-						<RoadmapFeature
-							title="Toggle Auto-remove  Weight From Dilution Total On Formula Creation"
-							upvotes={6}
-						/>
-					</div>
-					<div className={styles.roadmapButtonContainer}>
-						<button className={styles.roadmapButton}>Suggest Features</button>
+						{roadmapLoading ? (
+							<p>Loading roadmap...</p>
+						) : (
+							roadmapFeatures.map((feature) => (
+								<RoadmapFeature
+									key={feature.id}
+									title={feature.title}
+									upvotes={feature.upvotes}
+									hasUpvoted={feature.has_upvoted}
+									disabled={!isLoggedIn || pendingFeatureId === feature.id}
+									onToggle={() => handleToggleUpvote(feature.id)}
+								/>
+							))
+						)}
 					</div>
 				</div>
 			</div>
