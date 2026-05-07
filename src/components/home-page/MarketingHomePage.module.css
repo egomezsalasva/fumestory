@@ -459,3 +459,28 @@
 	padding: 0 1.5rem;
 	cursor: pointer;
 }
+
+.roadmapSpinner {
+	width: 1.125rem;
+	height: 1.125rem;
+	animation: roadmap-spin 0.8s linear infinite;
+}
+
+.roadmapSpinnerTrack {
+	fill: none;
+	stroke: rgba(245, 247, 250, 0.25);
+	stroke-width: 0.25rem;
+}
+
+.roadmapSpinnerHead {
+	fill: none;
+	stroke: #f5f7fa;
+	stroke-width: 0.25rem;
+	stroke-linecap: round;
+}
+
+@keyframes roadmap-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

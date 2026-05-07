@@ -102,34 +102,65 @@ const RoadmapFeature = ({
 	upvotes,
 	hasUpvoted,
 	disabled,
+	isPending,
 	onToggle,
 }: {
 	title: string;
 	upvotes: number;
 	hasUpvoted: boolean;
 	disabled: boolean;
+	isPending: boolean;
 	onToggle: () => void;
 }) => {
 	return (
 		<div className={styles.roadmapFeatureItem}>
 			<h3>{title}</h3>
 			<div className={styles.roadmapFeatureUpvotes}>
-				<p className={styles.roadmapFeatureUpvotesCount}>{upvotes}</p>
-				<button type="button" onClick={onToggle} disabled={disabled}>
-					<svg
-						width="18"
-						height="10"
-						viewBox="0 0 18 10"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
-							stroke={hasUpvoted ? "#7FD1A7" : "#F5F7FA"}
-							strokeWidth="2"
-							strokeLinecap="round"
-						/>
-					</svg>
+				<p
+					className={styles.roadmapFeatureUpvotesCount}
+					style={{ color: hasUpvoted ? "#0CCE6B" : "#F5F7FA" }}
+				>
+					{upvotes}
+				</p>
+				<button
+					type="button"
+					onClick={onToggle}
+					disabled={disabled}
+					style={{ borderColor: hasUpvoted ? "#0CCE6B" : "#F5F7FA" }}
+				>
+					{isPending ? (
+						<svg
+							className={styles.roadmapSpinner}
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<circle
+								cx="12"
+								cy="12"
+								r="10"
+								className={styles.roadmapSpinnerTrack}
+							/>
+							<path
+								d="M22 12a10 10 0 0 1-10 10"
+								className={styles.roadmapSpinnerHead}
+							/>
+						</svg>
+					) : (
+						<svg
+							width="18"
+							height="10"
+							viewBox="0 0 18 10"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
+								stroke={hasUpvoted ? "#0CCE6B" : "#F5F7FA"}
+								strokeWidth="2"
+								strokeLinecap="round"
+							/>
+						</svg>
+					)}
 				</button>
 			</div>
 		</div>
@@ -151,12 +182,16 @@ const MarketingHomePage = () => {
 	const loadRoadmap = async (cancelled?: () => boolean) => {
 		try {
 			setRoadmapLoading(true);
-			const response = await fetch("/api/roadmap");
+			const response = isLoggedIn
+				? await authedFetch("/api/roadmap")
+				: await fetch("/api/roadmap");
 			if (!response.ok) return;
 			const json = (await response.json()) as RoadmapGetResponse;
 			if (json.success && !(cancelled?.() ?? false)) {
 				setRoadmapFeatures(json.data);
 			}
+		} catch (error) {
+			console.error("Failed to load roadmap", error);
 		} finally {
 			if (!(cancelled?.() ?? false)) {
 				setRoadmapLoading(false);
@@ -188,7 +223,7 @@ const MarketingHomePage = () => {
 		return () => {
 			isCancelled = true;
 		};
-	}, []);
+	}, [isLoggedIn]);
 
 	const handleTabClick = (index: number) => {
 		setActiveIndex(index);
@@ -211,7 +246,7 @@ const MarketingHomePage = () => {
 			(await response.json()) as RoadmapToggleResponse;
 
 			// Refresh values from server truth, but keep current visible order.
-			const refreshResponse = await fetch("/api/roadmap");
+			const refreshResponse = await authedFetch("/api/roadmap");
 			if (!refreshResponse.ok) throw new Error("Refresh failed");
 
 			const refreshJson = (await refreshResponse.json()) as RoadmapGetResponse;
@@ -221,6 +256,8 @@ const MarketingHomePage = () => {
 					return prev.map((item) => byId.get(item.id) ?? item);
 				});
 			}
+		} catch (error) {
+			console.error("Failed to toggle roadmap upvote", error);
 		} finally {
 			setPendingFeatureId(null);
 		}
@@ -408,6 +445,7 @@ const MarketingHomePage = () => {
 									upvotes={feature.upvotes}
 									hasUpvoted={feature.has_upvoted}
 									disabled={!isLoggedIn || pendingFeatureId === feature.id}
+									isPending={pendingFeatureId === feature.id}
 									onToggle={() => handleToggleUpvote(feature.id)}
 								/>
 							))
