@@ -434,7 +434,7 @@
 	opacity: 0.75;
 }
 
-.roadmapFeatureUpvotes button:hover svg {
+.voteButton:hover .iconArrow svg {
 	transform: translateY(-2px);
 	opacity: 1;
 }
@@ -460,6 +460,39 @@
 	cursor: pointer;
 }
 
+.voteButton {
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 0.5rem;
+	background-color: transparent;
+	border: 2px solid #f5f7fa;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+}
+
+.iconArrow {
+	display: inline-flex;
+}
+
+.iconRemove {
+	display: none;
+}
+
+.iconRemove svg {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+.voteButton[data-upvoted="true"]:hover .iconArrow {
+	display: none;
+}
+
+.voteButton[data-upvoted="true"]:hover .iconRemove {
+	display: inline-flex;
+}
+
 .roadmapSpinner {
 	width: 1.125rem;
 	height: 1.125rem;
@@ -483,4 +516,41 @@
 	to {
 		transform: rotate(360deg);
 	}
+}
+
+.loginModalOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.loginModal {
+	width: min(28rem, 90vw);
+	background: #0f172a;
+	border: 1px solid rgba(245, 247, 250, 0.2);
+	border-radius: 0.75rem;
+	padding: 1.75rem;
+	text-align: center;
+}
+
+.loginModal h3 {
+	color: #f5f7fa;
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1.75rem;
+	line-height: 1.2;
+	margin-bottom: 1.75rem;
+}
+
+.loginModalButton {
+	margin: 0;
+	margin-left: 0;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { authedFetch } from "@/utils/authed-fetch";
 import type {
 	RoadmapItem,
@@ -42,6 +43,8 @@ const RoadmapFeature = ({
 					type="button"
 					onClick={onToggle}
 					disabled={disabled}
+					data-upvoted={hasUpvoted ? "true" : "false"}
+					className={styles.voteButton}
 					style={{ borderColor: hasUpvoted ? "#0CCE6B" : "#F5F7FA" }}
 				>
 					{isPending ? (
@@ -62,20 +65,41 @@ const RoadmapFeature = ({
 							/>
 						</svg>
 					) : (
-						<svg
-							width="18"
-							height="10"
-							viewBox="0 0 18 10"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
-								stroke={hasUpvoted ? "#0CCE6B" : "#F5F7FA"}
-								strokeWidth="2"
-								strokeLinecap="round"
-							/>
-						</svg>
+						<>
+							<span className={styles.iconArrow}>
+								<svg
+									width="18"
+									height="10"
+									viewBox="0 0 18 10"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
+										stroke={hasUpvoted ? "#0CCE6B" : "#F5F7FA"}
+										strokeWidth="2"
+										strokeLinecap="round"
+									/>
+								</svg>
+							</span>
+
+							<span className={styles.iconRemove}>
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 14 14"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M3 3L11 11M11 3L3 11"
+										stroke="#0CCE6B"
+										strokeWidth="2"
+										strokeLinecap="round"
+									/>
+								</svg>
+							</span>
+						</>
 					)}
 				</button>
 			</div>
@@ -90,6 +114,7 @@ const MarketingRoadmapSection = ({
 	const [roadmapFeatures, setRoadmapFeatures] = useState<RoadmapItem[]>([]);
 	const [roadmapLoading, setRoadmapLoading] = useState(true);
 	const [pendingFeatureId, setPendingFeatureId] = useState<number | null>(null);
+	const [showLoginModal, setShowLoginModal] = useState(false);
 
 	const loadRoadmap = async (cancelled?: () => boolean) => {
 		try {
@@ -120,8 +145,22 @@ const MarketingRoadmapSection = ({
 		};
 	}, [isLoggedIn]);
 
+	useEffect(() => {
+		if (!showLoginModal) return;
+
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	}, [showLoginModal]);
+
 	const handleToggleUpvote = async (featureId: number) => {
-		if (!isLoggedIn) return;
+		if (!isLoggedIn) {
+			setShowLoginModal(true);
+			return;
+		}
 
 		setPendingFeatureId(featureId);
 		try {
@@ -176,7 +215,7 @@ const MarketingRoadmapSection = ({
 							title={feature.title}
 							upvotes={feature.upvotes}
 							hasUpvoted={feature.has_upvoted}
-							disabled={!isLoggedIn || pendingFeatureId === feature.id}
+							disabled={pendingFeatureId === feature.id}
 							isPending={pendingFeatureId === feature.id}
 							onToggle={() => handleToggleUpvote(feature.id)}
 							styles={styles}
@@ -184,6 +223,31 @@ const MarketingRoadmapSection = ({
 					))
 				)}
 			</div>
+			{showLoginModal && (
+				<div
+					className={styles.loginModalOverlay}
+					onClick={() => setShowLoginModal(false)}
+				>
+					<div
+						className={styles.loginModal}
+						onClick={(e) => e.stopPropagation()}
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="login-required-title"
+					>
+						<h3 id="login-required-title">You must be logged in to upvote</h3>
+
+						<Link
+							to="/auth/$pathname"
+							params={{ pathname: "sign-in" }}
+							className={`${styles.loginModalButton} ${styles.linkButton}`}
+							onClick={() => setShowLoginModal(false)}
+						>
+							Login
+						</Link>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
