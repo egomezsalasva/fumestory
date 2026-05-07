@@ -1,0 +1,411 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { jsonResponse } from "@/utils/api";
+import { requireCurrentUserId } from "@/utils/current-user";
+import {
+	COMPOSITION_CHOICE,
+	createInitialCompositionConversationState,
+	type CompositionConversationState,
+} from "@/agent/composition-chat/flow";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+type ChatResponse = {
+	success: boolean;
+	reply: string;
+	interaction?: {
+		kind: "choice";
+		options: Array<{ id: string; label: string }>;
+	};
+	resetConversation?: boolean;
+};
+
+const memoryState = new Map<string, CompositionConversationState>();
+
+const getState = (userId: string) =>
+	memoryState.get(userId) ?? createInitialCompositionConversationState();
+
+const setState = (userId: string, state: CompositionConversationState) => {
+	memoryState.set(userId, state);
+};
+
+const resetState = (userId: string) => {
+	const next = createInitialCompositionConversationState();
+	memoryState.set(userId, next);
+	return next;
+};
+
+const choices = (
+	options: Array<{ id: string; label: string }>,
+): ChatResponse["interaction"] => ({ kind: "choice", options });
+
+const questionFor = (state: CompositionConversationState): ChatResponse => {
+	switch (state.step) {
+		case "pick_target":
+			return {
+				success: true,
+				reply: "Do you want to create an accord or a perfume?",
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.ACCORD, label: "Accord" },
+					{ id: COMPOSITION_CHOICE.PERFUME, label: "Perfume" },
+				]),
+			};
+
+		case "describe_accord_idea":
+			return {
+				success: true,
+				reply: "What accord idea do you want? (e.g., strawberry accord)",
+			};
+
+		case "pick_perfume_intent":
+			return {
+				success: true,
+				reply:
+					"Do you want to make a perfume replica or start from an idea/concept?",
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.REPLICA, label: "Replica" },
+					{ id: COMPOSITION_CHOICE.IDEA, label: "Idea / Concept" },
+				]),
+			};
+
+		case "pick_perfume_replica_mode":
+			return {
+				success: true,
+				reply: "Do you want an accurate replica or a modified replica?",
+				interaction: choices([
+					{
+						id: COMPOSITION_CHOICE.ACCURATE_REPLICA,
+						label: "Accurate replica",
+					},
+					{
+						id: COMPOSITION_CHOICE.MODIFIED_REPLICA,
+						label: "Modified replica",
+					},
+				]),
+			};
+
+		case "describe_perfume_reference":
+			return {
+				success: true,
+				reply: "What perfume do you want to replicate? (e.g., Chanel N°5)",
+			};
+
+		case "describe_perfume_modification":
+			return {
+				success: true,
+				reply: "What do you want to modify? (e.g., make it more masculine)",
+			};
+
+		case "describe_perfume_idea":
+			return {
+				success: true,
+				reply: "Describe your perfume idea/concept.",
+			};
+
+		case "pick_inventory_mode":
+			return {
+				success: true,
+				reply:
+					"How should I handle materials: strictly from your inventory, inventory-first with guided additions, or best overall suggestions?",
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.INVENTORY_ONLY, label: "Inventory only" },
+					{
+						id: COMPOSITION_CHOICE.INVENTORY_GUIDED,
+						label: "Inventory first (guided additions)",
+					},
+					{ id: COMPOSITION_CHOICE.SUGGEST_ANY, label: "Suggest best overall" },
+				]),
+			};
+
+		case "review_formula":
+			return {
+				success: true,
+				reply: "Formula generated. Choose Start over to generate another one.",
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
+				]),
+			};
+	}
+
+	return {
+		success: true,
+		reply: "Do you want to create an accord or a perfume?",
+		interaction: choices([
+			{ id: COMPOSITION_CHOICE.ACCORD, label: "Accord" },
+			{ id: COMPOSITION_CHOICE.PERFUME, label: "Perfume" },
+		]),
+	};
+};
+
+const buildContextSummary = (state: CompositionConversationState): string => {
+	const lines: string[] = [];
+
+	lines.push(`Target: ${state.target ?? "unknown"}`);
+	lines.push(`Inventory mode: ${state.inventoryMode ?? "unknown"}`);
+
+	if (state.target === "accord") {
+		lines.push(`Accord idea: ${state.accordIdea ?? "not provided"}`);
+	}
+
+	if (state.target === "perfume") {
+		lines.push(`Perfume intent: ${state.perfumeIntent ?? "unknown"}`);
+
+		if (state.perfumeIntent === "replica") {
+			lines.push(`Replica mode: ${state.perfumeReplicaMode ?? "unknown"}`);
+			lines.push(
+				`Reference perfume: ${state.perfumeReference ?? "not provided"}`,
+			);
+			if (state.perfumeReplicaMode === "modified_replica") {
+				lines.push(
+					`Requested modification: ${state.perfumeModificationRequest ?? "not provided"}`,
+				);
+			}
+		}
+
+		if (state.perfumeIntent === "idea") {
+			lines.push(`Perfume idea: ${state.perfumeIdea ?? "not provided"}`);
+		}
+	}
+
+	return lines.map((l) => `- ${l}`).join("\n");
+};
+
+const generateFormulaSuggestion = async (
+	state: CompositionConversationState,
+): Promise<string> => {
+	const system = `You are a senior perfumer helping draft starter formulas.
+
+Rules:
+- Stay strictly within perfumery/formulation context.
+- Provide a practical starter formula, not a final formula.
+- Include dilution suggestions per material where helpful.
+- Keep total formula percentages approximately 100%.
+- If details are missing, make reasonable assumptions and state them briefly.
+- Inventory handling:
+  - inventory_only: use only materials presumed in the user's inventory.
+  - inventory_guided: prioritize inventory, but include suggested additions/substitutions where needed.
+  - suggest_any: suggest best overall materials regardless of inventory.
+- Output clean markdown only.`;
+
+	const prompt = `Create a starter ${
+		state.target === "accord" ? "accord" : "perfume"
+	} formula from this context:
+
+${buildContextSummary(state)}
+
+Return markdown with:
+1) A brief rationale
+2) Starter formula as bullet list with material, dilution, and %
+3) 2-4 quick adjustment tips`;
+
+	const result = await generateText({
+		model: openai("gpt-4o-mini"),
+		system,
+		prompt,
+	});
+
+	return (
+		result.text?.trim() || "I couldn't generate a formula suggestion right now."
+	);
+};
+
+export const Route = createFileRoute("/api/agent/composition-chat")({
+	server: {
+		handlers: {
+			POST: async ({ request }) => {
+				const auth = requireCurrentUserId(request);
+				if (auth.errorResponse) return auth.errorResponse;
+				const userId = auth.userId!;
+
+				const body = await request.json().catch(() => ({}));
+				const choiceId =
+					typeof body?.choiceId === "string" ? body.choiceId : undefined;
+				const message =
+					typeof body?.message === "string" ? body.message.trim() : "";
+
+				if (choiceId === COMPOSITION_CHOICE.START_OVER) {
+					const state = resetState(userId);
+					return jsonResponse(
+						{ ...questionFor(state), resetConversation: true },
+						200,
+					);
+				}
+
+				let state = getState(userId);
+
+				if (!choiceId && !message) {
+					setState(userId, state);
+					return jsonResponse(questionFor(state), 200);
+				}
+
+				switch (state.step) {
+					case "pick_target": {
+						if (
+							choiceId !== COMPOSITION_CHOICE.ACCORD &&
+							choiceId !== COMPOSITION_CHOICE.PERFUME
+						) {
+							return jsonResponse(questionFor(state), 200);
+						}
+
+						if (choiceId === COMPOSITION_CHOICE.ACCORD) {
+							state = {
+								...state,
+								target: "accord",
+								step: "describe_accord_idea",
+							};
+						} else {
+							state = {
+								...state,
+								target: "perfume",
+								step: "pick_perfume_intent",
+							};
+						}
+						break;
+					}
+
+					case "describe_accord_idea": {
+						if (!message) return jsonResponse(questionFor(state), 200);
+						state = {
+							...state,
+							accordIdea: message,
+							step: "pick_inventory_mode",
+						};
+						break;
+					}
+
+					case "pick_perfume_intent": {
+						if (choiceId === COMPOSITION_CHOICE.REPLICA) {
+							state = {
+								...state,
+								perfumeIntent: "replica",
+								step: "pick_perfume_replica_mode",
+							};
+						} else if (choiceId === COMPOSITION_CHOICE.IDEA) {
+							state = {
+								...state,
+								perfumeIntent: "idea",
+								step: "describe_perfume_idea",
+							};
+						} else {
+							return jsonResponse(questionFor(state), 200);
+						}
+						break;
+					}
+
+					case "pick_perfume_replica_mode": {
+						if (
+							choiceId !== COMPOSITION_CHOICE.ACCURATE_REPLICA &&
+							choiceId !== COMPOSITION_CHOICE.MODIFIED_REPLICA
+						) {
+							return jsonResponse(questionFor(state), 200);
+						}
+						state = {
+							...state,
+							perfumeReplicaMode:
+								choiceId === COMPOSITION_CHOICE.ACCURATE_REPLICA
+									? "accurate_replica"
+									: "modified_replica",
+							step: "describe_perfume_reference",
+						};
+						break;
+					}
+
+					case "describe_perfume_reference": {
+						if (!message) return jsonResponse(questionFor(state), 200);
+
+						if (state.perfumeReplicaMode === "modified_replica") {
+							state = {
+								...state,
+								perfumeReference: message,
+								step: "describe_perfume_modification",
+							};
+						} else {
+							state = {
+								...state,
+								perfumeReference: message,
+								step: "pick_inventory_mode",
+							};
+						}
+						break;
+					}
+
+					case "describe_perfume_modification": {
+						if (!message) return jsonResponse(questionFor(state), 200);
+						state = {
+							...state,
+							perfumeModificationRequest: message,
+							step: "pick_inventory_mode",
+						};
+						break;
+					}
+
+					case "describe_perfume_idea": {
+						if (!message) return jsonResponse(questionFor(state), 200);
+						state = {
+							...state,
+							perfumeIdea: message,
+							step: "pick_inventory_mode",
+						};
+						break;
+					}
+
+					case "pick_inventory_mode": {
+						if (
+							choiceId !== COMPOSITION_CHOICE.INVENTORY_ONLY &&
+							choiceId !== COMPOSITION_CHOICE.INVENTORY_GUIDED &&
+							choiceId !== COMPOSITION_CHOICE.SUGGEST_ANY
+						) {
+							return jsonResponse(questionFor(state), 200);
+						}
+
+						state = {
+							...state,
+							inventoryMode:
+								choiceId === COMPOSITION_CHOICE.INVENTORY_ONLY
+									? "inventory_only"
+									: choiceId === COMPOSITION_CHOICE.INVENTORY_GUIDED
+										? "inventory_guided"
+										: "suggest_any",
+							step: "review_formula",
+						};
+
+						setState(userId, state);
+
+						try {
+							const reply = await generateFormulaSuggestion(state);
+							return jsonResponse(
+								{
+									success: true,
+									reply,
+									interaction: choices([
+										{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
+									]),
+								},
+								200,
+							);
+						} catch (error) {
+							console.error(
+								"[composition-chat] formula generation failed:",
+								error,
+							);
+							return jsonResponse(
+								{
+									success: false,
+									reply:
+										"Sorry, I encountered an error generating the formula. Please try again.",
+								},
+								500,
+							);
+						}
+					}
+
+					case "review_formula": {
+						return jsonResponse(questionFor(state), 200);
+					}
+				}
+
+				setState(userId, state);
+				return jsonResponse(questionFor(state), 200);
+			},
+		},
+	},
+});

@@ -6,6 +6,7 @@ import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields"
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
 	component: AddComposition,
@@ -65,47 +66,57 @@ function AddComposition() {
 			title="Compositions / Add Composition"
 			backButton={{ to: "/compositions" }}
 		>
-			<form
-				onSubmit={handleSubmit}
-				className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700 max-w-170 mx-auto"
-			>
-				<TextInput
-					label="Composition Name"
-					value={name}
-					onChange={setName}
-					placeholder="e.g., Trial 1, My Accord"
-				/>
+			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
+				<div className="w-full max-w-170 mx-auto">
+					<form
+						onSubmit={handleSubmit}
+						className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
+					>
+						<TextInput
+							label="Composition Name"
+							value={name}
+							onChange={setName}
+							placeholder="e.g., Trial 1, My Accord"
+						/>
 
-				<Select
-					label="Composition Type"
-					value={type}
-					onChange={(value) => setType(value as typeof type)}
-					options={[
-						{ value: "trial", label: "Trial" },
-						{ value: "accord", label: "Accord" },
-						{ value: "perfume", label: "Perfume" },
-					]}
-				/>
+						<Select
+							label="Composition Type"
+							value={type}
+							onChange={(value) => setType(value as typeof type)}
+							options={[
+								{ value: "trial", label: "Trial" },
+								{ value: "accord", label: "Accord" },
+								{ value: "perfume", label: "Perfume" },
+							]}
+						/>
 
-				<FormulaIngredientsFields onIngredientsChange={setIngredients} />
+						<FormulaIngredientsFields onIngredientsChange={setIngredients} />
 
-				<button
-					type="submit"
-					disabled={!name || isSubmitting}
-					className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-					{isSubmitting ? "Submitting..." : "Create Composition"}
-				</button>
-			</form>
+						<button
+							type="submit"
+							disabled={!name || isSubmitting}
+							className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{isSubmitting ? "Submitting..." : "Create Composition"}
+						</button>
+					</form>
+				</div>
+
+				<div className="hidden xl:block min-h-0">
+					<div className="sticky top-0 h-full min-h-0">
+						<CompositionAgentPanel />
+					</div>
+				</div>
+			</div>
 
 			{error && (
-				<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+				<div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
 					{error}
 				</div>
 			)}
 
 			{success && (
-				<div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+				<div className="mt-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
 					Composition created successfully!
 				</div>
 			)}
