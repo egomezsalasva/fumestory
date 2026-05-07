@@ -21,6 +21,11 @@ type ChatPanelProps = {
 	className?: string;
 	choiceOptions?: ChatChoiceOption[] | null;
 	onChoice?: (optionId: string) => void | Promise<void>;
+	footerAction?: {
+		label: string;
+		onClick: () => void | Promise<void>;
+		disabled?: boolean;
+	} | null;
 };
 
 export function ChatPanel({
@@ -33,6 +38,7 @@ export function ChatPanel({
 	className = "",
 	choiceOptions = null,
 	onChoice,
+	footerAction = null,
 }: ChatPanelProps) {
 	const [input, setInput] = useState("");
 	const [choiceFocusIndex, setChoiceFocusIndex] = useState(0);
@@ -213,19 +219,29 @@ export function ChatPanel({
 						</div>
 					</div>
 				) : (
-					<form
-						onSubmit={handleSubmit}
-						className="p-4 border-t border-slate-700"
-					>
-						<input
-							type="text"
-							value={input}
-							onChange={(e) => setInput(e.target.value)}
-							placeholder={placeholder}
-							disabled={isLoading}
-							className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none cursor-text disabled:opacity-50"
-						/>
-					</form>
+					<div className="p-4 border-t border-slate-700">
+						{footerAction ? (
+							<button
+								type="button"
+								onClick={() => void footerAction.onClick()}
+								disabled={isLoading || footerAction.disabled}
+								className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								{footerAction.label}
+							</button>
+						) : (
+							<form onSubmit={handleSubmit}>
+								<input
+									type="text"
+									value={input}
+									onChange={(e) => setInput(e.target.value)}
+									placeholder={placeholder}
+									disabled={isLoading}
+									className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none cursor-text disabled:opacity-50"
+								/>
+							</form>
+						)}
+					</div>
 				)}
 			</div>
 		</div>

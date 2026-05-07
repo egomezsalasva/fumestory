@@ -42,6 +42,25 @@ export function RawMaterialAgentPanel({
 	>(null);
 	const [pendingProposal, setPendingProposal] =
 		useState<RawMaterialProposal | null>(null);
+	const [showAddNewMaterialAction, setShowAddNewMaterialAction] =
+		useState(false);
+
+	const resetConversation = () => {
+		setChoiceOptions(null);
+		setPendingProposal(null);
+		setPendingMaterialQuery(null);
+		setShowAddNewMaterialAction(false);
+		setMessages([
+			{
+				role: "assistant",
+				content: "What raw material do you want to add?",
+			},
+		]);
+	};
+
+	const handleAddNewMaterialClick = () => {
+		resetConversation();
+	};
 
 	const sendToApi = async (body: Record<string, string>) => {
 		const response = await authedFetch("/api/agent/raw-material-chat", {
@@ -85,6 +104,7 @@ export function RawMaterialAgentPanel({
 	};
 
 	const handleSendMessage = async (message: string) => {
+		setShowAddNewMaterialAction(false);
 		setMessages((prev) => [...prev, { role: "user", content: message }]);
 		setIsLoading(true);
 		setPendingMaterialQuery(message);
@@ -118,19 +138,12 @@ export function RawMaterialAgentPanel({
 			onApplyProposal(pendingProposal);
 			setPendingProposal(null);
 			setPendingMaterialQuery(null);
+			setShowAddNewMaterialAction(true);
 			return;
 		}
 
 		if (choiceId === "different_material") {
-			setChoiceOptions(null);
-			setPendingProposal(null);
-			setPendingMaterialQuery(null);
-			setMessages([
-				{
-					role: "assistant",
-					content: "What raw material do you want to add?",
-				},
-			]);
+			resetConversation();
 			return;
 		}
 
@@ -162,6 +175,9 @@ export function RawMaterialAgentPanel({
 		setMessages((prev) => [...prev, { role: "user", content: label }]);
 		try {
 			await sendToApi({ message: query, choiceId });
+			if (choiceId === "yes") {
+				setShowAddNewMaterialAction(true);
+			}
 		} catch {
 			setMessages((prev) => [
 				...prev,
@@ -184,6 +200,15 @@ export function RawMaterialAgentPanel({
 			choiceOptions={choiceOptions}
 			onChoice={handleChoice}
 			className="h-full min-h-0"
+			footerAction={
+				showAddNewMaterialAction
+					? {
+							label: "Add new material",
+							onClick: handleAddNewMaterialClick,
+							disabled: isLoading,
+						}
+					: null
+			}
 		/>
 	);
 }
