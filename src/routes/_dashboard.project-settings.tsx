@@ -9,7 +9,7 @@ function RouteComponent() {
 	return (
 		<DashboardLayout title="Project Settings">
 			<div className="w-full max-w-170 mx-auto">
-				<div className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6">
+				{/* <div className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6">
 					<h2 className="text-lg font-medium text-white mb-4">
 						Project Settings
 					</h2>
@@ -132,7 +132,7 @@ function RouteComponent() {
 							</li>
 						</ul>
 					</div>
-				</div>
+				</div> */}
 				<div
 					className="p-6 bg-slate-800 rounded-lg border border-slate-700"
 					id="add-on-features"
@@ -143,16 +143,16 @@ function RouteComponent() {
 					<ul className="space-y-2">
 						<li>
 							<label>
-								<input type="checkbox" className="mr-2" checked />
+								<input type="checkbox" className="mr-2" />
 								Guest Feedback
 							</label>
 						</li>
-						<li>
+						{/* <li>
 							<label>
 								<input type="checkbox" className="mr-2" />
 								Blind Scent Test
 							</label>
-						</li>
+						</li> */}
 					</ul>
 				</div>
 			</div>

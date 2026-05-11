@@ -12,7 +12,7 @@ import CompositionIcon from "./svgs/CompositionIcon";
 import BoxIcon from "./svgs/BoxIcon";
 import LayersIcon from "./svgs/LayersIcon";
 import CupIcon from "./svgs/CupIcon";
-// import CogIcon from "../svgs/CogIcon";
+import CogIcon from "../svgs/CogIcon";
 // import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
 import { useState } from "react";
@@ -144,7 +144,7 @@ const SideNav = () => {
 							/>
 						</div>
 					</div>
-					{/* <div className={styles.navBodySection}>
+					<div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>PROJECT</div>
 						<div className={styles.navBodySectionItems}>
 							<NavBodySectionItem
@@ -152,14 +152,14 @@ const SideNav = () => {
 								to="/project-settings"
 								title="Settings"
 							/>
-							<NavBodySectionItem
+							{/* <NavBodySectionItem
 								icon={<StarIcon />}
 								to="/project-settings"
 								hash="#add-on-features"
 								title="Add-on Features"
-							/>
+							/> */}
 						</div>
-					</div> */}
+					</div>
 				</div>
 			</nav>
 			<div className={styles.navFooter}>
