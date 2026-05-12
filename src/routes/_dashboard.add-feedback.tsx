@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect, useLayoutEffect } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { TextInput } from "@/components/TextInput";
 import { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 export const Route = createFileRoute("/_dashboard/add-feedback")({
@@ -21,6 +22,43 @@ function AddFeedback() {
 	const [availableDilutions, setAvailableDilutions] = useState<Dilution[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [guestFeedbackAllowed, setGuestFeedbackAllowed] = useState<
+		boolean | null
+	>(null);
+
+	// Client-only: session must be ready; beforeLoad/SSR ran too early for authedFetch.
+	useLayoutEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as {
+					data?: UserSettingsEffective;
+				};
+				if (cancelled) return;
+				if (!res.ok || !json.data?.guest_feedback_enabled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+					return;
+				}
+				setGuestFeedbackAllowed(true);
+			} catch {
+				if (!cancelled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+				}
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [navigate]);
 
 	// Fetch dilutions when material is selected
 	useEffect(() => {
@@ -86,6 +124,17 @@ function AddFeedback() {
 			setLoading(false);
 		}
 	};
+
+	if (guestFeedbackAllowed !== true) {
+		return (
+			<DashboardLayout
+				title="Raw Materials Inventory / Add Feedback"
+				backButton={{ to: "/inventory" }}
+			>
+				<></>
+			</DashboardLayout>
+		);
+	}
 
 	return (
 		<DashboardLayout

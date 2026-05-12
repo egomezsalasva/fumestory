@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
+import { Route as ApiUserSettingsRouteImport } from './routes/api.user-settings'
 import { Route as ApiRoadmapRouteImport } from './routes/api.roadmap'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
@@ -46,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
   id: '/auth/$pathname',
   path: '/auth/$pathname',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUserSettingsRoute = ApiUserSettingsRouteImport.update({
+  id: '/api/user-settings',
+  path: '/api/user-settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRoadmapRoute = ApiRoadmapRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
   '/_dashboard/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/user-settings'
     | '/auth/$pathname'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/user-settings'
     | '/auth/$pathname'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/user-settings'
     | '/auth/$pathname'
     | '/_dashboard/account/$pathname'
     | '/_dashboard/add-formula/$compositionId'
@@ -326,6 +338,7 @@ export interface RootRouteChildren {
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   ApiRoadmapRoute: typeof ApiRoadmapRoute
+  ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
   ApiAgentCompositionChatRoute: typeof ApiAgentCompositionChatRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/$pathname'
       fullPath: '/auth/$pathname'
       preLoaderRoute: typeof AuthPathnameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user-settings': {
+      id: '/api/user-settings'
+      path: '/api/user-settings'
+      fullPath: '/api/user-settings'
+      preLoaderRoute: typeof ApiUserSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/roadmap': {
@@ -560,6 +580,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   ApiRoadmapRoute: ApiRoadmapRoute,
+  ApiUserSettingsRoute: ApiUserSettingsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
   ApiAgentCompositionChatRoute: ApiAgentCompositionChatRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,

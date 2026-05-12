@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useEffect, useState, useCallback } from "react";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { Dilution } from "./api.dilutions";
 import { FeedbackWithNotes } from "./api.feedback";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 export const Route = createFileRoute(
@@ -22,6 +23,27 @@ function ManageDilutions() {
 		{},
 	);
 	const [loading, setLoading] = useState(false);
+	const [guestFeedbackEnabled, setGuestFeedbackEnabled] = useState<
+		boolean | null
+	>(null);
+
+	const loadGuestFeedbackSetting = useCallback(async () => {
+		try {
+			const res = await authedFetch("/api/user-settings");
+			const json = (await res.json()) as { data?: UserSettingsEffective };
+			if (res.ok && json.data) {
+				setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
+			} else {
+				setGuestFeedbackEnabled(false);
+			}
+		} catch {
+			setGuestFeedbackEnabled(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		void loadGuestFeedbackSetting();
+	}, [loadGuestFeedbackSetting]);
 
 	useEffect(() => {
 		// Fetch all dilutions for this material
@@ -35,9 +57,6 @@ function ManageDilutions() {
 					(d) => d.raw_material_id === Number(materialId),
 				);
 				setDilutions(filtered);
-				if (filtered.length > 0) {
-					fetchFeedback(filtered.map((d) => d.id));
-				}
 			})
 			.catch((err) => console.error("Error:", err));
 
@@ -47,7 +66,8 @@ function ManageDilutions() {
 			.then((data) => {
 				const materials = Array.isArray(data?.data) ? data.data : [];
 				const material = materials.find(
-					(m: any) => m.id === Number(materialId),
+					(m: { id: number; name: string; label: string }) =>
+						m.id === Number(materialId),
 				);
 				if (material) {
 					setMaterialName(material.name);
@@ -56,6 +76,43 @@ function ManageDilutions() {
 			})
 			.catch((err) => console.error("Error:", err));
 	}, [materialId]);
+
+	useEffect(() => {
+		if (guestFeedbackEnabled === false) {
+			setFeedback({});
+			return;
+		}
+		if (guestFeedbackEnabled !== true || dilutions.length === 0) {
+			return;
+		}
+
+		let cancelled = false;
+		const dilutionIds = dilutions.map((d) => d.id);
+
+		void (async () => {
+			const feedbackData: Record<number, FeedbackWithNotes[]> = {};
+
+			for (const id of dilutionIds) {
+				if (cancelled) return;
+				try {
+					const response = await authedFetch(`/api/feedback?dilutionId=${id}`);
+					const data = await response.json();
+					feedbackData[id] = data.data || [];
+				} catch (err) {
+					console.error(`Error fetching feedback for dilution ${id}:`, err);
+					feedbackData[id] = [];
+				}
+			}
+
+			if (!cancelled) {
+				setFeedback(feedbackData);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [dilutions, guestFeedbackEnabled]);
 
 	const toggleAvailability = async (
 		dilutionId: number,
@@ -90,29 +147,20 @@ function ManageDilutions() {
 		}
 	};
 
-	const fetchFeedback = async (dilutionIds: number[]) => {
-		const feedbackData: Record<number, FeedbackWithNotes[]> = {};
-
-		for (const id of dilutionIds) {
-			try {
-				const response = await authedFetch(`/api/feedback?dilutionId=${id}`);
-				const data = await response.json();
-				feedbackData[id] = data.data || [];
-			} catch (err) {
-				console.error(`Error fetching feedback for dilution ${id}:`, err);
-				feedbackData[id] = [];
-			}
-		}
-
-		setFeedback(feedbackData);
-	};
-
 	return (
 		<DashboardLayout
 			title="Raw Materials Inventory / Manage Dilutions"
 			backButton={{ to: "/inventory" }}
 		>
 			<div className="space-y-3 max-w-200 mx-auto">
+				{(materialLabel || materialName) && (
+					<p className="text-slate-300 mb-4">
+						<span className="text-white font-medium">{materialLabel}</span>
+						{materialName ? (
+							<span className="text-slate-400"> — {materialName}</span>
+						) : null}
+					</p>
+				)}
 				{dilutions.length === 0 ? (
 					<p className="text-slate-400">No dilutions found</p>
 				) : (
@@ -159,34 +207,36 @@ function ManageDilutions() {
 								</div>
 							</div>
 
-							{/* Feedback Section */}
-							{feedback[dilution.id] && feedback[dilution.id].length > 0 && (
-								<div className="pt-3 border-t border-slate-700">
-									<h3 className="text-sm font-semibold text-slate-300 mb-2">
-										Feedback ({feedback[dilution.id].length})
-									</h3>
-									<div className="space-y-2">
-										{feedback[dilution.id].map((fb) => (
-											<div
-												key={fb.id}
-												className="text-sm bg-slate-700/50 p-3 rounded"
-											>
-												<div className="flex justify-between items-start mb-1">
-													<span className="font-medium text-blue-300">
-														{fb.person_name}
-													</span>
-													<span className="text-xs text-slate-400">
-														{new Date(fb.created_at).toLocaleDateString()}
-													</span>
+							{/* Feedback Section (guest add-on) */}
+							{guestFeedbackEnabled === true &&
+								feedback[dilution.id] &&
+								feedback[dilution.id].length > 0 && (
+									<div className="pt-3 border-t border-slate-700">
+										<h3 className="text-sm font-semibold text-slate-300 mb-2">
+											Feedback ({feedback[dilution.id].length})
+										</h3>
+										<div className="space-y-2">
+											{feedback[dilution.id].map((fb) => (
+												<div
+													key={fb.id}
+													className="text-sm bg-slate-700/50 p-3 rounded"
+												>
+													<div className="flex justify-between items-start mb-1">
+														<span className="font-medium text-blue-300">
+															{fb.person_name}
+														</span>
+														<span className="text-xs text-slate-400">
+															{new Date(fb.created_at).toLocaleDateString()}
+														</span>
+													</div>
+													<div className="text-slate-300">
+														Notes: {fb.notes.join(", ")}
+													</div>
 												</div>
-												<div className="text-slate-300">
-													Notes: {fb.notes.join(", ")}
-												</div>
-											</div>
-										))}
+											))}
+										</div>
 									</div>
-								</div>
-							)}
+								)}
 						</div>
 					))
 				)}

@@ -15,7 +15,12 @@ import CupIcon from "./svgs/CupIcon";
 import CogIcon from "../svgs/CogIcon";
 // import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { authedFetch } from "@/utils/authed-fetch";
+import {
+	USER_SETTINGS_UPDATED_EVENT,
+	type UserSettingsEffective,
+} from "@/utils/user-settings";
 
 const NavBodySectionItem: React.FC<{
 	icon: React.ReactNode;
@@ -49,6 +54,40 @@ const NavBodySectionItem: React.FC<{
 
 const SideNav = () => {
 	const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+	const [guestFeedbackEnabled, setGuestFeedbackEnabled] = useState<
+		boolean | null
+	>(null);
+
+	const loadGuestFeedbackSetting = useCallback(async () => {
+		try {
+			const res = await authedFetch("/api/user-settings");
+			const json = (await res.json()) as {
+				data?: UserSettingsEffective;
+			};
+			if (res.ok && json.data) {
+				setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
+			} else {
+				setGuestFeedbackEnabled(false);
+			}
+		} catch {
+			setGuestFeedbackEnabled(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		void loadGuestFeedbackSetting();
+	}, [loadGuestFeedbackSetting]);
+
+	useEffect(() => {
+		const handler = () => {
+			void loadGuestFeedbackSetting();
+		};
+		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, handler);
+		return () => {
+			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, handler);
+		};
+	}, [loadGuestFeedbackSetting]);
+
 	const navigate = useNavigate();
 	const handleSignOut = async () => {
 		await authClient.signOut();
@@ -136,12 +175,14 @@ const SideNav = () => {
 								to="/add-dilution"
 								title="Add Dilution"
 							/>
-							<NavBodySectionItem
-								icon={<CupIcon />}
-								to="/add-feedback"
-								title="Guest Feedback"
-								addOnPill
-							/>
+							{guestFeedbackEnabled === true && (
+								<NavBodySectionItem
+									icon={<CupIcon />}
+									to="/add-feedback"
+									title="Guest Feedback"
+									addOnPill
+								/>
+							)}
 						</div>
 					</div>
 					<div className={styles.navBodySection}>

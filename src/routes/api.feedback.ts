@@ -1,5 +1,10 @@
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import {
+	effectiveUserSettings,
+	parseUserSettingsJson,
+	type UserSettingsRow,
+} from "@/utils/user-settings";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
@@ -127,6 +132,28 @@ export const Route = createFileRoute("/api/feedback")({
 					if (ownsDilution.length === 0) {
 						return jsonResponse(
 							{ error: "Not allowed for this dilution" },
+							403,
+						);
+					}
+
+					const settingsTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(`SELECT settings FROM user_settings WHERE user_id = $1`, [
+							currentUserId,
+						]),
+					]);
+					const settingsRows = settingsTx[1] as UserSettingsRow[];
+					const storedSettings = parseUserSettingsJson(
+						settingsRows[0]?.settings,
+					);
+					if (!effectiveUserSettings(storedSettings).guest_feedback_enabled) {
+						return jsonResponse(
+							{
+								error:
+									"Guest feedback is turned off in Project Settings → Add-on Features",
+							},
 							403,
 						);
 					}
