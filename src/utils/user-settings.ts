@@ -6,6 +6,7 @@ export const INVENTORY_COLUMN_IDS = [
 	"material_nature",
 	"category_name",
 	"note_type",
+	"notes_display",
 ] as const;
 export type InventoryColumnId = (typeof INVENTORY_COLUMN_IDS)[number];
 
@@ -33,6 +34,7 @@ const inventoryColumnsPatchSchema = z.object({
 	material_nature: z.boolean().optional(),
 	category_name: z.boolean().optional(),
 	note_type: z.boolean().optional(),
+	notes_display: z.boolean().optional(),
 });
 
 export const patchUserSettingsSchema = z
@@ -100,6 +102,7 @@ function effectiveInventoryColumns(
 		material_nature: true,
 		category_name: true,
 		note_type: true,
+		notes_display: true,
 	};
 	if (!stored) {
 		return defaults;
