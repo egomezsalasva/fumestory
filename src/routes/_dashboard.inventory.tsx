@@ -28,6 +28,9 @@ function App() {
 	const [guestFeedbackEnabled, setGuestFeedbackEnabled] = useState<
 		boolean | null
 	>(null);
+	const [guestFeedbackAggregateNote, setGuestFeedbackAggregateNote] = useState<
+		boolean | null
+	>(null);
 	const [showInventoryLabelColumn, setShowInventoryLabelColumn] = useState<
 		boolean | null
 	>(null);
@@ -50,7 +53,9 @@ function App() {
 		guestFeedbackEnabled === true
 			? "with_guest_feedback"
 			: "without_guest_feedback";
-	const includeGuestFeedbackInNotes = notesDisplay === "with_guest_feedback";
+	const includeGuestFeedbackInNotes =
+		notesDisplay === "with_guest_feedback" &&
+		guestFeedbackAggregateNote !== false;
 
 	const loadUserSettings = useCallback(() => {
 		authedFetch("/api/user-settings")
@@ -58,6 +63,9 @@ function App() {
 			.then((json: { data?: UserSettingsEffective }) => {
 				if (json.data) {
 					setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
+					setGuestFeedbackAggregateNote(
+						json.data.guest_feedback_aggregate_note,
+					);
 					setShowInventoryLabelColumn(json.data.inventory_columns.label);
 					setShowInventoryMaterialNatureColumn(
 						json.data.inventory_columns.material_nature,
@@ -74,6 +82,7 @@ function App() {
 					);
 				} else {
 					setGuestFeedbackEnabled(false);
+					setGuestFeedbackAggregateNote(true);
 					setShowInventoryLabelColumn(true);
 					setShowInventoryMaterialNatureColumn(true);
 					setShowInventoryCategoryNameColumn(true);
@@ -84,6 +93,7 @@ function App() {
 			})
 			.catch(() => {
 				setGuestFeedbackEnabled(false);
+				setGuestFeedbackAggregateNote(true);
 				setShowInventoryLabelColumn(true);
 				setShowInventoryMaterialNatureColumn(true);
 				setShowInventoryCategoryNameColumn(true);
@@ -273,6 +283,7 @@ function App() {
 		return cols as ColDef<RawMaterial>[];
 	}, [
 		includeGuestFeedbackInNotes,
+		guestFeedbackAggregateNote,
 		showInventoryLabelColumn,
 		showInventoryMaterialNatureColumn,
 		showInventoryCategoryNameColumn,

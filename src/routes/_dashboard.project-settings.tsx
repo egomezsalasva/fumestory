@@ -262,6 +262,33 @@ function RouteComponent() {
 								</label>
 							</li>
 							<li>
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null &&
+										settings.guest_feedback_enabled === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
+									<input
+										type="checkbox"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={settings?.guest_feedback_aggregate_note ?? false}
+										disabled={
+											settings === null ||
+											saving ||
+											!settings.guest_feedback_enabled
+										}
+										onChange={(e) => {
+											void patchUserSettings({
+												guest_feedback_aggregate_note: e.target.checked,
+											});
+										}}
+									/>
+									Show Aggregated Note Counts From Guest Feedback
+								</label>
+							</li>
+							<li>
 								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
 									<input
 										type="checkbox"
@@ -281,6 +308,27 @@ function RouteComponent() {
 									Show Dilutions Available Column
 								</label>
 							</li>
+							{/* <li>
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null &&
+										settings.inventory_columns.available_dilutions === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
+									<input
+										type="checkbox"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										disabled={
+											settings === null ||
+											saving ||
+											settings.inventory_columns.available_dilutions === false
+										}
+									/>
+									Hide Raw Materials Without Available Dilutions
+								</label>
+							</li> */}
 						</ul>
 					</div>
 				</div>

@@ -18,11 +18,13 @@ export type InventoryColumnsEffective = Record<InventoryColumnId, boolean>;
 
 export type UserSettingsJson = {
 	guest_feedback_enabled?: boolean;
+	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
 };
 
 export type UserSettingsEffective = {
 	guest_feedback_enabled: boolean;
+	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
 };
 
@@ -42,18 +44,20 @@ const inventoryColumnsPatchSchema = z.object({
 export const patchUserSettingsSchema = z
 	.object({
 		guest_feedback_enabled: z.boolean().optional(),
+		guest_feedback_aggregate_note: z.boolean().optional(),
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
 	})
 	.refine(
 		(d) => {
 			if (d.guest_feedback_enabled !== undefined) return true;
+			if (typeof d.guest_feedback_aggregate_note === "boolean") return true;
 			const ic = d.inventory_columns;
 			if (!ic) return false;
 			return INVENTORY_COLUMN_IDS.some((id) => typeof ic[id] === "boolean");
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled and/or at least one inventory column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, and/or at least one inventory column flag",
 		},
 	);
 
@@ -89,6 +93,9 @@ export function parseUserSettingsJson(
 	if (typeof o.guest_feedback_enabled === "boolean") {
 		out.guest_feedback_enabled = o.guest_feedback_enabled;
 	}
+	if (typeof o.guest_feedback_aggregate_note === "boolean") {
+		out.guest_feedback_aggregate_note = o.guest_feedback_aggregate_note;
+	}
 	const cols = parseInventoryColumnsJson(o.inventory_columns);
 	if (cols) {
 		out.inventory_columns = cols;
@@ -122,8 +129,11 @@ function effectiveInventoryColumns(
 export function effectiveUserSettings(
 	stored: UserSettingsJson,
 ): UserSettingsEffective {
+	const guestOn = stored.guest_feedback_enabled === true;
 	return {
-		guest_feedback_enabled: stored.guest_feedback_enabled === true,
+		guest_feedback_enabled: guestOn,
+		guest_feedback_aggregate_note:
+			guestOn && stored.guest_feedback_aggregate_note !== false,
 		inventory_columns: effectiveInventoryColumns(stored.inventory_columns),
 	};
 }
@@ -135,6 +145,9 @@ export function mergeUserSettingsJson(
 	const merged: UserSettingsJson = { ...stored };
 	if (typeof patch.guest_feedback_enabled === "boolean") {
 		merged.guest_feedback_enabled = patch.guest_feedback_enabled;
+	}
+	if (typeof patch.guest_feedback_aggregate_note === "boolean") {
+		merged.guest_feedback_aggregate_note = patch.guest_feedback_aggregate_note;
 	}
 	if (
 		patch.inventory_columns !== undefined &&
