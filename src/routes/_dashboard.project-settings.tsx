@@ -108,6 +108,42 @@ function RouteComponent() {
 		}
 	}, []);
 
+	const onInventoryMaterialNatureColumnChange = useCallback(
+		async (next: boolean) => {
+			setSaveError(null);
+			setSaving(true);
+			try {
+				const res = await authedFetch("/api/user-settings", {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						inventory_columns: { material_nature: next },
+					}),
+				});
+				const json = (await res.json()) as {
+					success?: boolean;
+					data?: UserSettingsEffective;
+					error?: string;
+				};
+				if (!res.ok) {
+					throw new Error(json.error || "Failed to save settings");
+				}
+				if (!json.data) {
+					throw new Error("Invalid response");
+				}
+				setSettings(json.data);
+				notifyUserSettingsUpdated();
+			} catch (e) {
+				setSaveError(
+					e instanceof Error ? e.message : "Failed to save settings",
+				);
+			} finally {
+				setSaving(false);
+			}
+		},
+		[],
+	);
+
 	return (
 		<DashboardLayout title="Project Settings">
 			<div className="w-full max-w-170 mx-auto">
@@ -210,13 +246,25 @@ function RouteComponent() {
 									Show Label Column
 								</label>
 							</li>
-							{/* <li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={
+											settings?.inventory_columns.material_nature ?? true
+										}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void onInventoryMaterialNatureColumnChange(
+												e.target.checked,
+											);
+										}}
+									/>
 									Show Material Nature Column
 								</label>
 							</li>
-							<li>
+							{/* <li>
 								<label className="inline-flex items-center text-sm text-slate-200">
 									<input type="checkbox" className="mr-2" />
 									Show Name Column

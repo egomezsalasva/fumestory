@@ -31,6 +31,10 @@ function App() {
 	const [showInventoryLabelColumn, setShowInventoryLabelColumn] = useState<
 		boolean | null
 	>(null);
+	const [
+		showInventoryMaterialNatureColumn,
+		setShowInventoryMaterialNatureColumn,
+	] = useState<boolean | null>(null);
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -46,14 +50,19 @@ function App() {
 					if (json.data) {
 						setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
 						setShowInventoryLabelColumn(json.data.inventory_columns.label);
+						setShowInventoryMaterialNatureColumn(
+							json.data.inventory_columns.material_nature,
+						);
 					} else {
 						setGuestFeedbackEnabled(false);
 						setShowInventoryLabelColumn(true);
+						setShowInventoryMaterialNatureColumn(true);
 					}
 				})
 				.catch(() => {
 					setGuestFeedbackEnabled(false);
 					setShowInventoryLabelColumn(true);
+					setShowInventoryMaterialNatureColumn(true);
 				});
 		}
 
@@ -80,8 +89,13 @@ function App() {
 			width: 110,
 		};
 
+		const materialNatureCol: ColDef<RawMaterial> = {
+			field: "material_nature",
+			headerName: "Material Nature",
+			width: 160,
+		};
+
 		const rest: ColDef<RawMaterial>[] = [
-			{ field: "material_nature", headerName: "Material Nature", width: 160 },
 			{ field: "name", headerName: "Name", width: 240 },
 			{
 				field: "category_name",
@@ -208,10 +222,17 @@ function App() {
 			},
 		];
 
-		return (
-			showInventoryLabelColumn === false ? rest : [labelCol, ...rest]
-		) as ColDef<RawMaterial>[];
-	}, [includeGuestFeedbackInNotes, showInventoryLabelColumn]);
+		const cols: ColDef<RawMaterial>[] = [];
+		if (showInventoryLabelColumn !== false) cols.push(labelCol);
+		if (showInventoryMaterialNatureColumn !== false)
+			cols.push(materialNatureCol);
+		cols.push(...rest);
+		return cols as ColDef<RawMaterial>[];
+	}, [
+		includeGuestFeedbackInNotes,
+		showInventoryLabelColumn,
+		showInventoryMaterialNatureColumn,
+	]);
 
 	return (
 		<DashboardLayout

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** Extend this array when you add more toggles. */
-export const INVENTORY_COLUMN_IDS = ["label"] as const;
+export const INVENTORY_COLUMN_IDS = ["label", "material_nature"] as const;
 export type InventoryColumnId = (typeof INVENTORY_COLUMN_IDS)[number];
 
 /** Stored: omitted keys mean “use default” (visible). */
@@ -25,6 +25,7 @@ export type UserSettingsRow = {
 
 const inventoryColumnsPatchSchema = z.object({
 	label: z.boolean().optional(),
+	material_nature: z.boolean().optional(),
 });
 
 export const patchUserSettingsSchema = z
@@ -89,6 +90,7 @@ function effectiveInventoryColumns(
 ): InventoryColumnsEffective {
 	const defaults: InventoryColumnsEffective = {
 		label: true,
+		material_nature: true,
 	};
 	if (!stored) {
 		return defaults;
