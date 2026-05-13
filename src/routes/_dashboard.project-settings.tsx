@@ -79,14 +79,43 @@ function RouteComponent() {
 		}
 	}, []);
 
+	const onInventoryLabelColumnChange = useCallback(async (next: boolean) => {
+		setSaveError(null);
+		setSaving(true);
+		try {
+			const res = await authedFetch("/api/user-settings", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ inventory_columns: { label: next } }),
+			});
+			const json = (await res.json()) as {
+				success?: boolean;
+				data?: UserSettingsEffective;
+				error?: string;
+			};
+			if (!res.ok) {
+				throw new Error(json.error || "Failed to save settings");
+			}
+			if (!json.data) {
+				throw new Error("Invalid response");
+			}
+			setSettings(json.data);
+			notifyUserSettingsUpdated();
+		} catch (e) {
+			setSaveError(e instanceof Error ? e.message : "Failed to save settings");
+		} finally {
+			setSaving(false);
+		}
+	}, []);
+
 	return (
 		<DashboardLayout title="Project Settings">
 			<div className="w-full max-w-170 mx-auto">
-				{/* <div className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6">
+				<div className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6">
 					<h2 className="text-lg font-medium text-white mb-4">
 						Project Settings
 					</h2>
-					<ul className="space-y-2">
+					{/* <ul className="space-y-2">
 						<li>
 							<label>
 								<input type="checkbox" className="mr-2" />
@@ -94,8 +123,8 @@ function RouteComponent() {
 								creation
 							</label>
 						</li>
-					</ul>
-					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
+					</ul> */}
+					{/* <div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
 						<h3 className="text-sm font-medium text-slate-100">
 							Compositions Settings
 						</h3>
@@ -137,12 +166,12 @@ function RouteComponent() {
 								</label>
 							</li>
 						</ul>
-					</div>
+					</div> */}
 					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
 						<h3 className="text-sm font-medium text-slate-100">
 							Raw Materials Settings
 						</h3>
-						<div className="h-px w-full bg-slate-600 my-2"></div>
+						{/* <div className="h-px w-full bg-slate-600 my-2"></div>
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
 							Additional Properties
 						</h4>
@@ -160,7 +189,7 @@ function RouteComponent() {
 									Dilution Total Weight
 								</label>
 							</li>
-						</ul>
+						</ul> */}
 						<div className="h-px w-full bg-slate-600 my-2"></div>
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
 							Raw Materials Table Settings
@@ -168,44 +197,53 @@ function RouteComponent() {
 
 						<ul className="mt-3 space-y-2">
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.inventory_columns.label ?? true}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void onInventoryLabelColumnChange(e.target.checked);
+										}}
+									/>
 									Show Label Column
 								</label>
 							</li>
-							<li>
+							{/* <li>
 								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Name Column
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Category Column
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Note Type Column
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
+									<input type="checkbox" className="mr-2" />
 									Show Material Nature Column
 								</label>
 							</li>
 							<li>
 								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Created At Column
+									<input type="checkbox" className="mr-2" />
+									Show Name Column
 								</label>
 							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200">
+									<input type="checkbox" className="mr-2" />
+									Show Category Column
+								</label>
+							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200">
+									<input type="checkbox" className="mr-2" />
+									Show Note Type Column
+								</label>
+							</li>
+							
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200">
+									<input type="checkbox" className="mr-2" />
+									Show Dilutions Available Column
+								</label>
+							</li> */}
 						</ul>
 					</div>
-				</div> */}
+				</div>
 				<div
 					className="p-6 bg-slate-800 rounded-lg border border-slate-700"
 					id="add-on-features"
@@ -226,9 +264,6 @@ function RouteComponent() {
 									}}
 								/>
 								Guest Feedback
-								{saving && (
-									<span className="ml-2 text-xs text-slate-400">Saving…</span>
-								)}
 							</label>
 						</li>
 						{/* <li>

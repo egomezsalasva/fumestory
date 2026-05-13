@@ -1,4 +1,5 @@
 import { getClient } from "@/db";
+import { z } from "zod";
 import {
 	effectiveUserSettings,
 	mergeUserSettingsJson,
@@ -60,7 +61,10 @@ export const Route = createFileRoute("/api/user-settings")({
 					);
 					if (!parsed.success) {
 						return jsonResponse(
-							{ error: "guest_feedback_enabled must be a boolean" },
+							{
+								error: "Invalid user settings patch",
+								details: z.flattenError(parsed.error),
+							},
 							400,
 						);
 					}
