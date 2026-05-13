@@ -171,8 +171,8 @@ function App() {
 			field: "name",
 			headerName: "Name",
 			...(showInventoryNotesDisplayColumn === false
-				? { flex: 1, minWidth: 200 }
-				: { width: 240 }),
+				? { flex: 1, minWidth: 180 }
+				: { width: 180 }),
 		};
 
 		const notesDisplayCol: ColDef<RawMaterial> = {
@@ -263,7 +263,7 @@ function App() {
 		const dilutionsCol: ColDef<RawMaterial> = {
 			field: "available_dilutions",
 			headerName: "Available Dilutions (%)",
-			width: 230,
+			width: 200,
 			cellRenderer: (params: { value?: number[]; data?: RawMaterial }) => {
 				const percentages = params.value;
 				const hasPercentages = percentages && percentages.length > 0;
@@ -290,11 +290,11 @@ function App() {
 
 		const cols: ColDef<RawMaterial>[] = [];
 		if (showInventoryLabelColumn !== false) cols.push(labelCol);
+		cols.push(nameCol);
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
 		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
 		if (showInventoryNoteTypeColumn !== false) cols.push(noteTypeCol);
-		cols.push(nameCol);
 		if (showInventoryNotesDisplayColumn !== false) cols.push(notesDisplayCol);
 		if (showInventoryAvailableDilutionsColumn !== false)
 			cols.push(dilutionsCol);
