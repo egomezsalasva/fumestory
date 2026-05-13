@@ -183,10 +183,6 @@ export function mergeUserSettingsJson(
 		merged.hide_raw_materials_without_available_dilutions =
 			patch.hide_raw_materials_without_available_dilutions;
 	}
-	const invEff = effectiveInventoryColumns(merged.inventory_columns);
-	if (!invEff.available_dilutions) {
-		merged.hide_raw_materials_without_available_dilutions = false;
-	}
 	return merged;
 }
 
