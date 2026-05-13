@@ -261,12 +261,26 @@ function RouteComponent() {
 									Show Notes Column
 								</label>
 							</li>
-							{/* <li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={
+											settings?.inventory_columns.available_dilutions ?? true
+										}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												inventory_columns: {
+													available_dilutions: e.target.checked,
+												},
+											});
+										}}
+									/>
 									Show Dilutions Available Column
 								</label>
-							</li> */}
+							</li>
 						</ul>
 					</div>
 				</div>

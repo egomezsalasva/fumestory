@@ -41,6 +41,10 @@ function App() {
 		useState<boolean | null>(null);
 	const [showInventoryNotesDisplayColumn, setShowInventoryNotesDisplayColumn] =
 		useState<boolean | null>(null);
+	const [
+		showInventoryAvailableDilutionsColumn,
+		setShowInventoryAvailableDilutionsColumn,
+	] = useState<boolean | null>(null);
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -65,6 +69,9 @@ function App() {
 					setShowInventoryNotesDisplayColumn(
 						json.data.inventory_columns.notes_display,
 					);
+					setShowInventoryAvailableDilutionsColumn(
+						json.data.inventory_columns.available_dilutions,
+					);
 				} else {
 					setGuestFeedbackEnabled(false);
 					setShowInventoryLabelColumn(true);
@@ -72,6 +79,7 @@ function App() {
 					setShowInventoryCategoryNameColumn(true);
 					setShowInventoryNoteTypeColumn(true);
 					setShowInventoryNotesDisplayColumn(true);
+					setShowInventoryAvailableDilutionsColumn(true);
 				}
 			})
 			.catch(() => {
@@ -81,6 +89,7 @@ function App() {
 				setShowInventoryCategoryNameColumn(true);
 				setShowInventoryNoteTypeColumn(true);
 				setShowInventoryNotesDisplayColumn(true);
+				setShowInventoryAvailableDilutionsColumn(true);
 			});
 	}, []);
 
@@ -259,7 +268,8 @@ function App() {
 		if (showInventoryNoteTypeColumn !== false) cols.push(noteTypeCol);
 		cols.push(nameCol);
 		if (showInventoryNotesDisplayColumn !== false) cols.push(notesDisplayCol);
-		cols.push(dilutionsCol);
+		if (showInventoryAvailableDilutionsColumn !== false)
+			cols.push(dilutionsCol);
 		return cols as ColDef<RawMaterial>[];
 	}, [
 		includeGuestFeedbackInNotes,
@@ -268,6 +278,7 @@ function App() {
 		showInventoryCategoryNameColumn,
 		showInventoryNoteTypeColumn,
 		showInventoryNotesDisplayColumn,
+		showInventoryAvailableDilutionsColumn,
 	]);
 
 	return (
