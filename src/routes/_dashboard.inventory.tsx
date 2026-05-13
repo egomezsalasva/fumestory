@@ -37,6 +37,8 @@ function App() {
 	] = useState<boolean | null>(null);
 	const [showInventoryCategoryNameColumn, setShowInventoryCategoryNameColumn] =
 		useState<boolean | null>(null);
+	const [showInventoryNoteTypeColumn, setShowInventoryNoteTypeColumn] =
+		useState<boolean | null>(null);
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -57,11 +59,13 @@ function App() {
 					setShowInventoryCategoryNameColumn(
 						json.data.inventory_columns.category_name,
 					);
+					setShowInventoryNoteTypeColumn(json.data.inventory_columns.note_type);
 				} else {
 					setGuestFeedbackEnabled(false);
 					setShowInventoryLabelColumn(true);
 					setShowInventoryMaterialNatureColumn(true);
 					setShowInventoryCategoryNameColumn(true);
+					setShowInventoryNoteTypeColumn(true);
 				}
 			})
 			.catch(() => {
@@ -69,6 +73,7 @@ function App() {
 				setShowInventoryLabelColumn(true);
 				setShowInventoryMaterialNatureColumn(true);
 				setShowInventoryCategoryNameColumn(true);
+				setShowInventoryNoteTypeColumn(true);
 			});
 	}, []);
 
@@ -112,9 +117,14 @@ function App() {
 					: "",
 		};
 
+		const noteTypeCol: ColDef<RawMaterial> = {
+			field: "note_type",
+			headerName: "Note Type",
+			width: 140,
+		};
+
 		const rest: ColDef<RawMaterial>[] = [
 			{ field: "name", headerName: "Name", width: 240 },
-			{ field: "note_type", headerName: "Note Type", width: 140 },
 			{
 				colId: "notes_display",
 				field: includeGuestFeedbackInNotes ? "aggregated_note_counts" : "notes",
@@ -235,6 +245,7 @@ function App() {
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
 		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
+		if (showInventoryNoteTypeColumn !== false) cols.push(noteTypeCol);
 		cols.push(...rest);
 		return cols as ColDef<RawMaterial>[];
 	}, [
@@ -242,6 +253,7 @@ function App() {
 		showInventoryLabelColumn,
 		showInventoryMaterialNatureColumn,
 		showInventoryCategoryNameColumn,
+		showInventoryNoteTypeColumn,
 	]);
 
 	return (

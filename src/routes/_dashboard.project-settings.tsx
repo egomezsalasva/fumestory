@@ -227,14 +227,24 @@ function RouteComponent() {
 									Show Category Column
 								</label>
 							</li>
-							{/* <li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.inventory_columns.note_type ?? true}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												inventory_columns: { note_type: e.target.checked },
+											});
+										}}
+									/>
 									Show Note Type Column
 								</label>
 							</li>
-							
-							<li>
+
+							{/* <li>
 								<label className="inline-flex items-center text-sm text-slate-200">
 									<input type="checkbox" className="mr-2" />
 									Show Dilutions Available Column
