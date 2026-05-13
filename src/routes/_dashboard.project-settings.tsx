@@ -50,14 +50,14 @@ function RouteComponent() {
 		};
 	}, []);
 
-	const onGuestFeedbackChange = useCallback(async (next: boolean) => {
+	const patchUserSettings = useCallback(async (body: object) => {
 		setSaveError(null);
 		setSaving(true);
 		try {
 			const res = await authedFetch("/api/user-settings", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ guest_feedback_enabled: next }),
+				body: JSON.stringify(body),
 			});
 			const json = (await res.json()) as {
 				success?: boolean;
@@ -78,106 +78,6 @@ function RouteComponent() {
 			setSaving(false);
 		}
 	}, []);
-
-	const onInventoryLabelColumnChange = useCallback(async (next: boolean) => {
-		setSaveError(null);
-		setSaving(true);
-		try {
-			const res = await authedFetch("/api/user-settings", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ inventory_columns: { label: next } }),
-			});
-			const json = (await res.json()) as {
-				success?: boolean;
-				data?: UserSettingsEffective;
-				error?: string;
-			};
-			if (!res.ok) {
-				throw new Error(json.error || "Failed to save settings");
-			}
-			if (!json.data) {
-				throw new Error("Invalid response");
-			}
-			setSettings(json.data);
-			notifyUserSettingsUpdated();
-		} catch (e) {
-			setSaveError(e instanceof Error ? e.message : "Failed to save settings");
-		} finally {
-			setSaving(false);
-		}
-	}, []);
-
-	const onInventoryMaterialNatureColumnChange = useCallback(
-		async (next: boolean) => {
-			setSaveError(null);
-			setSaving(true);
-			try {
-				const res = await authedFetch("/api/user-settings", {
-					method: "PATCH",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						inventory_columns: { material_nature: next },
-					}),
-				});
-				const json = (await res.json()) as {
-					success?: boolean;
-					data?: UserSettingsEffective;
-					error?: string;
-				};
-				if (!res.ok) {
-					throw new Error(json.error || "Failed to save settings");
-				}
-				if (!json.data) {
-					throw new Error("Invalid response");
-				}
-				setSettings(json.data);
-				notifyUserSettingsUpdated();
-			} catch (e) {
-				setSaveError(
-					e instanceof Error ? e.message : "Failed to save settings",
-				);
-			} finally {
-				setSaving(false);
-			}
-		},
-		[],
-	);
-	const onInventoryCategoryNameColumnChange = useCallback(
-		async (next: boolean) => {
-			setSaveError(null);
-			setSaving(true);
-			try {
-				const res = await authedFetch("/api/user-settings", {
-					method: "PATCH",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						inventory_columns: { category_name: next },
-					}),
-				});
-				const json = (await res.json()) as {
-					success?: boolean;
-					data?: UserSettingsEffective;
-					error?: string;
-				};
-				if (!res.ok) {
-					throw new Error(json.error || "Failed to save settings");
-				}
-				if (!json.data) {
-					throw new Error("Invalid response");
-				}
-				setSettings(json.data);
-				notifyUserSettingsUpdated();
-			} catch (e) {
-				setSaveError(
-					e instanceof Error ? e.message : "Failed to save settings",
-				);
-			} finally {
-				setSaving(false);
-			}
-		},
-		[],
-	);
 
 	return (
 		<DashboardLayout title="Project Settings">
@@ -275,7 +175,9 @@ function RouteComponent() {
 										checked={settings?.inventory_columns.label ?? true}
 										disabled={settings === null || saving}
 										onChange={(e) => {
-											void onInventoryLabelColumnChange(e.target.checked);
+											void patchUserSettings({
+												inventory_columns: { label: e.target.checked },
+											});
 										}}
 									/>
 									Show Label Column
@@ -291,9 +193,11 @@ function RouteComponent() {
 										}
 										disabled={settings === null || saving}
 										onChange={(e) => {
-											void onInventoryMaterialNatureColumnChange(
-												e.target.checked,
-											);
+											void patchUserSettings({
+												inventory_columns: {
+													material_nature: e.target.checked,
+												},
+											});
 										}}
 									/>
 									Show Material Nature Column
@@ -313,9 +217,11 @@ function RouteComponent() {
 										checked={settings?.inventory_columns.category_name ?? true}
 										disabled={settings === null || saving}
 										onChange={(e) => {
-											void onInventoryCategoryNameColumnChange(
-												e.target.checked,
-											);
+											void patchUserSettings({
+												inventory_columns: {
+													category_name: e.target.checked,
+												},
+											});
 										}}
 									/>
 									Show Category Column
@@ -353,7 +259,9 @@ function RouteComponent() {
 									checked={settings?.guest_feedback_enabled ?? false}
 									disabled={settings === null || saving}
 									onChange={(e) => {
-										void onGuestFeedbackChange(e.target.checked);
+										void patchUserSettings({
+											guest_feedback_enabled: e.target.checked,
+										});
 									}}
 								/>
 								Guest Feedback
