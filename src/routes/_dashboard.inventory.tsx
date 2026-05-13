@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -35,6 +35,8 @@ function App() {
 		showInventoryMaterialNatureColumn,
 		setShowInventoryMaterialNatureColumn,
 	] = useState<boolean | null>(null);
+	const [showInventoryCategoryNameColumn, setShowInventoryCategoryNameColumn] =
+		useState<boolean | null>(null);
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -42,36 +44,41 @@ function App() {
 			: "without_guest_feedback";
 	const includeGuestFeedbackInNotes = notesDisplay === "with_guest_feedback";
 
-	useEffect(() => {
-		function loadUserSettings() {
-			authedFetch("/api/user-settings")
-				.then((res) => res.json())
-				.then((json: { data?: UserSettingsEffective }) => {
-					if (json.data) {
-						setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
-						setShowInventoryLabelColumn(json.data.inventory_columns.label);
-						setShowInventoryMaterialNatureColumn(
-							json.data.inventory_columns.material_nature,
-						);
-					} else {
-						setGuestFeedbackEnabled(false);
-						setShowInventoryLabelColumn(true);
-						setShowInventoryMaterialNatureColumn(true);
-					}
-				})
-				.catch(() => {
+	const loadUserSettings = useCallback(() => {
+		authedFetch("/api/user-settings")
+			.then((res) => res.json())
+			.then((json: { data?: UserSettingsEffective }) => {
+				if (json.data) {
+					setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
+					setShowInventoryLabelColumn(json.data.inventory_columns.label);
+					setShowInventoryMaterialNatureColumn(
+						json.data.inventory_columns.material_nature,
+					);
+					setShowInventoryCategoryNameColumn(
+						json.data.inventory_columns.category_name,
+					);
+				} else {
 					setGuestFeedbackEnabled(false);
 					setShowInventoryLabelColumn(true);
 					setShowInventoryMaterialNatureColumn(true);
-				});
-		}
+					setShowInventoryCategoryNameColumn(true);
+				}
+			})
+			.catch(() => {
+				setGuestFeedbackEnabled(false);
+				setShowInventoryLabelColumn(true);
+				setShowInventoryMaterialNatureColumn(true);
+				setShowInventoryCategoryNameColumn(true);
+			});
+	}, []);
 
+	useEffect(() => {
 		loadUserSettings();
 		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
 		return () => {
 			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
 		};
-	}, []);
+	}, [loadUserSettings]);
 
 	useEffect(() => {
 		authedFetch("/api/raw-materials")
@@ -95,17 +102,18 @@ function App() {
 			width: 160,
 		};
 
+		const categoryNameCol: ColDef<RawMaterial> = {
+			field: "category_name",
+			headerName: "Category",
+			width: 140,
+			valueFormatter: (params: ValueFormatterParams<RawMaterial, string>) =>
+				params.value
+					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
+					: "",
+		};
+
 		const rest: ColDef<RawMaterial>[] = [
 			{ field: "name", headerName: "Name", width: 240 },
-			{
-				field: "category_name",
-				headerName: "Category",
-				width: 140,
-				valueFormatter: (params: ValueFormatterParams<RawMaterial, string>) =>
-					params.value
-						? params.value.charAt(0).toUpperCase() + params.value.slice(1)
-						: "",
-			},
 			{ field: "note_type", headerName: "Note Type", width: 140 },
 			{
 				colId: "notes_display",
@@ -226,12 +234,14 @@ function App() {
 		if (showInventoryLabelColumn !== false) cols.push(labelCol);
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
+		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
 		cols.push(...rest);
 		return cols as ColDef<RawMaterial>[];
 	}, [
 		includeGuestFeedbackInNotes,
 		showInventoryLabelColumn,
 		showInventoryMaterialNatureColumn,
+		showInventoryCategoryNameColumn,
 	]);
 
 	return (
