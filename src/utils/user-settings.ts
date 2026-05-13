@@ -20,12 +20,14 @@ export type UserSettingsJson = {
 	guest_feedback_enabled?: boolean;
 	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
+	hide_raw_materials_without_available_dilutions?: boolean;
 };
 
 export type UserSettingsEffective = {
 	guest_feedback_enabled: boolean;
 	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
+	hide_raw_materials_without_available_dilutions: boolean;
 };
 
 export type UserSettingsRow = {
@@ -46,18 +48,21 @@ export const patchUserSettingsSchema = z
 		guest_feedback_enabled: z.boolean().optional(),
 		guest_feedback_aggregate_note: z.boolean().optional(),
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
+		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 	})
 	.refine(
 		(d) => {
 			if (d.guest_feedback_enabled !== undefined) return true;
 			if (typeof d.guest_feedback_aggregate_note === "boolean") return true;
+			if (typeof d.hide_raw_materials_without_available_dilutions === "boolean")
+				return true;
 			const ic = d.inventory_columns;
 			if (!ic) return false;
 			return INVENTORY_COLUMN_IDS.some((id) => typeof ic[id] === "boolean");
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, and/or at least one inventory column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, and/or at least one inventory column flag",
 		},
 	);
 
@@ -96,6 +101,10 @@ export function parseUserSettingsJson(
 	if (typeof o.guest_feedback_aggregate_note === "boolean") {
 		out.guest_feedback_aggregate_note = o.guest_feedback_aggregate_note;
 	}
+	if (typeof o.hide_raw_materials_without_available_dilutions === "boolean") {
+		out.hide_raw_materials_without_available_dilutions =
+			o.hide_raw_materials_without_available_dilutions;
+	}
 	const cols = parseInventoryColumnsJson(o.inventory_columns);
 	if (cols) {
 		out.inventory_columns = cols;
@@ -130,11 +139,15 @@ export function effectiveUserSettings(
 	stored: UserSettingsJson,
 ): UserSettingsEffective {
 	const guestOn = stored.guest_feedback_enabled === true;
+	const inventory_columns = effectiveInventoryColumns(stored.inventory_columns);
 	return {
 		guest_feedback_enabled: guestOn,
 		guest_feedback_aggregate_note:
 			guestOn && stored.guest_feedback_aggregate_note !== false,
-		inventory_columns: effectiveInventoryColumns(stored.inventory_columns),
+		inventory_columns,
+		hide_raw_materials_without_available_dilutions:
+			inventory_columns.available_dilutions === true &&
+			stored.hide_raw_materials_without_available_dilutions === true,
 	};
 }
 
@@ -163,6 +176,16 @@ export function mergeUserSettingsJson(
 		} else {
 			delete merged.inventory_columns;
 		}
+	}
+	if (
+		typeof patch.hide_raw_materials_without_available_dilutions === "boolean"
+	) {
+		merged.hide_raw_materials_without_available_dilutions =
+			patch.hide_raw_materials_without_available_dilutions;
+	}
+	const invEff = effectiveInventoryColumns(merged.inventory_columns);
+	if (!invEff.available_dilutions) {
+		merged.hide_raw_materials_without_available_dilutions = false;
 	}
 	return merged;
 }

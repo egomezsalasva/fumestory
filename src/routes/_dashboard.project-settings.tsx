@@ -308,7 +308,7 @@ function RouteComponent() {
 									Show Dilutions Available Column
 								</label>
 							</li>
-							{/* <li>
+							<li>
 								<label
 									className={`inline-flex items-center text-sm cursor-pointer ${
 										settings !== null &&
@@ -320,15 +320,25 @@ function RouteComponent() {
 									<input
 										type="checkbox"
 										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={
+											settings?.hide_raw_materials_without_available_dilutions ??
+											false
+										}
 										disabled={
 											settings === null ||
 											saving ||
 											settings.inventory_columns.available_dilutions === false
 										}
+										onChange={(e) => {
+											void patchUserSettings({
+												hide_raw_materials_without_available_dilutions:
+													e.target.checked,
+											});
+										}}
 									/>
 									Hide Raw Materials Without Available Dilutions
 								</label>
-							</li> */}
+							</li>
 						</ul>
 					</div>
 				</div>

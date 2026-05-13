@@ -31,6 +31,10 @@ function App() {
 	const [guestFeedbackAggregateNote, setGuestFeedbackAggregateNote] = useState<
 		boolean | null
 	>(null);
+	const [
+		hideRawMaterialsWithoutAvailableDilutions,
+		setHideRawMaterialsWithoutAvailableDilutions,
+	] = useState<boolean | null>(null);
 	const [showInventoryLabelColumn, setShowInventoryLabelColumn] = useState<
 		boolean | null
 	>(null);
@@ -66,6 +70,9 @@ function App() {
 					setGuestFeedbackAggregateNote(
 						json.data.guest_feedback_aggregate_note,
 					);
+					setHideRawMaterialsWithoutAvailableDilutions(
+						json.data.hide_raw_materials_without_available_dilutions,
+					);
 					setShowInventoryLabelColumn(json.data.inventory_columns.label);
 					setShowInventoryMaterialNatureColumn(
 						json.data.inventory_columns.material_nature,
@@ -83,6 +90,7 @@ function App() {
 				} else {
 					setGuestFeedbackEnabled(false);
 					setGuestFeedbackAggregateNote(true);
+					setHideRawMaterialsWithoutAvailableDilutions(false);
 					setShowInventoryLabelColumn(true);
 					setShowInventoryMaterialNatureColumn(true);
 					setShowInventoryCategoryNameColumn(true);
@@ -94,6 +102,7 @@ function App() {
 			.catch(() => {
 				setGuestFeedbackEnabled(false);
 				setGuestFeedbackAggregateNote(true);
+				setHideRawMaterialsWithoutAvailableDilutions(false);
 				setShowInventoryLabelColumn(true);
 				setShowInventoryMaterialNatureColumn(true);
 				setShowInventoryCategoryNameColumn(true);
@@ -119,6 +128,15 @@ function App() {
 			})
 			.catch((err) => console.error("Raw materials error:", err));
 	}, []);
+
+	const inventoryRowData = useMemo(() => {
+		if (hideRawMaterialsWithoutAvailableDilutions !== true) return rawMaterials;
+		return rawMaterials.filter(
+			(m) =>
+				Array.isArray(m.available_dilutions) &&
+				m.available_dilutions.length > 0,
+		);
+	}, [rawMaterials, hideRawMaterialsWithoutAvailableDilutions]);
 
 	const columnDefs = useMemo(() => {
 		const labelCol: ColDef<RawMaterial> = {
@@ -302,7 +320,7 @@ function App() {
 				style={{ height: "100%", width: "100%", minHeight: "680px" }}
 			>
 				<AgGridReact
-					rowData={rawMaterials}
+					rowData={inventoryRowData}
 					columnDefs={columnDefs}
 					defaultColDef={{
 						filter: true,
