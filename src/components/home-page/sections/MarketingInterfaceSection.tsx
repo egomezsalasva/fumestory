@@ -10,11 +10,11 @@ type MarketingInterfaceSectionProps = {
 };
 
 const INTERFACE_TABS: InterfaceTab[] = [
-	{ title: "Inventory", image: "/inventory.png" },
-	{ title: "Add Raw Material", image: "/add-raw-material.png" },
-	{ title: "Add Dilution", image: "/add-dilution.png" },
-	{ title: "Compositions", image: "/formulas.png" },
-	{ title: "Formulas", image: "/formulas.png" },
+	{ title: "Inventory", image: "/inventory.webp" },
+	{ title: "Add Raw Material", image: "/add-raw-material.webp" },
+	{ title: "Add Dilution", image: "/add-dilution.webp" },
+	{ title: "Compositions", image: "/compositions.webp" },
+	{ title: "Formulas", image: "/formulas.webp" },
 ];
 
 const InterfaceItem = ({
