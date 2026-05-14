@@ -22,6 +22,7 @@ function AddDilution() {
 	>(null);
 	const [rawMaterialSearch, setRawMaterialSearch] = useState("");
 	const [percentage, setPercentage] = useState("");
+	const [batchWeightGrams, setBatchWeightGrams] = useState("");
 	const [dilutionDate, setDilutionDate] = useState("");
 
 	const [error, setError] = useState("");
@@ -41,6 +42,17 @@ function AddDilution() {
 			setError("Percentage must be between 0 and 100");
 			return;
 		}
+
+		let batchWeightGramsPayload: number | undefined;
+		if (batchWeightGrams.trim() !== "") {
+			const w = parseFloat(batchWeightGrams);
+			if (!Number.isFinite(w) || w <= 0) {
+				setError("Batch weight must be a number greater than 0");
+				return;
+			}
+			batchWeightGramsPayload = w;
+		}
+
 		try {
 			const response = await authedFetch("/api/dilutions", {
 				method: "POST",
@@ -49,6 +61,9 @@ function AddDilution() {
 					raw_material_id: selectedRawMaterialId,
 					percentage: percentageNum,
 					dilution_date: dilutionDate || null,
+					...(batchWeightGramsPayload !== undefined
+						? { batch_weight_grams: batchWeightGramsPayload }
+						: {}),
 				}),
 			});
 
@@ -62,6 +77,7 @@ function AddDilution() {
 			setSelectedRawMaterialId(null);
 			setRawMaterialSearch("");
 			setPercentage("");
+			setBatchWeightGrams("");
 			setDilutionDate("");
 			alert("Dilution added successfully!");
 		} catch (error) {
@@ -97,14 +113,25 @@ function AddDilution() {
 							setPercentage(value);
 							setError("");
 						}}
-						placeholder="e.g., 10"
+						placeholder="e.g. 10"
 						required
 						min={0}
 						max={100}
 					/>
+					<NumberInput
+						label="Batch weight (g) (optional)"
+						value={batchWeightGrams}
+						onChange={(value) => {
+							setBatchWeightGrams(value);
+							setError("");
+						}}
+						placeholder="e.g. 5"
+						min={0}
+						step="any"
+					/>
 					{/* Dilution Date Field */}
 					<DateTimeInput
-						label="Dilution Date (Optional)"
+						label="Dilution Date (optional)"
 						value={dilutionDate}
 						onChange={setDilutionDate}
 					/>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { Dilution } from "@/routes/api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterial = {
@@ -6,13 +7,9 @@ type RawMaterial = {
 	name: string;
 };
 
-type Dilution = {
-	id: number;
-	raw_material_id: number;
-	percentage: number;
-	dilution_date: string | null;
-	available: boolean;
-};
+function batchGramsLabel(grams: number): string {
+	return `${grams.toLocaleString(undefined, { maximumFractionDigits: 5, useGrouping: false })} g`;
+}
 
 type CombinedItem = {
 	dilutionId: number;
@@ -66,13 +63,17 @@ export function DilutionAutocomplete({
 							const dateStr = d.dilution_date
 								? new Date(d.dilution_date).toLocaleDateString()
 								: "";
+							const weightSuffix =
+								d.batch_weight_grams != null
+									? ` · ${batchGramsLabel(d.batch_weight_grams)}`
+									: "";
 							return {
 								dilutionId: d.id,
 								materialId: d.raw_material_id,
 								materialName: material?.name || "Unknown",
 								percentage: d.percentage,
 								date: d.dilution_date,
-								displayText: `${material?.name || "Unknown"} - ${d.percentage}%${dateStr ? ` (${dateStr})` : ""}`,
+								displayText: `${material?.name || "Unknown"} - ${d.percentage}%${dateStr ? ` · (${dateStr})` : ""}${weightSuffix}`,
 							};
 						});
 

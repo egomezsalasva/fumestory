@@ -6,6 +6,10 @@ import { authedFetch } from "@/utils/authed-fetch";
 import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
+function formatBatchGrams(grams: number): string {
+	return `${grams.toLocaleString(undefined, { maximumFractionDigits: 5, useGrouping: false })} g`;
+}
+
 export const Route = createFileRoute(
 	"/_dashboard/manage-dilutions/$materialId",
 )({
@@ -185,6 +189,14 @@ function ManageDilutions() {
 											? new Date(dilution.dilution_date).toLocaleDateString()
 											: "No date"}
 									</span>
+									{dilution.batch_weight_grams != null && (
+										<p className="text-sm text-slate-400 mt-2">
+											Batch weight:{" "}
+											<span className="text-slate-200">
+												{formatBatchGrams(dilution.batch_weight_grams)}
+											</span>
+										</p>
+									)}
 								</div>
 								<div className="flex items-center gap-3">
 									<span
