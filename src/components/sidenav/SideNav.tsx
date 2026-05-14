@@ -13,7 +13,7 @@ import BoxIcon from "./svgs/BoxIcon";
 import LayersIcon from "./svgs/LayersIcon";
 import CupIcon from "./svgs/CupIcon";
 import CogIcon from "../svgs/CogIcon";
-// import StarIcon from "./svgs/StarIcon";
+import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
 import { useState, useEffect, useCallback } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
@@ -33,16 +33,17 @@ const NavBodySectionItem: React.FC<{
 	const { location } = useRouterState();
 
 	const [toPath] = to.split("#");
-	const targetHash = hash ?? "";
+	const hashNorm = (h: string | undefined) => (h ?? "").replace(/^#/, "");
+	const targetHashKey = hashNorm(hash);
 	const pathMatches = !!matchRoute({ to, fuzzy: false });
-	const active = targetHash
-		? pathMatches && location.hash === targetHash
-		: pathMatches && !location.hash;
+	const active = targetHashKey
+		? pathMatches && hashNorm(location.hash) === targetHashKey
+		: pathMatches && !hashNorm(location.hash);
 
 	return (
 		<Link
 			to={toPath}
-			hash={targetHash ? targetHash.replace(/^#/, "") : undefined}
+			hash={targetHashKey || undefined}
 			className={`${styles.navBodySectionItem} ${active ? styles.navBodySectionItem_active : ""}`}
 		>
 			{icon}
@@ -150,11 +151,6 @@ const SideNav = () => {
 								to="/add-composition"
 								title="Add Composition"
 							/>
-							{/* <NavBodySectionItem
-								icon={<TableIcon />}
-								to="/compositions"
-								title="Add Formula"
-							/> */}
 						</div>
 					</div>
 					<div className={styles.navBodySection}>
@@ -193,12 +189,12 @@ const SideNav = () => {
 								to="/project-settings"
 								title="Settings"
 							/>
-							{/* <NavBodySectionItem
+							<NavBodySectionItem
 								icon={<StarIcon />}
 								to="/project-settings"
 								hash="#add-on-features"
 								title="Add-on Features"
-							/> */}
+							/>
 						</div>
 					</div>
 				</div>

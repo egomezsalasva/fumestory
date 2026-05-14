@@ -285,9 +285,9 @@ function App() {
 						<Link
 							to="/manage-dilutions/$materialId"
 							params={{ materialId: String(material.id) }}
-							className="px-2 py-1 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors text-sm border border-blue-500/30"
+							className="inline-flex shrink-0 items-center justify-center whitespace-nowrap px-2.5 py-1 rounded-[0.375rem] bg-[#0b172d] text-white font-medium border border-[#d8e3f0] shadow-sm shadow-black/40 hover:bg-[#243044] hover:border-[#f0f4fa] transition-colors text-xs"
 						>
-							👁️
+							View
 						</Link>
 					</div>
 				);
