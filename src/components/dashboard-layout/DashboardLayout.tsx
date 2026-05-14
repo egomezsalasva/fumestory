@@ -48,7 +48,11 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 						<h1>{title}</h1>
 					</div>
 					<div className={styles.headerRight}>
-						{showCogButton && <CogIcon />}
+						{showCogButton && (
+							<Link to="/project-settings">
+								<CogIcon />
+							</Link>
+						)}
 						{plusButton && (
 							<Link to={plusButton.to} params={plusButton.params ?? {}}>
 								<PlusIcon />
