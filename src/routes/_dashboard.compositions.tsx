@@ -64,12 +64,11 @@ function Compositions() {
 	}, []);
 
 	const columnDefs: ColDef<Composition>[] = [
-		{ field: "name", headerName: "Name", width: 220 },
+		{ field: "name", headerName: "Name", flex: 1 },
 		{
 			field: "type",
 			headerName: "Type",
 			flex: 1,
-			minWidth: 220,
 			valueFormatter: (params) =>
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
@@ -77,7 +76,7 @@ function Compositions() {
 		},
 		{
 			headerName: "",
-			width: 130,
+			flex: 1,
 			sortable: false,
 			filter: false,
 			cellRenderer: (params: ICellRendererParams<Composition>) => {

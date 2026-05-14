@@ -148,19 +148,19 @@ function App() {
 		const labelCol: ColDef<RawMaterial> = {
 			field: "label",
 			headerName: "Label",
-			width: 110,
+			width: 88,
 		};
 
 		const materialNatureCol: ColDef<RawMaterial> = {
 			field: "material_nature",
 			headerName: "Material Nature",
-			width: 160,
+			width: 136,
 		};
 
 		const categoryNameCol: ColDef<RawMaterial> = {
 			field: "category_name",
 			headerName: "Category",
-			width: 140,
+			width: 100,
 			valueFormatter: (params: ValueFormatterParams<RawMaterial, string>) =>
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
@@ -170,15 +170,15 @@ function App() {
 		const noteTypeCol: ColDef<RawMaterial> = {
 			field: "note_type",
 			headerName: "Note Type",
-			width: 140,
+			width: 104,
 		};
 
 		const nameCol: ColDef<RawMaterial> = {
 			field: "name",
 			headerName: "Name",
 			...(showInventoryNotesDisplayColumn === false
-				? { flex: 1, minWidth: 180 }
-				: { width: 180 }),
+				? { flex: 1, minWidth: 160 }
+				: { width: 160 }),
 		};
 
 		const notesDisplayCol: ColDef<RawMaterial> = {
@@ -208,11 +208,11 @@ function App() {
 					if (list.length === 0)
 						return <span className="text-slate-500">—</span>;
 					return (
-						<div className="flex flex-wrap gap-2 py-2">
+						<div className="flex flex-wrap gap-1 py-1.5">
 							{list.map((note) => (
 								<span
 									key={note}
-									className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-xs text-white bg-transparent border border-white/40"
+									className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[0.7rem] text-white bg-transparent border border-white/40"
 								>
 									{note}
 								</span>
@@ -269,7 +269,7 @@ function App() {
 		const dilutionsCol: ColDef<RawMaterial> = {
 			field: "available_dilutions",
 			headerName: "Available Dilutions (%)",
-			width: 200,
+			width: 176,
 			cellRenderer: (params: { value?: number[]; data?: RawMaterial }) => {
 				const percentages = params.value;
 				const hasPercentages = percentages && percentages.length > 0;
