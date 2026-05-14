@@ -9,6 +9,12 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 export const Route = createFileRoute(
 	"/_dashboard/manage-dilutions/$materialId",
 )({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Manage Dilutions" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: ManageDilutions,
 });
 

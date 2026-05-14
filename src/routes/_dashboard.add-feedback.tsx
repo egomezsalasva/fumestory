@@ -9,6 +9,12 @@ import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 export const Route = createFileRoute("/_dashboard/add-feedback")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Add Feedback" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: AddFeedback,
 });
 

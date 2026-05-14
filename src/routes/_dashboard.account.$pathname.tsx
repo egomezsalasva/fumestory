@@ -6,6 +6,12 @@ import {
 } from "@neondatabase/neon-js/auth/react/ui";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 export const Route = createFileRoute("/_dashboard/account/$pathname")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Account Settings" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: Account,
 });
 function Account() {

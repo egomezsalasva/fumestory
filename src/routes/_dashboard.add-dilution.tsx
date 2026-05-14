@@ -7,6 +7,12 @@ import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 export const Route = createFileRoute("/_dashboard/add-dilution")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Add Dilution" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: AddDilution,
 });
 

@@ -20,6 +20,12 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 type InventoryNotesDisplay = "with_guest_feedback" | "without_guest_feedback";
 
 export const Route = createFileRoute("/_dashboard/inventory")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Inventory" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: App,
 });
 

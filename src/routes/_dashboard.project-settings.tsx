@@ -8,6 +8,12 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_dashboard/project-settings")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Project Settings" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: RouteComponent,
 });
 

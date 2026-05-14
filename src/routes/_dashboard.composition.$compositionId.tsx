@@ -8,6 +8,12 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Composition Details" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: CompositionDetail,
 });
 

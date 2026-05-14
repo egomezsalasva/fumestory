@@ -9,6 +9,12 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Add Composition" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: AddComposition,
 });
 

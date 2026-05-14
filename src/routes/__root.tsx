@@ -22,7 +22,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ title: "Perfumery Organizer" },
+			{ title: "Fumestory | Perfumery software for formulas & raw materials" },
+			{
+				name: "description",
+				content:
+					"Fumestory helps niche perfumers and anyone serious about scent organize raw materials, dilutions, and formulas — clear workflows for newcomers and experienced blenders alike.",
+			},
 		],
 		links: [{ rel: "stylesheet", href: appCss }],
 	}),

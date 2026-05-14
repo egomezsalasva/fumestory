@@ -11,6 +11,12 @@ import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory | Add Raw Material" },
+			{ name: "robots", content: "noindex" },
+		],
+	}),
 	component: AddRawMaterial,
 });
 
