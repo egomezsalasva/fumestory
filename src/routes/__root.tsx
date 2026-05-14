@@ -29,7 +29,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 					"Fumestory helps niche perfumers and anyone serious about scent organize raw materials, dilutions, and formulas — clear workflows for newcomers and experienced blenders alike.",
 			},
 		],
-		links: [{ rel: "stylesheet", href: appCss }],
+		links: [
+			{ rel: "stylesheet", href: appCss },
+			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+			{ rel: "icon", href: "/favicon.ico", sizes: "any" },
+		],
 	}),
 	shellComponent: RootDocument,
 });
