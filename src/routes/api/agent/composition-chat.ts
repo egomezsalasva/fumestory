@@ -355,6 +355,19 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 				const userId = auth.userId!;
 
 				const body = await request.json().catch(() => ({}));
+
+				const shouldResetConversation =
+					body?.resetConversation === true ||
+					body?.resetConversation === "true";
+
+				if (shouldResetConversation) {
+					const state = resetState(userId);
+					return jsonResponse(
+						{ ...questionFor(state), resetConversation: true },
+						200,
+					);
+				}
+
 				const choiceId =
 					typeof body?.choiceId === "string" ? body.choiceId : undefined;
 				const message =

@@ -99,7 +99,8 @@ export function CompositionAgentPanel() {
 		const bootstrap = async () => {
 			setIsLoading(true);
 			try {
-				if (!cancelled) await sendToApi({});
+				// Force a fresh conversation on page refresh/remount
+				if (!cancelled) await sendToApi({ resetConversation: "true" });
 			} catch {
 				if (!cancelled) {
 					setMessages([
@@ -122,7 +123,6 @@ export function CompositionAgentPanel() {
 			cancelled = true;
 		};
 	}, []);
-
 	const handleSendMessage = async (message: string) => {
 		if (isLoading) return;
 		setMessages((prev) => [...prev, { role: "user", content: message }]);
