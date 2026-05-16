@@ -13,7 +13,9 @@ import {
 	formatAvailableDilutionsForPrompt,
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
-import { generateText } from "ai";
+import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
+import { formulaProposalToMarkdown } from "@/agent/utils/formulaProposalToMarkdown";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 type ChatResponse = {
@@ -268,11 +270,43 @@ Materials not on the allowed list go ONLY in "Suggested additions (not in invent
 	return "";
 };
 
+const SUGGEST_ANY_OBJECT_SYSTEM_PROMPT = `You are a senior perfumer drafting a starter formula.
+
+Return JSON only (schema fields):
+- rationale
+- lines: materialDisplayName, dilutionPercent (stock), formulaPercent (blend share). Do not set dilutionId or section.
+- adjustmentTips: 2–4 strings
+
+Rules:
+- formulaPercent must sum to 100 (±0.1).
+- dilutionPercent is not formulaPercent.
+- Whole numbers when exact (10 not 10.0).`;
+
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
 	availableDilutions: AvailableDilution[] | null,
 ): Promise<string> => {
 	const inventoryMode = state.inventoryMode ?? "suggest_any";
+
+	if (inventoryMode === "suggest_any") {
+		const prompt = `Create a starter ${
+			state.target === "accord" ? "accord" : "perfume"
+		} formula from this context:
+
+${buildContextSummary(state)}`;
+
+		const result = await generateText({
+			model: openai("gpt-4o-mini"),
+			output: Output.object({ schema: suggestAnyFormulaProposalSchema }),
+			system: SUGGEST_ANY_OBJECT_SYSTEM_PROMPT,
+			prompt,
+		});
+
+		if (!result.output) {
+			return "I couldn't generate a formula suggestion right now.";
+		}
+		return formulaProposalToMarkdown(result.output);
+	}
 
 	const system = `You are a senior perfumer helping draft starter formulas.
 
