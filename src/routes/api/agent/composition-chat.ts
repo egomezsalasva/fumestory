@@ -8,6 +8,8 @@ import {
 } from "@/agent/composition-chat/flow";
 import {
 	type AvailableDilution,
+	countUniqueRawMaterials,
+	formatAllowedInventoryMaterialNames,
 	formatAvailableDilutionsForPrompt,
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
@@ -174,37 +176,122 @@ const buildContextSummary = (state: CompositionConversationState): string => {
 	return lines.map((l) => `- ${l}`).join("\n");
 };
 
+const FORMULA_LINE_FORMAT =
+	'Format each starter formula line exactly like: "Aldehyde C12 (Lemon) 10% dilution - 18%" (material name, space, dilution %, space, word dilution, space-hyphen-space, formula % only). No em dashes, no commas between parts, no "of formula".';
+
 const buildInventorySystemRule = (
 	inventoryMode: CompositionConversationState["inventoryMode"],
 ): string => {
 	switch (inventoryMode) {
 		case "inventory_only":
-			return `- inventory_only: use ONLY dilutions from the "Available inventory dilutions" list in the user message. Every starter formula line must match a list entry (material name and dilution %). Do not suggest any material or dilution not in that list. If the idea cannot be achieved with the list, say so briefly and propose the best possible formula from what is available.`;
+			return `- ACTIVE MODE inventory_only (not inventory_guided): ONE formula section only. Use ONLY materials from the allowed inventory list. Pick one dilution % per material. ${FORMULA_LINE_FORMAT} Never show dilution_id or "@". Do NOT include "Suggested additions (not in inventory)" or any non-inventory materials. All formula % in that single section MUST sum to exactly 100 (±0.1) — the full accord is 100% from stock on hand. Dilution % is NOT formula %. Use whole numbers when there is no fractional part (10% not 10.0%). If the idea cannot be achieved with inventory alone, say so in the rationale and use the best possible 100% formula from available materials only.`;
 		case "inventory_guided":
-			return `- inventory_guided: build the main starter formula from the "Available inventory dilutions" list. Any material not in that list may appear only in a separate section titled "Suggested additions (not in inventory)".`;
+			return `- ACTIVE MODE inventory_guided (not inventory_only): TWO sections required. (1) "Starter formula (inventory only)" — ONLY allowed inventory materials; one dilution % each; ${FORMULA_LINE_FORMAT} no dilution_id, no "@". (2) "Suggested additions (not in inventory)" — ONLY materials NOT on the allowed list; at least one addition; same line format. Formula % in section 1 PLUS section 2 MUST sum to exactly 100 (±0.1) together — split between inventory and additions (e.g. 65% + 35%). Do NOT put non-inventory materials in section 1. Do NOT put inventory-only materials in section 2 unless replacing with a substitute. Use whole numbers when there is no fractional part (10% not 10.0%).`;
 		default:
-			return `- suggest_any: suggest best overall materials regardless of inventory.`;
+			return `- ACTIVE MODE suggest_any: one starter formula; best overall materials; ${FORMULA_LINE_FORMAT} all formula % MUST sum to exactly 100 (±0.1). Use whole numbers when there is no fractional part (10% not 10.0%).`;
 	}
+};
+
+const MIN_UNIQUE_RAW_MATERIALS_WITHOUT_WARNING = 5;
+
+const buildSparseInventoryWarning = (
+	uniqueMaterialCount: number,
+): string | null => {
+	if (uniqueMaterialCount >= MIN_UNIQUE_RAW_MATERIALS_WITHOUT_WARNING) {
+		return null;
+	}
+
+	const materialWord = uniqueMaterialCount === 1 ? "material" : "materials";
+	return `> **Note:** You only have **${uniqueMaterialCount}** available raw ${materialWord} in inventory. A strict inventory-only formula may be very limited. Consider **Inventory first (guided additions)** next time if you want suggested materials beyond what you own.\n\n`;
+};
+
+const buildMarkdownReturnInstructions = (
+	inventoryMode: CompositionConversationState["inventoryMode"],
+): string => {
+	if (inventoryMode === "inventory_guided") {
+		return `Return markdown for inventory_guided ONLY (two sections, combined 100%):
+1) A brief rationale
+2) **Starter formula (inventory only)** — ONLY allowed inventory materials. Material Name 10% dilution - 18% per line.
+3) **Suggested additions (not in inventory)** — ONLY materials NOT on the allowed list. Same line format. At least one line.
+4) **Total formula %: 100** — section 2 plus section 3 must add up to 100.
+5) 2-4 quick adjustment tips
+
+Do NOT use the inventory_only single-section format.`;
+	}
+
+	if (inventoryMode === "inventory_only") {
+		return `Return markdown for inventory_only ONLY (one section, 100% from inventory):
+1) A brief rationale
+2) Starter formula — ONLY allowed inventory materials. One bullet per line: Material Name 10% dilution - 18%. Formula % in THIS section alone MUST sum to exactly 100. End with: **Total formula %: 100**
+3) 2-4 quick adjustment tips
+
+Do NOT include "Suggested additions (not in inventory)". Do NOT use the inventory_guided two-section format.
+
+Example line: Aldehyde C12 (Lemon) 10% dilution - 18%`;
+	}
+
+	return `Return markdown for suggest_any:
+1) A brief rationale
+2) Starter formula — Material Name 10% dilution - 18% per line. Formula % MUST sum to exactly 100. **Total formula %: 100**
+3) 2-4 quick adjustment tips`;
+};
+
+const buildInventoryPromptSection = (
+	inventoryMode: CompositionConversationState["inventoryMode"],
+	availableDilutions: AvailableDilution[],
+): string => {
+	const allowedList = formatAllowedInventoryMaterialNames(availableDilutions);
+	const dilutionsList = formatAvailableDilutionsForPrompt(availableDilutions, {
+		includeInternalIds: false,
+	});
+
+	if (inventoryMode === "inventory_only") {
+		return `\n\n=== inventory_only ===
+Allowed inventory materials (the ENTIRE formula must use only these; 100% total in one section):
+${allowedList}
+
+Available inventory dilutions (pick one dilution % per material):
+${dilutionsList}`;
+	}
+
+	if (inventoryMode === "inventory_guided") {
+		return `\n\n=== inventory_guided ===
+Allowed inventory materials (section "Starter formula (inventory only)" ONLY):
+${allowedList}
+
+Available inventory dilutions (pick one dilution % per material for section 2):
+${dilutionsList}
+
+Materials not on the allowed list go ONLY in "Suggested additions (not in inventory)". Sections 2 + 3 formula % must total 100.`;
+	}
+
+	return "";
 };
 
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
 	availableDilutions: AvailableDilution[] | null,
 ): Promise<string> => {
+	const inventoryMode = state.inventoryMode ?? "suggest_any";
+
 	const system = `You are a senior perfumer helping draft starter formulas.
 
 Rules:
 - Stay strictly within perfumery/formulation context.
 - Provide a practical starter formula, not a final formula.
-- Keep total formula percentages approximately 100%.
+- Formula % = share of the final blend. Dilution % = stock strength only. Never confuse them.
+- Follow ONLY the ACTIVE MODE rules below for this request. Do not mix inventory_only with inventory_guided.
+- Use whole numbers for percents when there is no fractional part (10% not 10.0%, Total formula %: 100 not 100.0).
+- ${FORMULA_LINE_FORMAT}
 - If details are missing, make reasonable assumptions and state them briefly.
 - Inventory handling:
-${buildInventorySystemRule(state.inventoryMode)}
+${buildInventorySystemRule(inventoryMode)}
 - Output clean markdown only.`;
 
 	const inventorySection =
-		availableDilutions !== null
-			? `\n\nAvailable inventory dilutions (authoritative list):\n${formatAvailableDilutionsForPrompt(availableDilutions)}`
+		availableDilutions !== null &&
+		(inventoryMode === "inventory_only" || inventoryMode === "inventory_guided")
+			? buildInventoryPromptSection(inventoryMode, availableDilutions)
 			: "";
 
 	const prompt = `Create a starter ${
@@ -213,10 +300,7 @@ ${buildInventorySystemRule(state.inventoryMode)}
 
 ${buildContextSummary(state)}${inventorySection}
 
-Return markdown with:
-1) A brief rationale
-2) Starter formula as bullet list with material, dilution %, and formula %
-3) 2-4 quick adjustment tips`;
+${buildMarkdownReturnInstructions(inventoryMode)}`;
 
 	const result = await generateText({
 		model: openai("gpt-4o-mini"),
@@ -419,10 +503,23 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 						}
 
 						try {
-							const reply = await generateFormulaSuggestion(
+							let reply = await generateFormulaSuggestion(
 								state,
 								availableDilutions,
 							);
+
+							if (
+								state.inventoryMode === "inventory_only" &&
+								availableDilutions !== null
+							) {
+								const warning = buildSparseInventoryWarning(
+									countUniqueRawMaterials(availableDilutions),
+								);
+								if (warning) {
+									reply = warning + reply;
+								}
+							}
+
 							return jsonResponse(
 								{
 									success: true,

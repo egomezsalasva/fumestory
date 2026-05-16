@@ -58,21 +58,76 @@ export async function getAvailableDilutions(
 	}));
 }
 
+export function countUniqueRawMaterials(
+	dilutions: AvailableDilution[],
+): number {
+	return new Set(dilutions.map((d) => d.rawMaterialId)).size;
+}
+
+export function formatAllowedInventoryMaterialNames(
+	dilutions: AvailableDilution[],
+): string {
+	const names = new Set<string>();
+	for (const d of dilutions) {
+		const name =
+			d.materialLabel && d.materialLabel !== d.materialName
+				? `${d.materialName} (${d.materialLabel})`
+				: d.materialName;
+		names.add(name);
+	}
+	return [...names]
+		.sort()
+		.map((n) => `- ${n}`)
+		.join("\n");
+}
+
+/** e.g. 10 → "10", 10.5 → "10.5" (no trailing .0) */
+export function formatPercent(value: number): string {
+	const n = Number(value);
+	if (!Number.isFinite(n)) return String(value);
+	if (Math.abs(n - Math.round(n)) < 1e-9) {
+		return String(Math.round(n));
+	}
+	return String(parseFloat(n.toFixed(4)));
+}
+
 export function formatAvailableDilutionsForPrompt(
 	dilutions: AvailableDilution[],
+	options?: { includeInternalIds?: boolean },
 ): string {
 	if (dilutions.length === 0) {
 		return "(none)";
 	}
 
-	return dilutions
-		.map((d) => {
+	const includeInternalIds = options?.includeInternalIds ?? false;
+
+	const byMaterial = new Map<number, AvailableDilution[]>();
+	for (const d of dilutions) {
+		const group = byMaterial.get(d.rawMaterialId) ?? [];
+		group.push(d);
+		byMaterial.set(d.rawMaterialId, group);
+	}
+
+	return [...byMaterial.values()]
+		.map((group) => {
+			const first = group[0];
 			const label =
-				d.materialLabel && d.materialLabel !== d.materialName
-					? `${d.materialName} (${d.materialLabel})`
-					: d.materialName;
-			const note = d.noteType ? ` · ${d.noteType}` : "";
-			return `- dilution_id=${d.dilutionId}: ${label} - ${d.percentage}%${note}`;
+				first.materialLabel && first.materialLabel !== first.materialName
+					? `${first.materialName} (${first.materialLabel})`
+					: first.materialName;
+			const note = first.noteType ? ` · ${first.noteType}` : "";
+			const optionsText = group
+				.map((d) =>
+					includeInternalIds
+						? `dilution_id=${d.dilutionId} ${formatPercent(d.percentage)}%`
+						: `${formatPercent(d.percentage)}%`,
+				)
+				.join(", ");
+			const pickHint =
+				group.length > 1
+					? " — use exactly one of these dilutions in the formula"
+					: "";
+			return `- ${label}${note}: ${optionsText}${pickHint}`;
 		})
 		.join("\n");
 }
