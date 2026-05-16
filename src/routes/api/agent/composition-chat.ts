@@ -6,6 +6,11 @@ import {
 	createInitialCompositionConversationState,
 	type CompositionConversationState,
 } from "@/agent/composition-chat/flow";
+import {
+	type AvailableDilution,
+	formatAvailableDilutionsForPrompt,
+	getAvailableDilutions,
+} from "@/agent/tools/getAvailableDilutions";
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
@@ -169,32 +174,48 @@ const buildContextSummary = (state: CompositionConversationState): string => {
 	return lines.map((l) => `- ${l}`).join("\n");
 };
 
+const buildInventorySystemRule = (
+	inventoryMode: CompositionConversationState["inventoryMode"],
+): string => {
+	switch (inventoryMode) {
+		case "inventory_only":
+			return `- inventory_only: use ONLY dilutions from the "Available inventory dilutions" list in the user message. Every starter formula line must match a list entry (material name and dilution %). Do not suggest any material or dilution not in that list. If the idea cannot be achieved with the list, say so briefly and propose the best possible formula from what is available.`;
+		case "inventory_guided":
+			return `- inventory_guided: build the main starter formula from the "Available inventory dilutions" list. Any material not in that list may appear only in a separate section titled "Suggested additions (not in inventory)".`;
+		default:
+			return `- suggest_any: suggest best overall materials regardless of inventory.`;
+	}
+};
+
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
+	availableDilutions: AvailableDilution[] | null,
 ): Promise<string> => {
 	const system = `You are a senior perfumer helping draft starter formulas.
 
 Rules:
 - Stay strictly within perfumery/formulation context.
 - Provide a practical starter formula, not a final formula.
-- Include dilution suggestions per material where helpful.
 - Keep total formula percentages approximately 100%.
 - If details are missing, make reasonable assumptions and state them briefly.
 - Inventory handling:
-  - inventory_only: use only materials presumed in the user's inventory.
-  - inventory_guided: prioritize inventory, but include suggested additions/substitutions where needed.
-  - suggest_any: suggest best overall materials regardless of inventory.
+${buildInventorySystemRule(state.inventoryMode)}
 - Output clean markdown only.`;
+
+	const inventorySection =
+		availableDilutions !== null
+			? `\n\nAvailable inventory dilutions (authoritative list):\n${formatAvailableDilutionsForPrompt(availableDilutions)}`
+			: "";
 
 	const prompt = `Create a starter ${
 		state.target === "accord" ? "accord" : "perfume"
 	} formula from this context:
 
-${buildContextSummary(state)}
+${buildContextSummary(state)}${inventorySection}
 
 Return markdown with:
 1) A brief rationale
-2) Starter formula as bullet list with material, dilution, and %
+2) Starter formula as bullet list with material, dilution %, and formula %
 3) 2-4 quick adjustment tips`;
 
 	const result = await generateText({
@@ -370,8 +391,38 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 
 						setState(userId, state);
 
+						const needsInventory =
+							state.inventoryMode === "inventory_only" ||
+							state.inventoryMode === "inventory_guided";
+
+						let availableDilutions: AvailableDilution[] | null = null;
+						if (needsInventory) {
+							availableDilutions = await getAvailableDilutions(userId);
+						}
+
+						if (
+							state.inventoryMode === "inventory_only" &&
+							availableDilutions !== null &&
+							availableDilutions.length === 0
+						) {
+							return jsonResponse(
+								{
+									success: true,
+									reply:
+										"You don't have any available dilutions yet. Add at least one dilution, then try again.",
+									interaction: choices([
+										{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
+									]),
+								},
+								200,
+							);
+						}
+
 						try {
-							const reply = await generateFormulaSuggestion(state);
+							const reply = await generateFormulaSuggestion(
+								state,
+								availableDilutions,
+							);
 							return jsonResponse(
 								{
 									success: true,
