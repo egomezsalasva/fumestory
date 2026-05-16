@@ -1,9 +1,15 @@
+import type { z } from "zod";
+import { FormulaProposalTable } from "@/agent/ui/FormulaProposalTable";
+import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+
+type FormulaProposal = z.infer<typeof suggestAnyFormulaProposalSchema>;
 
 export type ChatMessage = {
 	role: "user" | "assistant";
 	content: string;
+	formulaProposal?: FormulaProposal;
 };
 
 export type ChatChoiceOption = {
@@ -100,40 +106,137 @@ export function ChatPanel({
 								}`}
 							>
 								{msg.role === "assistant" ? (
-									<div className="prose prose-invert prose-sm max-w-none">
-										<ReactMarkdown
-											components={{
-												h3: ({ children }) => (
-													<h3 className="text-base font-semibold mt-3 mb-2 text-slate-100">
-														{children}
-													</h3>
-												),
-												strong: ({ children }) => (
-													<strong className="font-semibold text-slate-50">
-														{children}
-													</strong>
-												),
-												ul: ({ children }) => (
-													<ul className="list-disc list-inside space-y-1 my-2">
-														{children}
-													</ul>
-												),
-												li: ({ children }) => (
-													<li className="text-slate-200">{children}</li>
-												),
-												p: ({ children }) => (
-													<p className="mb-2 last:mb-0 leading-relaxed">
-														{children}
-													</p>
-												),
-												hr: () => (
-													<hr className="mt-6 mb-2 w-full border-0 border-t border-slate-500/50 py-2" />
-												),
-											}}
-										>
-											{msg.content}
-										</ReactMarkdown>
-									</div>
+									<>
+										{msg.formulaProposal ? (
+											<>
+												<div className="prose prose-invert prose-sm max-w-none">
+													<ReactMarkdown
+														components={{
+															h3: ({ children }) => (
+																<h3 className="text-base font-semibold mt-3 mb-2 text-slate-100">
+																	{children}
+																</h3>
+															),
+															strong: ({ children }) => (
+																<strong className="font-semibold text-slate-50">
+																	{children}
+																</strong>
+															),
+															ul: ({ children }) => (
+																<ul className="list-disc list-inside space-y-1 my-2">
+																	{children}
+																</ul>
+															),
+															li: ({ children }) => (
+																<li className="text-slate-200">{children}</li>
+															),
+															p: ({ children }) => (
+																<p className="mb-2 last:mb-0 leading-relaxed">
+																	{children}
+																</p>
+															),
+															hr: () => (
+																<hr className="mt-6 mb-2 w-full border-0 border-t border-slate-500/50 py-2" />
+															),
+														}}
+													>
+														{msg.formulaProposal.rationale}
+													</ReactMarkdown>
+												</div>
+
+												<p className="mt-3 mb-2 text-sm font-semibold text-slate-50">
+													Starter formula
+												</p>
+												<div className="overflow-x-auto">
+													<FormulaProposalTable
+														lines={msg.formulaProposal.lines}
+													/>
+												</div>
+
+												{(() => {
+													const rationale =
+														msg.formulaProposal.rationale.trim();
+													const footer = msg.content.startsWith(rationale)
+														? msg.content.slice(rationale.length).trimStart()
+														: msg.content;
+
+													return footer ? (
+														<div className="prose prose-invert prose-sm max-w-none mt-3">
+															<ReactMarkdown
+																components={{
+																	h3: ({ children }) => (
+																		<h3 className="text-base font-semibold mt-3 mb-2 text-slate-100">
+																			{children}
+																		</h3>
+																	),
+																	strong: ({ children }) => (
+																		<strong className="font-semibold text-slate-50">
+																			{children}
+																		</strong>
+																	),
+																	ul: ({ children }) => (
+																		<ul className="list-disc list-inside space-y-1 my-2">
+																			{children}
+																		</ul>
+																	),
+																	li: ({ children }) => (
+																		<li className="text-slate-200">
+																			{children}
+																		</li>
+																	),
+																	p: ({ children }) => (
+																		<p className="mb-2 last:mb-0 leading-relaxed">
+																			{children}
+																		</p>
+																	),
+																	hr: () => (
+																		<hr className="mt-6 mb-2 w-full border-0 border-t border-slate-500/50 py-2" />
+																	),
+																}}
+															>
+																{footer}
+															</ReactMarkdown>
+														</div>
+													) : null;
+												})()}
+											</>
+										) : (
+											<div className="prose prose-invert prose-sm max-w-none">
+												<ReactMarkdown
+													components={{
+														h3: ({ children }) => (
+															<h3 className="text-base font-semibold mt-3 mb-2 text-slate-100">
+																{children}
+															</h3>
+														),
+														strong: ({ children }) => (
+															<strong className="font-semibold text-slate-50">
+																{children}
+															</strong>
+														),
+														ul: ({ children }) => (
+															<ul className="list-disc list-inside space-y-1 my-2">
+																{children}
+															</ul>
+														),
+														li: ({ children }) => (
+															<li className="text-slate-200">{children}</li>
+														),
+														p: ({ children }) => (
+															<p className="mb-2 last:mb-0 leading-relaxed">
+																{children}
+															</p>
+														),
+														hr: () => (
+															<hr className="mt-6 mb-2 w-full border-0 border-t border-slate-500/50 py-2" />
+														),
+													}}
+												>
+													{msg.content}
+												</ReactMarkdown>
+											</div>
+										)}
+									</>
 								) : (
 									<p className="whitespace-pre-wrap leading-relaxed">
 										{msg.content}

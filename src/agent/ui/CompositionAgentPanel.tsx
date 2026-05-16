@@ -4,18 +4,36 @@ import {
 	type ChatChoiceOption,
 	type ChatMessage,
 } from "@/components/ChatPanel";
+import type { z } from "zod";
+import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { authedFetch } from "@/utils/authed-fetch";
+
+type SuggestAnyFormulaProposal = z.infer<
+	typeof suggestAnyFormulaProposalSchema
+>;
 
 type ChatResponse = {
 	success?: boolean;
 	reply?: string;
 	error?: string;
 	resetConversation?: boolean;
+	proposal?: SuggestAnyFormulaProposal;
 	interaction?: {
 		kind: "choice";
 		options: ChatChoiceOption[];
 	};
 };
+
+function assistantMessage(
+	reply: string,
+	proposal?: SuggestAnyFormulaProposal,
+): ChatMessage {
+	return {
+		role: "assistant",
+		content: reply,
+		...(proposal ? { formulaProposal: proposal } : {}),
+	};
+}
 
 export function CompositionAgentPanel() {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -35,7 +53,6 @@ export function CompositionAgentPanel() {
 		try {
 			data = (await response.json()) as ChatResponse;
 		} catch {
-			// Non-JSON response (e.g. HTML error page)
 			data = { error: `Request failed (${response.status})` };
 		}
 
@@ -54,9 +71,9 @@ export function CompositionAgentPanel() {
 		const reply =
 			data.reply ?? "Sorry, I encountered an error. Please try again.";
 		if (data.resetConversation) {
-			setMessages([{ role: "assistant", content: reply }]);
+			setMessages([assistantMessage(reply, data.proposal)]);
 		} else {
-			setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+			setMessages((prev) => [...prev, assistantMessage(reply, data.proposal)]);
 		}
 
 		if (
@@ -73,7 +90,7 @@ export function CompositionAgentPanel() {
 
 	useEffect(() => {
 		if (didBootstrapRef.current) {
-			setIsLoading(false); // prevent dev strict-mode stuck loading
+			setIsLoading(false);
 			return;
 		}
 		didBootstrapRef.current = true;

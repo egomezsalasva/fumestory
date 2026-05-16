@@ -14,18 +14,28 @@ import {
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
-import { formulaProposalToMarkdown } from "@/agent/utils/formulaProposalToMarkdown";
+import type { z } from "zod";
 import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
+
+type SuggestAnyFormulaProposal = z.infer<
+	typeof suggestAnyFormulaProposalSchema
+>;
 
 type ChatResponse = {
 	success: boolean;
 	reply: string;
+	proposal?: SuggestAnyFormulaProposal;
 	interaction?: {
 		kind: "choice";
 		options: Array<{ id: string; label: string }>;
 	};
 	resetConversation?: boolean;
+};
+
+type FormulaSuggestionResult = {
+	reply: string;
+	proposal?: SuggestAnyFormulaProposal;
 };
 
 const memoryState = new Map<string, CompositionConversationState>();
@@ -282,10 +292,19 @@ Rules:
 - dilutionPercent is not formulaPercent.
 - Whole numbers when exact (10 not 10.0).`;
 
+function formulaProposalToReplyMarkdown(
+	proposal: SuggestAnyFormulaProposal,
+): string {
+	const tips = proposal.adjustmentTips.map((t) => `- ${t}`).join("\n");
+	return [proposal.rationale.trim(), "", "**Adjustment tips**", "", tips].join(
+		"\n",
+	);
+}
+
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
 	availableDilutions: AvailableDilution[] | null,
-): Promise<string> => {
+): Promise<FormulaSuggestionResult> => {
 	const inventoryMode = state.inventoryMode ?? "suggest_any";
 
 	if (inventoryMode === "suggest_any") {
@@ -303,9 +322,14 @@ ${buildContextSummary(state)}`;
 		});
 
 		if (!result.output) {
-			return "I couldn't generate a formula suggestion right now.";
+			return {
+				reply: "I couldn't generate a formula suggestion right now.",
+			};
 		}
-		return formulaProposalToMarkdown(result.output);
+		return {
+			reply: formulaProposalToReplyMarkdown(result.output),
+			proposal: result.output,
+		};
 	}
 
 	const system = `You are a senior perfumer helping draft starter formulas.
@@ -342,9 +366,11 @@ ${buildMarkdownReturnInstructions(inventoryMode)}`;
 		prompt,
 	});
 
-	return (
-		result.text?.trim() || "I couldn't generate a formula suggestion right now."
-	);
+	return {
+		reply:
+			result.text?.trim() ||
+			"I couldn't generate a formula suggestion right now.",
+	};
 };
 
 export const Route = createFileRoute("/api/agent/composition-chat")({
@@ -537,10 +563,11 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 						}
 
 						try {
-							let reply = await generateFormulaSuggestion(
+							const generated = await generateFormulaSuggestion(
 								state,
 								availableDilutions,
 							);
+							let reply = generated.reply;
 
 							if (
 								state.inventoryMode === "inventory_only" &&
@@ -558,6 +585,9 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 								{
 									success: true,
 									reply,
+									...(generated.proposal
+										? { proposal: generated.proposal }
+										: {}),
 									interaction: choices([
 										{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
 									]),

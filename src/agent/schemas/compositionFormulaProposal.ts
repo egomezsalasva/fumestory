@@ -1,11 +1,21 @@
 import { z } from "zod";
 
+const FORMULA_TOTAL_TARGET = 100;
+const FORMULA_TOTAL_TOLERANCE = 0.1;
+
+function isFormulaTotalValid(
+	lines: Array<{ formulaPercent: number }>,
+): boolean {
+	const total = lines.reduce((sum, line) => sum + line.formulaPercent, 0);
+	return Math.abs(total - FORMULA_TOTAL_TARGET) <= FORMULA_TOTAL_TOLERANCE;
+}
+
+const formulaTotalErrorMessage = `formulaPercent values must sum to ${FORMULA_TOTAL_TARGET} (±${FORMULA_TOTAL_TOLERANCE}).`;
+
 export const compositionFormulaLineSchema = z.object({
 	materialDisplayName: z
 		.string()
-		.describe(
-			"Display name as in inventory, e.g. Aldehyde C12 (Lemon)",
-		),
+		.describe("Display name as in inventory, e.g. Aldehyde C12 (Lemon)"),
 	dilutionPercent: z
 		.number()
 		.describe("Stock dilution %, e.g. 10 — not formula %"),
@@ -23,20 +33,28 @@ export const compositionFormulaLineSchema = z.object({
 	section: z
 		.enum(["inventory", "addition"])
 		.optional()
-		.describe(
-			"inventory_guided only: inventory vs suggested addition",
-		),
+		.describe("inventory_guided only: inventory vs suggested addition"),
 });
 
-export const compositionFormulaProposalSchema = z.object({
-	rationale: z.string(),
-	lines: z.array(compositionFormulaLineSchema).min(1),
-	adjustmentTips: z
-		.array(z.string())
-		.min(1)
-		.max(4)
-		.describe("2–4 short tips"),
-});
+export const compositionFormulaProposalSchema = z
+	.object({
+		rationale: z.string(),
+		lines: z.array(compositionFormulaLineSchema).min(1),
+		adjustmentTips: z
+			.array(z.string())
+			.min(1)
+			.max(4)
+			.describe("2–4 short tips"),
+	})
+	.superRefine((value, ctx) => {
+		if (!isFormulaTotalValid(value.lines)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: formulaTotalErrorMessage,
+				path: ["lines"],
+			});
+		}
+	});
 
 export type CompositionFormulaLine = z.infer<
 	typeof compositionFormulaLineSchema
@@ -51,8 +69,18 @@ export const suggestAnyFormulaLineSchema = z.object({
 	formulaPercent: z.number(),
 });
 
-export const suggestAnyFormulaProposalSchema = z.object({
-	rationale: z.string(),
-	lines: z.array(suggestAnyFormulaLineSchema).min(1),
-	adjustmentTips: z.array(z.string()).min(1).max(4),
-});
+export const suggestAnyFormulaProposalSchema = z
+	.object({
+		rationale: z.string(),
+		lines: z.array(suggestAnyFormulaLineSchema).min(1),
+		adjustmentTips: z.array(z.string()).min(1).max(4),
+	})
+	.superRefine((value, ctx) => {
+		if (!isFormulaTotalValid(value.lines)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: formulaTotalErrorMessage,
+				path: ["lines"],
+			});
+		}
+	});
