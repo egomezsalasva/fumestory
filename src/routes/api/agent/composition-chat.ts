@@ -13,7 +13,10 @@ import {
 	formatAvailableDilutionsForPrompt,
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
-import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
+import {
+	inventoryGuidedFormulaProposalSchema,
+	suggestAnyFormulaProposalSchema,
+} from "@/agent/schemas/compositionFormulaProposal";
 import type { z } from "zod";
 import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
@@ -21,11 +24,14 @@ import { openai } from "@ai-sdk/openai";
 type SuggestAnyFormulaProposal = z.infer<
 	typeof suggestAnyFormulaProposalSchema
 >;
+type InventoryGuidedFormulaProposal = z.infer<
+	typeof inventoryGuidedFormulaProposalSchema
+>;
 
 type ChatResponse = {
 	success: boolean;
 	reply: string;
-	proposal?: SuggestAnyFormulaProposal;
+	proposal?: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal;
 	inventoryOnlyTotalWeight?: string;
 	interaction?: {
 		kind: "choice";
@@ -36,7 +42,7 @@ type ChatResponse = {
 
 type FormulaSuggestionResult = {
 	reply: string;
-	proposal?: SuggestAnyFormulaProposal;
+	proposal?: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal;
 };
 
 const memoryState = new Map<string, CompositionConversationState>();
@@ -293,18 +299,22 @@ const INVENTORY_GUIDED_OBJECT_SYSTEM_PROMPT = `You are a senior perfumer draftin
 
 Return JSON only (schema fields):
 - rationale
-- lines: materialDisplayName, dilutionPercent, formulaPercent
+- lines: materialDisplayName, dilutionPercent, formulaPercent, section
 - adjustmentTips: 2–4 strings
 
 Rules:
 - inventory_guided mode.
-- Include inventory-first + additions if needed.
-- Include at least one non-inventory suggestion when inventory is limiting.
+- Include BOTH inventory and additions in one formula total.
+- section is REQUIRED on every line:
+  - "inventory" for lines from allowed inventory list
+  - "addition" for lines not on allowed inventory list
+- Include at least one line with section "inventory".
+- Include at least one line with section "addition".
 - formulaPercent across ALL lines must sum to 100 (±0.1).
 - dilutionPercent is stock strength, not formulaPercent.`;
 
 function formulaProposalToReplyMarkdown(
-	proposal: SuggestAnyFormulaProposal,
+	proposal: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal,
 ): string {
 	const tips = proposal.adjustmentTips.map((t) => `- ${t}`).join("\n");
 	return [proposal.rationale.trim(), "", "**Adjustment tips**", "", tips].join(
@@ -312,7 +322,7 @@ function formulaProposalToReplyMarkdown(
 	);
 }
 
-async function generateValidatedProposal(
+async function generateValidatedSuggestAnyProposal(
 	system: string,
 	prompt: string,
 ): Promise<SuggestAnyFormulaProposal | null> {
@@ -344,6 +354,38 @@ async function generateValidatedProposal(
 	}
 }
 
+async function generateValidatedInventoryGuidedProposal(
+	system: string,
+	prompt: string,
+): Promise<InventoryGuidedFormulaProposal | null> {
+	const attempt = (extraInstruction?: string) =>
+		generateText({
+			model: openai("gpt-4o-mini"),
+			output: Output.object({ schema: inventoryGuidedFormulaProposalSchema }),
+			system,
+			prompt: extraInstruction ? `${prompt}\n\n${extraInstruction}` : prompt,
+		});
+
+	try {
+		const first = await attempt();
+		return first.output ?? null;
+	} catch {
+		try {
+			const second = await attempt(
+				[
+					"IMPORTANT: Return valid JSON matching schema.",
+					"Each line MUST include section: inventory or addition.",
+					"Include at least one inventory and one addition line.",
+					"formulaPercent values across all lines MUST sum to exactly 100 (±0.1).",
+				].join(" "),
+			);
+			return second.output ?? null;
+		} catch {
+			return null;
+		}
+	}
+}
+
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
 	availableDilutions: AvailableDilution[] | null,
@@ -366,17 +408,33 @@ ${modeRule}`;
 			? buildInventoryPromptSection(inventoryMode, availableDilutions)
 			: "";
 
+	const prompt = `${basePrompt}${inventorySection}`;
+
+	if (inventoryMode === "inventory_guided") {
+		const output = await generateValidatedInventoryGuidedProposal(
+			INVENTORY_GUIDED_OBJECT_SYSTEM_PROMPT,
+			prompt,
+		);
+
+		if (!output) {
+			return {
+				reply:
+					"I couldn't generate a valid formula right now. Please try again.",
+			};
+		}
+
+		return {
+			reply: formulaProposalToReplyMarkdown(output),
+			proposal: output,
+		};
+	}
+
 	const system =
 		inventoryMode === "suggest_any"
 			? SUGGEST_ANY_OBJECT_SYSTEM_PROMPT
-			: inventoryMode === "inventory_only"
-				? INVENTORY_ONLY_OBJECT_SYSTEM_PROMPT
-				: INVENTORY_GUIDED_OBJECT_SYSTEM_PROMPT;
+			: INVENTORY_ONLY_OBJECT_SYSTEM_PROMPT;
 
-	const output = await generateValidatedProposal(
-		system,
-		`${basePrompt}${inventorySection}`,
-	);
+	const output = await generateValidatedSuggestAnyProposal(system, prompt);
 
 	if (!output) {
 		return {

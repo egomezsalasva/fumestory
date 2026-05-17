@@ -13,17 +13,12 @@ function isFormulaTotalValid(
 const formulaTotalErrorMessage = `formulaPercent values must sum to ${FORMULA_TOTAL_TARGET} (±${FORMULA_TOTAL_TOLERANCE}).`;
 
 function sanitizeMaterialDisplayName(raw: string): string {
-	return (
-		raw
-			// "Rose Oil 10% dilution - 18%"
-			.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
-			// "Rose Oil 10% dilution"
-			.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
-			// "Rose Oil - 18%"
-			.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
-			.replace(/\s{2,}/g, " ")
-			.trim()
-	);
+	return raw
+		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
+		.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+		.replace(/\s{2,}/g, " ")
+		.trim();
 }
 
 const materialDisplayNameSchema = z
@@ -86,7 +81,7 @@ export type CompositionFormulaProposal = z.infer<
 >;
 
 export const suggestAnyFormulaLineSchema = z.object({
-	materialDisplayName: materialDisplayNameSchema, // <-- important fix
+	materialDisplayName: materialDisplayNameSchema,
 	dilutionPercent: z.number(),
 	formulaPercent: z.number(),
 });
@@ -106,3 +101,47 @@ export const suggestAnyFormulaProposalSchema = z
 			});
 		}
 	});
+
+export const inventoryGuidedFormulaLineSchema = z.object({
+	materialDisplayName: materialDisplayNameSchema,
+	dilutionPercent: z.number(),
+	formulaPercent: z.number(),
+	section: z.enum(["inventory", "addition"]),
+});
+
+export const inventoryGuidedFormulaProposalSchema = z
+	.object({
+		rationale: z.string(),
+		lines: z.array(inventoryGuidedFormulaLineSchema).min(1),
+		adjustmentTips: z.array(z.string()).min(1).max(4),
+	})
+	.superRefine((value, ctx) => {
+		if (!isFormulaTotalValid(value.lines)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: formulaTotalErrorMessage,
+				path: ["lines"],
+			});
+		}
+		if (!value.lines.some((line) => line.section === "inventory")) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "At least one inventory line is required.",
+				path: ["lines"],
+			});
+		}
+		if (!value.lines.some((line) => line.section === "addition")) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "At least one addition line is required.",
+				path: ["lines"],
+			});
+		}
+	});
+
+export type InventoryGuidedFormulaLine = z.infer<
+	typeof inventoryGuidedFormulaLineSchema
+>;
+export type InventoryGuidedFormulaProposal = z.infer<
+	typeof inventoryGuidedFormulaProposalSchema
+>;
