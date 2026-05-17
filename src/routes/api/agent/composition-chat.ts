@@ -135,6 +135,13 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 				]),
 			};
 
+		case "ask_inventory_only_total_weight":
+			return {
+				success: true,
+				reply:
+					"Before I generate the inventory-only formula, what total weight do you want? (e.g., 30g)",
+			};
+
 		case "review_formula":
 			return {
 				success: true,
@@ -183,6 +190,12 @@ const buildContextSummary = (state: CompositionConversationState): string => {
 		if (state.perfumeIntent === "idea") {
 			lines.push(`Perfume idea: ${state.perfumeIdea ?? "not provided"}`);
 		}
+	}
+
+	if (state.inventoryMode === "inventory_only") {
+		lines.push(
+			`Requested total batch weight: ${state.inventoryOnlyTotalWeight ?? "not provided"}`,
+		);
 	}
 
 	return lines.map((l) => `- ${l}`).join("\n");
@@ -309,11 +322,11 @@ async function generateValidatedProposal(
 			system,
 			prompt: extraInstruction ? `${prompt}\n\n${extraInstruction}` : prompt,
 		});
+
 	try {
 		const first = await attempt();
 		return first.output ?? null;
 	} catch {
-		// Retry once with explicit correction constraints
 		try {
 			const second = await attempt(
 				[
@@ -363,15 +376,88 @@ ${modeRule}`;
 		system,
 		`${basePrompt}${inventorySection}`,
 	);
+
 	if (!output) {
 		return {
 			reply: "I couldn't generate a valid formula right now. Please try again.",
 		};
 	}
+
 	return {
 		reply: formulaProposalToReplyMarkdown(output),
 		proposal: output,
 	};
+};
+
+const generateReviewFormulaResponse = async (
+	userId: string,
+	state: CompositionConversationState,
+) => {
+	const needsInventory =
+		state.inventoryMode === "inventory_only" ||
+		state.inventoryMode === "inventory_guided";
+
+	let availableDilutions: AvailableDilution[] | null = null;
+	if (needsInventory) {
+		availableDilutions = await getAvailableDilutions(userId);
+	}
+
+	if (
+		state.inventoryMode === "inventory_only" &&
+		availableDilutions !== null &&
+		availableDilutions.length === 0
+	) {
+		return jsonResponse(
+			{
+				success: true,
+				reply:
+					"You don't have any available dilutions yet. Add at least one dilution, then try again.",
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
+				]),
+			},
+			200,
+		);
+	}
+
+	try {
+		const generated = await generateFormulaSuggestion(state, availableDilutions);
+		let reply = generated.reply;
+
+		if (
+			state.inventoryMode === "inventory_only" &&
+			availableDilutions !== null
+		) {
+			const warning = buildSparseInventoryWarning(
+				countUniqueRawMaterials(availableDilutions),
+			);
+			if (warning) {
+				reply = warning + reply;
+			}
+		}
+
+		return jsonResponse(
+			{
+				success: true,
+				reply,
+				...(generated.proposal ? { proposal: generated.proposal } : {}),
+				interaction: choices([
+					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
+				]),
+			},
+			200,
+		);
+	} catch (error) {
+		console.error("[composition-chat] formula generation failed:", error);
+		return jsonResponse(
+			{
+				success: false,
+				reply:
+					"Sorry, I encountered an error generating the formula. Please try again.",
+			},
+			500,
+		);
+	}
 };
 
 export const Route = createFileRoute("/api/agent/composition-chat")({
@@ -536,92 +622,55 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 							return jsonResponse(questionFor(state), 200);
 						}
 
+						if (choiceId === COMPOSITION_CHOICE.INVENTORY_ONLY) {
+							state = {
+								...state,
+								inventoryMode: "inventory_only",
+								step: "ask_inventory_only_total_weight",
+							};
+							setState(userId, state);
+							return jsonResponse(questionFor(state), 200);
+						}
+
 						state = {
 							...state,
 							inventoryMode:
-								choiceId === COMPOSITION_CHOICE.INVENTORY_ONLY
-									? "inventory_only"
-									: choiceId === COMPOSITION_CHOICE.INVENTORY_GUIDED
-										? "inventory_guided"
-										: "suggest_any",
+								choiceId === COMPOSITION_CHOICE.INVENTORY_GUIDED
+									? "inventory_guided"
+									: "suggest_any",
 							step: "review_formula",
 						};
-
 						setState(userId, state);
+						return await generateReviewFormulaResponse(userId, state);
+					}
 
-						const needsInventory =
-							state.inventoryMode === "inventory_only" ||
-							state.inventoryMode === "inventory_guided";
-
-						let availableDilutions: AvailableDilution[] | null = null;
-						if (needsInventory) {
-							availableDilutions = await getAvailableDilutions(userId);
+					case "ask_inventory_only_total_weight": {
+						if (!message) {
+							return jsonResponse(questionFor(state), 200);
 						}
 
-						if (
-							state.inventoryMode === "inventory_only" &&
-							availableDilutions !== null &&
-							availableDilutions.length === 0
-						) {
+						const isValidWeight = /^\d+(\.\d+)?\s*(g|gram|grams|ml)?$/i.test(
+							message,
+						);
+
+						if (!isValidWeight) {
 							return jsonResponse(
 								{
 									success: true,
 									reply:
-										"You don't have any available dilutions yet. Add at least one dilution, then try again.",
-									interaction: choices([
-										{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
-									]),
+										"Please enter total weight as a number with optional unit, e.g. 30g or 50 ml.",
 								},
 								200,
 							);
 						}
 
-						try {
-							const generated = await generateFormulaSuggestion(
-								state,
-								availableDilutions,
-							);
-							let reply = generated.reply;
-
-							if (
-								state.inventoryMode === "inventory_only" &&
-								availableDilutions !== null
-							) {
-								const warning = buildSparseInventoryWarning(
-									countUniqueRawMaterials(availableDilutions),
-								);
-								if (warning) {
-									reply = warning + reply;
-								}
-							}
-
-							return jsonResponse(
-								{
-									success: true,
-									reply,
-									...(generated.proposal
-										? { proposal: generated.proposal }
-										: {}),
-									interaction: choices([
-										{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
-									]),
-								},
-								200,
-							);
-						} catch (error) {
-							console.error(
-								"[composition-chat] formula generation failed:",
-								error,
-							);
-							return jsonResponse(
-								{
-									success: false,
-									reply:
-										"Sorry, I encountered an error generating the formula. Please try again.",
-								},
-								500,
-							);
-						}
+						state = {
+							...state,
+							inventoryOnlyTotalWeight: message,
+							step: "review_formula",
+						};
+						setState(userId, state);
+						return await generateReviewFormulaResponse(userId, state);
 					}
 
 					case "review_formula": {

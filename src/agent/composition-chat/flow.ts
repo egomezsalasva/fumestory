@@ -28,6 +28,7 @@ export type CompositionStep =
 	| "describe_perfume_modification"
 	| "describe_perfume_idea"
 	| "pick_inventory_mode"
+	| "ask_inventory_only_total_weight"
 	| "review_formula";
 
 export type CompositionConversationState = {
@@ -47,6 +48,9 @@ export type CompositionConversationState = {
 
 	// Shared branch
 	inventoryMode?: "inventory_only" | "inventory_guided" | "suggest_any";
+
+	// inventory_only branch
+	inventoryOnlyTotalWeight?: string;
 };
 
 export function createInitialCompositionConversationState(): CompositionConversationState {
