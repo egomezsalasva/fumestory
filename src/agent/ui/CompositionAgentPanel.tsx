@@ -18,6 +18,7 @@ type ChatResponse = {
 	error?: string;
 	resetConversation?: boolean;
 	proposal?: SuggestAnyFormulaProposal;
+	inventoryOnlyTotalWeight?: string;
 	interaction?: {
 		kind: "choice";
 		options: ChatChoiceOption[];
@@ -27,11 +28,13 @@ type ChatResponse = {
 function assistantMessage(
 	reply: string,
 	proposal?: SuggestAnyFormulaProposal,
+	inventoryOnlyTotalWeight?: string,
 ): ChatMessage {
 	return {
 		role: "assistant",
 		content: reply,
 		...(proposal ? { formulaProposal: proposal } : {}),
+		...(inventoryOnlyTotalWeight ? { inventoryOnlyTotalWeight } : {}),
 	};
 }
 
@@ -71,9 +74,14 @@ export function CompositionAgentPanel() {
 		const reply =
 			data.reply ?? "Sorry, I encountered an error. Please try again.";
 		if (data.resetConversation) {
-			setMessages([assistantMessage(reply, data.proposal)]);
+			setMessages([
+				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
+			]);
 		} else {
-			setMessages((prev) => [...prev, assistantMessage(reply, data.proposal)]);
+			setMessages((prev) => [
+				...prev,
+				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
+			]);
 		}
 
 		if (
@@ -123,6 +131,7 @@ export function CompositionAgentPanel() {
 			cancelled = true;
 		};
 	}, []);
+
 	const handleSendMessage = async (message: string) => {
 		if (isLoading) return;
 		setMessages((prev) => [...prev, { role: "user", content: message }]);

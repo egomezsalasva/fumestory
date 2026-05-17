@@ -10,6 +10,7 @@ export type ChatMessage = {
 	role: "user" | "assistant";
 	content: string;
 	formulaProposal?: FormulaProposal;
+	inventoryOnlyTotalWeight?: string;
 };
 
 export type ChatChoiceOption = {
@@ -150,6 +151,9 @@ export function ChatPanel({
 												<div className="overflow-x-auto">
 													<FormulaProposalTable
 														lines={msg.formulaProposal.lines}
+														inventoryOnlyTotalWeight={
+															msg.inventoryOnlyTotalWeight
+														}
 													/>
 												</div>
 

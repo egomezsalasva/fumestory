@@ -13,18 +13,17 @@ function isFormulaTotalValid(
 const formulaTotalErrorMessage = `formulaPercent values must sum to ${FORMULA_TOTAL_TARGET} (±${FORMULA_TOTAL_TOLERANCE}).`;
 
 function sanitizeMaterialDisplayName(raw: string): string {
-	return raw
-		// "Rose Oil 10% dilution - 18%"
-		.replace(
-			/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i,
-			"",
-		)
-		// "Rose Oil 10% dilution"
-		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
-		// "Rose Oil - 18%"
-		.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
-		.replace(/\s{2,}/g, " ")
-		.trim();
+	return (
+		raw
+			// "Rose Oil 10% dilution - 18%"
+			.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+			// "Rose Oil 10% dilution"
+			.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
+			// "Rose Oil - 18%"
+			.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+			.replace(/\s{2,}/g, " ")
+			.trim()
+	);
 }
 
 const materialDisplayNameSchema = z

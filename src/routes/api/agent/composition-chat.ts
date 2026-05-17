@@ -26,6 +26,7 @@ type ChatResponse = {
 	success: boolean;
 	reply: string;
 	proposal?: SuggestAnyFormulaProposal;
+	inventoryOnlyTotalWeight?: string;
 	interaction?: {
 		kind: "choice";
 		options: Array<{ id: string; label: string }>;
@@ -421,7 +422,10 @@ const generateReviewFormulaResponse = async (
 	}
 
 	try {
-		const generated = await generateFormulaSuggestion(state, availableDilutions);
+		const generated = await generateFormulaSuggestion(
+			state,
+			availableDilutions,
+		);
 		let reply = generated.reply;
 
 		if (
@@ -441,6 +445,10 @@ const generateReviewFormulaResponse = async (
 				success: true,
 				reply,
 				...(generated.proposal ? { proposal: generated.proposal } : {}),
+				...(state.inventoryMode === "inventory_only" &&
+				state.inventoryOnlyTotalWeight
+					? { inventoryOnlyTotalWeight: state.inventoryOnlyTotalWeight }
+					: {}),
 				interaction: choices([
 					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
 				]),
