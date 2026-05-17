@@ -12,10 +12,33 @@ function isFormulaTotalValid(
 
 const formulaTotalErrorMessage = `formulaPercent values must sum to ${FORMULA_TOTAL_TARGET} (±${FORMULA_TOTAL_TOLERANCE}).`;
 
+function sanitizeMaterialDisplayName(raw: string): string {
+	return raw
+		// "Rose Oil 10% dilution - 18%"
+		.replace(
+			/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i,
+			"",
+		)
+		// "Rose Oil 10% dilution"
+		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
+		// "Rose Oil - 18%"
+		.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+		.replace(/\s{2,}/g, " ")
+		.trim();
+}
+
+const materialDisplayNameSchema = z
+	.string()
+	.min(1)
+	.transform((value) => sanitizeMaterialDisplayName(value))
+	.refine((value) => value.length > 0, {
+		message: "materialDisplayName must not be empty.",
+	});
+
 export const compositionFormulaLineSchema = z.object({
-	materialDisplayName: z
-		.string()
-		.describe("Display name as in inventory, e.g. Aldehyde C12 (Lemon)"),
+	materialDisplayName: materialDisplayNameSchema.describe(
+		"Display name as in inventory, e.g. Aldehyde C12 (Lemon)",
+	),
 	dilutionPercent: z
 		.number()
 		.describe("Stock dilution %, e.g. 10 — not formula %"),
@@ -64,7 +87,7 @@ export type CompositionFormulaProposal = z.infer<
 >;
 
 export const suggestAnyFormulaLineSchema = z.object({
-	materialDisplayName: z.string(),
+	materialDisplayName: materialDisplayNameSchema, // <-- important fix
 	dilutionPercent: z.number(),
 	formulaPercent: z.number(),
 });
