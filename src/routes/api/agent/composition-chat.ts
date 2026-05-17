@@ -298,6 +298,38 @@ function formulaProposalToReplyMarkdown(
 	);
 }
 
+async function generateValidatedProposal(
+	system: string,
+	prompt: string,
+): Promise<SuggestAnyFormulaProposal | null> {
+	const attempt = (extraInstruction?: string) =>
+		generateText({
+			model: openai("gpt-4o-mini"),
+			output: Output.object({ schema: suggestAnyFormulaProposalSchema }),
+			system,
+			prompt: extraInstruction ? `${prompt}\n\n${extraInstruction}` : prompt,
+		});
+	try {
+		const first = await attempt();
+		return first.output ?? null;
+	} catch {
+		// Retry once with explicit correction constraints
+		try {
+			const second = await attempt(
+				[
+					"IMPORTANT: Return valid JSON matching the schema.",
+					"formulaPercent values across all lines MUST sum to exactly 100 (±0.1).",
+					"Do not include formatting text like '10% dilution - 18%' inside materialDisplayName.",
+					"materialDisplayName must be only the material name.",
+				].join(" "),
+			);
+			return second.output ?? null;
+		} catch {
+			return null;
+		}
+	}
+}
+
 const generateFormulaSuggestion = async (
 	state: CompositionConversationState,
 	availableDilutions: AvailableDilution[] | null,
@@ -327,22 +359,18 @@ ${modeRule}`;
 				? INVENTORY_ONLY_OBJECT_SYSTEM_PROMPT
 				: INVENTORY_GUIDED_OBJECT_SYSTEM_PROMPT;
 
-	const result = await generateText({
-		model: openai("gpt-4o-mini"),
-		output: Output.object({ schema: suggestAnyFormulaProposalSchema }),
+	const output = await generateValidatedProposal(
 		system,
-		prompt: `${basePrompt}${inventorySection}`,
-	});
-
-	if (!result.output) {
+		`${basePrompt}${inventorySection}`,
+	);
+	if (!output) {
 		return {
-			reply: "I couldn't generate a formula suggestion right now.",
+			reply: "I couldn't generate a valid formula right now. Please try again.",
 		};
 	}
-
 	return {
-		reply: formulaProposalToReplyMarkdown(result.output),
-		proposal: result.output,
+		reply: formulaProposalToReplyMarkdown(output),
+		proposal: output,
 	};
 };
 
