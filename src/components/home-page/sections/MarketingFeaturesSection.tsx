@@ -41,7 +41,7 @@ const MarketingFeaturesSection = ({
 			<div className={styles.featuresGrid}>
 				<FeatureItem
 					title="Raw Material Inventory"
-					image="/inventory.png"
+					image="/inventory.webp"
 					styles={styles}
 				>
 					<p>
@@ -79,7 +79,7 @@ const MarketingFeaturesSection = ({
 
 				<FeatureItem
 					title="Formulas Agent"
-					image="/formulas.png"
+					image="/formulas.webp"
 					styles={styles}
 				>
 					<p>
@@ -98,7 +98,7 @@ const MarketingFeaturesSection = ({
 
 				<FeatureItem
 					title="From Idea To Formula"
-					image="/formulas.png"
+					image="/compositions-agent.webp"
 					styles={styles}
 				>
 					<p>
