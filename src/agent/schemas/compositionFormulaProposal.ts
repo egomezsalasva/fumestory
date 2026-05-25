@@ -1,4 +1,9 @@
 import { z } from "zod";
+import type { AvailableDilution } from "@/agent/tools/getAvailableDilutions";
+import {
+	inventoryRawMaterialIds,
+	resolveRawMaterialId,
+} from "@/agent/tools/getAvailableDilutions";
 
 const FORMULA_TOTAL_TARGET = 100;
 const FORMULA_TOTAL_TOLERANCE = 0.1;
@@ -17,6 +22,7 @@ function sanitizeMaterialDisplayName(raw: string): string {
 		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
 		.replace(/\s+\d+(?:\.\d+)?%\s*dilution\s*$/i, "")
 		.replace(/\s*-\s*\d+(?:\.\d+)?%\s*$/i, "")
+		.replace(/\s+\(addition\)\s*$/i, "")
 		.replace(/\s{2,}/g, " ")
 		.trim();
 }
@@ -145,3 +151,45 @@ export type InventoryGuidedFormulaLine = z.infer<
 export type InventoryGuidedFormulaProposal = z.infer<
 	typeof inventoryGuidedFormulaProposalSchema
 >;
+
+export function getInventoryGuidedAdditionViolations(
+	proposal: InventoryGuidedFormulaProposal,
+	dilutions: AvailableDilution[],
+): string[] {
+	const inventoryIds = inventoryRawMaterialIds(dilutions);
+	const violations: string[] = [];
+
+	for (const line of proposal.lines) {
+		if (line.section !== "addition") continue;
+
+		const rawMaterialId = resolveRawMaterialId(
+			line.materialDisplayName,
+			dilutions,
+		);
+
+		if (rawMaterialId !== null && inventoryIds.has(rawMaterialId)) {
+			violations.push(
+				`"${line.materialDisplayName}" is already in inventory and must not be an addition.`,
+			);
+		}
+	}
+
+	return violations;
+}
+
+export function createInventoryGuidedFormulaProposalSchema(
+	dilutions: AvailableDilution[],
+) {
+	return inventoryGuidedFormulaProposalSchema.superRefine((value, ctx) => {
+		for (const message of getInventoryGuidedAdditionViolations(
+			value,
+			dilutions,
+		)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message,
+				path: ["lines"],
+			});
+		}
+	});
+}

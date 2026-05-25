@@ -64,17 +64,42 @@ export function countUniqueRawMaterials(
 	return new Set(dilutions.map((d) => d.rawMaterialId)).size;
 }
 
+function materialDisplayName(d: AvailableDilution): string {
+	return d.materialLabel && d.materialLabel !== d.materialName
+		? `${d.materialName} (${d.materialLabel})`
+		: d.materialName;
+}
+
+function normalizeMaterialKey(name: string): string {
+	return name.trim().toLowerCase();
+}
+
+export function inventoryRawMaterialIds(
+	dilutions: AvailableDilution[],
+): Set<number> {
+	return new Set(dilutions.map((d) => d.rawMaterialId));
+}
+
+export function resolveRawMaterialId(
+	displayName: string,
+	dilutions: AvailableDilution[],
+): number | null {
+	const key = normalizeMaterialKey(displayName);
+	for (const d of dilutions) {
+		if (normalizeMaterialKey(materialDisplayName(d)) === key) {
+			return d.rawMaterialId;
+		}
+		if (normalizeMaterialKey(d.materialName) === key) {
+			return d.rawMaterialId;
+		}
+	}
+	return null;
+}
+
 export function formatAllowedInventoryMaterialNames(
 	dilutions: AvailableDilution[],
 ): string {
-	const names = new Set<string>();
-	for (const d of dilutions) {
-		const name =
-			d.materialLabel && d.materialLabel !== d.materialName
-				? `${d.materialName} (${d.materialLabel})`
-				: d.materialName;
-		names.add(name);
-	}
+	const names = new Set(dilutions.map((d) => materialDisplayName(d)));
 	return [...names]
 		.sort()
 		.map((n) => `- ${n}`)
@@ -111,10 +136,6 @@ export function formatAvailableDilutionsForPrompt(
 	return [...byMaterial.values()]
 		.map((group) => {
 			const first = group[0];
-			const label =
-				first.materialLabel && first.materialLabel !== first.materialName
-					? `${first.materialName} (${first.materialLabel})`
-					: first.materialName;
 			const note = first.noteType ? ` · ${first.noteType}` : "";
 			const optionsText = group
 				.map((d) =>
@@ -127,7 +148,7 @@ export function formatAvailableDilutionsForPrompt(
 				group.length > 1
 					? " — use exactly one of these dilutions in the formula"
 					: "";
-			return `- ${label}${note}: ${optionsText}${pickHint}`;
+			return `- ${materialDisplayName(first)}${note}: ${optionsText}${pickHint}`;
 		})
 		.join("\n");
 }

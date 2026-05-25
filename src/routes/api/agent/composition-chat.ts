@@ -14,6 +14,7 @@ import {
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
 import {
+	createInventoryGuidedFormulaProposalSchema,
 	inventoryGuidedFormulaProposalSchema,
 	suggestAnyFormulaProposalSchema,
 } from "@/agent/schemas/compositionFormulaProposal";
@@ -305,9 +306,9 @@ Return JSON only (schema fields):
 Rules:
 - inventory_guided mode.
 - Include BOTH inventory and additions in one formula total.
-- section is REQUIRED on every line:
-  - "inventory" for lines from allowed inventory list
-  - "addition" for lines not on allowed inventory list
+- section is REQUIRED on every line — never encode inventory vs addition in materialDisplayName:
+  - section "inventory": materialDisplayName MUST match the allowed inventory list exactly (including label in parentheses when listed).
+  - section "addition": materialDisplayName MUST be the standard material name (e.g. "Hedione", "Aldehyde C12 (Lemon)"). Do NOT copy the user's inventory "Name (Label)" format and do NOT append "(addition)".
 - Include at least one line with section "inventory".
 - Include at least one line with section "addition".
 - formulaPercent across ALL lines must sum to 100 (±0.1).
@@ -357,11 +358,14 @@ async function generateValidatedSuggestAnyProposal(
 async function generateValidatedInventoryGuidedProposal(
 	system: string,
 	prompt: string,
+	availableDilutions: AvailableDilution[],
 ): Promise<InventoryGuidedFormulaProposal | null> {
+	const schema = createInventoryGuidedFormulaProposalSchema(availableDilutions);
+
 	const attempt = (extraInstruction?: string) =>
 		generateText({
 			model: openai("gpt-4o-mini"),
-			output: Output.object({ schema: inventoryGuidedFormulaProposalSchema }),
+			output: Output.object({ schema }),
 			system,
 			prompt: extraInstruction ? `${prompt}\n\n${extraInstruction}` : prompt,
 		});
@@ -377,11 +381,26 @@ async function generateValidatedInventoryGuidedProposal(
 					"Each line MUST include section: inventory or addition.",
 					"Include at least one inventory and one addition line.",
 					"formulaPercent values across all lines MUST sum to exactly 100 (±0.1).",
+					"Addition lines MUST be materials the user does NOT already have in inventory.",
+					"Never put an allowed inventory material in section addition — use section inventory instead.",
+					'For section addition, do not append "(addition)" and do not copy inventory "Name (Label)" format. Standard names with parentheses (e.g. "Aldehyde C12 (Lemon)") are fine.',
 				].join(" "),
 			);
 			return second.output ?? null;
 		} catch {
-			return null;
+			try {
+				const third = await attempt(
+					[
+						"Your previous response incorrectly listed inventory materials as additions.",
+						"Replace every addition line with materials NOT on the allowed inventory list.",
+						"Keep inventory lines for materials the user already owns.",
+						'Do not append "(addition)" to materialDisplayName — use the section field only.',
+					].join(" "),
+				);
+				return third.output ?? null;
+			} catch {
+				return null;
+			}
 		}
 	}
 }
@@ -414,6 +433,7 @@ ${modeRule}`;
 		const output = await generateValidatedInventoryGuidedProposal(
 			INVENTORY_GUIDED_OBJECT_SYSTEM_PROMPT,
 			prompt,
+			availableDilutions ?? [],
 		);
 
 		if (!output) {
