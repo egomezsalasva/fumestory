@@ -239,11 +239,40 @@ function ManageDilutions() {
 													key={fb.id}
 													className="text-sm bg-slate-700/50 p-3 rounded"
 												>
-													<div className="flex justify-between items-start mb-1">
-														<span className="font-medium text-blue-300">
-															{fb.person_name}
-														</span>
-														<span className="text-xs text-slate-400">
+													<div className="flex justify-between items-start gap-2 mb-1.5">
+														<div className="flex flex-wrap items-center gap-2 min-w-0">
+															<span className="font-medium text-blue-300">
+																{fb.person_name}
+															</span>
+															{typeof fb.rating === "number" && (
+																<span
+																	className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5"
+																	title={`Guest rating: ${fb.rating} out of 5`}
+																>
+																	<span
+																		className="flex items-center gap-px leading-none"
+																		aria-hidden
+																	>
+																		{Array.from({ length: 5 }, (_, i) => (
+																			<span
+																				key={i}
+																				className={`text-[11px] ${
+																					i < fb.rating!
+																						? "text-amber-400"
+																						: "text-slate-600"
+																				}`}
+																			>
+																				★
+																			</span>
+																		))}
+																	</span>
+																	<span className="text-xs font-medium tabular-nums text-amber-200/90">
+																		{fb.rating}/5
+																	</span>
+																</span>
+															)}
+														</div>
+														<span className="text-xs text-slate-400 shrink-0">
 															{new Date(fb.created_at).toLocaleDateString()}
 														</span>
 													</div>

@@ -12,6 +12,7 @@ export type Feedback = {
 	id: number;
 	dilution_id: number;
 	person_name: string;
+	rating: number | null;
 	created_at: string;
 };
 
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/api/feedback")({
                         f.id,
                         f.dilution_id,
                         f.person_name,
+						f.rating,
                         f.created_at,
                         COALESCE(
                             json_agg(n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
@@ -53,7 +55,7 @@ export const Route = createFileRoute("/api/feedback")({
                     LEFT JOIN notes n ON fn.note_id = n.id
                     WHERE f.dilution_id = $1
   						AND rm.owner_id = $2
-                    GROUP BY f.id, f.dilution_id, f.person_name, f.created_at
+                    GROUP BY f.id, f.dilution_id, f.person_name, f.rating, f.created_at
                     ORDER BY f.created_at DESC
                 `;
 					const txResults = await client.transaction((txn) => [
@@ -85,10 +87,11 @@ export const Route = createFileRoute("/api/feedback")({
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
 					const body = await request.json();
-					const { dilution_id, person_name, notes } = body as {
+					const { dilution_id, person_name, notes, rating } = body as {
 						dilution_id: Feedback["dilution_id"];
 						person_name: Feedback["person_name"];
 						notes: FeedbackWithNotes["notes"];
+						rating?: Feedback["rating"];
 					};
 					if (!dilution_id || typeof dilution_id !== "number") {
 						return jsonResponse({ error: "Dilution ID is required" }, 400);
@@ -112,6 +115,17 @@ export const Route = createFileRoute("/api/feedback")({
 							return jsonResponse({ error: "Note is required" }, 400);
 						}
 						validNotes.push(note.trim());
+					}
+
+					let ratingToStore: Feedback["rating"] = null;
+					if (rating !== undefined && rating !== null) {
+						if (!Number.isInteger(rating) || rating < 0 || rating > 5) {
+							return jsonResponse(
+								{ error: "Rating must be an integer from 0 to 5" },
+								400,
+							);
+						}
+						ratingToStore = rating;
 					}
 
 					const ownTx = await client.transaction((txn) => [
@@ -164,11 +178,11 @@ export const Route = createFileRoute("/api/feedback")({
 						]),
 						txn.query(
 							`
-                        INSERT INTO feedback (dilution_id, person_name)
-                        VALUES ($1, $2)
-                        RETURNING id, dilution_id, person_name, created_at
+                        INSERT INTO feedback (dilution_id, person_name, rating)
+                        VALUES ($1, $2, $3)
+                        RETURNING id, dilution_id, person_name, rating, created_at
                     `,
-							[dilution_id, person_name.trim()],
+							[dilution_id, person_name.trim(), ratingToStore],
 						),
 					]);
 

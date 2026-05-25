@@ -7,6 +7,7 @@ import { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { Feedback } from "./api.feedback";
 
 export const Route = createFileRoute("/_dashboard/add-feedback")({
 	head: () => ({
@@ -22,8 +23,11 @@ function AddFeedback() {
 	const navigate = useNavigate();
 	const [rawMaterialId, setRawMaterialId] = useState<number | null>(null);
 	const [rawMaterialName, setRawMaterialName] = useState("");
-	const [dilutionId, setDilutionId] = useState<number | null>(null);
-	const [personName, setPersonName] = useState("");
+	const [dilutionId, setDilutionId] = useState<Feedback["dilution_id"] | null>(
+		null,
+	);
+	const [personName, setPersonName] = useState<Feedback["person_name"]>("");
+	const [rating, setRating] = useState<Feedback["rating"]>(null);
 	const [notes, setNotes] = useState<string[]>([]);
 	const [availableDilutions, setAvailableDilutions] = useState<Dilution[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -112,7 +116,8 @@ function AddFeedback() {
 				body: JSON.stringify({
 					dilution_id: dilutionId,
 					person_name: personName.trim(),
-					notes: notes,
+					notes,
+					rating,
 				}),
 			});
 
@@ -225,6 +230,43 @@ function AddFeedback() {
 							selectedNotes={notes}
 							onNotesChange={setNotes}
 						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-slate-300 mb-2">
+							Rating (optional)
+						</label>
+						<p className="text-xs text-slate-400 mb-2">
+							0 = lowest, 5 = highest. Leave unset if the guest prefers not to
+							rate.
+						</p>
+						<div className="flex flex-wrap gap-2">
+							{([0, 1, 2, 3, 4, 5] as const).map((value) => (
+								<button
+									key={value}
+									type="button"
+									onClick={() => setRating(value)}
+									className={`min-w-10 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+										rating === value
+											? "bg-blue-500 border-blue-500 text-white"
+											: "bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500"
+									}`}
+								>
+									{value}
+								</button>
+							))}
+							<button
+								type="button"
+								onClick={() => setRating(null)}
+								className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+									rating === null
+										? "bg-slate-600 border-slate-500 text-white"
+										: "bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500"
+								}`}
+							>
+								No rating
+							</button>
+						</div>
 					</div>
 
 					{/* Submit Button */}
