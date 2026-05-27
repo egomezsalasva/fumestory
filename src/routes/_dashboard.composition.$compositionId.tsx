@@ -149,7 +149,7 @@ function CompositionDetail() {
 									return (
 										<section key={f.id} className="mt-8">
 											<h2 className="text-lg font-semibold text-white mb-3">
-												Formula #{f.mods}
+												Formula (Mod) #{f.mods}
 											</h2>
 											{lines.length === 0 ? (
 												<p className="text-slate-400 text-sm">
