@@ -45,6 +45,8 @@ export function CompositionAgentPanel() {
 	);
 	const [isLoading, setIsLoading] = useState(false);
 
+	const hasUserResponded = messages.some((m) => m.role === "user");
+
 	const sendToApi = async (body: Record<string, string>) => {
 		const response = await authedFetch("/api/agent/composition-chat", {
 			method: "POST",
@@ -177,6 +179,12 @@ export function CompositionAgentPanel() {
 
 	return (
 		<ChatPanel
+			title={!hasUserResponded ? "Composition Agent" : undefined}
+			subtitle={
+				!hasUserResponded
+					? "This agent helps you come up with a strating formula for eiter an accord or a perfume.\nYou can pick materials from you inventory or let it suggest materials for you."
+					: undefined
+			}
 			messages={messages}
 			onSendMessage={handleSendMessage}
 			isLoading={isLoading}

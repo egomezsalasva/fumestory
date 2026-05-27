@@ -81,13 +81,17 @@ export function ChatPanel({
 		<div className={`w-full h-full min-h-0 ${className}`}>
 			<div className="bg-slate-800 rounded-lg border border-slate-700 h-full flex flex-col shadow-xl">
 				{(title || subtitle) && (
-					<div className="p-4 border-b border-slate-700">
-						{title && (
-							<h2 className="text-lg font-semibold text-white">{title}</h2>
-						)}
-						{subtitle && (
-							<p className="text-xs text-slate-400 mt-1">{subtitle}</p>
-						)}
+					<div className="p-3 border-b border-slate-700">
+						<div className="rounded-md bg-slate-700/40 px-3 py-2">
+							{title && (
+								<h2 className="text-md font-semibold text-white">{title}</h2>
+							)}
+							{subtitle && (
+								<p className="mt-1 whitespace-pre-wrap text-sm text-slate-400">
+									{subtitle}
+								</p>
+							)}
+						</div>
 					</div>
 				)}
 

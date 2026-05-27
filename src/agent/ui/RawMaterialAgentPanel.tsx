@@ -45,6 +45,8 @@ export function RawMaterialAgentPanel({
 	const [showAddNewMaterialAction, setShowAddNewMaterialAction] =
 		useState(false);
 
+	const hasUserResponded = messages.some((m) => m.role === "user");
+
 	const resetConversation = () => {
 		setChoiceOptions(null);
 		setPendingProposal(null);
@@ -193,6 +195,12 @@ export function RawMaterialAgentPanel({
 
 	return (
 		<ChatPanel
+			title={!hasUserResponded ? "Raw Materials Agent" : undefined}
+			subtitle={
+				!hasUserResponded
+					? "This agent helps you fetch the raw material information you need to autofill the form."
+					: undefined
+			}
 			messages={messages}
 			onSendMessage={handleSendMessage}
 			isLoading={isLoading}
