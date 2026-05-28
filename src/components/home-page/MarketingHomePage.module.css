@@ -259,7 +259,7 @@
 
 .featuresContainer {
 	margin: 0 5.25rem;
-	padding-top: 8rem;
+	padding-top: 12rem;
 }
 
 .featuresContainer h2 {
@@ -553,4 +553,32 @@
 	justify-content: center;
 	align-items: center;
 	text-decoration: none;
+}
+
+.missionContainer {
+	margin: 0 5.25rem;
+	padding-top: 12rem;
+	text-align: center;
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(16, 1fr);
+}
+
+.missionContent {
+	grid-column: 5 / span 8;
+}
+
+.missionContainer h2 {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 3rem;
+	line-height: 1.1;
+	margin-bottom: 1.75rem;
+}
+
+.missionDescription {
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 1.5rem;
+	line-height: 1.4;
 }

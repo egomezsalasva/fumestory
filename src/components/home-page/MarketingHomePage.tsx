@@ -5,6 +5,7 @@ import MarketingInterfaceSection from "./sections/MarketingInterfaceSection";
 import MarketingFeaturesSection from "./sections/MarketingFeaturesSection";
 import MarketingRoadmapSection from "./sections/MarketingRoadmapSection";
 import styles from "./MarketingHomePage.module.css";
+import MarketingMissionSection from "./sections/MarketingMissionSection";
 
 const MarketingHomePage = () => {
 	const { data } = authClient.useSession();
@@ -16,6 +17,7 @@ const MarketingHomePage = () => {
 			<div className={styles.content}>
 				<MarketingHeroSection isLoggedIn={isLoggedIn} styles={styles} />
 				<MarketingInterfaceSection styles={styles} />
+				<MarketingMissionSection styles={styles} />
 				<MarketingFeaturesSection styles={styles} />
 				<MarketingRoadmapSection styles={styles} isLoggedIn={isLoggedIn} />
 			</div>
