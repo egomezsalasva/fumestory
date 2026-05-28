@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import styles from "./Form.module.css";
 
 type Category = {
 	id: number;
@@ -9,12 +10,14 @@ type CategoryAutocompleteProps = {
 	label: string;
 	value: string;
 	onSelect: (categoryId: number, categoryName: string) => void;
+	required?: boolean;
 };
 
 export function CategoryAutocomplete({
 	label,
 	value,
 	onSelect,
+	required,
 }: CategoryAutocompleteProps) {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [search, setSearch] = useState(value);
@@ -59,8 +62,8 @@ export function CategoryAutocomplete({
 
 	return (
 		<div className="relative">
-			<label className="block text-sm font-medium text-gray-300 mb-2">
-				{label}
+			<label className={styles.formLabel}>
+				{label} {required && "*"}
 			</label>
 			<input
 				type="text"
@@ -71,8 +74,9 @@ export function CategoryAutocomplete({
 				}}
 				onFocus={() => setShowDropdown(true)}
 				onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-				placeholder="Search or add category..."
+				className={styles.formInput}
+				placeholder="e.g. Woody"
+				required
 			/>
 
 			{showDropdown && (

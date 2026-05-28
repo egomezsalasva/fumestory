@@ -4,6 +4,7 @@ import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields"
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import styles from "@/components/Form.module.css";
 
 export const Route = createFileRoute("/_dashboard/add-formula/$compositionId")({
 	head: () => ({
@@ -147,11 +148,9 @@ function AddFormula() {
 			}}
 		>
 			<div className="max-w-170 mx-auto">
-				<form
-					onSubmit={handleSubmit}
-					className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
-				>
+				<form onSubmit={handleSubmit} className={styles.formContainer}>
 					<FormulaIngredientsFields
+						styleHeader={{ marginBottom: "1.5rem" }}
 						onIngredientsChange={setIngredients}
 						prefillIngredients={prefillIngredients}
 						headerRight={
@@ -159,7 +158,12 @@ function AddFormula() {
 								type="button"
 								onClick={handleAutofillFromPrevious}
 								disabled={isAutofilling || isSubmitting}
-								className="px-2.5 py-1.5 rounded-md bg-slate-700 text-xs text-slate-200 hover:bg-slate-600 transition-colors border border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+								className={styles.formSubmitButton}
+								style={{
+									padding: "0.375rem 1.5rem",
+									fontWeight: "400",
+									fontSize: "0.875rem",
+								}}
 							>
 								{isAutofilling
 									? "Autofilling..."
@@ -168,13 +172,18 @@ function AddFormula() {
 						}
 					/>
 
-					<button
-						type="submit"
-						disabled={isSubmitting}
-						className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+					<div
+						className={styles.formSubmitButtonContainer}
+						style={{ marginTop: "0" }}
 					>
-						{isSubmitting ? "Submitting..." : "Create Formula"}
-					</button>
+						<button
+							type="submit"
+							disabled={isSubmitting}
+							className={styles.formSubmitButton}
+						>
+							{isSubmitting ? "Submitting..." : "+ Create Formula"}
+						</button>
+					</div>
 				</form>
 
 				{error && (

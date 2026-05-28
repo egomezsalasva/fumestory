@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
+import styles from "./Form.module.css";
 
 type LabelInputProps = {
 	label: string;
@@ -89,9 +90,7 @@ export function LabelInput({
 
 	return (
 		<div className="relative">
-			<label className="block text-sm font-medium text-slate-200 mb-2">
-				{label}
-			</label>
+			<label className={styles.formLabel}>{label}</label>
 			<input
 				type="text"
 				value={value}
@@ -100,9 +99,7 @@ export function LabelInput({
 				onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
 				placeholder={placeholder}
 				required={required}
-				className={`w-full px-4 py-2 bg-slate-700 text-white rounded-lg border ${
-					error ? "border-red-500" : "border-slate-600"
-				} focus:outline-none focus:border-blue-500`}
+				className={`${styles.formInput} ${error ? styles.formInputError : ""}`}
 			/>
 
 			{/* Error message */}

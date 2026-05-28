@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import styles from "@/components/Form.module.css";
 
 export const Route = createFileRoute("/_dashboard/add-dilution")({
 	head: () => ({
@@ -90,67 +91,66 @@ function AddDilution() {
 			title="Raw Materials Inventory / Add Dilution"
 			backButton={{ to: "/inventory" }}
 		>
-			<form
-				onSubmit={handleSubmit}
-				className="bg-slate-800 rounded-lg p-6 max-w-170 mx-auto"
-			>
-				<div className="space-y-6">
-					{/* Raw Material Selector */}
-					<RawMaterialAutocomplete
-						label="Raw Material *"
-						value={rawMaterialSearch}
-						onSelect={(id, name) => {
-							setSelectedRawMaterialId(id);
-							setRawMaterialSearch(name);
-							setError("");
-						}}
-					/>
-					{/* Percentage Field */}
-					<NumberInput
-						label="Percentage"
-						value={percentage}
-						onChange={(value) => {
-							setPercentage(value);
-							setError("");
-						}}
-						placeholder="e.g. 10"
-						required
-						min={0}
-						max={100}
-					/>
-					<NumberInput
-						label="Batch weight (g) (optional)"
-						value={batchWeightGrams}
-						onChange={(value) => {
-							setBatchWeightGrams(value);
-							setError("");
-						}}
-						placeholder="e.g. 5"
-						min={0}
-						step="any"
-					/>
-					{/* Dilution Date Field */}
-					<DateTimeInput
-						label="Dilution Date (optional)"
-						value={dilutionDate}
-						onChange={setDilutionDate}
-					/>
+			<div className={styles.formContainerWrapper}>
+				<form onSubmit={handleSubmit} className={styles.formContainer}>
+					<div className="space-y-6">
+						{/* Raw Material Selector */}
+						<RawMaterialAutocomplete
+							label="Raw Material"
+							value={rawMaterialSearch}
+							onSelect={(id, name) => {
+								setSelectedRawMaterialId(id);
+								setRawMaterialSearch(name);
+								setError("");
+							}}
+							required
+						/>
+						{/* Percentage Field */}
+						<NumberInput
+							label="Percentage"
+							value={percentage}
+							onChange={(value) => {
+								setPercentage(value);
+								setError("");
+							}}
+							placeholder="e.g. 10"
+							required
+							min={0}
+							max={100}
+						/>
+						<NumberInput
+							label="Batch Weight (g)"
+							value={batchWeightGrams}
+							onChange={(value) => {
+								setBatchWeightGrams(value);
+								setError("");
+							}}
+							placeholder="e.g. 5"
+							min={0}
+							step="any"
+						/>
+						{/* Dilution Date Field */}
+						<DateTimeInput
+							label="Dilution Date"
+							value={dilutionDate}
+							onChange={setDilutionDate}
+						/>
 
-					{/* Submit Button */}
-					<button
-						type="submit"
-						className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-					>
-						Add Dilution
-					</button>
-					{/* Error Message */}
-					{error && (
-						<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-							{error}
+						{/* Submit Button */}
+						<div className={styles.formSubmitButtonContainer}>
+							<button type="submit" className={styles.formSubmitButton}>
+								+ Add Dilution
+							</button>
 						</div>
-					)}
-				</div>
-			</form>
+						{/* Error Message */}
+						{error && (
+							<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
+								{error}
+							</div>
+						)}
+					</div>
+				</form>
+			</div>
 		</DashboardLayout>
 	);
 }

@@ -1,0 +1,221 @@
+.formContainerWrapper {
+	padding: 0 5rem;
+}
+
+.formContainer {
+	--input-border: 1px solid rgb(70 72 89 / 1);
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	background-color: #10151c;
+	padding: 2rem 1.5rem;
+	border-radius: 0.5rem;
+	border: 1px solid #464859;
+	max-width: 38.5rem;
+	margin: 0 auto;
+}
+
+.formLabel {
+	display: block;
+	margin-bottom: 0.375rem;
+	font-size: 0.875rem;
+	color: rgb(255 255 255 / 0.5);
+}
+
+.formInput {
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	max-height: 2.5rem;
+	background: #101c26;
+	color: #fff;
+	border: var(--input-border);
+	border-radius: 0.25rem;
+	outline: none;
+}
+.formInput:focus {
+	outline: none;
+}
+
+.formInputError {
+	border-color: #ef4444;
+}
+
+.formInputPlaceholder {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.formAddCircleButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	background: #101c26;
+	color: rgb(255 255 255 / 0.5);
+	border: var(--input-border);
+	border-radius: 50%;
+	outline: none;
+	cursor: pointer;
+}
+
+.formAddCircleButtonRemoveDisabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.formAddCircleButtonRemove:not(:disabled):hover {
+	color: rgb(252 165 165);
+}
+
+.formSubmitButtonContainer {
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+}
+
+.formSubmitButton {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	background-color: #0b172d;
+	color: #fff;
+	font-weight: 500;
+	border: 1px solid rgb(216 227 240 / 0.25);
+	box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+	transition:
+		background-color 150ms ease,
+		border-color 150ms ease;
+}
+
+.formSubmitButton:hover {
+	background: #243044;
+}
+
+.formDateTimeEmpty {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.formDateTimeEmpty::-webkit-datetime-edit {
+	color: rgb(255 255 255 / 0.5);
+}
+
+.formDateTimeEmpty::-webkit-calendar-picker-indicator {
+	opacity: 0.5;
+}
+
+.noteChipContainer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.noteChip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+	color: #fff;
+	background: transparent;
+	border: 1px solid rgb(216 227 240 / 0.5);
+	cursor: pointer;
+}
+
+.noteChipRemove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	font-size: 1.25rem;
+	color: #fff;
+}
+
+.noteChip:hover .noteChipRemove {
+	color: rgb(252 165 165);
+}
+
+.selectWrapper {
+	position: relative;
+}
+
+.formSelect {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	padding-right: 2rem;
+}
+
+.selectChevron {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 50%;
+	right: 0.75rem;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	background: #15222f;
+	border: 1px solid #2b3240;
+	color: rgb(255 255 255 / 0.25);
+}
+
+.selectChevron svg {
+	transform: translateY(1px);
+}
+
+.feedbackRatingButton,
+.feedbackNoRatingButton {
+	border: var(--input-border);
+	font-size: 0.875rem;
+	cursor: pointer;
+	transition:
+		background-color 150ms ease,
+		border-color 150ms ease,
+		color 150ms ease;
+}
+
+.feedbackRatingButton {
+	width: 2.5rem;
+	height: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	font-weight: 500;
+}
+
+.feedbackNoRatingButton {
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.25rem;
+}
+
+.feedbackRatingButtonActive,
+.feedbackNoRatingButtonActive {
+	background: #243044;
+	border-color: #243044;
+	color: #fff;
+}
+
+.feedbackRatingButtonInactive,
+.feedbackNoRatingButtonInactive {
+	background: #15222f;
+	border-color: rgb(71 85 105);
+	color: rgb(203 213 225);
+}
+
+.feedbackRatingButtonInactive:hover,
+.feedbackNoRatingButtonInactive:hover {
+	border-color: rgb(100 116 139);
+}

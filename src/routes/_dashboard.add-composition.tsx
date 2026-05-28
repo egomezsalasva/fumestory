@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
@@ -7,6 +7,7 @@ import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
+import styles from "@/components/Form.module.css";
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
 	head: () => ({
@@ -73,16 +74,13 @@ function AddComposition() {
 			backButton={{ to: "/compositions" }}
 		>
 			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
-				<div className="w-full max-w-170 mx-auto">
-					<form
-						onSubmit={handleSubmit}
-						className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
-					>
+				<div className={styles.formContainerWrapper}>
+					<form onSubmit={handleSubmit} className={styles.formContainer}>
 						<TextInput
 							label="Composition Name"
 							value={name}
 							onChange={setName}
-							placeholder="e.g., Trial 1, My Accord"
+							placeholder="e.g. Trial 1, Strawberry Accord, Creed Aventus Replica"
 						/>
 
 						<Select
@@ -98,13 +96,18 @@ function AddComposition() {
 
 						<FormulaIngredientsFields onIngredientsChange={setIngredients} />
 
-						<button
-							type="submit"
-							disabled={!name || isSubmitting}
-							className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+						<div
+							className={styles.formSubmitButtonContainer}
+							style={{ marginTop: "0rem" }}
 						>
-							{isSubmitting ? "Submitting..." : "Create Composition"}
-						</button>
+							<button
+								type="submit"
+								disabled={!name || isSubmitting}
+								className={styles.formSubmitButton}
+							>
+								{isSubmitting ? "Submitting..." : "+ Create Composition"}
+							</button>
+						</div>
 					</form>
 				</div>
 

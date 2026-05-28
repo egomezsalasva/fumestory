@@ -3,6 +3,7 @@ import { FormulaProposalTable } from "@/agent/ui/FormulaProposalTable";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import styles from "./ChatPanel.module.css";
 
 type FormulaProposal = z.infer<typeof suggestAnyFormulaProposalSchema>;
 
@@ -79,23 +80,17 @@ export function ChatPanel({
 
 	return (
 		<div className={`w-full h-full min-h-0 ${className}`}>
-			<div className="bg-slate-800 rounded-lg border border-slate-700 h-full flex flex-col shadow-xl">
+			<div className={styles.chatPanelContainer}>
 				{(title || subtitle) && (
-					<div className="p-3 border-b border-slate-700">
-						<div className="rounded-md bg-slate-700/40 px-3 py-2">
-							{title && (
-								<h2 className="text-md font-semibold text-white">{title}</h2>
-							)}
-							{subtitle && (
-								<p className="mt-1 whitespace-pre-wrap text-sm text-slate-400">
-									{subtitle}
-								</p>
-							)}
+					<div className={styles.chatPanelHeader}>
+						<div className={styles.chatPanelHeaderContent}>
+							{title && <h2>{title}</h2>}
+							{subtitle && <p>{subtitle}</p>}
 						</div>
 					</div>
 				)}
 
-				<div className="flex-1 overflow-y-auto p-4 space-y-4">
+				<div className={styles.chatPanelBody}>
 					{messages.map((msg, idx) => (
 						<div
 							key={idx}
@@ -104,10 +99,10 @@ export function ChatPanel({
 							}`}
 						>
 							<div
-								className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+								className={`${styles.messageBubble} ${
 									msg.role === "user"
-										? "bg-blue-600 text-white"
-										: "bg-slate-700 text-slate-200"
+										? styles.messageBubbleUser
+										: styles.messageBubbleAssistant
 								}`}
 							>
 								{msg.role === "assistant" ? (
@@ -336,7 +331,7 @@ export function ChatPanel({
 								type="button"
 								onClick={() => void footerAction.onClick()}
 								disabled={isLoading || footerAction.disabled}
-								className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+								className={styles.chatPanelFooterActionButton}
 							>
 								{footerAction.label}
 							</button>
@@ -348,7 +343,7 @@ export function ChatPanel({
 									onChange={(e) => setInput(e.target.value)}
 									placeholder={placeholder}
 									disabled={isLoading}
-									className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none cursor-text disabled:opacity-50"
+									className={`${styles.chatInput}`}
 								/>
 							</form>
 						)}

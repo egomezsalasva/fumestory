@@ -76,9 +76,14 @@ function Compositions() {
 		},
 		{
 			headerName: "",
-			flex: 1,
+			width: 140,
 			sortable: false,
 			filter: false,
+			cellStyle: {
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+			},
 			cellRenderer: (params: ICellRendererParams<Composition>) => {
 				const id = params.data?.id;
 				if (!id) return null;
@@ -86,7 +91,7 @@ function Compositions() {
 					<Link
 						to="/composition/$compositionId"
 						params={{ compositionId: String(id) }}
-						className="text-sky-300 hover:underline"
+						className="inline-flex shrink-0 items-center justify-center whitespace-nowrap px-2.5 py-1 rounded-[0.25rem] bg-[#0b172d] text-white font-medium border border-[#d8e3f0] shadow-sm shadow-black/40 hover:bg-[#243044] hover:border-[#f0f4fa] transition-colors text-xs"
 					>
 						Details
 					</Link>

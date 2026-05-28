@@ -1,3 +1,4 @@
+import styles from "@/components/Form.module.css";
 type NumberInputProps = {
 	label: string;
 	value: string;
@@ -27,7 +28,7 @@ export function NumberInput({
 	return (
 		<div>
 			<div className="flex items-center gap-1 mb-2">
-				<label className="block text-sm font-medium text-gray-300">
+				<label className={styles.formLabel}>
 					{label} {inputProps.required && "*"}
 				</label>
 				{labelRight}
@@ -38,7 +39,7 @@ export function NumberInput({
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
 				onKeyDown={handleKeyDown}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
+				className={styles.formInput}
 			/>
 		</div>
 	);

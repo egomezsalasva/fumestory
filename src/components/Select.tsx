@@ -1,3 +1,6 @@
+import styles from "./Form.module.css";
+import SelectArrow from "./svgs/SelectArrow";
+
 type SelectOption = {
 	value: string;
 	label: string;
@@ -22,22 +25,27 @@ export function Select({
 }: SelectProps) {
 	return (
 		<div>
-			<label className="block text-sm font-medium text-gray-300 mb-2">
+			<label className={styles.formLabel}>
 				{label} {required && "*"}
 			</label>
-			<select
-				value={value}
-				onChange={(e) => onChange(e.target.value)}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-				required={required}
-			>
-				{placeholder && <option value="">{placeholder}</option>}
-				{options.map((option) => (
-					<option key={option.value} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
+			<div className={styles.selectWrapper}>
+				<select
+					value={value}
+					onChange={(e) => onChange(e.target.value)}
+					className={`${styles.formInput} ${styles.formSelect} ${!value ? styles.formInputPlaceholder : ""}`}
+					required={required}
+				>
+					{placeholder && <option value="">{placeholder}</option>}
+					{options.map((option) => (
+						<option key={option.value} value={option.value}>
+							{option.label}
+						</option>
+					))}
+				</select>
+				<span className={styles.selectChevron} aria-hidden>
+					<SelectArrow />
+				</span>
+			</div>
 		</div>
 	);
 }

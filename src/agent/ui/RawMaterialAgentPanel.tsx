@@ -211,7 +211,7 @@ export function RawMaterialAgentPanel({
 			footerAction={
 				showAddNewMaterialAction
 					? {
-							label: "Add new material",
+							label: "Add New Material",
 							onClick: handleAddNewMaterialClick,
 							disabled: isLoading,
 						}

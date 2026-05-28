@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Dilution } from "@/routes/api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
+import styles from "@/components/Form.module.css";
 
 type RawMaterial = {
 	id: number;
@@ -99,7 +100,7 @@ export function DilutionAutocomplete({
 
 	return (
 		<div className="relative">
-			<label className="block text-sm font-medium text-gray-300 mb-2">
+			<label className={styles.formLabel} style={{ marginBottom: "0.875rem" }}>
 				{label}
 			</label>
 			<input
@@ -111,7 +112,7 @@ export function DilutionAutocomplete({
 				}}
 				onFocus={() => setShowDropdown(true)}
 				onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
+				className={styles.formInput}
 				placeholder="Search material and dilution..."
 				disabled={loading}
 			/>

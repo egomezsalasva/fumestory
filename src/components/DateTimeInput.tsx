@@ -1,3 +1,4 @@
+import styles from "@/components/Form.module.css";
 type DateTimeInputProps = {
 	label: string;
 	value: string;
@@ -13,14 +14,14 @@ export function DateTimeInput({
 }: DateTimeInputProps) {
 	return (
 		<div>
-			<label className="block text-sm font-medium text-gray-300 mb-2">
+			<label className={styles.formLabel}>
 				{label} {required && "*"}
 			</label>
 			<input
 				type="datetime-local"
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
+				className={`${styles.formInput} ${!value ? styles.formDateTimeEmpty : ""}`}
 				required={required}
 			/>
 		</div>

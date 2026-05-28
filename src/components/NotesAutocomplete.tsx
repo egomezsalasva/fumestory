@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import type { Note } from "@/routes/api.notes";
+import styles from "./Form.module.css";
 
 type NotesAutocompleteProps = {
 	label: string;
 	selectedNotes: string[];
 	onNotesChange: (notes: string[]) => void;
+	required?: boolean;
 };
 
 export function NotesAutocomplete({
 	label,
 	selectedNotes,
 	onNotesChange,
+	required,
 }: NotesAutocompleteProps) {
 	const [availableNotes, setAvailableNotes] = useState<Note[]>([]);
 	const [inputValue, setInputValue] = useState("");
@@ -50,27 +53,25 @@ export function NotesAutocomplete({
 
 	return (
 		<div>
-			<label className="block text-sm font-medium text-slate-200 mb-2">
-				{label}
+			<label className={styles.formLabel}>
+				{label} {required && "*"}
 			</label>
 
 			{/* Selected notes as tags */}
 			{selectedNotes.length > 0 && (
-				<div className="flex flex-wrap gap-2 mb-2">
+				<div className={styles.noteChipContainer}>
 					{selectedNotes.map((note) => (
-						<span
-							key={note}
-							className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-full text-sm"
+						<button
+							type="button"
+							onClick={() => handleRemoveNote(note)}
+							className={styles.noteChip}
+							aria-label={`Remove ${note}`}
 						>
-							{note}
-							<button
-								type="button"
-								onClick={() => handleRemoveNote(note)}
-								className="hover:text-red-300 font-bold"
-							>
+							<span>{note}</span>
+							<span aria-hidden className={styles.noteChipRemove}>
 								×
-							</button>
-						</span>
+							</span>
+						</button>
 					))}
 				</div>
 			)}
@@ -98,7 +99,8 @@ export function NotesAutocomplete({
 							}
 						}}
 						placeholder="Type to search or add new note..."
-						className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-blue-500"
+						className={styles.formInput}
+						required
 					/>
 
 					{/* Dropdown - only shows when there are filtered results */}
@@ -127,9 +129,9 @@ export function NotesAutocomplete({
 						}
 					}}
 					disabled={!inputValue.trim()}
-					className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed"
+					className={styles.formAddCircleButton}
 				>
-					Add
+					+
 				</button>
 			</div>
 		</div>

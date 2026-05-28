@@ -5,17 +5,20 @@ import {
 	type Ingredient,
 	useFormulaIngredients,
 } from "@/hooks/useFormulaIngredients";
+import styles from "@/components/Form.module.css";
 
 type Props = {
 	onIngredientsChange: (ingredients: Ingredient[]) => void;
 	prefillIngredients?: Ingredient[] | null;
 	headerRight?: React.ReactNode;
+	styleHeader?: React.CSSProperties;
 };
 
 export function FormulaIngredientsFields({
 	onIngredientsChange,
 	prefillIngredients,
 	headerRight,
+	styleHeader,
 }: Props) {
 	const [isPercentMode, setIsPercentMode] = useState(false);
 	const [showRecalculateModal, setShowRecalculateModal] = useState(false);
@@ -170,8 +173,11 @@ export function FormulaIngredientsFields({
 
 	return (
 		<div className="space-y-3">
-			<div className="flex items-center justify-between gap-3">
-				<label className="block text-sm font-medium text-slate-300">
+			<div
+				className="flex items-center justify-between gap-3"
+				style={styleHeader}
+			>
+				<label className={styles.formLabel} style={{ marginBottom: "0" }}>
 					Ingredients
 				</label>
 				{headerRight}
@@ -214,6 +220,9 @@ export function FormulaIngredientsFields({
 												checked={!isPercentMode}
 												onChange={() => handleModeChange("weight")}
 												className="h-3.5 w-3.5 accent-slate-300"
+												style={{
+													marginBottom: "0.375rem",
+												}}
 											/>
 										) : undefined
 									}
@@ -234,6 +243,9 @@ export function FormulaIngredientsFields({
 												checked={isPercentMode}
 												onChange={() => handleModeChange("percent")}
 												className="h-3.5 w-3.5 accent-slate-300"
+												style={{
+													marginBottom: "0.375rem",
+												}}
 											/>
 										) : undefined
 									}
@@ -258,26 +270,36 @@ export function FormulaIngredientsFields({
 						type="button"
 						onClick={() => removeIngredient(ingredient.id)}
 						disabled={ingredients.length === 1}
-						className="px-3 py-2 bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-red-500/30"
+						className={`${styles.formAddCircleButton} 	${ingredients.length === 1 ? styles.formAddCircleButtonRemoveDisabled : ""} ${styles.formAddCircleButtonRemove}`}
 					>
 						✕
 					</button>
 				</div>
 			))}
 
-			<button
-				type="button"
-				onClick={addIngredient}
-				className="w-full px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors border border-slate-600"
+			<div
+				className={styles.formSubmitButtonContainer}
+				style={{ margin: "1.5rem 0" }}
 			>
-				+ Add Ingredient
-			</button>
+				<button
+					type="button"
+					onClick={addIngredient}
+					className={styles.formSubmitButton}
+					style={{
+						padding: "0.375rem 2.5rem",
+						fontWeight: "400",
+						fontSize: "0.875rem",
+					}}
+				>
+					+ Add Ingredient
+				</button>
+			</div>
 
 			<div className="flex items-end gap-3 pt-3 border-t border-slate-700">
 				<span className="text-md font-medium text-slate-300 pb-2">
 					Total (g)
 				</span>
-				<div className="w-28">
+				<div className="w-15">
 					<NumberInput
 						label=""
 						value={totalWeight}

@@ -4,6 +4,7 @@ import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import styles from "@/components/Form.module.css";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -120,7 +121,7 @@ function CompositionDetail() {
 				{err && <p className="mt-4 text-red-400">{err}</p>}
 				{!payload && !err && <p className="mt-4 text-slate-400">Loading…</p>}
 				{payload && (
-					<div className="max-w-3xl">
+					<div className="max-w-3xl mx-auto">
 						<div className="mt-4 flex flex-wrap items-start justify-between gap-4">
 							<div>
 								<h1 className="text-2xl font-bold">
@@ -133,7 +134,7 @@ function CompositionDetail() {
 							<Link
 								to="/add-formula/$compositionId"
 								params={{ compositionId: String(compositionId) }}
-								className="shrink-0 rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500"
+								className={styles.formSubmitButton}
 							>
 								Add Formula
 							</Link>

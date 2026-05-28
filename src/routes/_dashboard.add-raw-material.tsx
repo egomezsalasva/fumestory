@@ -9,6 +9,7 @@ import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import styles from "@/components/Form.module.css";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -142,24 +143,12 @@ function AddRawMaterial() {
 			backButton={{ to: "/inventory" }}
 		>
 			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
-				<div className="w-full max-w-170 mx-auto">
+				<div className="w-full px-20">
 					<form
 						onSubmit={handleSubmit}
-						className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
+						className={`${styles.formContainer} space-y-6 bg-[#10151C] py-8 px-6 rounded-lg border border-[#464859]`}
 					>
-						<div className="space-y-6">
-							{/* Label Field */}
-							<LabelInput
-								label="Label *"
-								value={label}
-								onChange={(value) => {
-									setLabel(value);
-									setError("");
-								}}
-								placeholder="e.g., LB1"
-								required
-							/>
-
+						<div className="space-y-4">
 							{/* Name Field */}
 							<TextInput
 								label="Name"
@@ -168,7 +157,31 @@ function AddRawMaterial() {
 									setName(value);
 									setError("");
 								}}
-								placeholder="Enter raw material name"
+								placeholder="e.g. Ambroxan"
+								required
+							/>
+
+							{/* CAS Number Field */}
+							{/* <LabelInput
+								label="CAS Number"
+								value={label}
+								onChange={(value) => {
+									setLabel(value);
+									setError("");
+								}}
+								placeholder="e.g. 123-45-6"
+								required
+							/> */}
+
+							{/* Label Field */}
+							<LabelInput
+								label="Bottle Label"
+								value={label}
+								onChange={(value) => {
+									setLabel(value);
+									setError("");
+								}}
+								placeholder="e.g. LB1"
 								required
 							/>
 
@@ -188,17 +201,6 @@ function AddRawMaterial() {
 								required
 							/>
 
-							{/* Category Field with Autocomplete */}
-							<CategoryAutocomplete
-								label="Category"
-								value={categorySearch}
-								onSelect={(id, name) => {
-									setSelectedCategoryId(id);
-									setCategorySearch(name);
-									setError("");
-								}}
-							/>
-
 							{/* Note Type Field */}
 							<Select
 								label="Note Type"
@@ -213,6 +215,19 @@ function AddRawMaterial() {
 									{ value: "Base", label: "Base" },
 								]}
 								placeholder="Select note type..."
+								required
+							/>
+
+							{/* Primary Category Field with Autocomplete */}
+							<CategoryAutocomplete
+								label="Primary Category"
+								value={categorySearch}
+								onSelect={(id, name) => {
+									setSelectedCategoryId(id);
+									setCategorySearch(name);
+									setError("");
+								}}
+								required
 							/>
 
 							{/* Notes Field */}
@@ -226,12 +241,11 @@ function AddRawMaterial() {
 							/>
 
 							{/* Submit Button */}
-							<button
-								type="submit"
-								className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-							>
-								Add Raw Material
-							</button>
+							<div className={styles.formSubmitButtonContainer}>
+								<button type="submit" className={styles.formSubmitButton}>
+									+ Add Raw Material
+								</button>
+							</div>
 
 							{/* Error Message */}
 							{error && (

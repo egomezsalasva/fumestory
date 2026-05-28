@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
+import styles from "@/components/Form.module.css";
 
 type RawMaterial = {
 	id: number;
@@ -10,12 +11,14 @@ type RawMaterialAutocompleteProps = {
 	label: string;
 	value: string;
 	onSelect: (materialId: number, materialName: string) => void;
+	required?: boolean;
 };
 
 export function RawMaterialAutocomplete({
 	label,
 	value,
 	onSelect,
+	required,
 }: RawMaterialAutocompleteProps) {
 	const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
 	const [search, setSearch] = useState(value);
@@ -42,8 +45,8 @@ export function RawMaterialAutocomplete({
 
 	return (
 		<div className="relative">
-			<label className="block text-sm font-medium text-gray-300 mb-2">
-				{label}
+			<label className={styles.formLabel}>
+				{label} {required && "*"}
 			</label>
 			<input
 				type="text"
@@ -54,7 +57,7 @@ export function RawMaterialAutocomplete({
 				}}
 				onFocus={() => setShowDropdown(true)}
 				onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-				className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
+				className={styles.formInput}
 				placeholder="Search raw material..."
 			/>
 

@@ -8,6 +8,8 @@ import { authedFetch } from "@/utils/authed-fetch";
 import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { Feedback } from "./api.feedback";
+import styles from "@/components/Form.module.css";
+import SelectArrow from "@/components/svgs/SelectArrow";
 
 export const Route = createFileRoute("/_dashboard/add-feedback")({
 	head: () => ({
@@ -165,10 +167,7 @@ function AddFeedback() {
 					</div>
 				)}
 
-				<form
-					onSubmit={handleSubmit}
-					className="space-y-6 bg-slate-800 p-6 rounded-lg border border-slate-700"
-				>
+				<form onSubmit={handleSubmit} className={styles.formContainer}>
 					{/* Person Name */}
 					{/* Person Name */}
 					<TextInput
@@ -194,23 +193,26 @@ function AddFeedback() {
 					{/* Dilution Selection - show only when material is selected */}
 					{rawMaterialId && availableDilutions.length > 0 && (
 						<div>
-							<label className="block text-sm font-medium text-slate-300 mb-2">
-								Dilution *
-							</label>
-							<select
-								value={dilutionId || ""}
-								onChange={(e) => setDilutionId(Number(e.target.value))}
-								className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-							>
-								<option value="">Select a dilution...</option>
-								{availableDilutions.map((dilution) => (
-									<option key={dilution.id} value={dilution.id}>
-										{dilution.percentage}%
-										{dilution.dilution_date &&
-											` - ${new Date(dilution.dilution_date).toLocaleDateString()}`}
-									</option>
-								))}
-							</select>
+							<label className={styles.formLabel}>Dilution *</label>
+							<div className={styles.selectWrapper}>
+								<select
+									value={dilutionId || ""}
+									onChange={(e) => setDilutionId(Number(e.target.value))}
+									className={`${styles.formInput} ${styles.formSelect} ${!dilutionId ? styles.formInputPlaceholder : ""}`}
+								>
+									<option value="">Select a dilution...</option>
+									{availableDilutions.map((dilution) => (
+										<option key={dilution.id} value={dilution.id}>
+											{dilution.percentage}%
+											{dilution.dilution_date &&
+												` - ${new Date(dilution.dilution_date).toLocaleDateString()}`}
+										</option>
+									))}
+								</select>
+								<span className={styles.selectChevron} aria-hidden>
+									<SelectArrow />
+								</span>
+							</div>
 						</div>
 					)}
 
@@ -233,9 +235,7 @@ function AddFeedback() {
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-slate-300 mb-2">
-							Rating (optional)
-						</label>
+						<label className={styles.formLabel}>Rating (optional)</label>
 						<p className="text-xs text-slate-400 mb-2">
 							0 = lowest, 5 = highest. Leave unset if the guest prefers not to
 							rate.
@@ -246,10 +246,10 @@ function AddFeedback() {
 									key={value}
 									type="button"
 									onClick={() => setRating(value)}
-									className={`min-w-10 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+									className={`${styles.feedbackRatingButton} ${
 										rating === value
-											? "bg-blue-500 border-blue-500 text-white"
-											: "bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500"
+											? styles.feedbackRatingButtonActive
+											: styles.feedbackRatingButtonInactive
 									}`}
 								>
 									{value}
@@ -258,10 +258,10 @@ function AddFeedback() {
 							<button
 								type="button"
 								onClick={() => setRating(null)}
-								className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+								className={`${styles.feedbackNoRatingButton} ${
 									rating === null
-										? "bg-slate-600 border-slate-500 text-white"
-										: "bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500"
+										? styles.feedbackNoRatingButtonActive
+										: styles.feedbackNoRatingButtonInactive
 								}`}
 							>
 								No rating
@@ -270,19 +270,24 @@ function AddFeedback() {
 					</div>
 
 					{/* Submit Button */}
-					<button
-						type="submit"
-						disabled={
-							loading ||
-							!rawMaterialId ||
-							!dilutionId ||
-							!personName ||
-							notes.length === 0
-						}
-						className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+					<div
+						className={styles.formSubmitButtonContainer}
+						style={{ marginTop: "0.75rem" }}
 					>
-						{loading ? "Submitting..." : "Add Feedback"}
-					</button>
+						<button
+							type="submit"
+							disabled={
+								loading ||
+								!rawMaterialId ||
+								!dilutionId ||
+								!personName ||
+								notes.length === 0
+							}
+							className={styles.formSubmitButton}
+						>
+							{loading ? "Submitting..." : "Add Feedback"}
+						</button>
+					</div>
 				</form>
 			</div>
 		</DashboardLayout>
