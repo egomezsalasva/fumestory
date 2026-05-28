@@ -98,7 +98,7 @@ const MarketingFeaturesSection = ({
 
 				<FeatureItem
 					title="From Idea To Formula"
-					image="/compositions-agent.webp"
+					image="/compositions-formula.webp"
 					styles={styles}
 				>
 					<p>
