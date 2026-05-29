@@ -395,13 +395,14 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	gap: 2rem;
 }
 
 .roadmapFeatureItem h3 {
 	font-family: "Aspekta";
 	font-weight: 400;
 	font-size: 1.5rem;
-	line-height: 1;
+	line-height: 1.2;
 }
 
 .roadmapFeatureUpvotes {
