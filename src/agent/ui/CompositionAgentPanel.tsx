@@ -12,6 +12,10 @@ type SuggestAnyFormulaProposal = z.infer<
 	typeof suggestAnyFormulaProposalSchema
 >;
 
+type CompositionAgentPanelProps = {
+	onStartOverClick: () => void;
+};
+
 type ChatResponse = {
 	success?: boolean;
 	reply?: string;
@@ -38,7 +42,9 @@ function assistantMessage(
 	};
 }
 
-export function CompositionAgentPanel() {
+export function CompositionAgentPanel({
+	onStartOverClick,
+}: CompositionAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [choiceOptions, setChoiceOptions] = useState<ChatChoiceOption[] | null>(
 		null,
@@ -156,6 +162,9 @@ export function CompositionAgentPanel() {
 
 	const handleChoice = async (choiceId: string) => {
 		if (isLoading) return;
+		if (choiceId === "start_over") {
+			onStartOverClick();
+		}
 		const label =
 			choiceOptions?.find((o) => o.id === choiceId)?.label ?? choiceId;
 		setMessages((prev) => [...prev, { role: "user", content: label }]);

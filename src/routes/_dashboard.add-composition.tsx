@@ -134,7 +134,7 @@ function AddComposition() {
 
 				<div className="dashboardSplitSidebar">
 					<div className="dashboardSplitSidebarSticky">
-						<CompositionAgentPanel />
+						<CompositionAgentPanel onStartOverClick={() => setSuccess(false)} />
 					</div>
 				</div>
 			</div>
