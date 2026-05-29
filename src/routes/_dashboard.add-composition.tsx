@@ -73,7 +73,7 @@ function AddComposition() {
 			title="Compositions / Add Composition"
 			backButton={{ to: "/compositions" }}
 		>
-			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
+			<div className="dashboardSplitLayout">
 				<div className={styles.formContainerWrapper}>
 					<form onSubmit={handleSubmit} className={styles.formContainer}>
 						<TextInput
@@ -111,8 +111,8 @@ function AddComposition() {
 					</form>
 				</div>
 
-				<div className="hidden xl:block min-h-0">
-					<div className="sticky top-0 h-full min-h-0">
+				<div className="dashboardSplitSidebar">
+					<div className="dashboardSplitSidebarSticky">
 						<CompositionAgentPanel />
 					</div>
 				</div>

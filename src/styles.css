@@ -112,3 +112,32 @@ code {
 	padding-bottom: 0.25rem !important;
 }
 
+.dashboardSplitLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  min-height: 100%;
+}
+
+.dashboardSplitSidebar {
+  display: none;
+  min-height: 0;
+}
+
+@media (min-width: 1280px) {
+  .dashboardSplitLayout {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+
+  .dashboardSplitSidebar {
+    display: block;
+    min-height: 0;
+  }
+
+  .dashboardSplitSidebarSticky {
+    position: sticky;
+    top: 0;
+    height: calc(100dvh - 9rem);
+    min-height: 0;
+  }
+}

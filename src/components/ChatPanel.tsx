@@ -79,7 +79,7 @@ export function ChatPanel({
 	};
 
 	return (
-		<div className={`w-full h-full min-h-0 ${className}`}>
+		<div className={`w-full h-full min-h-[18rem] ${className}`}>
 			<div className={styles.chatPanelContainer}>
 				{(title || subtitle) && (
 					<div className={styles.chatPanelHeader}>

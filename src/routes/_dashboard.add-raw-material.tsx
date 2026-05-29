@@ -142,7 +142,7 @@ function AddRawMaterial() {
 			title="Raw Materials Inventory / Add Raw Material"
 			backButton={{ to: "/inventory" }}
 		>
-			<div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_24rem] gap-6 h-full min-h-0">
+			<div className="dashboardSplitLayout">
 				<div className="w-full px-20">
 					<form
 						onSubmit={handleSubmit}
@@ -256,8 +256,8 @@ function AddRawMaterial() {
 						</div>
 					</form>
 				</div>
-				<div className="hidden xl:block min-h-0">
-					<div className="sticky top-0 h-full min-h-0">
+				<div className="dashboardSplitSidebar">
+					<div className="dashboardSplitSidebarSticky">
 						<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
 					</div>
 				</div>
