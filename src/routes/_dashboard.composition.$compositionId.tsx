@@ -122,9 +122,9 @@ function CompositionDetail() {
 				{!payload && !err && <p className="mt-4 text-slate-400">Loading…</p>}
 				{payload && (
 					<div className="max-w-3xl mx-auto">
-						<div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-							<div>
-								<h1 className="text-2xl font-bold">
+						<div className="mt-4 flex items-start justify-between gap-4">
+							<div className="flex-1 min-w-0">
+								<h1 className="text-2xl font-bold break-words">
 									{payload.composition.name}
 								</h1>
 								<p className="text-slate-400 capitalize">

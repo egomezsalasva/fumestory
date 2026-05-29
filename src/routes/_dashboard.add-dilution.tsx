@@ -1,11 +1,12 @@
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { DateTimeInput } from "@/components/DateTimeInput";
 import { NumberInput } from "@/components/NumberInput";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
+import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-dilution")({
 	head: () => ({
@@ -27,9 +28,12 @@ function AddDilution() {
 	const [dilutionDate, setDilutionDate] = useState("");
 
 	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setError("");
+		setSuccessMessage("");
 		if (!selectedRawMaterialId) {
 			setError("Raw material is required");
 			return;
@@ -80,9 +84,10 @@ function AddDilution() {
 			setPercentage("");
 			setBatchWeightGrams("");
 			setDilutionDate("");
-			alert("Dilution added successfully!");
+			setSuccessMessage("Dilution added successfully!");
 		} catch (error) {
 			setError("Network error: Failed to add dilution. Please try again.");
+			setSuccessMessage("");
 		}
 	};
 
@@ -142,6 +147,13 @@ function AddDilution() {
 								+ Add Dilution
 							</button>
 						</div>
+						{successMessage && (
+							<SuccessMessage
+								message={successMessage}
+								link={{ text: "Go to Inventory", to: "/inventory" }}
+								onClose={() => setSuccessMessage("")}
+							/>
+						)}
 						{/* Error Message */}
 						{error && (
 							<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">

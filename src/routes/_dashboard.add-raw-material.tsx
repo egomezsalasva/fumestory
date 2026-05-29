@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
@@ -10,6 +10,7 @@ import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
+import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -255,25 +256,11 @@ function AddRawMaterial() {
 							</div>
 
 							{successMessage && (
-								<div className="px-4 py-3 bg-emerald-900/40 border border-emerald-500 rounded-lg text-emerald-200 flex items-center justify-between gap-3">
-									<p className="m-0">{successMessage}</p>
-									<div className="flex items-center gap-3">
-										<Link
-											to="/inventory"
-											className="inline-flex items-center px-3 py-1.5 rounded-[0.25rem] bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium whitespace-nowrap"
-										>
-											Go to Inventory
-										</Link>
-										<button
-											type="button"
-											onClick={() => setSuccessMessage("")}
-											aria-label="Close success message"
-											className="inline-flex items-center justify-center px-3 py-1.5 rounded-[0.25rem] border border-emerald-400/60 text-emerald-200 hover:bg-emerald-800/40 text-sm font-medium"
-										>
-											X
-										</button>
-									</div>
-								</div>
+								<SuccessMessage
+									message={successMessage}
+									link={{ text: "Go to Inventory", to: "/inventory" }}
+									onClose={() => setSuccessMessage("")}
+								/>
 							)}
 
 							{/* Error Message */}

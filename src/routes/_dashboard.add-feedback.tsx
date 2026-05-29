@@ -10,6 +10,7 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { Feedback } from "./api.feedback";
 import styles from "@/components/Form.module.css";
 import SelectArrow from "@/components/svgs/SelectArrow";
+import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-feedback")({
 	head: () => ({
@@ -33,10 +34,14 @@ function AddFeedback() {
 	const [notes, setNotes] = useState<string[]>([]);
 	const [availableDilutions, setAvailableDilutions] = useState<Dilution[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState("");
 	const [guestFeedbackAllowed, setGuestFeedbackAllowed] = useState<
 		boolean | null
 	>(null);
+	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+	const [submittedMaterialId, setSubmittedMaterialId] = useState<number | null>(
+		null,
+	);
 
 	// Client-only: session must be ready; beforeLoad/SSR ran too early for authedFetch.
 	useLayoutEffect(() => {
@@ -103,7 +108,8 @@ function AddFeedback() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
-
+		setSuccessMessage("");
+		setSubmittedMaterialId(null);
 		if (!dilutionId || !personName.trim() || notes.length === 0) {
 			setError("Please fill in all fields");
 			return;
@@ -124,8 +130,16 @@ function AddFeedback() {
 			});
 
 			if (response.ok) {
-				// Success! Navigate back to home
-				navigate({ to: "/" });
+				setSubmittedMaterialId(rawMaterialId);
+				setRawMaterialId(null);
+				setRawMaterialName("");
+				setDilutionId(null);
+				setPersonName("");
+				setRating(null);
+				setNotes([]);
+				setAvailableDilutions([]);
+				setSuccessMessage("Guest feedback added successfully!");
+				return;
 			} else {
 				const data = await response.json();
 				setError(data.error || "Failed to submit feedback");
@@ -161,14 +175,8 @@ function AddFeedback() {
 					to your guest without giving them any guidance. See what notes they
 					pick up on and what they think of the scent.
 				</p>
-				{error && (
-					<div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300">
-						{error}
-					</div>
-				)}
 
 				<form onSubmit={handleSubmit} className={styles.formContainer}>
-					{/* Person Name */}
 					{/* Person Name */}
 					<TextInput
 						label="Guest Name *"
@@ -288,6 +296,24 @@ function AddFeedback() {
 							{loading ? "Submitting..." : "Add Feedback"}
 						</button>
 					</div>
+					{successMessage && (
+						<SuccessMessage
+							message={successMessage}
+							link={{
+								text: "Go to Raw Material",
+								to: `/manage-dilutions/${submittedMaterialId}`,
+							}}
+							onClose={() => {
+								setSuccessMessage("");
+								setSubmittedMaterialId(null);
+							}}
+						/>
+					)}
+					{error && (
+						<div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300">
+							{error}
+						</div>
+					)}
 				</form>
 			</div>
 		</DashboardLayout>

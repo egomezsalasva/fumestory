@@ -5,6 +5,7 @@ import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
+import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-formula/$compositionId")({
 	head: () => ({
@@ -24,9 +25,10 @@ function AddFormula() {
 		Ingredient[] | null
 	>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isAutofilling, setIsAutofilling] = useState(false);
+	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
-	const [isAutofilling, setIsAutofilling] = useState(false);
 
 	const handleAutofillFromPrevious = async () => {
 		setError(null);
@@ -131,6 +133,9 @@ function AddFormula() {
 				return;
 			}
 
+			setIngredients([]);
+			setPrefillIngredients(null);
+			setFormResetKey((k) => k + 1);
 			setSuccess(true);
 			setIsSubmitting(false);
 		} catch {
@@ -150,6 +155,7 @@ function AddFormula() {
 			<div className="max-w-170 mx-auto">
 				<form onSubmit={handleSubmit} className={styles.formContainer}>
 					<FormulaIngredientsFields
+						key={formResetKey}
 						styleHeader={{ marginBottom: "1.5rem" }}
 						onIngredientsChange={setIngredients}
 						prefillIngredients={prefillIngredients}
@@ -184,18 +190,22 @@ function AddFormula() {
 							{isSubmitting ? "Submitting..." : "+ Create Formula"}
 						</button>
 					</div>
+					{success && (
+						<SuccessMessage
+							message="Formula created successfully!"
+							link={{
+								text: "Go to Composition",
+								to: `/composition/${compositionId}`,
+							}}
+							onClose={() => setSuccess(false)}
+						/>
+					)}
+					{error && (
+						<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+							{error}
+						</div>
+					)}
 				</form>
-
-				{error && (
-					<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-						{error}
-					</div>
-				)}
-				{success && (
-					<div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
-						Formula created successfully!
-					</div>
-				)}
 			</div>
 		</DashboardLayout>
 	);

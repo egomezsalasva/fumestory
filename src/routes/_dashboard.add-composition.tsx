@@ -8,6 +8,7 @@ import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 import styles from "@/components/Form.module.css";
+import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
 	head: () => ({
@@ -24,6 +25,7 @@ function AddComposition() {
 	const [type, setType] = useState<"trial" | "accord" | "perfume">("trial");
 	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 
@@ -60,6 +62,10 @@ function AddComposition() {
 				return;
 			}
 
+			setName("");
+			setType("trial");
+			setIngredients([]);
+			setFormResetKey((k) => k + 1);
 			setSuccess(true);
 			setIsSubmitting(false);
 		} catch {
@@ -94,7 +100,10 @@ function AddComposition() {
 							]}
 						/>
 
-						<FormulaIngredientsFields onIngredientsChange={setIngredients} />
+						<FormulaIngredientsFields
+							key={formResetKey}
+							onIngredientsChange={setIngredients}
+						/>
 
 						<div
 							className={styles.formSubmitButtonContainer}
@@ -108,6 +117,18 @@ function AddComposition() {
 								{isSubmitting ? "Submitting..." : "+ Create Composition"}
 							</button>
 						</div>
+						{success && (
+							<SuccessMessage
+								message="Composition created successfully!"
+								link={{ text: "Go to Compositions", to: "/compositions" }}
+								onClose={() => setSuccess(false)}
+							/>
+						)}
+						{error && (
+							<div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+								{error}
+							</div>
+						)}
 					</form>
 				</div>
 
@@ -117,18 +138,6 @@ function AddComposition() {
 					</div>
 				</div>
 			</div>
-
-			{error && (
-				<div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-					{error}
-				</div>
-			)}
-
-			{success && (
-				<div className="mt-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
-					Composition created successfully!
-				</div>
-			)}
 		</DashboardLayout>
 	);
 }
