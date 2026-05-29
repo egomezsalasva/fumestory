@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
@@ -32,6 +32,7 @@ function AddRawMaterial() {
 	const [notes, setNotes] = useState<string[]>([]);
 	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
 		setLabel(proposal.suggestedLabel);
@@ -74,6 +75,7 @@ function AddRawMaterial() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
+		setSuccessMessage("");
 
 		if (!name.trim()) {
 			setError("Name is required");
@@ -133,11 +135,12 @@ function AddRawMaterial() {
 			setNoteType("");
 			setMaterialNature("");
 			setNotes([]);
-			alert("Raw material added successfully!");
+			setSuccessMessage("Raw material added successfully!");
 		} catch (error) {
 			setError(
 				"Network error: Failed to create raw material. Please try again.",
 			);
+			setSuccessMessage("");
 		}
 	};
 
@@ -251,6 +254,28 @@ function AddRawMaterial() {
 								</button>
 							</div>
 
+							{successMessage && (
+								<div className="px-4 py-3 bg-emerald-900/40 border border-emerald-500 rounded-lg text-emerald-200 flex items-center justify-between gap-3">
+									<p className="m-0">{successMessage}</p>
+									<div className="flex items-center gap-3">
+										<Link
+											to="/inventory"
+											className="inline-flex items-center px-3 py-1.5 rounded-[0.25rem] bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium whitespace-nowrap"
+										>
+											Go to Inventory
+										</Link>
+										<button
+											type="button"
+											onClick={() => setSuccessMessage("")}
+											aria-label="Close success message"
+											className="inline-flex items-center justify-center px-3 py-1.5 rounded-[0.25rem] border border-emerald-400/60 text-emerald-200 hover:bg-emerald-800/40 text-sm font-medium"
+										>
+											X
+										</button>
+									</div>
+								</div>
+							)}
+
 							{/* Error Message */}
 							{error && (
 								<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
@@ -262,7 +287,10 @@ function AddRawMaterial() {
 				</div>
 				<div className="dashboardSplitSidebar">
 					<div className="dashboardSplitSidebarSticky">
-						<RawMaterialAgentPanel onApplyProposal={handleApplyProposal} />
+						<RawMaterialAgentPanel
+							onApplyProposal={handleApplyProposal}
+							onAddNewMaterialClick={() => setSuccessMessage("")}
+						/>
 					</div>
 				</div>
 			</div>
