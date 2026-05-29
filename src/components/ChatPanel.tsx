@@ -4,6 +4,7 @@ import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionForm
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styles from "./ChatPanel.module.css";
+import CollapseMenuIcon from "./sidenav/svgs/CollapseMenuIcon";
 
 type FormulaProposal = z.infer<typeof suggestAnyFormulaProposalSchema>;
 
@@ -34,6 +35,7 @@ type ChatPanelProps = {
 		onClick: () => void | Promise<void>;
 		disabled?: boolean;
 	} | null;
+	hidePanel?: () => void;
 };
 
 export function ChatPanel({
@@ -47,6 +49,7 @@ export function ChatPanel({
 	choiceOptions = null,
 	onChoice,
 	footerAction = null,
+	hidePanel,
 }: ChatPanelProps) {
 	const [input, setInput] = useState("");
 	const [choiceFocusIndex, setChoiceFocusIndex] = useState(0);
@@ -84,7 +87,26 @@ export function ChatPanel({
 				{(title || subtitle) && (
 					<div className={styles.chatPanelHeader}>
 						<div className={styles.chatPanelHeaderContent}>
-							{title && <h2>{title}</h2>}
+							<div className="flex items-center justify-between gap-2">
+								{title && <h2>{title}</h2>}
+								{hidePanel && (
+									<button
+										type="button"
+										onClick={hidePanel}
+										className="flex items-center gap-1.25 px-1.5 py-0.75 text-[0.625rem] rounded border border-[#464859] bg-[#10151C] text-white hover:bg-[#171D26]"
+									>
+										Collapse
+										<CollapseMenuIcon
+											style={{
+												transform: "rotate(180deg)",
+												width: "0.625rem",
+												height: "0.625rem",
+												marginRight: "0.125rem",
+											}}
+										/>
+									</button>
+								)}
+							</div>
 							{subtitle && <p>{subtitle}</p>}
 						</div>
 					</div>

@@ -10,6 +10,7 @@ import { authedFetch } from "@/utils/authed-fetch";
 type RawMaterialAgentPanelProps = {
 	onApplyProposal?: (proposal: RawMaterialProposal) => void;
 	onAddNewMaterialClick: () => void;
+	hidePanel: () => void;
 };
 
 type ChatResponse = {
@@ -28,6 +29,7 @@ type ChatResponse = {
 export function RawMaterialAgentPanel({
 	onApplyProposal,
 	onAddNewMaterialClick,
+	hidePanel,
 }: RawMaterialAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([
 		{
@@ -220,6 +222,7 @@ export function RawMaterialAgentPanel({
 						}
 					: null
 			}
+			hidePanel={hidePanel}
 		/>
 	);
 }

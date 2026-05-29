@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import BackArrowIcon from "./svgs/BackArrowIcon";
 import PlusIcon from "./svgs/PlusIcon";
 import CogIcon from "../svgs/CogIcon";
+import AgentIcon from "./svgs/AgentIcon";
 
 type BackButtonConfig = {
 	to: string;
@@ -17,6 +18,8 @@ type DashboardLayoutProps = {
 	plusButton?: BackButtonConfig;
 	showCogButton?: boolean;
 	backButton?: BackButtonConfig;
+	agentToggle?: boolean;
+	onAgentToggleClick?: () => void;
 };
 
 const BackButton = ({ backButton }: { backButton: BackButtonConfig }) => {
@@ -38,6 +41,8 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 	plusButton,
 	showCogButton = false,
 	backButton,
+	agentToggle = false,
+	onAgentToggleClick,
 }) => {
 	return (
 		<div className={styles.container}>
@@ -57,6 +62,11 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 							<Link to={plusButton.to} params={plusButton.params ?? {}}>
 								<PlusIcon />
 							</Link>
+						)}
+						{agentToggle && (
+							<button type="button" onClick={onAgentToggleClick}>
+								<AgentIcon />
+							</button>
 						)}
 					</div>
 				</div>

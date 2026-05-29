@@ -113,31 +113,47 @@ code {
 }
 
 .dashboardSplitLayout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
 }
 
 .dashboardSplitSidebar {
   display: none;
-  min-height: 0;
 }
 
 @media (min-width: 1280px) {
   .dashboardSplitLayout {
-    grid-template-columns: minmax(0, 1fr) 24rem;
+    flex-direction: row;
+  }
+
+  .dashboardSplitLayout > *:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .dashboardSplitSidebar {
-    display: block;
-    min-height: 0;
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 calc(24rem + 1.5rem);
+    transition: flex-basis 1s ease-in-out;
+    min-width: 0;
+    will-change: flex-basis;
+  }
+  
+  .dashboardSplitLayout.isSidebarCollapsed .dashboardSplitSidebar {
+    flex-basis: 0;
   }
 
   .dashboardSplitSidebarSticky {
     position: sticky;
     top: 0;
-    height: calc(100dvh - 9rem);
-    min-height: 0;
+    height: calc(100dvh - 9rem - 2px);
+    overflow: hidden;
+  }
+
+  .dashboardSplitSidebarClip {
+    height: 100%;
+    width: 24rem;
   }
 }

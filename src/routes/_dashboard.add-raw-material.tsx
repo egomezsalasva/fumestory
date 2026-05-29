@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
@@ -22,6 +22,14 @@ export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	component: AddRawMaterial,
 });
 
+type UserSettingsResponse = {
+	success?: boolean;
+	data?: {
+		raw_material_agent_collapsed?: boolean;
+	};
+	error?: string;
+};
+
 function AddRawMaterial() {
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
@@ -34,6 +42,68 @@ function AddRawMaterial() {
 	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
+
+	// null = loading settings, true/false = resolved preference
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
+		null,
+	);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadSidebarPreference = async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as UserSettingsResponse;
+
+				const collapsed =
+					res.ok && json?.data?.raw_material_agent_collapsed === true;
+
+				if (!cancelled) {
+					setIsSidebarCollapsed(collapsed);
+				}
+			} catch {
+				// Fallback to expanded if settings fetch fails.
+				if (!cancelled) {
+					setIsSidebarCollapsed(false);
+				}
+			}
+		};
+
+		void loadSidebarPreference();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	const handleToggleSidebar = async () => {
+		// Guard for edge case while still loading.
+		if (isSidebarCollapsed === null) return;
+
+		const next = !isSidebarCollapsed;
+		setIsSidebarCollapsed(next);
+
+		try {
+			await authedFetch("/api/user-settings", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ raw_material_agent_collapsed: next }),
+			});
+		} catch {
+			// Keep optimistic UI state even if save fails.
+		}
+	};
+
+	const handleCloseSidebar = async () => {
+		if (isSidebarCollapsed === true) return;
+		setIsSidebarCollapsed(true);
+		await authedFetch("/api/user-settings", {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ raw_material_agent_collapsed: true }), // or raw_material...
+		});
+	};
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
 		setLabel(proposal.suggestedLabel);
@@ -145,12 +215,29 @@ function AddRawMaterial() {
 		}
 	};
 
+	// Render shell while loading settings to avoid sidebar flicker.
+	if (isSidebarCollapsed === null) {
+		return (
+			<DashboardLayout
+				title="Raw Materials Inventory / Add Raw Material"
+				backButton={{ to: "/inventory" }}
+				agentToggle={true}
+			>
+				<div className="dashboardSplitLayout" />
+			</DashboardLayout>
+		);
+	}
+
 	return (
 		<DashboardLayout
 			title="Raw Materials Inventory / Add Raw Material"
 			backButton={{ to: "/inventory" }}
+			agentToggle={true}
+			onAgentToggleClick={handleToggleSidebar}
 		>
-			<div className="dashboardSplitLayout">
+			<div
+				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
+			>
 				<div className="w-full px-20">
 					<form
 						onSubmit={handleSubmit}
@@ -274,10 +361,13 @@ function AddRawMaterial() {
 				</div>
 				<div className="dashboardSplitSidebar">
 					<div className="dashboardSplitSidebarSticky">
-						<RawMaterialAgentPanel
-							onApplyProposal={handleApplyProposal}
-							onAddNewMaterialClick={() => setSuccessMessage("")}
-						/>
+						<div className="dashboardSplitSidebarClip">
+							<RawMaterialAgentPanel
+								onApplyProposal={handleApplyProposal}
+								onAddNewMaterialClick={() => setSuccessMessage("")}
+								hidePanel={handleCloseSidebar}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

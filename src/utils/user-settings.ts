@@ -21,6 +21,8 @@ export type UserSettingsJson = {
 	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
 	hide_raw_materials_without_available_dilutions?: boolean;
+	composition_agent_collapsed?: boolean;
+	raw_material_agent_collapsed?: boolean;
 };
 
 export type UserSettingsEffective = {
@@ -28,6 +30,8 @@ export type UserSettingsEffective = {
 	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
 	hide_raw_materials_without_available_dilutions: boolean;
+	composition_agent_collapsed: boolean;
+	raw_material_agent_collapsed: boolean;
 };
 
 export type UserSettingsRow = {
@@ -49,6 +53,8 @@ export const patchUserSettingsSchema = z
 		guest_feedback_aggregate_note: z.boolean().optional(),
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
+		composition_agent_collapsed: z.boolean().optional(),
+		raw_material_agent_collapsed: z.boolean().optional(),
 	})
 	.refine(
 		(d) => {
@@ -56,13 +62,16 @@ export const patchUserSettingsSchema = z
 			if (typeof d.guest_feedback_aggregate_note === "boolean") return true;
 			if (typeof d.hide_raw_materials_without_available_dilutions === "boolean")
 				return true;
+			if (typeof d.composition_agent_collapsed === "boolean") return true;
+			if (typeof d.raw_material_agent_collapsed === "boolean") return true;
+
 			const ic = d.inventory_columns;
 			if (!ic) return false;
 			return INVENTORY_COLUMN_IDS.some((id) => typeof ic[id] === "boolean");
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, and/or at least one inventory column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, and/or at least one inventory column flag",
 		},
 	);
 
@@ -104,6 +113,12 @@ export function parseUserSettingsJson(
 	if (typeof o.hide_raw_materials_without_available_dilutions === "boolean") {
 		out.hide_raw_materials_without_available_dilutions =
 			o.hide_raw_materials_without_available_dilutions;
+	}
+	if (typeof o.composition_agent_collapsed === "boolean") {
+		out.composition_agent_collapsed = o.composition_agent_collapsed;
+	}
+	if (typeof o.raw_material_agent_collapsed === "boolean") {
+		out.raw_material_agent_collapsed = o.raw_material_agent_collapsed;
 	}
 	const cols = parseInventoryColumnsJson(o.inventory_columns);
 	if (cols) {
@@ -148,6 +163,8 @@ export function effectiveUserSettings(
 		hide_raw_materials_without_available_dilutions:
 			inventory_columns.available_dilutions === true &&
 			stored.hide_raw_materials_without_available_dilutions === true,
+		composition_agent_collapsed: stored.composition_agent_collapsed === true,
+		raw_material_agent_collapsed: stored.raw_material_agent_collapsed === true,
 	};
 }
 
@@ -182,6 +199,12 @@ export function mergeUserSettingsJson(
 	) {
 		merged.hide_raw_materials_without_available_dilutions =
 			patch.hide_raw_materials_without_available_dilutions;
+	}
+	if (typeof patch.composition_agent_collapsed === "boolean") {
+		merged.composition_agent_collapsed = patch.composition_agent_collapsed;
+	}
+	if (typeof patch.raw_material_agent_collapsed === "boolean") {
+		merged.raw_material_agent_collapsed = patch.raw_material_agent_collapsed;
 	}
 	return merged;
 }

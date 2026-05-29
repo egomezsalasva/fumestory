@@ -1,4 +1,4 @@
-const CollapseMenuIcon = ({ style }: { style: React.CSSProperties }) => {
+const CollapseIcon = ({ style }: { style: React.CSSProperties }) => {
 	return (
 		<svg
 			width="12"
@@ -24,5 +24,3 @@ const CollapseMenuIcon = ({ style }: { style: React.CSSProperties }) => {
 		</svg>
 	);
 };
-
-export default CollapseMenuIcon;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
@@ -9,6 +9,14 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
+
+type UserSettingsResponse = {
+	success?: boolean;
+	data?: {
+		composition_agent_collapsed?: boolean;
+	};
+	error?: string;
+};
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
 	head: () => ({
@@ -28,6 +36,67 @@ function AddComposition() {
 	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+
+	// null = loading settings, true/false = resolved preference
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
+		null,
+	);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadSidebarPreference = async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as UserSettingsResponse;
+
+				const collapsed =
+					res.ok && json?.data?.composition_agent_collapsed === true;
+				if (!cancelled) {
+					setIsSidebarCollapsed(collapsed);
+				}
+			} catch {
+				// Fallback to expanded if settings fetch fails.
+				if (!cancelled) {
+					setIsSidebarCollapsed(false);
+				}
+			}
+		};
+
+		void loadSidebarPreference();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	const handleToggleSidebar = async () => {
+		// Guard for impossible edge case while still loading.
+		if (isSidebarCollapsed === null) return;
+
+		const next = !isSidebarCollapsed;
+		setIsSidebarCollapsed(next);
+
+		try {
+			await authedFetch("/api/user-settings", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ composition_agent_collapsed: next }),
+			});
+		} catch {
+			// Keep optimistic UI state even if save fails.
+		}
+	};
+
+	const handleCloseSidebar = async () => {
+		if (isSidebarCollapsed === true) return;
+		setIsSidebarCollapsed(true);
+		await authedFetch("/api/user-settings", {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ composition_agent_collapsed: true }), // or raw_material...
+		});
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -74,12 +143,29 @@ function AddComposition() {
 		}
 	};
 
+	// Render nothing until we know the saved preference => no first-paint flicker.
+	if (isSidebarCollapsed === null) {
+		return (
+			<DashboardLayout
+				title="Compositions / Add Composition"
+				backButton={{ to: "/compositions" }}
+				agentToggle={true}
+			>
+				<></>
+			</DashboardLayout>
+		);
+	}
+
 	return (
 		<DashboardLayout
 			title="Compositions / Add Composition"
 			backButton={{ to: "/compositions" }}
+			agentToggle={true}
+			onAgentToggleClick={handleToggleSidebar}
 		>
-			<div className="dashboardSplitLayout">
+			<div
+				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
+			>
 				<div className={styles.formContainerWrapper}>
 					<form onSubmit={handleSubmit} className={styles.formContainer}>
 						<TextInput
@@ -134,7 +220,12 @@ function AddComposition() {
 
 				<div className="dashboardSplitSidebar">
 					<div className="dashboardSplitSidebarSticky">
-						<CompositionAgentPanel onStartOverClick={() => setSuccess(false)} />
+						<div className="dashboardSplitSidebarClip">
+							<CompositionAgentPanel
+								onStartOverClick={() => setSuccess(false)}
+								hidePanel={handleCloseSidebar}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

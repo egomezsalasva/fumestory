@@ -14,6 +14,7 @@ type SuggestAnyFormulaProposal = z.infer<
 
 type CompositionAgentPanelProps = {
 	onStartOverClick: () => void;
+	hidePanel: () => void;
 };
 
 type ChatResponse = {
@@ -44,6 +45,7 @@ function assistantMessage(
 
 export function CompositionAgentPanel({
 	onStartOverClick,
+	hidePanel,
 }: CompositionAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [choiceOptions, setChoiceOptions] = useState<ChatChoiceOption[] | null>(
@@ -201,6 +203,7 @@ export function CompositionAgentPanel({
 			choiceOptions={choiceOptions}
 			onChoice={handleChoice}
 			className="h-full min-h-0"
+			hidePanel={hidePanel}
 		/>
 	);
 }
