@@ -95,6 +95,10 @@ function AddRawMaterial() {
 			setError("Material nature is required");
 			return;
 		}
+		if (notes.length === 0) {
+			setError("At least one note is required");
+			return;
+		}
 		if (error) {
 			setError(error);
 			return;
@@ -232,7 +236,7 @@ function AddRawMaterial() {
 
 							{/* Notes Field */}
 							<NotesAutocomplete
-								label="Notes"
+								label="Notes *"
 								selectedNotes={notes}
 								onNotesChange={(value) => {
 									setNotes(value);

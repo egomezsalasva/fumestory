@@ -6,14 +6,12 @@ type NotesAutocompleteProps = {
 	label: string;
 	selectedNotes: string[];
 	onNotesChange: (notes: string[]) => void;
-	required?: boolean;
 };
 
 export function NotesAutocomplete({
 	label,
 	selectedNotes,
 	onNotesChange,
-	required,
 }: NotesAutocompleteProps) {
 	const [availableNotes, setAvailableNotes] = useState<Note[]>([]);
 	const [inputValue, setInputValue] = useState("");
@@ -53,9 +51,7 @@ export function NotesAutocomplete({
 
 	return (
 		<div>
-			<label className={styles.formLabel}>
-				{label} {required && "*"}
-			</label>
+			<label className={styles.formLabel}>{label}</label>
 
 			{/* Selected notes as tags */}
 			{selectedNotes.length > 0 && (
@@ -100,7 +96,6 @@ export function NotesAutocomplete({
 						}}
 						placeholder="Type to search or add new note..."
 						className={styles.formInput}
-						required
 					/>
 
 					{/* Dropdown - only shows when there are filtered results */}
