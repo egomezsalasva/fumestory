@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
+import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 
 export type RawMaterial = {
 	id: number;
@@ -9,6 +10,7 @@ export type RawMaterial = {
 	name: string;
 	category_id: number;
 	material_nature: string;
+	cas_number: string | null;
 	category_name: string;
 	note_type: string;
 	notes: string[];
@@ -38,9 +40,10 @@ export const Route = createFileRoute("/api/raw-materials")({
 						SELECT
 							rm.id,
 							rm.label,
-							rm.name ,
+							rm.name,
 							rm.material_nature,
 							rm.category_id,
+							rm.cas_number,
 							c.name as category_name,
 							rm.note_type,
 							rm.created_at,
@@ -82,7 +85,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 						LEFT JOIN notes n ON rmn.note_id = n.id
 						LEFT JOIN dilutions d ON rm.id = d.raw_material_id
 						WHERE rm.owner_id = $1
-						GROUP BY rm.id, rm.label, rm.name, rm.category_id, c.name, rm.note_type, rm.created_at, rm.material_nature
+						GROUP BY rm.id, rm.label, rm.name, rm.category_id, rm.cas_number, c.name, rm.note_type, rm.created_at, rm.material_nature
 						ORDER BY rm.id DESC
 					`;
 					const txResults = await client.transaction((txn) => [
@@ -119,10 +122,20 @@ export const Route = createFileRoute("/api/raw-materials")({
 						label,
 						name,
 						category_id,
+						cas_number,
 						note_type,
 						notes,
 						material_nature,
 					} = body;
+
+					const casNumber = normalizeCasNumber(cas_number);
+
+					if (!isValidCasNumber(casNumber)) {
+						return jsonResponse(
+							{ error: "CAS number must look like 6790-58-5" },
+							400,
+						);
+					}
 
 					if (!label || typeof label !== "string" || label.trim() === "") {
 						return jsonResponse(
@@ -173,15 +186,16 @@ export const Route = createFileRoute("/api/raw-materials")({
 							currentUserId,
 						]),
 						txn.query(
-							`INSERT INTO raw_materials (label,name, category_id, note_type, material_nature, owner_id)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                    RETURNING id, name, category_id, note_type, material_nature, created_at`,
+							`INSERT INTO raw_materials (label, name, category_id, note_type, material_nature, cas_number, owner_id)
+                    		VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    		RETURNING id, label, name, category_id, material_nature, cas_number, note_type, created_at`,
 							[
 								label.trim(),
 								name.trim(),
 								category_id || null,
 								note_type || null,
 								material_nature,
+								casNumber,
 								currentUserId,
 							],
 						),

@@ -151,6 +151,15 @@ function App() {
 			width: 88,
 		};
 
+		const casNumberCol: ColDef<RawMaterial> = {
+			field: "cas_number",
+			headerName: "CAS",
+			width: 120,
+			valueFormatter: (
+				params: ValueFormatterParams<RawMaterial, string | null>,
+			) => params.value ?? "—",
+		};
+
 		const materialNatureCol: ColDef<RawMaterial> = {
 			field: "material_nature",
 			headerName: "Material Nature",
@@ -297,6 +306,7 @@ function App() {
 		const cols: ColDef<RawMaterial>[] = [];
 		if (showInventoryLabelColumn !== false) cols.push(labelCol);
 		cols.push(nameCol);
+		cols.push(casNumberCol);
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
 		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);

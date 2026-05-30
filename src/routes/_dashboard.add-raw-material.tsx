@@ -11,6 +11,7 @@ import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
+import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -33,6 +34,7 @@ type UserSettingsResponse = {
 function AddRawMaterial() {
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
+	const [casNumber, setCasNumber] = useState("");
 	const [categorySearch, setCategorySearch] = useState("");
 	const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
 		null,
@@ -156,6 +158,11 @@ function AddRawMaterial() {
 			setError("Name must be at least 3 characters long");
 			return;
 		}
+		const normalizedCas = normalizeCasNumber(casNumber);
+		if (!isValidCasNumber(normalizedCas)) {
+			setError("CAS number must look like 6790-58-5");
+			return;
+		}
 		if (!selectedCategoryId) {
 			setError("Category is required");
 			return;
@@ -184,6 +191,7 @@ function AddRawMaterial() {
 				body: JSON.stringify({
 					label,
 					name,
+					cas_number: normalizedCas,
 					category_id: selectedCategoryId,
 					note_type: noteType,
 					material_nature: materialNature,
@@ -201,6 +209,7 @@ function AddRawMaterial() {
 			// Success reset
 			setName("");
 			setLabel("");
+			setCasNumber("");
 			setCategorySearch("");
 			setSelectedCategoryId(null);
 			setNoteType("");
@@ -257,16 +266,15 @@ function AddRawMaterial() {
 							/>
 
 							{/* CAS Number Field */}
-							{/* <LabelInput
+							<TextInput
 								label="CAS Number"
-								value={label}
+								value={casNumber}
 								onChange={(value) => {
-									setLabel(value);
+									setCasNumber(value);
 									setError("");
 								}}
-								placeholder="e.g. 123-45-6"
-								required
-							/> */}
+								placeholder="e.g. 6790-58-5"
+							/>
 
 							{/* Label Field */}
 							<LabelInput
