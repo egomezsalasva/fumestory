@@ -10,6 +10,7 @@ import {
 } from "@/agent/schemas/rawMaterialProposal";
 import { proposalToMarkdown } from "@/agent/utils/proposalToMarkdown";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
+import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 
 const DUPLICATE_CHOICE_INTERACTION = {
 	kind: "choice" as const,
@@ -26,6 +27,13 @@ const ADD_TO_FORM_CHOICE_INTERACTION = {
 		{ id: "different_material", label: "Add different material" },
 	],
 };
+
+function sanitizeProposalCasNumber(
+	casNumber: string | null | undefined,
+): string | null {
+	const normalized = normalizeCasNumber(casNumber);
+	return isValidCasNumber(normalized) ? normalized : null;
+}
 
 async function generateStructuredProposal(
 	userMessage: string,
@@ -98,7 +106,11 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 								200,
 							);
 						}
-						const reply = proposalToMarkdown(result.proposal);
+						const proposal = {
+							...result.proposal,
+							casNumber: sanitizeProposalCasNumber(result.proposal.casNumber),
+						};
+						const reply = proposalToMarkdown(proposal);
 						return jsonResponse({ success: true, reply }, 200);
 					} catch {
 						return jsonResponse(
@@ -166,12 +178,16 @@ export const Route = createFileRoute("/api/agent/raw-material-chat")({
 							200,
 						);
 					}
-					const reply = proposalToMarkdown(result.proposal);
+					const proposal = {
+						...result.proposal,
+						casNumber: sanitizeProposalCasNumber(result.proposal.casNumber),
+					};
+					const reply = proposalToMarkdown(proposal);
 					return jsonResponse(
 						{
 							success: true,
 							reply,
-							proposal: result.proposal,
+							proposal,
 							interaction: ADD_TO_FORM_CHOICE_INTERACTION,
 						},
 						200,

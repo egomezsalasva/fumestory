@@ -60,6 +60,7 @@ Example:
   "proposal": {
     "suggestedLabel": "...",
     "nameAsEntered": "...",
+    "casNumber": "6790-58-5",
     "materialNature": "Natural|Synthetic",
     "suggestedCategory": "...",
     "noteType": "High|Mid(Heart)|Base",
@@ -92,4 +93,6 @@ Example:
     - if uncertain => "Synthetic"
   - notes should be concise tags for the form.
   - additionalInformation is chat-only context, not a form field.
+  - casNumber: include when the material has a well-known single CAS (especially synthetics / aroma chemicals). Format: 2–7 digits, hyphen, 2 digits, hyphen, 1 digit (e.g. 6790-58-5). Use null for naturals/blends, obscure materials, or when unsure — never fabricate.
+  - Do not put CAS in additionalInformation; use casNumber only. 
 `;

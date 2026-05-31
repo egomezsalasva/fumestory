@@ -18,6 +18,8 @@ export function proposalToMarkdown(proposal: RawMaterialProposal): string {
 		"",
 		`**Name:** ${proposal.nameAsEntered}`,
 		"",
+		`**CAS number:** ${proposal.casNumber ?? "_none_"}`,
+		"",
 		`**Material nature:** ${proposal.materialNature}`,
 		"",
 		`**Suggested category:** ${proposal.suggestedCategory}`,

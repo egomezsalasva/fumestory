@@ -10,6 +10,12 @@ export const rawMaterialProposalSchema = z.object({
 	nameAsEntered: z
 		.string()
 		.describe("User material name exactly as they typed it (form field: name)"),
+	casNumber: z
+		.string()
+		.nullable()
+		.describe(
+			"Form field CAS Registry Number (e.g. 6790-58-5 for Ambroxan). Use null if unknown, not applicable (common for natural blends/extracts), or uncertain — do not guess or invent a CAS.",
+		),
 	suggestedCategory: z
 		.string()
 		.describe(
@@ -29,8 +35,9 @@ export const rawMaterialProposalSchema = z.object({
 	additionalInformation: z
 		.string()
 		.describe(
-			"READ-ONLY for the user in chat: extra context (odor, use, dilution, IFRA). " +
-				"NOT a form field — the inventory form has no field for this; never treat it as data to save.",
+			"READ-ONLY chat context only (odor, use, dilution tips, IFRA notes). " +
+				"Not mapped to any inventory form field and not saved on submit. " +
+				"Put CAS in casNumber, not here. Do not duplicate suggestedLabel, name, category, noteType, materialNature, notes, or casNumber.",
 		),
 });
 

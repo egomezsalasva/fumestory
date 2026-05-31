@@ -113,7 +113,15 @@ function AddRawMaterial() {
 		setMaterialNature(proposal.materialNature);
 		setNoteType(proposal.noteType);
 		setNotes(proposal.notes);
-		setError("");
+
+		const normalizedCas = normalizeCasNumber(proposal.casNumber);
+		let casError = "";
+		if (!isValidCasNumber(normalizedCas)) {
+			casError = "CAS number must look like 6790-58-5";
+			setCasNumber("");
+		} else {
+			setCasNumber(normalizedCas ?? "");
+		}
 
 		try {
 			const response = await authedFetch("/api/categories");
@@ -122,6 +130,7 @@ function AddRawMaterial() {
 			if (!response.ok || !data.success || !Array.isArray(data.data)) {
 				setCategorySearch(proposal.suggestedCategory);
 				setSelectedCategoryId(null);
+				setError(casError);
 				return;
 			}
 			const categories = data.data as { id: number; name: string }[];
@@ -143,6 +152,8 @@ function AddRawMaterial() {
 			setCategorySearch(proposal.suggestedCategory);
 			setSelectedCategoryId(null);
 		}
+
+		setError(casError);
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
