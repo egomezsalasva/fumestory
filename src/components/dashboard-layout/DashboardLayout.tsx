@@ -64,7 +64,11 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 							</Link>
 						)}
 						{agentToggle && (
-							<button type="button" onClick={onAgentToggleClick}>
+							<button
+								type="button"
+								className="cursor-pointer"
+								onClick={onAgentToggleClick}
+							>
 								<AgentIcon />
 							</button>
 						)}

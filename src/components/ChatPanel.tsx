@@ -93,7 +93,7 @@ export function ChatPanel({
 									<button
 										type="button"
 										onClick={hidePanel}
-										className="flex items-center gap-1.25 px-1.5 py-0.75 text-[0.625rem] rounded border border-[#464859] bg-[#10151C] text-white hover:bg-[#171D26]"
+										className="flex items-center gap-1.25 px-1.5 py-0.75 text-[0.625rem] rounded border border-[#464859] bg-[#10151C] text-white hover:bg-[#171D26] cursor-pointer"
 									>
 										Collapse
 										<CollapseMenuIcon
