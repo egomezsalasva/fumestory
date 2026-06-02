@@ -5,6 +5,7 @@ import {
 	type ChatMessage,
 } from "@/components/ChatPanel";
 import type { z } from "zod";
+import { COMPOSITION_CHOICE } from "@/agent/composition-chat/flow";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { authedFetch } from "@/utils/authed-fetch";
 
@@ -14,6 +15,10 @@ type SuggestAnyFormulaProposal = z.infer<
 
 type CompositionAgentPanelProps = {
 	onStartOverClick: () => void;
+	onApplyProposal?: (
+		proposal: SuggestAnyFormulaProposal,
+		inventoryOnlyTotalWeight?: string,
+	) => void;
 	hidePanel: () => void;
 };
 
@@ -45,6 +50,7 @@ function assistantMessage(
 
 export function CompositionAgentPanel({
 	onStartOverClick,
+	onApplyProposal,
 	hidePanel,
 }: CompositionAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -52,8 +58,17 @@ export function CompositionAgentPanel({
 		null,
 	);
 	const [isLoading, setIsLoading] = useState(false);
+	const [pendingProposal, setPendingProposal] =
+		useState<SuggestAnyFormulaProposal | null>(null);
+	const [pendingInventoryOnlyTotalWeight, setPendingInventoryOnlyTotalWeight] =
+		useState<string | null>(null);
 
 	const hasUserResponded = messages.some((m) => m.role === "user");
+
+	const clearPendingProposal = () => {
+		setPendingProposal(null);
+		setPendingInventoryOnlyTotalWeight(null);
+	};
 
 	const sendToApi = async (body: Record<string, string>) => {
 		const response = await authedFetch("/api/agent/composition-chat", {
@@ -78,16 +93,21 @@ export function CompositionAgentPanel({
 				},
 			]);
 			setChoiceOptions(null);
+			clearPendingProposal();
 			return;
 		}
 
 		const reply =
 			data.reply ?? "Sorry, I encountered an error. Please try again.";
+
 		if (data.resetConversation) {
+			clearPendingProposal();
 			setMessages([
 				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
 			]);
 		} else {
+			setPendingProposal(data.proposal ?? null);
+			setPendingInventoryOnlyTotalWeight(data.inventoryOnlyTotalWeight ?? null);
 			setMessages((prev) => [
 				...prev,
 				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
@@ -127,6 +147,7 @@ export function CompositionAgentPanel({
 							content: "Sorry, I encountered an error. Please try again.",
 						},
 					]);
+					clearPendingProposal();
 				}
 			} finally {
 				if (!cancelled) {
@@ -157,6 +178,7 @@ export function CompositionAgentPanel({
 				},
 			]);
 			setChoiceOptions(null);
+			clearPendingProposal();
 		} finally {
 			setIsLoading(false);
 		}
@@ -164,9 +186,26 @@ export function CompositionAgentPanel({
 
 	const handleChoice = async (choiceId: string) => {
 		if (isLoading) return;
-		if (choiceId === "start_over") {
-			onStartOverClick();
+
+		if (choiceId === COMPOSITION_CHOICE.APPLY_TO_FORM) {
+			if (!pendingProposal || !onApplyProposal) return;
+			const label =
+				choiceOptions?.find((o) => o.id === choiceId)?.label ?? "Apply to form";
+			setChoiceOptions(null);
+			setMessages((prev) => [...prev, { role: "user", content: label }]);
+			onApplyProposal(
+				pendingProposal,
+				pendingInventoryOnlyTotalWeight ?? undefined,
+			);
+			clearPendingProposal();
+			return;
 		}
+
+		if (choiceId === COMPOSITION_CHOICE.START_OVER) {
+			onStartOverClick();
+			clearPendingProposal();
+		}
+
 		const label =
 			choiceOptions?.find((o) => o.id === choiceId)?.label ?? choiceId;
 		setMessages((prev) => [...prev, { role: "user", content: label }]);
@@ -183,6 +222,7 @@ export function CompositionAgentPanel({
 					content: "Sorry, I encountered an error. Please try again.",
 				},
 			]);
+			clearPendingProposal();
 		} finally {
 			setIsLoading(false);
 		}

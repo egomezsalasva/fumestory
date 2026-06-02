@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import type { z } from "zod";
+import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
+import { fetchAndConvertProposalToIngredients } from "@/agent/utils/proposalToIngredients";
 import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
@@ -9,6 +12,10 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
+
+type SuggestAnyFormulaProposal = z.infer<
+	typeof suggestAnyFormulaProposalSchema
+>;
 
 type UserSettingsResponse = {
 	success?: boolean;
@@ -32,6 +39,9 @@ function AddComposition() {
 	const [name, setName] = useState("");
 	const [type, setType] = useState<"trial" | "accord" | "perfume">("trial");
 	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+	const [prefillIngredients, setPrefillIngredients] = useState<
+		Ingredient[] | null
+	>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
@@ -94,8 +104,35 @@ function AddComposition() {
 		await authedFetch("/api/user-settings", {
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ composition_agent_collapsed: true }), // or raw_material...
+			body: JSON.stringify({ composition_agent_collapsed: true }),
 		});
+	};
+
+	const handleApplyProposal = async (
+		proposal: SuggestAnyFormulaProposal,
+		inventoryOnlyTotalWeight?: string,
+	) => {
+		if (!inventoryOnlyTotalWeight) {
+			setError("Missing total weight for this formula.");
+			return;
+		}
+
+		setError(null);
+		setSuccess(false);
+
+		const { ingredients: nextIngredients, errors } =
+			await fetchAndConvertProposalToIngredients(
+				proposal,
+				inventoryOnlyTotalWeight,
+			);
+
+		if (errors.length > 0) {
+			setError(errors.join(" "));
+			return;
+		}
+
+		setPrefillIngredients(nextIngredients);
+		setFormResetKey((k) => k + 1);
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +171,7 @@ function AddComposition() {
 			setName("");
 			setType("trial");
 			setIngredients([]);
+			setPrefillIngredients(null);
 			setFormResetKey((k) => k + 1);
 			setSuccess(true);
 			setIsSubmitting(false);
@@ -189,6 +227,7 @@ function AddComposition() {
 						<FormulaIngredientsFields
 							key={formResetKey}
 							onIngredientsChange={setIngredients}
+							prefillIngredients={prefillIngredients}
 						/>
 
 						<div
@@ -223,6 +262,7 @@ function AddComposition() {
 						<div className="dashboardSplitSidebarClip">
 							<CompositionAgentPanel
 								onStartOverClick={() => setSuccess(false)}
+								onApplyProposal={handleApplyProposal}
 								hidePanel={handleCloseSidebar}
 							/>
 						</div>

@@ -65,6 +65,23 @@ const choices = (
 	options: Array<{ id: string; label: string }>,
 ): ChatResponse["interaction"] => ({ kind: "choice", options });
 
+const reviewFormulaChoices = (
+	state: CompositionConversationState,
+): ChatResponse["interaction"] => {
+	const options: Array<{ id: string; label: string }> = [];
+
+	if (state.inventoryMode === "inventory_only") {
+		options.push({
+			id: COMPOSITION_CHOICE.APPLY_TO_FORM,
+			label: "Apply to form",
+		});
+	}
+
+	options.push({ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" });
+
+	return choices(options);
+};
+
 const questionFor = (state: CompositionConversationState): ChatResponse => {
 	switch (state.step) {
 		case "pick_target":
@@ -147,16 +164,17 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 			return {
 				success: true,
 				reply:
-					"Before I generate the inventory-only formula, what total weight do you want? (e.g., 30g)",
+					"Before I generate the inventory-only formula, what total weight do you want? (e.g., 5g)",
 			};
 
 		case "review_formula":
 			return {
 				success: true,
-				reply: "Formula generated. Choose Start over to generate another one.",
-				interaction: choices([
-					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
-				]),
+				reply:
+					state.inventoryMode === "inventory_only"
+						? "Formula generated. Apply it to the form or start over."
+						: "Formula generated. Choose Start over to generate another one.",
+				interaction: reviewFormulaChoices(state),
 			};
 	}
 
@@ -527,9 +545,7 @@ const generateReviewFormulaResponse = async (
 				state.inventoryOnlyTotalWeight
 					? { inventoryOnlyTotalWeight: state.inventoryOnlyTotalWeight }
 					: {}),
-				interaction: choices([
-					{ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" },
-				]),
+				interaction: reviewFormulaChoices(state),
 			},
 			200,
 		);
@@ -735,7 +751,7 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 							return jsonResponse(questionFor(state), 200);
 						}
 
-						const isValidWeight = /^\d+(\.\d+)?\s*(g|gram|grams|ml)?$/i.test(
+						const isValidWeight = /^\d+(\.\d+)?\s*(g|gram|grams)?$/i.test(
 							message,
 						);
 
@@ -744,7 +760,7 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 								{
 									success: true,
 									reply:
-										"Please enter total weight as a number with optional unit, e.g. 30g or 50 ml.",
+										"Please enter total weight as a number in grams, e.g. 5g or 5.",
 								},
 								200,
 							);

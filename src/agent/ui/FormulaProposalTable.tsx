@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { formatPercent } from "@/agent/tools/getAvailableDilutions";
+import { parseInventoryTotalWeight } from "@/agent/utils/proposalToIngredients";
 
 type FormulaLine = z.infer<
 	typeof suggestAnyFormulaProposalSchema
@@ -12,19 +13,6 @@ type Props = {
 	lines: FormulaLine[];
 	inventoryOnlyTotalWeight?: string;
 };
-
-function parseTotalWeight(
-	value?: string,
-): { amount: number; unit: string } | null {
-	if (!value) return null;
-	const m = value.trim().match(/^(\d+(?:\.\d+)?)\s*(g|gram|grams|ml)?$/i);
-	if (!m) return null;
-	const amount = Number(m[1]);
-	if (!Number.isFinite(amount) || amount <= 0) return null;
-	const unit = (m[2] ?? "g").toLowerCase();
-	const normalizedUnit = unit === "gram" || unit === "grams" ? "g" : unit;
-	return { amount, unit: normalizedUnit };
-}
 
 function formatWeight(value: number): string {
 	if (!Number.isFinite(value)) return "0";
@@ -49,7 +37,7 @@ export function FormulaProposalTable({
 	lines,
 	inventoryOnlyTotalWeight,
 }: Props) {
-	const totalWeight = parseTotalWeight(inventoryOnlyTotalWeight);
+	const totalWeightGrams = parseInventoryTotalWeight(inventoryOnlyTotalWeight);
 
 	const inventoryLines = lines.filter((l) => l.section === "inventory");
 	const additionLines = lines.filter((l) => l.section === "addition");
@@ -84,12 +72,9 @@ export function FormulaProposalTable({
 				</thead>
 				<tbody>
 					{orderedLines.map((line, i) => {
-						const lineWeightInfo =
-							totalWeight !== null
-								? {
-										value: (line.formulaPercent / 100) * totalWeight.amount,
-										unit: totalWeight.unit,
-									}
+						const lineWeightGrams =
+							totalWeightGrams !== null
+								? (line.formulaPercent / 100) * totalWeightGrams
 								: null;
 
 						const showSectionHeader =
@@ -123,10 +108,9 @@ export function FormulaProposalTable({
 									</td>
 									<td className="text-center align-top px-2 py-1.5 border-r border-slate-600 text-slate-100">
 										<div>{formatPercent(line.formulaPercent)}%</div>
-										{lineWeightInfo ? (
+										{lineWeightGrams !== null ? (
 											<div className="text-xs text-slate-400 mt-0.5">
-												{formatWeight(lineWeightInfo.value)}{" "}
-												{lineWeightInfo.unit}
+												{formatWeight(lineWeightGrams)} g
 											</div>
 										) : null}
 									</td>
