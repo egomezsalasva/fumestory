@@ -5,6 +5,7 @@ import {
 	type ChatMessage,
 } from "@/components/ChatPanel";
 import type { z } from "zod";
+import type { CompositionFormPrefill } from "@/agent/composition-chat/compositionFormPrefill";
 import { COMPOSITION_CHOICE } from "@/agent/composition-chat/flow";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { authedFetch } from "@/utils/authed-fetch";
@@ -18,6 +19,7 @@ type CompositionAgentPanelProps = {
 	onApplyProposal?: (
 		proposal: SuggestAnyFormulaProposal,
 		inventoryOnlyTotalWeight?: string,
+		formPrefill?: CompositionFormPrefill,
 	) => void;
 	hidePanel: () => void;
 };
@@ -29,6 +31,7 @@ type ChatResponse = {
 	resetConversation?: boolean;
 	proposal?: SuggestAnyFormulaProposal;
 	inventoryOnlyTotalWeight?: string;
+	formPrefill?: CompositionFormPrefill;
 	interaction?: {
 		kind: "choice";
 		options: ChatChoiceOption[];
@@ -62,12 +65,15 @@ export function CompositionAgentPanel({
 		useState<SuggestAnyFormulaProposal | null>(null);
 	const [pendingInventoryOnlyTotalWeight, setPendingInventoryOnlyTotalWeight] =
 		useState<string | null>(null);
+	const [pendingFormPrefill, setPendingFormPrefill] =
+		useState<CompositionFormPrefill | null>(null);
 
 	const hasUserResponded = messages.some((m) => m.role === "user");
 
 	const clearPendingProposal = () => {
 		setPendingProposal(null);
 		setPendingInventoryOnlyTotalWeight(null);
+		setPendingFormPrefill(null);
 	};
 
 	const sendToApi = async (body: Record<string, string>) => {
@@ -108,6 +114,7 @@ export function CompositionAgentPanel({
 		} else {
 			setPendingProposal(data.proposal ?? null);
 			setPendingInventoryOnlyTotalWeight(data.inventoryOnlyTotalWeight ?? null);
+			setPendingFormPrefill(data.formPrefill ?? null);
 			setMessages((prev) => [
 				...prev,
 				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
@@ -196,6 +203,7 @@ export function CompositionAgentPanel({
 			onApplyProposal(
 				pendingProposal,
 				pendingInventoryOnlyTotalWeight ?? undefined,
+				pendingFormPrefill ?? undefined,
 			);
 			clearPendingProposal();
 			return;

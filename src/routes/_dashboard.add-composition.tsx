@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { z } from "zod";
+import type { CompositionFormPrefill } from "@/agent/composition-chat/compositionFormPrefill";
 import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionFormulaProposal";
 import { fetchAndConvertProposalToIngredients } from "@/agent/utils/proposalToIngredients";
 import { TextInput } from "@/components/TextInput";
@@ -111,6 +112,7 @@ function AddComposition() {
 	const handleApplyProposal = async (
 		proposal: SuggestAnyFormulaProposal,
 		inventoryOnlyTotalWeight?: string,
+		formPrefill?: CompositionFormPrefill,
 	) => {
 		if (!inventoryOnlyTotalWeight) {
 			setError("Missing total weight for this formula.");
@@ -129,6 +131,11 @@ function AddComposition() {
 		if (errors.length > 0) {
 			setError(errors.join(" "));
 			return;
+		}
+
+		if (formPrefill) {
+			setType(formPrefill.type);
+			setName(formPrefill.suggestedName);
 		}
 
 		setPrefillIngredients(nextIngredients);

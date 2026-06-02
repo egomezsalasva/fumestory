@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { jsonResponse } from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
 import {
+	buildCompositionFormPrefill,
+	type CompositionFormPrefill,
+} from "@/agent/composition-chat/compositionFormPrefill";
+import {
 	COMPOSITION_CHOICE,
 	createInitialCompositionConversationState,
 	type CompositionConversationState,
@@ -34,6 +38,7 @@ type ChatResponse = {
 	reply: string;
 	proposal?: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal;
 	inventoryOnlyTotalWeight?: string;
+	formPrefill?: CompositionFormPrefill;
 	interaction?: {
 		kind: "choice";
 		options: Array<{ id: string; label: string }>;
@@ -167,7 +172,8 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 					"Before I generate the inventory-only formula, what total weight do you want? (e.g., 5g)",
 			};
 
-		case "review_formula":
+		case "review_formula": {
+			const formPrefill = buildCompositionFormPrefill(state);
 			return {
 				success: true,
 				reply:
@@ -175,7 +181,9 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 						? "Formula generated. Apply it to the form or start over."
 						: "Formula generated. Choose Start over to generate another one.",
 				interaction: reviewFormulaChoices(state),
+				...(formPrefill ? { formPrefill } : {}),
 			};
+		}
 	}
 
 	return {
@@ -536,6 +544,8 @@ const generateReviewFormulaResponse = async (
 			}
 		}
 
+		const formPrefill = buildCompositionFormPrefill(state);
+
 		return jsonResponse(
 			{
 				success: true,
@@ -545,6 +555,7 @@ const generateReviewFormulaResponse = async (
 				state.inventoryOnlyTotalWeight
 					? { inventoryOnlyTotalWeight: state.inventoryOnlyTotalWeight }
 					: {}),
+				...(formPrefill ? { formPrefill } : {}),
 				interaction: reviewFormulaChoices(state),
 			},
 			200,
