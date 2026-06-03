@@ -45,6 +45,13 @@ type ChatPanelProps = {
 	hidePanel?: () => void;
 };
 
+function eventTargetElement(target: EventTarget | null): Element | null {
+	if (!target) return null;
+	if (target instanceof Element) return target;
+	if (target instanceof Node) return target.parentElement;
+	return null;
+}
+
 export function ChatPanel({
 	messages,
 	onSendMessage,
@@ -62,10 +69,24 @@ export function ChatPanel({
 	const [input, setInput] = useState("");
 	const [numberInput, setNumberInput] = useState("");
 	const [choiceFocusIndex, setChoiceFocusIndex] = useState(0);
+	const [choiceListFocused, setChoiceListFocused] = useState(false);
+	const panelRef = useRef<HTMLDivElement>(null);
 	const choiceListRef = useRef<HTMLDivElement>(null);
+	const textInputRef = useRef<HTMLInputElement>(null);
+	const numberInputRef = useRef<HTMLInputElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
+	const isLoadingRef = useRef(isLoading);
+	const choiceOptionsRef = useRef(choiceOptions);
+	const footerNumberInputRef = useRef(footerNumberInput);
+	const footerActionRef = useRef(footerAction);
+	isLoadingRef.current = isLoading;
+	choiceOptionsRef.current = choiceOptions;
+	footerNumberInputRef.current = footerNumberInput;
+	footerActionRef.current = footerAction;
+
 	const showChoices = Boolean(choiceOptions?.length && onChoice);
+	const showTextInput = !showChoices && !footerNumberInput && !footerAction;
 
 	useEffect(() => {
 		if (!showChoices || !choiceOptions?.length) return;
@@ -73,9 +94,23 @@ export function ChatPanel({
 	}, [showChoices, choiceOptions]);
 
 	useEffect(() => {
-		if (!showChoices || isLoading) return;
-		choiceListRef.current?.focus();
-	}, [showChoices, isLoading]);
+		if (!showChoices) setChoiceListFocused(false);
+	}, [showChoices]);
+
+	useEffect(() => {
+		if (!showChoices) return;
+
+		const onDocumentPointerDown = (e: PointerEvent) => {
+			const el = eventTargetElement(e.target);
+			if (!el) return;
+			if (panelRef.current?.contains(el)) return;
+			setChoiceListFocused(false);
+		};
+
+		document.addEventListener("pointerdown", onDocumentPointerDown, true);
+		return () =>
+			document.removeEventListener("pointerdown", onDocumentPointerDown, true);
+	}, [showChoices]);
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +119,92 @@ export function ChatPanel({
 	useEffect(() => {
 		if (!footerNumberInput) setNumberInput("");
 	}, [footerNumberInput]);
+
+	const activateChoiceList = () => {
+		if (isLoadingRef.current) return;
+		const options = choiceOptionsRef.current;
+		if (!options?.length || !onChoice) return;
+		setChoiceListFocused(true);
+		requestAnimationFrame(() => {
+			choiceListRef.current?.focus({ preventScroll: true });
+		});
+	};
+
+	const activateFooterFocus = () => {
+		if (isLoadingRef.current) return;
+		const options = choiceOptionsRef.current;
+		const hasChoices = Boolean(options?.length && onChoice);
+		if (hasChoices) {
+			activateChoiceList();
+		} else if (footerNumberInputRef.current) {
+			numberInputRef.current?.focus({ preventScroll: true });
+		} else if (!footerActionRef.current) {
+			textInputRef.current?.focus({ preventScroll: true });
+		}
+	};
+
+	useEffect(() => {
+		if (isLoading) return;
+		const id = requestAnimationFrame(() => activateFooterFocus());
+		return () => cancelAnimationFrame(id);
+	}, [
+		isLoading,
+		showChoices,
+		choiceOptions,
+		footerNumberInput,
+		footerAction,
+		showTextInput,
+		onChoice,
+	]);
+
+	useEffect(() => {
+		const panel = panelRef.current;
+		if (!panel) return;
+
+		const onPanelPointerDown = (e: PointerEvent) => {
+			if (isLoadingRef.current) return;
+
+			const el = eventTargetElement(e.target);
+			if (el?.closest("[data-chat-collapse]")) return;
+
+			const options = choiceOptionsRef.current;
+			const hasChoices = Boolean(options?.length && onChoice);
+
+			if (hasChoices) {
+				const optionEl = el?.closest('[role="option"]');
+				if (optionEl?.id && options) {
+					const idx = options.findIndex(
+						(o) => `chat-choice-${o.id}` === optionEl.id,
+					);
+					if (idx >= 0) setChoiceFocusIndex(idx);
+				}
+				e.preventDefault();
+				setChoiceListFocused(true);
+				requestAnimationFrame(() => {
+					choiceListRef.current?.focus({ preventScroll: true });
+				});
+				return;
+			}
+
+			if (!el) return;
+			if (el.closest("input, textarea")) return;
+
+			const hasNumber = Boolean(footerNumberInputRef.current);
+			const hasText = !footerActionRef.current && !hasNumber;
+			if (!hasText && !hasNumber) return;
+
+			e.preventDefault();
+			if (hasNumber) {
+				numberInputRef.current?.focus({ preventScroll: true });
+			} else {
+				textInputRef.current?.focus({ preventScroll: true });
+			}
+		};
+
+		panel.addEventListener("pointerdown", onPanelPointerDown, true);
+		return () =>
+			panel.removeEventListener("pointerdown", onPanelPointerDown, true);
+	}, [onChoice]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -105,7 +226,7 @@ export function ChatPanel({
 
 	return (
 		<div className={`w-full h-full min-h-[18rem] ${className}`}>
-			<div className={styles.chatPanelContainer}>
+			<div ref={panelRef} className={styles.chatPanelContainer}>
 				{(title || subtitle) && (
 					<div className={styles.chatPanelHeader}>
 						<div className={styles.chatPanelHeaderContent}>
@@ -114,6 +235,7 @@ export function ChatPanel({
 								{hidePanel && (
 									<button
 										type="button"
+										data-chat-collapse
 										onClick={hidePanel}
 										className="flex items-center gap-1.25 px-1.5 py-0.75 text-[0.625rem] rounded border border-[#464859] bg-[#10151C] text-white hover:bg-[#171D26] cursor-pointer"
 									>
@@ -313,7 +435,7 @@ export function ChatPanel({
 							role="listbox"
 							tabIndex={0}
 							aria-activedescendant={
-								choiceOptions![choiceFocusIndex]
+								choiceListFocused && choiceOptions![choiceFocusIndex]
 									? `chat-choice-${choiceOptions![choiceFocusIndex].id}`
 									: undefined
 							}
@@ -335,7 +457,7 @@ export function ChatPanel({
 							className="font-mono text-sm text-slate-200 outline-none rounded-md ring-2 ring-transparent px-1 py-1 -mx-1"
 						>
 							{choiceOptions!.map((opt, i) => {
-								const focused = i === choiceFocusIndex;
+								const focused = choiceListFocused && i === choiceFocusIndex;
 								return (
 									<div
 										key={opt.id}
@@ -383,6 +505,7 @@ export function ChatPanel({
 							<form onSubmit={handleNumberSubmit}>
 								<div className="flex items-center gap-2">
 									<input
+										ref={numberInputRef}
 										type="number"
 										value={numberInput}
 										onChange={(e) => setNumberInput(e.target.value)}
@@ -410,6 +533,7 @@ export function ChatPanel({
 						) : (
 							<form onSubmit={handleSubmit}>
 								<input
+									ref={textInputRef}
 									type="text"
 									value={input}
 									onChange={(e) => setInput(e.target.value)}
