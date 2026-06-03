@@ -78,15 +78,20 @@ export function ChatPanel({
 
 	const isLoadingRef = useRef(isLoading);
 	const choiceOptionsRef = useRef(choiceOptions);
+	const onChoiceRef = useRef(onChoice);
 	const footerNumberInputRef = useRef(footerNumberInput);
 	const footerActionRef = useRef(footerAction);
 	isLoadingRef.current = isLoading;
 	choiceOptionsRef.current = choiceOptions;
+	onChoiceRef.current = onChoice;
 	footerNumberInputRef.current = footerNumberInput;
 	footerActionRef.current = footerAction;
 
 	const showChoices = Boolean(choiceOptions?.length && onChoice);
 	const showTextInput = !showChoices && !footerNumberInput && !footerAction;
+	const hasFooterNumberInput = Boolean(footerNumberInput);
+	const hasFooterAction = Boolean(footerAction);
+	const choiceOptionIds = choiceOptions?.map((o) => o.id).join(",") ?? "";
 
 	useEffect(() => {
 		if (!showChoices || !choiceOptions?.length) return;
@@ -117,13 +122,13 @@ export function ChatPanel({
 	}, [messages, isLoading, showChoices]);
 
 	useEffect(() => {
-		if (!footerNumberInput) setNumberInput("");
-	}, [footerNumberInput]);
+		if (!hasFooterNumberInput) setNumberInput("");
+	}, [hasFooterNumberInput]);
 
 	const activateChoiceList = () => {
 		if (isLoadingRef.current) return;
 		const options = choiceOptionsRef.current;
-		if (!options?.length || !onChoice) return;
+		if (!options?.length || !onChoiceRef.current) return;
 		setChoiceListFocused(true);
 		requestAnimationFrame(() => {
 			choiceListRef.current?.focus({ preventScroll: true });
@@ -133,7 +138,7 @@ export function ChatPanel({
 	const activateFooterFocus = () => {
 		if (isLoadingRef.current) return;
 		const options = choiceOptionsRef.current;
-		const hasChoices = Boolean(options?.length && onChoice);
+		const hasChoices = Boolean(options?.length && onChoiceRef.current);
 		if (hasChoices) {
 			activateChoiceList();
 		} else if (footerNumberInputRef.current) {
@@ -150,11 +155,10 @@ export function ChatPanel({
 	}, [
 		isLoading,
 		showChoices,
-		choiceOptions,
-		footerNumberInput,
-		footerAction,
 		showTextInput,
-		onChoice,
+		choiceOptionIds,
+		hasFooterNumberInput,
+		hasFooterAction,
 	]);
 
 	useEffect(() => {
@@ -168,7 +172,7 @@ export function ChatPanel({
 			if (el?.closest("[data-chat-collapse]")) return;
 
 			const options = choiceOptionsRef.current;
-			const hasChoices = Boolean(options?.length && onChoice);
+			const hasChoices = Boolean(options?.length && onChoiceRef.current);
 
 			if (hasChoices) {
 				const optionEl = el?.closest('[role="option"]');
@@ -204,7 +208,7 @@ export function ChatPanel({
 		panel.addEventListener("pointerdown", onPanelPointerDown, true);
 		return () =>
 			panel.removeEventListener("pointerdown", onPanelPointerDown, true);
-	}, [onChoice]);
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
