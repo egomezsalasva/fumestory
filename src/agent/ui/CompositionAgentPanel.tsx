@@ -69,6 +69,7 @@ export function CompositionAgentPanel({
 		useState<string | null>(null);
 	const [pendingFormPrefill, setPendingFormPrefill] =
 		useState<CompositionFormPrefill | null>(null);
+	const [showStartOverAction, setShowStartOverAction] = useState(false);
 
 	const hasUserResponded = messages.some((m) => m.role === "user");
 
@@ -103,6 +104,7 @@ export function CompositionAgentPanel({
 			setChoiceOptions(null);
 			clearPendingProposal();
 			setExpectWeightGrams(false);
+			setShowStartOverAction(false);
 			return;
 		}
 
@@ -111,6 +113,7 @@ export function CompositionAgentPanel({
 
 		if (data.resetConversation) {
 			clearPendingProposal();
+			setShowStartOverAction(false);
 			setMessages([
 				assistantMessage(reply, data.proposal, data.inventoryOnlyTotalWeight),
 			]);
@@ -128,7 +131,18 @@ export function CompositionAgentPanel({
 			data.interaction?.kind === "choice" &&
 			data.interaction.options?.length
 		) {
-			setChoiceOptions(data.interaction.options);
+			const options = data.interaction.options;
+			const isOnlyStartOver =
+				options.length === 1 &&
+				options[0].id === COMPOSITION_CHOICE.START_OVER;
+
+			if (isOnlyStartOver) {
+				setChoiceOptions(null);
+				setShowStartOverAction(true);
+			} else {
+				setChoiceOptions(options);
+				setShowStartOverAction(false);
+			}
 		} else {
 			setChoiceOptions(null);
 		}
@@ -149,7 +163,6 @@ export function CompositionAgentPanel({
 		const bootstrap = async () => {
 			setIsLoading(true);
 			try {
-				// Force a fresh conversation on page refresh/remount
 				if (!cancelled) await sendToApi({ resetConversation: "true" });
 			} catch {
 				if (!cancelled) {
@@ -161,6 +174,7 @@ export function CompositionAgentPanel({
 					]);
 					clearPendingProposal();
 					setExpectWeightGrams(false);
+					setShowStartOverAction(false);
 				}
 			} finally {
 				if (!cancelled) {
@@ -176,8 +190,31 @@ export function CompositionAgentPanel({
 		};
 	}, []);
 
+	const handleStartOverClick = async () => {
+		if (isLoading) return;
+		onStartOverClick();
+		setShowStartOverAction(false);
+		setChoiceOptions(null);
+		clearPendingProposal();
+		setExpectWeightGrams(false);
+		setIsLoading(true);
+		try {
+			await sendToApi({ resetConversation: "true" });
+		} catch {
+			setMessages([
+				{
+					role: "assistant",
+					content: "Sorry, I encountered an error. Please try again.",
+				},
+			]);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	const handleSendMessage = async (message: string) => {
 		if (isLoading) return;
+		setShowStartOverAction(false);
 		setMessages((prev) => [...prev, { role: "user", content: message }]);
 		setIsLoading(true);
 		try {
@@ -204,6 +241,7 @@ export function CompositionAgentPanel({
 		const trimmed = value.trim();
 		if (!/^\d+(\.\d+)?$/.test(trimmed)) return;
 
+		setShowStartOverAction(false);
 		setMessages((prev) => [...prev, { role: "user", content: `${trimmed} g` }]);
 		setIsLoading(true);
 
@@ -240,12 +278,14 @@ export function CompositionAgentPanel({
 				pendingFormPrefill ?? undefined,
 			);
 			clearPendingProposal();
+			setShowStartOverAction(true);
 			return;
 		}
 
 		if (choiceId === COMPOSITION_CHOICE.START_OVER) {
 			onStartOverClick();
 			clearPendingProposal();
+			setShowStartOverAction(false);
 		}
 
 		const label =
@@ -293,6 +333,15 @@ export function CompositionAgentPanel({
 							step: "any",
 							placeholder: "Total weight",
 							onSubmit: handleSubmitWeightGrams,
+						}
+					: null
+			}
+			footerAction={
+				showStartOverAction
+					? {
+							label: "Start Over",
+							onClick: handleStartOverClick,
+							disabled: isLoading,
 						}
 					: null
 			}
