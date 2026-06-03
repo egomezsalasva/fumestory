@@ -35,6 +35,13 @@ type ChatPanelProps = {
 		onClick: () => void | Promise<void>;
 		disabled?: boolean;
 	} | null;
+	footerNumberInput?: {
+		suffix?: string;
+		min?: number;
+		step?: string;
+		placeholder?: string;
+		onSubmit: (value: string) => void | Promise<void>;
+	} | null;
 	hidePanel?: () => void;
 };
 
@@ -49,9 +56,11 @@ export function ChatPanel({
 	choiceOptions = null,
 	onChoice,
 	footerAction = null,
+	footerNumberInput = null,
 	hidePanel,
 }: ChatPanelProps) {
 	const [input, setInput] = useState("");
+	const [numberInput, setNumberInput] = useState("");
 	const [choiceFocusIndex, setChoiceFocusIndex] = useState(0);
 	const choiceListRef = useRef<HTMLDivElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -72,6 +81,10 @@ export function ChatPanel({
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages, isLoading, showChoices]);
 
+	useEffect(() => {
+		if (!footerNumberInput) setNumberInput("");
+	}, [footerNumberInput]);
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		const value = input.trim();
@@ -79,6 +92,15 @@ export function ChatPanel({
 
 		setInput("");
 		await onSendMessage(value);
+	};
+
+	const handleNumberSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const value = numberInput.trim();
+		if (!value || isLoading || !footerNumberInput) return;
+
+		setNumberInput("");
+		await footerNumberInput.onSubmit(value);
 	};
 
 	return (
@@ -357,6 +379,34 @@ export function ChatPanel({
 							>
 								{footerAction.label}
 							</button>
+						) : footerNumberInput ? (
+							<form onSubmit={handleNumberSubmit}>
+								<div className="flex items-center gap-2">
+									<input
+										type="number"
+										value={numberInput}
+										onChange={(e) => setNumberInput(e.target.value)}
+										onKeyDown={(e) => {
+											if (["e", "E", "+", "-"].includes(e.key)) {
+												e.preventDefault();
+											}
+										}}
+										placeholder={
+											footerNumberInput.placeholder ?? "Total weight"
+										}
+										min={footerNumberInput.min ?? 0.01}
+										step={footerNumberInput.step ?? "any"}
+										inputMode="decimal"
+										disabled={isLoading}
+										className={styles.chatInput}
+									/>
+									{footerNumberInput.suffix ? (
+										<span className="text-sm text-slate-400 shrink-0">
+											{footerNumberInput.suffix}
+										</span>
+									) : null}
+								</div>
+							</form>
 						) : (
 							<form onSubmit={handleSubmit}>
 								<input
@@ -365,7 +415,7 @@ export function ChatPanel({
 									onChange={(e) => setInput(e.target.value)}
 									placeholder={placeholder}
 									disabled={isLoading}
-									className={`${styles.chatInput}`}
+									className={styles.chatInput}
 								/>
 							</form>
 						)}

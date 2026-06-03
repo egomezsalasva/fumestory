@@ -39,6 +39,7 @@ type ChatResponse = {
 	proposal?: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal;
 	inventoryOnlyTotalWeight?: string;
 	formPrefill?: CompositionFormPrefill;
+	expectWeightGrams?: boolean;
 	interaction?: {
 		kind: "choice";
 		options: Array<{ id: string; label: string }>;
@@ -169,7 +170,8 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 			return {
 				success: true,
 				reply:
-					"Before I generate the inventory-only formula, what total weight do you want? (e.g., 5g)",
+					"Before I generate the inventory-only formula, what total weight do you want? (e.g. 5g)",
+				expectWeightGrams: true,
 			};
 
 		case "review_formula": {
@@ -762,16 +764,15 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 							return jsonResponse(questionFor(state), 200);
 						}
 
-						const isValidWeight = /^\d+(\.\d+)?\s*(g|gram|grams)?$/i.test(
-							message,
-						);
+						const isValidWeight = /^\d+(\.\d+)?$/.test(message);
 
 						if (!isValidWeight) {
 							return jsonResponse(
 								{
 									success: true,
 									reply:
-										"Please enter total weight as a number in grams, e.g. 5g or 5.",
+										"Please enter a number in grams only, e.g. 30 or 12.5.",
+									expectWeightGrams: true,
 								},
 								200,
 							);

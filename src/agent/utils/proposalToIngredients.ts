@@ -21,9 +21,9 @@ export type ProposalToIngredientsResult = {
 
 export function parseInventoryTotalWeight(value?: string): number | null {
 	if (!value) return null;
-	const m = value.trim().match(/^(\d+(?:\.\d+)?)\s*(?:g|gram|grams)?$/i);
-	if (!m) return null;
-	const amount = Number(m[1]);
+	const trimmed = value.trim();
+	if (!/^\d+(\.\d+)?$/.test(trimmed)) return null;
+	const amount = Number(trimmed);
 	if (!Number.isFinite(amount) || amount <= 0) return null;
 	return amount;
 }
@@ -86,7 +86,9 @@ export function proposalToIngredients(
 	if (!totalWeight) {
 		return {
 			ingredients: [],
-			errors: ["Invalid total weight. Use grams, e.g. 5g."],
+			errors: [
+				"Invalid total weight. Enter a number in grams, e.g. 30 or 12.5.",
+			],
 		};
 	}
 

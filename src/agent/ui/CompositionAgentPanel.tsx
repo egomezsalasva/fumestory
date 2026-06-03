@@ -32,6 +32,7 @@ type ChatResponse = {
 	proposal?: SuggestAnyFormulaProposal;
 	inventoryOnlyTotalWeight?: string;
 	formPrefill?: CompositionFormPrefill;
+	expectWeightGrams?: boolean;
 	interaction?: {
 		kind: "choice";
 		options: ChatChoiceOption[];
@@ -61,6 +62,7 @@ export function CompositionAgentPanel({
 		null,
 	);
 	const [isLoading, setIsLoading] = useState(false);
+	const [expectWeightGrams, setExpectWeightGrams] = useState(false);
 	const [pendingProposal, setPendingProposal] =
 		useState<SuggestAnyFormulaProposal | null>(null);
 	const [pendingInventoryOnlyTotalWeight, setPendingInventoryOnlyTotalWeight] =
@@ -100,6 +102,7 @@ export function CompositionAgentPanel({
 			]);
 			setChoiceOptions(null);
 			clearPendingProposal();
+			setExpectWeightGrams(false);
 			return;
 		}
 
@@ -129,6 +132,8 @@ export function CompositionAgentPanel({
 		} else {
 			setChoiceOptions(null);
 		}
+
+		setExpectWeightGrams(data.expectWeightGrams === true);
 	};
 
 	const didBootstrapRef = useRef(false);
@@ -155,6 +160,7 @@ export function CompositionAgentPanel({
 						},
 					]);
 					clearPendingProposal();
+					setExpectWeightGrams(false);
 				}
 			} finally {
 				if (!cancelled) {
@@ -186,6 +192,34 @@ export function CompositionAgentPanel({
 			]);
 			setChoiceOptions(null);
 			clearPendingProposal();
+			setExpectWeightGrams(false);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleSubmitWeightGrams = async (value: string) => {
+		if (isLoading) return;
+
+		const trimmed = value.trim();
+		if (!/^\d+(\.\d+)?$/.test(trimmed)) return;
+
+		setMessages((prev) => [...prev, { role: "user", content: `${trimmed} g` }]);
+		setIsLoading(true);
+
+		try {
+			await sendToApi({ message: trimmed });
+		} catch {
+			setMessages((prev) => [
+				...prev,
+				{
+					role: "assistant",
+					content: "Sorry, I encountered an error. Please try again.",
+				},
+			]);
+			setChoiceOptions(null);
+			clearPendingProposal();
+			setExpectWeightGrams(false);
 		} finally {
 			setIsLoading(false);
 		}
@@ -231,6 +265,7 @@ export function CompositionAgentPanel({
 				},
 			]);
 			clearPendingProposal();
+			setExpectWeightGrams(false);
 		} finally {
 			setIsLoading(false);
 		}
@@ -250,6 +285,17 @@ export function CompositionAgentPanel({
 			placeholder="Type your idea..."
 			choiceOptions={choiceOptions}
 			onChoice={handleChoice}
+			footerNumberInput={
+				expectWeightGrams && !choiceOptions?.length
+					? {
+							suffix: "g",
+							min: 0.01,
+							step: "any",
+							placeholder: "Total weight",
+							onSubmit: handleSubmitWeightGrams,
+						}
+					: null
+			}
 			className="h-full min-h-0"
 			hidePanel={hidePanel}
 		/>
