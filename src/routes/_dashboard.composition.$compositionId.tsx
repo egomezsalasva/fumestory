@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
 
 type FormulaLine = {
 	dilution_id: number;
-	material_label: string;
+	material_label: string | null;
 	material_name: string;
 	percentage: number;
 	weight_grams: number;
@@ -76,7 +76,12 @@ function CompositionDetail() {
 
 	const columnDefs = useMemo<ColDef<FormulaLine>[]>(
 		() => [
-			{ field: "material_label", headerName: "Label", width: 110 },
+			{
+				field: "material_label",
+				headerName: "Label",
+				width: 110,
+				valueFormatter: (params) => params.value ?? "—",
+			},
 			{
 				field: "material_name",
 				headerName: "Material",

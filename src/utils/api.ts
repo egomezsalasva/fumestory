@@ -35,6 +35,10 @@ export function getUniqueViolationMessage(error: unknown): string | null {
 			return "Label already exists";
 		case "raw_materials_owner_name_uidx":
 			return "A raw material with this name already exists";
+		case "compositions_owner_label_uidx":
+			return "Label already exists";
+		case "compositions_owner_name_uidx":
+			return "A composition with this name already exists";
 		default:
 			return null;
 	}

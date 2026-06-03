@@ -7,6 +7,7 @@ import {
 	ICellRendererParams,
 	ModuleRegistry,
 } from "ag-grid-community";
+import type { Composition } from "@/routes/api.compositions";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
@@ -21,13 +22,6 @@ export const Route = createFileRoute("/_dashboard/compositions")({
 	}),
 	component: Compositions,
 });
-
-type Composition = {
-	id: number;
-	name: string;
-	type: "trial" | "accord" | "perfume";
-	created_at: string;
-};
 
 const gridStyles = `
 	.nested-grid .ag-header {
@@ -64,6 +58,12 @@ function Compositions() {
 	}, []);
 
 	const columnDefs: ColDef<Composition>[] = [
+		{
+			field: "label",
+			headerName: "Label",
+			width: 88,
+			valueFormatter: (params) => params.value ?? "—",
+		},
 		{ field: "name", headerName: "Name", flex: 1 },
 		{
 			field: "type",

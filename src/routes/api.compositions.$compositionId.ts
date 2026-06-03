@@ -1,5 +1,6 @@
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import type { Composition } from "@/routes/api.compositions";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
@@ -8,7 +9,7 @@ type FormulaLineRow = {
 	dilution_id: number;
 	percentage: string | number;
 	weight_grams: string | number;
-	material_label: string;
+	material_label: string | null;
 	material_name: string;
 };
 
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 					}
 
 					const compositionSql = `
-						SELECT c.id, c.name, c.type, c.created_at
+						SELECT c.id, c.name, c.label, c.type, c.created_at
 						FROM compositions c
 						WHERE c.id = $1
 					`;
@@ -70,12 +71,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						txn.query(linesSql, [compositionId]),
 					]);
 
-					const compositionRows = txResults[1] as {
-						id: number;
-						name: string;
-						type: string;
-						created_at: string;
-					}[];
+					const compositionRows = txResults[1] as Composition[];
 					const formulas = txResults[2] as {
 						id: number;
 						composition_id: number;
@@ -93,7 +89,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						number,
 						{
 							dilution_id: number;
-							material_label: string;
+							material_label: string | null;
 							material_name: string;
 							percentage: number;
 							weight_grams: number;
@@ -192,7 +188,6 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						);
 					}
 
-					// Verify composition belongs to current user + dilutions are allowed
 					const ownTx = await client.transaction((txn) => [
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
 							currentUserId,
@@ -229,7 +224,6 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						);
 					}
 
-					// Next mod number as text (1,2,3...)
 					const nextModTx = await client.transaction((txn) => [
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
 							currentUserId,

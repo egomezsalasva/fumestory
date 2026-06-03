@@ -6,6 +6,7 @@ import { suggestAnyFormulaProposalSchema } from "@/agent/schemas/compositionForm
 import { fetchAndConvertProposalToIngredients } from "@/agent/utils/proposalToIngredients";
 import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
+import { LabelInput } from "@/components/LabelInput";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/_dashboard/add-composition")({
 
 function AddComposition() {
 	const [name, setName] = useState("");
+	const [label, setLabel] = useState("");
 	const [type, setType] = useState<"trial" | "accord" | "perfume">("trial");
 	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 	const [prefillIngredients, setPrefillIngredients] = useState<
@@ -48,7 +50,6 @@ function AddComposition() {
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 
-	// null = loading settings, true/false = resolved preference
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
@@ -67,7 +68,6 @@ function AddComposition() {
 					setIsSidebarCollapsed(collapsed);
 				}
 			} catch {
-				// Fallback to expanded if settings fetch fails.
 				if (!cancelled) {
 					setIsSidebarCollapsed(false);
 				}
@@ -82,7 +82,6 @@ function AddComposition() {
 	}, []);
 
 	const handleToggleSidebar = async () => {
-		// Guard for impossible edge case while still loading.
 		if (isSidebarCollapsed === null) return;
 
 		const next = !isSidebarCollapsed;
@@ -151,6 +150,7 @@ function AddComposition() {
 		const compositionData = {
 			name,
 			type,
+			label: label.trim() || null,
 			ingredients: ingredients
 				.filter((ing) => ing.dilution_id !== null)
 				.map((ing) => ({
@@ -176,6 +176,7 @@ function AddComposition() {
 			}
 
 			setName("");
+			setLabel("");
 			setType("trial");
 			setIngredients([]);
 			setPrefillIngredients(null);
@@ -188,7 +189,6 @@ function AddComposition() {
 		}
 	};
 
-	// Render nothing until we know the saved preference => no first-paint flicker.
 	if (isSidebarCollapsed === null) {
 		return (
 			<DashboardLayout
@@ -218,6 +218,17 @@ function AddComposition() {
 							value={name}
 							onChange={setName}
 							placeholder="e.g. Trial 1, Strawberry Accord, Creed Aventus Replica"
+							required
+						/>
+
+						<LabelInput
+							label="Bottle Label"
+							value={label}
+							onChange={(value) => {
+								setLabel(value);
+								setError(null);
+							}}
+							placeholder="e.g. CP1"
 						/>
 
 						<Select
@@ -229,6 +240,7 @@ function AddComposition() {
 								{ value: "accord", label: "Accord" },
 								{ value: "perfume", label: "Perfume" },
 							]}
+							required
 						/>
 
 						<FormulaIngredientsFields

@@ -1,11 +1,21 @@
 import { getClient } from "@/db";
-import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import {
+	getErrorDetails,
+	getUniqueViolationMessage,
+	jsonResponse,
+	noClientResponse,
+} from "@/utils/api";
+import {
+	parseBottleLabelInput,
+	validateBottleLabelFormat,
+} from "@/utils/bottle-labels";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
 export type Composition = {
 	id: number;
 	name: string;
+	label: string | null;
 	type: "trial" | "accord" | "perfume";
 	created_at: string;
 };
@@ -33,6 +43,7 @@ export const Route = createFileRoute("/api/compositions")({
 					SELECT
 						c.id,
 						c.name,
+						c.label,
 						c.type,
 						c.created_at
 					FROM compositions c
@@ -73,10 +84,12 @@ export const Route = createFileRoute("/api/compositions")({
 					const {
 						name,
 						type,
+						label,
 						mods = "1",
 						ingredients,
 					} = body as {
 						name: Composition["name"];
+						label: Composition["label"];
 						type: Composition["type"];
 						mods: Formula["mods"];
 						ingredients: {
@@ -85,6 +98,32 @@ export const Route = createFileRoute("/api/compositions")({
 							formula_percentage: number;
 						}[];
 					};
+
+					const normalizedLabel = parseBottleLabelInput(label);
+					if (normalizedLabel !== null) {
+						const formatError = validateBottleLabelFormat(normalizedLabel);
+						if (formatError) {
+							return jsonResponse({ error: formatError }, 400);
+						}
+
+						const [_session, conflictRows] = await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
+							txn.query(
+								`SELECT 1 AS found FROM raw_materials
+								 WHERE owner_id = $1 AND label = $2
+								 LIMIT 1`,
+								[currentUserId, normalizedLabel],
+							),
+						]);
+						if ((conflictRows as { found: number }[]).length > 0) {
+							return jsonResponse(
+								{ error: "Label already used on a raw material" },
+								400,
+							);
+						}
+					}
 
 					if (!name || typeof name !== "string" || name.trim() === "") {
 						return jsonResponse({ error: "Name is required" }, 400);
@@ -153,11 +192,11 @@ export const Route = createFileRoute("/api/compositions")({
 						]),
 						txn.query(
 							`
-						INSERT INTO compositions (owner_id, name, type)
-						VALUES ($1, $2, $3)
-						RETURNING id, owner_id, name, type, created_at
+						INSERT INTO compositions (owner_id, name, type, label)
+						VALUES ($1, $2, $3, $4)
+						RETURNING id, name, type, label, created_at
 						`,
-							[currentUserId, name.trim(), type],
+							[currentUserId, name.trim(), type, normalizedLabel],
 						),
 					]);
 
@@ -213,6 +252,10 @@ export const Route = createFileRoute("/api/compositions")({
 						201,
 					);
 				} catch (error) {
+					const uniqueMessage = getUniqueViolationMessage(error);
+					if (uniqueMessage) {
+						return jsonResponse({ error: uniqueMessage }, 400);
+					}
 					return jsonResponse(
 						{
 							error: "Failed to create composition",

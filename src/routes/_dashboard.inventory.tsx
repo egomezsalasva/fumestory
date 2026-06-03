@@ -149,6 +149,9 @@ function App() {
 			field: "label",
 			headerName: "Label",
 			width: 88,
+			valueFormatter: (
+				params: ValueFormatterParams<RawMaterial, string | null>,
+			) => params.value ?? "—",
 		};
 
 		const casNumberCol: ColDef<RawMaterial> = {
