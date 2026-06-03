@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
+import { BOTTLE_LABEL_PARSE } from "@/utils/bottle-labels";
 import styles from "./Form.module.css";
 
 type LabelInputProps = {
@@ -16,47 +17,72 @@ type ParsedLabel = {
 	full: string;
 };
 
+type LabelItem = { label: string | null };
+
+function parseStoredLabel(item: LabelItem): ParsedLabel | null {
+	if (!item.label) return null;
+	const match = item.label.match(BOTTLE_LABEL_PARSE);
+	if (!match) return null;
+	return {
+		prefix: match[1],
+		number: parseInt(match[2], 10),
+		full: item.label,
+	};
+}
+
 export function LabelInput({
 	label,
 	value,
 	onChange,
 	placeholder,
-	required,
+	required = false,
 }: LabelInputProps) {
 	const [existingLabels, setExistingLabels] = useState<ParsedLabel[]>([]);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [error, setError] = useState("");
 
-	// Fetch existing labels
 	useEffect(() => {
-		authedFetch("/api/raw-materials")
-			.then((res) => res.json())
-			.then((data) => {
-				if (data.success) {
-					const parsed = data.data
-						.map((rm: any) => {
-							const match = rm.label.match(/^([A-Z]+)(\d+)$/);
-							if (match) {
-								return {
-									prefix: match[1],
-									number: parseInt(match[2], 10),
-									full: rm.label,
-								};
-							}
-							return null;
-						})
-						.filter(Boolean);
-					setExistingLabels(parsed);
-				}
-			})
-			.catch((err) => console.error("Failed to fetch labels:", err));
+		let cancelled = false;
+
+		const loadLabels = async () => {
+			try {
+				const [materialsRes, compositionsRes] = await Promise.all([
+					authedFetch("/api/raw-materials"),
+					authedFetch("/api/compositions"),
+				]);
+
+				const [materialsJson, compositionsJson] = await Promise.all([
+					materialsRes.json(),
+					compositionsRes.json(),
+				]);
+
+				if (cancelled) return;
+
+				const items: LabelItem[] = [
+					...(materialsJson.success ? materialsJson.data : []),
+					...(compositionsJson.success ? compositionsJson.data : []),
+				];
+
+				const parsed = items
+					.map(parseStoredLabel)
+					.filter((entry): entry is ParsedLabel => entry !== null);
+
+				setExistingLabels(parsed);
+			} catch (err) {
+				console.error("Failed to fetch labels:", err);
+			}
+		};
+
+		void loadLabels();
+
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
-	// Parse current input
 	const currentMatch = value.match(/^([A-Z]*)(\d*)$/);
 	const currentPrefix = currentMatch ? currentMatch[1] : "";
 
-	// Find labels with matching prefix
 	const matchingLabels = existingLabels.filter(
 		(l) => l.prefix === currentPrefix && currentPrefix !== "",
 	);
@@ -68,18 +94,17 @@ export function LabelInput({
 		? `${currentPrefix}${maxNumber + 1}`
 		: "";
 
-	// Check if current value is duplicate
-	const isDuplicate = existingLabels.some(
-		(l) => l.full.toUpperCase() === value.toUpperCase(),
-	);
-
 	const handleChange = (newValue: string) => {
 		const upperValue = newValue.toUpperCase();
 
-		// Validate format: letters then numbers
 		if (upperValue && !/^[A-Z]*\d*$/.test(upperValue)) {
 			setError("Label must be letters followed by numbers (e.g., LB1)");
-		} else if (isDuplicate) {
+		} else if (
+			upperValue.trim() !== "" &&
+			existingLabels.some(
+				(l) => l.full.toUpperCase() === upperValue.toUpperCase(),
+			)
+		) {
 			setError("Label already exists");
 		} else {
 			setError("");
@@ -102,10 +127,8 @@ export function LabelInput({
 				className={`${styles.formInput} ${error ? styles.formInputError : ""}`}
 			/>
 
-			{/* Error message */}
 			{error && <p className="mt-1 text-sm text-red-400">{error}</p>}
 
-			{/* Dropdown with suggestions */}
 			{showDropdown && currentPrefix && (
 				<div className="absolute z-10 w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg">
 					{maxNumber > 0 && (

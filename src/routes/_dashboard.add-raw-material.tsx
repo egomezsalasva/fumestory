@@ -200,7 +200,7 @@ function AddRawMaterial() {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					label,
+					label: label.trim() || null,
 					name,
 					cas_number: normalizedCas,
 					category_id: selectedCategoryId,
@@ -296,7 +296,6 @@ function AddRawMaterial() {
 									setError("");
 								}}
 								placeholder="e.g. LB1"
-								required
 							/>
 
 							{/* Material Nature Field */}

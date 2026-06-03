@@ -133,8 +133,7 @@ export function CompositionAgentPanel({
 		) {
 			const options = data.interaction.options;
 			const isOnlyStartOver =
-				options.length === 1 &&
-				options[0].id === COMPOSITION_CHOICE.START_OVER;
+				options.length === 1 && options[0].id === COMPOSITION_CHOICE.START_OVER;
 
 			if (isOnlyStartOver) {
 				setChoiceOptions(null);

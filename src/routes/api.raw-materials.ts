@@ -1,12 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getClient } from "@/db";
-import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import {
+	getErrorDetails,
+	getUniqueViolationMessage,
+	jsonResponse,
+	noClientResponse,
+} from "@/utils/api";
 import { requireCurrentUserId } from "@/utils/current-user";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
+import {
+	parseBottleLabelInput,
+	validateBottleLabelFormat,
+} from "@/utils/bottle-labels";
 
 export type RawMaterial = {
 	id: number;
-	label: string;
+	label: string | null;
 	name: string;
 	category_id: number;
 	material_nature: string;
@@ -137,13 +146,29 @@ export const Route = createFileRoute("/api/raw-materials")({
 						);
 					}
 
-					if (!label || typeof label !== "string" || label.trim() === "") {
-						return jsonResponse(
-							{
-								error: "Label is required",
-							},
-							400,
-						);
+					const normalizedLabel = parseBottleLabelInput(label);
+					if (normalizedLabel !== null) {
+						const formatError = validateBottleLabelFormat(normalizedLabel);
+						if (formatError) {
+							return jsonResponse({ error: formatError }, 400);
+						}
+						const conflictTx = await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
+							txn.query(
+								`SELECT 1 AS found FROM compositions
+							   WHERE owner_id = $1 AND label = $2
+							   LIMIT 1`,
+								[currentUserId, normalizedLabel],
+							),
+						]);
+						if ((conflictTx[1] as { found: number }[]).length > 0) {
+							return jsonResponse(
+								{ error: "Label already used on a composition" },
+								400,
+							);
+						}
 					}
 
 					if (!name || typeof name !== "string" || name.trim() === "") {
@@ -190,7 +215,7 @@ export const Route = createFileRoute("/api/raw-materials")({
                     		VALUES ($1, $2, $3, $4, $5, $6, $7)
                     		RETURNING id, label, name, category_id, material_nature, cas_number, note_type, created_at`,
 							[
-								label.trim(),
+								normalizedLabel,
 								name.trim(),
 								category_id || null,
 								note_type || null,
@@ -241,6 +266,10 @@ export const Route = createFileRoute("/api/raw-materials")({
 
 					return jsonResponse({ success: true, data: result }, 201);
 				} catch (error) {
+					const uniqueMessage = getUniqueViolationMessage(error);
+					if (uniqueMessage) {
+						return jsonResponse({ error: uniqueMessage }, 400);
+					}
 					return jsonResponse(
 						{
 							error: "Failed to create raw material",
