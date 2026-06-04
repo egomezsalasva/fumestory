@@ -181,21 +181,21 @@ const SideNav = () => {
 							)}
 						</div>
 					</div>
-					{/* <div className={styles.navBodySection}>
+					<div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>LEARNING</div>
 						<div className={styles.navBodySectionItems}>
 							<NavBodySectionItem
 								icon={<TableIcon />}
-								to="/inventory"
+								to="/scent-knowledge"
 								title="Scent Knowledge"
 							/>
 							<NavBodySectionItem
 								icon={<BoxIcon />}
-								to="/add-raw-material"
+								to="/scent-blind-test"
 								title="Scent Test"
 							/>
 						</div>
-					</div> */}
+					</div>
 					<div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>PROJECT</div>
 						<div className={styles.navBodySectionItems}>

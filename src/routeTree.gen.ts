@@ -13,6 +13,7 @@ import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiUserSettingsRouteImport } from './routes/api.user-settings'
+import { Route as ApiScentBlindTestsRouteImport } from './routes/api.scent-blind-tests'
 import { Route as ApiRoadmapRouteImport } from './routes/api.roadmap'
 import { Route as ApiRawMaterialsRouteImport } from './routes/api.raw-materials'
 import { Route as ApiNotesRouteImport } from './routes/api.notes'
@@ -20,6 +21,8 @@ import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCompositionsRouteImport } from './routes/api.compositions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
+import { Route as DashboardScentKnowledgeRouteImport } from './routes/_dashboard.scent-knowledge'
+import { Route as DashboardScentBlindTestRouteImport } from './routes/_dashboard.scent-blind-test'
 import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
 import { Route as DashboardInventoryRouteImport } from './routes/_dashboard.inventory'
 import { Route as DashboardCompositionsRouteImport } from './routes/_dashboard.compositions'
@@ -52,6 +55,11 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
 const ApiUserSettingsRoute = ApiUserSettingsRouteImport.update({
   id: '/api/user-settings',
   path: '/api/user-settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScentBlindTestsRoute = ApiScentBlindTestsRouteImport.update({
+  id: '/api/scent-blind-tests',
+  path: '/api/scent-blind-tests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRoadmapRoute = ApiRoadmapRouteImport.update({
@@ -88,6 +96,16 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   id: '/api/categories',
   path: '/api/categories',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardScentKnowledgeRoute = DashboardScentKnowledgeRouteImport.update({
+  id: '/scent-knowledge',
+  path: '/scent-knowledge',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardScentBlindTestRoute = DashboardScentBlindTestRouteImport.update({
+  id: '/scent-blind-test',
+  path: '/scent-blind-test',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectSettingsRoute =
   DashboardProjectSettingsRouteImport.update({
@@ -175,6 +193,8 @@ export interface FileRoutesByFullPath {
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
+  '/scent-blind-test': typeof DashboardScentBlindTestRoute
+  '/scent-knowledge': typeof DashboardScentKnowledgeRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -182,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
@@ -201,6 +222,8 @@ export interface FileRoutesByTo {
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
+  '/scent-blind-test': typeof DashboardScentBlindTestRoute
+  '/scent-knowledge': typeof DashboardScentKnowledgeRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -208,6 +231,7 @@ export interface FileRoutesByTo {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
@@ -229,6 +253,8 @@ export interface FileRoutesById {
   '/_dashboard/compositions': typeof DashboardCompositionsRoute
   '/_dashboard/inventory': typeof DashboardInventoryRoute
   '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
+  '/_dashboard/scent-blind-test': typeof DashboardScentBlindTestRoute
+  '/_dashboard/scent-knowledge': typeof DashboardScentKnowledgeRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -236,6 +262,7 @@ export interface FileRoutesById {
   '/api/notes': typeof ApiNotesRoute
   '/api/raw-materials': typeof ApiRawMaterialsRoute
   '/api/roadmap': typeof ApiRoadmapRoute
+  '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
@@ -257,6 +284,8 @@ export interface FileRouteTypes {
     | '/compositions'
     | '/inventory'
     | '/project-settings'
+    | '/scent-blind-test'
+    | '/scent-knowledge'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -264,6 +293,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
     | '/account/$pathname'
@@ -283,6 +313,8 @@ export interface FileRouteTypes {
     | '/compositions'
     | '/inventory'
     | '/project-settings'
+    | '/scent-blind-test'
+    | '/scent-knowledge'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -290,6 +322,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
     | '/account/$pathname'
@@ -310,6 +343,8 @@ export interface FileRouteTypes {
     | '/_dashboard/compositions'
     | '/_dashboard/inventory'
     | '/_dashboard/project-settings'
+    | '/_dashboard/scent-blind-test'
+    | '/_dashboard/scent-knowledge'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -317,6 +352,7 @@ export interface FileRouteTypes {
     | '/api/notes'
     | '/api/raw-materials'
     | '/api/roadmap'
+    | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
     | '/_dashboard/account/$pathname'
@@ -338,6 +374,7 @@ export interface RootRouteChildren {
   ApiNotesRoute: typeof ApiNotesRoute
   ApiRawMaterialsRoute: typeof ApiRawMaterialsRoute
   ApiRoadmapRoute: typeof ApiRoadmapRoute
+  ApiScentBlindTestsRoute: typeof ApiScentBlindTestsRoute
   ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
   ApiAgentCompositionChatRoute: typeof ApiAgentCompositionChatRoute
@@ -372,6 +409,13 @@ declare module '@tanstack/react-router' {
       path: '/api/user-settings'
       fullPath: '/api/user-settings'
       preLoaderRoute: typeof ApiUserSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scent-blind-tests': {
+      id: '/api/scent-blind-tests'
+      path: '/api/scent-blind-tests'
+      fullPath: '/api/scent-blind-tests'
+      preLoaderRoute: typeof ApiScentBlindTestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/roadmap': {
@@ -422,6 +466,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/categories'
       preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/scent-knowledge': {
+      id: '/_dashboard/scent-knowledge'
+      path: '/scent-knowledge'
+      fullPath: '/scent-knowledge'
+      preLoaderRoute: typeof DashboardScentKnowledgeRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/scent-blind-test': {
+      id: '/_dashboard/scent-blind-test'
+      path: '/scent-blind-test'
+      fullPath: '/scent-blind-test'
+      preLoaderRoute: typeof DashboardScentBlindTestRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/project-settings': {
       id: '/_dashboard/project-settings'
@@ -532,6 +590,8 @@ interface DashboardRouteChildren {
   DashboardCompositionsRoute: typeof DashboardCompositionsRoute
   DashboardInventoryRoute: typeof DashboardInventoryRoute
   DashboardProjectSettingsRoute: typeof DashboardProjectSettingsRoute
+  DashboardScentBlindTestRoute: typeof DashboardScentBlindTestRoute
+  DashboardScentKnowledgeRoute: typeof DashboardScentKnowledgeRoute
   DashboardAccountPathnameRoute: typeof DashboardAccountPathnameRoute
   DashboardAddFormulaCompositionIdRoute: typeof DashboardAddFormulaCompositionIdRoute
   DashboardCompositionCompositionIdRoute: typeof DashboardCompositionCompositionIdRoute
@@ -546,6 +606,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCompositionsRoute: DashboardCompositionsRoute,
   DashboardInventoryRoute: DashboardInventoryRoute,
   DashboardProjectSettingsRoute: DashboardProjectSettingsRoute,
+  DashboardScentBlindTestRoute: DashboardScentBlindTestRoute,
+  DashboardScentKnowledgeRoute: DashboardScentKnowledgeRoute,
   DashboardAccountPathnameRoute: DashboardAccountPathnameRoute,
   DashboardAddFormulaCompositionIdRoute: DashboardAddFormulaCompositionIdRoute,
   DashboardCompositionCompositionIdRoute:
@@ -580,6 +642,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNotesRoute: ApiNotesRoute,
   ApiRawMaterialsRoute: ApiRawMaterialsRoute,
   ApiRoadmapRoute: ApiRoadmapRoute,
+  ApiScentBlindTestsRoute: ApiScentBlindTestsRoute,
   ApiUserSettingsRoute: ApiUserSettingsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
   ApiAgentCompositionChatRoute: ApiAgentCompositionChatRoute,
