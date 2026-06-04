@@ -114,7 +114,7 @@ export const Route = createFileRoute("/api/feedback")({
 						if (!note || typeof note !== "string" || note.trim() === "") {
 							return jsonResponse({ error: "Note is required" }, 400);
 						}
-						validNotes.push(note.trim());
+						validNotes.push(note.trim().toLowerCase());
 					}
 
 					let ratingToStore: Feedback["rating"] = null;

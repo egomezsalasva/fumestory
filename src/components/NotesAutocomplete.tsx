@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Note } from "@/routes/api.notes";
 import styles from "./Form.module.css";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 type NotesAutocompleteProps = {
 	label: string;
@@ -33,13 +34,20 @@ export function NotesAutocomplete({
 	const filteredNotes = availableNotes.filter(
 		(note) =>
 			note.name.toLowerCase().includes(inputValue.toLowerCase()) &&
-			!selectedNotes.includes(note.name),
+			!selectedNotes.some(
+				(selected) => selected.toLowerCase() === note.name.toLowerCase(),
+			),
 	);
 
 	const handleAddNote = (noteName: string) => {
 		const trimmed = noteName.trim();
-		if (trimmed && !selectedNotes.includes(trimmed)) {
-			onNotesChange([...selectedNotes, trimmed]);
+		if (
+			trimmed &&
+			!selectedNotes.some(
+				(selected) => selected.toLowerCase() === trimmed.toLowerCase(),
+			)
+		) {
+			onNotesChange([...selectedNotes, trimmed.toLowerCase()]);
 			setInputValue("");
 			setShowDropdown(false);
 		}
@@ -61,9 +69,9 @@ export function NotesAutocomplete({
 							type="button"
 							onClick={() => handleRemoveNote(note)}
 							className={styles.noteChip}
-							aria-label={`Remove ${note}`}
+							aria-label={`Remove ${toTitleCaseWords(note)}`}
 						>
-							<span>{note}</span>
+							<span>{toTitleCaseWords(note)}</span>
 							<span aria-hidden className={styles.noteChipRemove}>
 								×
 							</span>
@@ -108,7 +116,7 @@ export function NotesAutocomplete({
 									onClick={() => handleAddNote(note.name)}
 									className="w-full text-left px-4 py-2 hover:bg-slate-600 text-white"
 								>
-									{note.name}
+									{toTitleCaseWords(note.name)}
 								</button>
 							))}
 						</div>

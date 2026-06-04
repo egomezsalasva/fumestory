@@ -1,9 +1,10 @@
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
+import { nameFromAgentProposal, toTitleCaseWords } from "@/utils/display-names";
 
 export function proposalToMarkdown(proposal: RawMaterialProposal): string {
 	const notesBlock =
 		proposal.notes.length > 0
-			? proposal.notes.map((n) => `- ${n}`).join("\n")
+			? proposal.notes.map((n) => `- ${toTitleCaseWords(n)}`).join("\n")
 			: "- _none_";
 
 	const additionalParagraphs = proposal.additionalInformation
@@ -16,13 +17,13 @@ export function proposalToMarkdown(proposal: RawMaterialProposal): string {
 	const formSection = [
 		`**Suggested label:** ${proposal.suggestedLabel}`,
 		"",
-		`**Name:** ${proposal.nameAsEntered}`,
+		`**Name:** ${nameFromAgentProposal(proposal.nameAsEntered)}`,
 		"",
 		`**CAS number:** ${proposal.casNumber ?? "_none_"}`,
 		"",
 		`**Material nature:** ${proposal.materialNature}`,
 		"",
-		`**Suggested category:** ${proposal.suggestedCategory}`,
+		`**Suggested category:** ${toTitleCaseWords(proposal.suggestedCategory)}`,
 		"",
 		`**Note type:** \`${proposal.noteType}\``,
 		"",

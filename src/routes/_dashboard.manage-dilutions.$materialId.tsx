@@ -5,6 +5,7 @@ import { FeedbackWithNotes } from "./api.feedback";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 function formatBatchGrams(grams: number): string {
 	return `${grams.toLocaleString(undefined, { maximumFractionDigits: 5, useGrouping: false })} g`;
@@ -277,7 +278,7 @@ function ManageDilutions() {
 														</span>
 													</div>
 													<div className="text-slate-300">
-														Notes: {fb.notes.join(", ")}
+														Notes: {fb.notes.map(toTitleCaseWords).join(", ")}
 													</div>
 												</div>
 											))}

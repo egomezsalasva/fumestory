@@ -12,6 +12,7 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
+import { nameFromAgentProposal, toTitleCaseWords } from "@/utils/display-names";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -109,10 +110,10 @@ function AddRawMaterial() {
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
 		setLabel(proposal.suggestedLabel);
-		setName(proposal.nameAsEntered);
+		setName(nameFromAgentProposal(proposal.nameAsEntered));
 		setMaterialNature(proposal.materialNature);
 		setNoteType(proposal.noteType);
-		setNotes(proposal.notes);
+		setNotes(proposal.notes.map((n) => n.trim().toLowerCase()).filter(Boolean));
 
 		const normalizedCas = normalizeCasNumber(proposal.casNumber);
 		let casError = "";
@@ -128,7 +129,7 @@ function AddRawMaterial() {
 			const data = await response.json();
 			const suggested = proposal.suggestedCategory.trim().toLowerCase();
 			if (!response.ok || !data.success || !Array.isArray(data.data)) {
-				setCategorySearch(proposal.suggestedCategory);
+				setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
 				setSelectedCategoryId(null);
 				setError(casError);
 				return;
@@ -143,13 +144,13 @@ function AddRawMaterial() {
 				);
 			if (match) {
 				setSelectedCategoryId(match.id);
-				setCategorySearch(match.name);
+				setCategorySearch(toTitleCaseWords(match.name));
 			} else {
-				setCategorySearch(proposal.suggestedCategory);
+				setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
 				setSelectedCategoryId(null);
 			}
 		} catch {
-			setCategorySearch(proposal.suggestedCategory);
+			setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
 			setSelectedCategoryId(null);
 		}
 
@@ -337,7 +338,7 @@ function AddRawMaterial() {
 								value={categorySearch}
 								onSelect={(id, name) => {
 									setSelectedCategoryId(id);
-									setCategorySearch(name);
+									setCategorySearch(toTitleCaseWords(name));
 									setError("");
 								}}
 								required

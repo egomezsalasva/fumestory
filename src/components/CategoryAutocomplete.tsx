@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./Form.module.css";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 type Category = {
 	id: number;
@@ -92,7 +93,7 @@ export function CategoryAutocomplete({
 								}}
 								className="w-full text-left px-4 py-2 text-white hover:bg-slate-600 transition-colors"
 							>
-								{cat.name}
+								{toTitleCaseWords(cat.name)}
 							</button>
 						))
 					) : search.trim() ? (
@@ -101,7 +102,7 @@ export function CategoryAutocomplete({
 							onClick={handleCreateCategory}
 							className="w-full text-left px-4 py-2 text-green-400 hover:bg-slate-600 transition-colors font-medium"
 						>
-							+ Create "{search}"
+							+ Create "{toTitleCaseWords(search)}"
 						</button>
 					) : (
 						<div className="px-4 py-2 text-gray-400">

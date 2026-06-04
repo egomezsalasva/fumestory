@@ -193,7 +193,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 					if (notes && Array.isArray(notes) && notes.length > 0) {
 						for (const noteName of notes) {
 							if (noteName && typeof noteName === "string" && noteName.trim()) {
-								validNotes.push(noteName.trim());
+								validNotes.push(noteName.trim().toLowerCase());
 							}
 						}
 					}

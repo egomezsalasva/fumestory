@@ -14,6 +14,7 @@ import {
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -174,9 +175,7 @@ function App() {
 			headerName: "Category",
 			width: 100,
 			valueFormatter: (params: ValueFormatterParams<RawMaterial, string>) =>
-				params.value
-					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
-					: "",
+				params.value ? toTitleCaseWords(params.value) : "",
 		};
 
 		const noteTypeCol: ColDef<RawMaterial> = {
@@ -207,10 +206,12 @@ function App() {
 			valueGetter: (p: { data?: RawMaterial }) => {
 				if (!includeGuestFeedbackInNotes) {
 					const list = p.data?.notes ?? [];
-					return list.length ? list.join(", ") : "";
+					return list.length ? list.map(toTitleCaseWords).join(", ") : "";
 				}
 				const m = p.data?.aggregated_note_counts;
-				return m && Object.keys(m).length ? Object.keys(m).join(", ") : "";
+				return m && Object.keys(m).length
+					? Object.keys(m).map(toTitleCaseWords).join(", ")
+					: "";
 			},
 			cellRenderer: (p: { data?: RawMaterial }) => {
 				if (!includeGuestFeedbackInNotes) {
@@ -226,7 +227,7 @@ function App() {
 									key={note}
 									className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[0.7rem] text-white bg-transparent border border-white/40"
 								>
-									{note}
+									{toTitleCaseWords(note)}
 								</span>
 							))}
 						</div>
@@ -252,7 +253,7 @@ function App() {
 					return `rgb(${r}, ${g}, ${b})`;
 				};
 				const isFeedbackOnly = (n: string) =>
-					!originalNotes || !originalNotes.includes(n);
+					!originalNotes?.some((o) => o.toLowerCase() === n.toLowerCase());
 
 				return (
 					<div className="flex flex-wrap gap-2 py-2">
@@ -268,7 +269,7 @@ function App() {
 										borderColor: color(count),
 									}}
 								>
-									{note}
+									{toTitleCaseWords(note)}
 									{isFeedbackOnly(note) && "*"}
 									{count > 1 && <span className="font-semibold">×{count}</span>}
 								</span>

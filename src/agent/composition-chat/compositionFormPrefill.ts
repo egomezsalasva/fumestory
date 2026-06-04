@@ -1,18 +1,10 @@
 import type { CompositionConversationState } from "@/agent/composition-chat/flow";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 export type CompositionFormPrefill = {
 	type: "accord" | "perfume";
 	suggestedName: string;
 };
-
-function toTitleCaseWords(text: string): string {
-	return text
-		.trim()
-		.split(/\s+/)
-		.filter(Boolean)
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-		.join(" ");
-}
 
 function stripSuffix(text: string, suffix: RegExp): string {
 	return text.replace(suffix, "").trim();

@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/categories")({
 					}
 					const [result] = (await client.query(
 						"INSERT INTO categories (name) VALUES ($1) RETURNING id, name",
-						[name.trim()],
+						[name.trim().toLowerCase()],
 					)) as Category[];
 					return jsonResponse({ success: true, data: result }, 201);
 				} catch (error) {
