@@ -94,6 +94,34 @@ function RouteComponent() {
 					</h2>
 					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
 						<h3 className="text-sm font-medium text-slate-100">
+							Compositions Settings
+						</h3>
+						<div className="h-px w-full bg-slate-600 my-2" />
+						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
+							Compositions Table Settings
+						</h4>
+
+						<ul className="mt-3 space-y-2">
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.compositions_columns.label ?? true}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												compositions_columns: { label: e.target.checked },
+											});
+										}}
+									/>
+									Show Bottle Label Column
+								</label>
+							</li>
+						</ul>
+					</div>
+					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
+						<h3 className="text-sm font-medium text-slate-100">
 							Raw Materials Settings
 						</h3>
 						<div className="h-px w-full bg-slate-600 my-2"></div>

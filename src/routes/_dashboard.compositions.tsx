@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -9,6 +9,10 @@ import {
 } from "ag-grid-community";
 import type { Composition } from "@/routes/api.compositions";
 import { authedFetch } from "@/utils/authed-fetch";
+import {
+	USER_SETTINGS_UPDATED_EVENT,
+	type UserSettingsEffective,
+} from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -47,6 +51,31 @@ const gridStyles = `
 
 function Compositions() {
 	const [compositions, setCompositions] = useState<Composition[]>([]);
+	const [showCompositionsLabelColumn, setShowCompositionsLabelColumn] =
+		useState<boolean | null>(null);
+
+	const loadUserSettings = useCallback(() => {
+		authedFetch("/api/user-settings")
+			.then((res) => res.json())
+			.then((json: { data?: UserSettingsEffective }) => {
+				if (json.data) {
+					setShowCompositionsLabelColumn(json.data.compositions_columns.label);
+				} else {
+					setShowCompositionsLabelColumn(true);
+				}
+			})
+			.catch(() => {
+				setShowCompositionsLabelColumn(true);
+			});
+	}, []);
+
+	useEffect(() => {
+		loadUserSettings();
+		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		return () => {
+			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		};
+	}, [loadUserSettings]);
 
 	useEffect(() => {
 		authedFetch("/api/compositions")
@@ -57,15 +86,21 @@ function Compositions() {
 			.catch((err) => console.error("Compositions error:", err));
 	}, []);
 
-	const columnDefs: ColDef<Composition>[] = [
-		{
+	const columnDefs = useMemo(() => {
+		const labelCol: ColDef<Composition> = {
 			field: "label",
 			headerName: "Label",
 			width: 88,
 			valueFormatter: (params) => params.value ?? "—",
-		},
-		{ field: "name", headerName: "Name", flex: 1 },
-		{
+		};
+
+		const nameCol: ColDef<Composition> = {
+			field: "name",
+			headerName: "Name",
+			flex: 1,
+		};
+
+		const typeCol: ColDef<Composition> = {
 			field: "type",
 			headerName: "Type",
 			flex: 1,
@@ -73,8 +108,9 @@ function Compositions() {
 				params.value
 					? params.value.charAt(0).toUpperCase() + params.value.slice(1)
 					: "",
-		},
-		{
+		};
+
+		const detailsCol: ColDef<Composition> = {
 			headerName: "",
 			width: 140,
 			sortable: false,
@@ -97,8 +133,13 @@ function Compositions() {
 					</Link>
 				);
 			},
-		},
-	];
+		};
+
+		const cols: ColDef<Composition>[] = [];
+		if (showCompositionsLabelColumn !== false) cols.push(labelCol);
+		cols.push(nameCol, typeCol, detailsCol);
+		return cols;
+	}, [showCompositionsLabelColumn]);
 
 	return (
 		<>
@@ -106,6 +147,7 @@ function Compositions() {
 			<DashboardLayout
 				title="Compositions"
 				plusButton={{ to: "/add-composition" }}
+				showCogButton={true}
 			>
 				<div
 					className="ag-theme-quartz-dark"

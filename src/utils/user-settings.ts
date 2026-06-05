@@ -17,10 +17,24 @@ export type InventoryColumnsJson = Partial<Record<InventoryColumnId, boolean>>;
 
 export type InventoryColumnsEffective = Record<InventoryColumnId, boolean>;
 
+/** Extend this array when you add more composition table toggles. */
+export const COMPOSITIONS_COLUMN_IDS = ["label"] as const;
+export type CompositionsColumnId = (typeof COMPOSITIONS_COLUMN_IDS)[number];
+
+export type CompositionsColumnsJson = Partial<
+	Record<CompositionsColumnId, boolean>
+>;
+
+export type CompositionsColumnsEffective = Record<
+	CompositionsColumnId,
+	boolean
+>;
+
 export type UserSettingsJson = {
 	guest_feedback_enabled?: boolean;
 	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
+	compositions_columns?: CompositionsColumnsJson;
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
 	raw_material_agent_collapsed?: boolean;
@@ -31,6 +45,7 @@ export type UserSettingsEffective = {
 	guest_feedback_enabled: boolean;
 	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
+	compositions_columns: CompositionsColumnsEffective;
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
 	raw_material_agent_collapsed: boolean;
@@ -51,11 +66,16 @@ const inventoryColumnsPatchSchema = z.object({
 	available_dilutions: z.boolean().optional(),
 });
 
+const compositionsColumnsPatchSchema = z.object({
+	label: z.boolean().optional(),
+});
+
 export const patchUserSettingsSchema = z
 	.object({
 		guest_feedback_enabled: z.boolean().optional(),
 		guest_feedback_aggregate_note: z.boolean().optional(),
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
+		compositions_columns: compositionsColumnsPatchSchema.optional(),
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
 		raw_material_agent_collapsed: z.boolean().optional(),
@@ -72,12 +92,26 @@ export const patchUserSettingsSchema = z
 			if (d.scent_blind_test_enabled !== undefined) return true;
 
 			const ic = d.inventory_columns;
-			if (!ic) return false;
-			return INVENTORY_COLUMN_IDS.some((id) => typeof ic[id] === "boolean");
+			if (
+				ic &&
+				INVENTORY_COLUMN_IDS.some((id) => typeof ic[id] === "boolean")
+			) {
+				return true;
+			}
+
+			const cc = d.compositions_columns;
+			if (
+				cc &&
+				COMPOSITIONS_COLUMN_IDS.some((id) => typeof cc[id] === "boolean")
+			) {
+				return true;
+			}
+
+			return false;
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -91,6 +125,22 @@ function parseInventoryColumnsJson(
 	const o = raw as Record<string, unknown>;
 	const out: InventoryColumnsJson = {};
 	for (const id of INVENTORY_COLUMN_IDS) {
+		const v = o[id];
+		if (typeof v === "boolean") {
+			out[id] = v;
+		}
+	}
+	return Object.keys(out).length > 0 ? out : undefined;
+}
+
+function parseCompositionsColumnsJson(
+	raw: unknown,
+): CompositionsColumnsJson | undefined {
+	if (raw === null || raw === undefined) return undefined;
+	if (typeof raw !== "object" || Array.isArray(raw)) return undefined;
+	const o = raw as Record<string, unknown>;
+	const out: CompositionsColumnsJson = {};
+	for (const id of COMPOSITIONS_COLUMN_IDS) {
 		const v = o[id];
 		if (typeof v === "boolean") {
 			out[id] = v;
@@ -129,9 +179,13 @@ export function parseUserSettingsJson(
 	if (typeof o.scent_blind_test_enabled === "boolean") {
 		out.scent_blind_test_enabled = o.scent_blind_test_enabled;
 	}
-	const cols = parseInventoryColumnsJson(o.inventory_columns);
-	if (cols) {
-		out.inventory_columns = cols;
+	const inventoryCols = parseInventoryColumnsJson(o.inventory_columns);
+	if (inventoryCols) {
+		out.inventory_columns = inventoryCols;
+	}
+	const compositionsCols = parseCompositionsColumnsJson(o.compositions_columns);
+	if (compositionsCols) {
+		out.compositions_columns = compositionsCols;
 	}
 	return out;
 }
@@ -160,16 +214,38 @@ function effectiveInventoryColumns(
 	return next;
 }
 
+function effectiveCompositionsColumns(
+	stored: CompositionsColumnsJson | undefined,
+): CompositionsColumnsEffective {
+	const defaults: CompositionsColumnsEffective = {
+		label: true,
+	};
+	if (!stored) {
+		return defaults;
+	}
+	const next = { ...defaults };
+	for (const id of COMPOSITIONS_COLUMN_IDS) {
+		if (typeof stored[id] === "boolean") {
+			next[id] = stored[id];
+		}
+	}
+	return next;
+}
+
 export function effectiveUserSettings(
 	stored: UserSettingsJson,
 ): UserSettingsEffective {
 	const guestOn = stored.guest_feedback_enabled === true;
 	const inventory_columns = effectiveInventoryColumns(stored.inventory_columns);
+	const compositions_columns = effectiveCompositionsColumns(
+		stored.compositions_columns,
+	);
 	return {
 		guest_feedback_enabled: guestOn,
 		guest_feedback_aggregate_note:
 			guestOn && stored.guest_feedback_aggregate_note !== false,
 		inventory_columns,
+		compositions_columns,
 		hide_raw_materials_without_available_dilutions:
 			inventory_columns.available_dilutions === true &&
 			stored.hide_raw_materials_without_available_dilutions === true,
@@ -203,6 +279,21 @@ export function mergeUserSettingsJson(
 			merged.inventory_columns = cleaned;
 		} else {
 			delete merged.inventory_columns;
+		}
+	}
+	if (
+		patch.compositions_columns !== undefined &&
+		patch.compositions_columns !== null
+	) {
+		const combined: CompositionsColumnsJson = {
+			...stored.compositions_columns,
+			...patch.compositions_columns,
+		};
+		const cleaned = parseCompositionsColumnsJson(combined);
+		if (cleaned) {
+			merged.compositions_columns = cleaned;
+		} else {
+			delete merged.compositions_columns;
 		}
 	}
 	if (
