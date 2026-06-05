@@ -115,7 +115,7 @@ function RouteComponent() {
 											});
 										}}
 									/>
-									Show Label Column
+									Show Bottle Label Column
 								</label>
 							</li>
 							<li>
@@ -265,7 +265,7 @@ function RouteComponent() {
 											});
 										}}
 									/>
-									Hide Raw Materials Without Available Dilutions
+									Only Show Raw Materials With Available Dilutions
 								</label>
 							</li>
 						</ul>
