@@ -97,18 +97,59 @@ function RouteComponent() {
 							Compositions Settings
 						</h3>
 						<div className="h-px w-full bg-slate-600 my-2" />
-						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
-							Compositions Table Settings
-						</h4>
-
 						<ul className="mt-3 space-y-2">
 							<li>
 								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
 									<input
 										type="checkbox"
 										className="mr-2"
-										checked={settings?.compositions_columns.label ?? true}
+										checked={
+											settings?.composition_bottle_label_enabled ?? false
+										}
 										disabled={settings === null || saving}
+										onChange={(e) => {
+											const enabled = e.target.checked;
+											void patchUserSettings(
+												enabled
+													? {
+															composition_bottle_label_enabled: true,
+															compositions_columns: { label: true },
+														}
+													: {
+															composition_bottle_label_enabled: false,
+															compositions_columns: { label: false },
+														},
+											);
+										}}
+									/>
+									Enable Bottle Label
+								</label>
+							</li>
+						</ul>
+
+						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
+							Compositions Table Settings
+						</h4>
+
+						<ul className="mt-3 space-y-2">
+							<li>
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null &&
+										settings.composition_bottle_label_enabled === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
+									<input
+										type="checkbox"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={settings?.compositions_columns.label ?? true}
+										disabled={
+											settings === null ||
+											saving ||
+											settings?.composition_bottle_label_enabled === false
+										}
 										onChange={(e) => {
 											void patchUserSettings({
 												compositions_columns: { label: e.target.checked },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { z } from "zod";
 import type { CompositionFormPrefill } from "@/agent/composition-chat/compositionFormPrefill";
@@ -14,6 +14,10 @@ import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
+import {
+	USER_SETTINGS_UPDATED_EVENT,
+	type UserSettingsEffective,
+} from "@/utils/user-settings";
 
 type SuggestAnyFormulaProposal = z.infer<
 	typeof suggestAnyFormulaProposalSchema
@@ -21,9 +25,10 @@ type SuggestAnyFormulaProposal = z.infer<
 
 type UserSettingsResponse = {
 	success?: boolean;
-	data?: {
-		composition_agent_collapsed?: boolean;
-	};
+	data?: Pick<
+		UserSettingsEffective,
+		"composition_agent_collapsed" | "composition_bottle_label_enabled"
+	>;
 	error?: string;
 };
 
@@ -53,33 +58,50 @@ function AddComposition() {
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
+	const [compositionBottleLabelEnabled, setCompositionBottleLabelEnabled] =
+		useState<boolean | null>(null);
 
-	useEffect(() => {
+	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
 
-		const loadSidebarPreference = async () => {
+		const run = async () => {
 			try {
 				const res = await authedFetch("/api/user-settings");
 				const json = (await res.json()) as UserSettingsResponse;
 
-				const collapsed =
-					res.ok && json?.data?.composition_agent_collapsed === true;
 				if (!cancelled) {
-					setIsSidebarCollapsed(collapsed);
+					setIsSidebarCollapsed(
+						res.ok && json?.data?.composition_agent_collapsed === true,
+					);
+					setCompositionBottleLabelEnabled(
+						res.ok
+							? (json.data?.composition_bottle_label_enabled ?? false)
+							: false,
+					);
 				}
 			} catch {
 				if (!cancelled) {
 					setIsSidebarCollapsed(false);
+					setCompositionBottleLabelEnabled(false);
 				}
 			}
 		};
 
-		void loadSidebarPreference();
+		void run();
 
 		return () => {
 			cancelled = true;
 		};
 	}, []);
+
+	useEffect(() => {
+		const cleanup = loadUserSettings();
+		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		return () => {
+			cleanup();
+			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		};
+	}, [loadUserSettings]);
 
 	const handleToggleSidebar = async () => {
 		if (isSidebarCollapsed === null) return;
@@ -135,7 +157,11 @@ function AddComposition() {
 		if (formPrefill) {
 			setType(formPrefill.type);
 			setName(formPrefill.suggestedName);
-			setLabel(formPrefill.suggestedLabel);
+			if (compositionBottleLabelEnabled) {
+				setLabel(formPrefill.suggestedLabel);
+			} else {
+				setLabel("");
+			}
 		}
 
 		setPrefillIngredients(nextIngredients);
@@ -151,7 +177,7 @@ function AddComposition() {
 		const compositionData = {
 			name,
 			type,
-			label: label.trim() || null,
+			label: compositionBottleLabelEnabled ? label.trim() || null : null,
 			ingredients: ingredients
 				.filter((ing) => ing.dilution_id !== null)
 				.map((ing) => ({
@@ -190,12 +216,13 @@ function AddComposition() {
 		}
 	};
 
-	if (isSidebarCollapsed === null) {
+	if (isSidebarCollapsed === null || compositionBottleLabelEnabled === null) {
 		return (
 			<DashboardLayout
 				title="Compositions / Add Composition"
 				backButton={{ to: "/compositions" }}
 				agentToggle={true}
+				showCogButton={true}
 			>
 				<></>
 			</DashboardLayout>
@@ -208,6 +235,7 @@ function AddComposition() {
 			backButton={{ to: "/compositions" }}
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
+			showCogButton={true}
 		>
 			<div
 				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
@@ -222,15 +250,17 @@ function AddComposition() {
 							required
 						/>
 
-						<LabelInput
-							label="Bottle Label"
-							value={label}
-							onChange={(value) => {
-								setLabel(value);
-								setError(null);
-							}}
-							placeholder="e.g. CP1"
-						/>
+						{compositionBottleLabelEnabled && (
+							<LabelInput
+								label="Bottle Label"
+								value={label}
+								onChange={(value) => {
+									setLabel(value);
+									setError(null);
+								}}
+								placeholder="e.g. CP1"
+							/>
+						)}
 
 						<Select
 							label="Composition Type"

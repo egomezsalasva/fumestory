@@ -61,11 +61,11 @@ function Compositions() {
 				if (json.data) {
 					setShowCompositionsLabelColumn(json.data.compositions_columns.label);
 				} else {
-					setShowCompositionsLabelColumn(true);
+					setShowCompositionsLabelColumn(false);
 				}
 			})
 			.catch(() => {
-				setShowCompositionsLabelColumn(true);
+				setShowCompositionsLabelColumn(false);
 			});
 	}, []);
 

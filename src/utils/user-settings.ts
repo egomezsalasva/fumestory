@@ -36,6 +36,7 @@ export type UserSettingsJson = {
 	inventory_columns?: InventoryColumnsJson;
 	compositions_columns?: CompositionsColumnsJson;
 	bottle_label_enabled?: boolean;
+	composition_bottle_label_enabled?: boolean;
 	cas_number_enabled?: boolean;
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
@@ -49,6 +50,7 @@ export type UserSettingsEffective = {
 	inventory_columns: InventoryColumnsEffective;
 	compositions_columns: CompositionsColumnsEffective;
 	bottle_label_enabled: boolean;
+	composition_bottle_label_enabled: boolean;
 	cas_number_enabled: boolean;
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
@@ -81,6 +83,7 @@ export const patchUserSettingsSchema = z
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
 		compositions_columns: compositionsColumnsPatchSchema.optional(),
 		bottle_label_enabled: z.boolean().optional(),
+		composition_bottle_label_enabled: z.boolean().optional(),
 		cas_number_enabled: z.boolean().optional(),
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
@@ -92,6 +95,7 @@ export const patchUserSettingsSchema = z
 			if (d.guest_feedback_enabled !== undefined) return true;
 			if (typeof d.guest_feedback_aggregate_note === "boolean") return true;
 			if (typeof d.bottle_label_enabled === "boolean") return true;
+			if (typeof d.composition_bottle_label_enabled === "boolean") return true;
 			if (typeof d.cas_number_enabled === "boolean") return true;
 			if (typeof d.hide_raw_materials_without_available_dilutions === "boolean")
 				return true;
@@ -119,7 +123,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, cas_number_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -176,6 +180,9 @@ export function parseUserSettingsJson(
 	}
 	if (typeof o.bottle_label_enabled === "boolean") {
 		out.bottle_label_enabled = o.bottle_label_enabled;
+	}
+	if (typeof o.composition_bottle_label_enabled === "boolean") {
+		out.composition_bottle_label_enabled = o.composition_bottle_label_enabled;
 	}
 	if (typeof o.cas_number_enabled === "boolean") {
 		out.cas_number_enabled = o.cas_number_enabled;
@@ -251,6 +258,8 @@ export function effectiveUserSettings(
 ): UserSettingsEffective {
 	const guestOn = stored.guest_feedback_enabled === true;
 	const bottleLabelOn = stored.bottle_label_enabled === true;
+	const compositionBottleLabelOn =
+		stored.composition_bottle_label_enabled === true;
 	const casOn = stored.cas_number_enabled === true;
 	const inventory_columns = effectiveInventoryColumns(stored.inventory_columns);
 	if (!bottleLabelOn) {
@@ -262,6 +271,9 @@ export function effectiveUserSettings(
 	const compositions_columns = effectiveCompositionsColumns(
 		stored.compositions_columns,
 	);
+	if (!compositionBottleLabelOn) {
+		compositions_columns.label = false;
+	}
 	return {
 		guest_feedback_enabled: guestOn,
 		guest_feedback_aggregate_note:
@@ -269,6 +281,7 @@ export function effectiveUserSettings(
 		inventory_columns,
 		compositions_columns,
 		bottle_label_enabled: bottleLabelOn,
+		composition_bottle_label_enabled: compositionBottleLabelOn,
 		cas_number_enabled: casOn,
 		hide_raw_materials_without_available_dilutions:
 			inventory_columns.available_dilutions === true &&
@@ -292,6 +305,10 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.bottle_label_enabled === "boolean") {
 		merged.bottle_label_enabled = patch.bottle_label_enabled;
+	}
+	if (typeof patch.composition_bottle_label_enabled === "boolean") {
+		merged.composition_bottle_label_enabled =
+			patch.composition_bottle_label_enabled;
 	}
 	if (typeof patch.cas_number_enabled === "boolean") {
 		merged.cas_number_enabled = patch.cas_number_enabled;
