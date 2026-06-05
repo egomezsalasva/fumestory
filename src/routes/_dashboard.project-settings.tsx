@@ -92,81 +92,10 @@ function RouteComponent() {
 					<h2 className="text-lg font-medium text-white mb-4">
 						Project Settings
 					</h2>
-					{/* <ul className="space-y-2">
-						<li>
-							<label>
-								<input type="checkbox" className="mr-2" />
-								Automatically remove weight from dilution total on formula
-								creation
-							</label>
-						</li>
-					</ul> */}
-					{/* <div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
-						<h3 className="text-sm font-medium text-slate-100">
-							Compositions Settings
-						</h3>
-						<div className="h-px w-full bg-slate-600 my-2"></div>
-						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
-							Additional Properties
-						</h4>
-
-						<ul className="mt-3 space-y-2">
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
-									Label
-								</label>
-							</li>
-						</ul>
-						<div className="h-px w-full bg-slate-600 my-2"></div>
-						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
-							Compositions Table Settings
-						</h4>
-
-						<ul className="mt-3 space-y-2">
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Name Column
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" checked />
-									Show Type Column
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
-									Show Status Column
-								</label>
-							</li>
-						</ul>
-					</div> */}
 					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
 						<h3 className="text-sm font-medium text-slate-100">
 							Raw Materials Settings
 						</h3>
-						{/* <div className="h-px w-full bg-slate-600 my-2"></div>
-						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
-							Additional Properties
-						</h4>
-
-						<ul className="mt-3 space-y-2">
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
-									CAS Number
-								</label>
-							</li>
-							<li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
-									Dilution Total Weight
-								</label>
-							</li>
-						</ul> */}
 						<div className="h-px w-full bg-slate-600 my-2"></div>
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
 							Raw Materials Table Settings
@@ -209,12 +138,6 @@ function RouteComponent() {
 									Show Material Nature Column
 								</label>
 							</li>
-							{/* <li>
-								<label className="inline-flex items-center text-sm text-slate-200">
-									<input type="checkbox" className="mr-2" />
-									Show Name Column
-								</label>
-							</li> */}
 							<li>
 								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
 									<input
@@ -343,6 +266,46 @@ function RouteComponent() {
 										}}
 									/>
 									Hide Raw Materials Without Available Dilutions
+								</label>
+							</li>
+						</ul>
+					</div>
+					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
+						<h3 className="text-sm font-medium text-slate-100">
+							Agent Settings
+						</h3>
+						<div className="h-px w-full bg-slate-600 my-2" />
+						<ul className="mt-3 space-y-2">
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={!settings?.raw_material_agent_collapsed}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												raw_material_agent_collapsed: !e.target.checked,
+											});
+										}}
+									/>
+									Show Raw Materials Agent
+								</label>
+							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={!settings?.composition_agent_collapsed}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												composition_agent_collapsed: !e.target.checked,
+											});
+										}}
+									/>
+									Show Compositions Agent
 								</label>
 							</li>
 						</ul>
