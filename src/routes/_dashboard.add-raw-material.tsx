@@ -32,7 +32,9 @@ type UserSettingsResponse = {
 	success?: boolean;
 	data?: Pick<
 		UserSettingsEffective,
-		"raw_material_agent_collapsed" | "cas_number_enabled"
+		| "raw_material_agent_collapsed"
+		| "bottle_label_enabled"
+		| "cas_number_enabled"
 	>;
 	error?: string;
 };
@@ -55,6 +57,9 @@ function AddRawMaterial() {
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
+	const [bottleLabelEnabled, setBottleLabelEnabled] = useState<boolean | null>(
+		null,
+	);
 	const [casNumberEnabled, setCasNumberEnabled] = useState<boolean | null>(
 		null,
 	);
@@ -71,6 +76,9 @@ function AddRawMaterial() {
 					setIsSidebarCollapsed(
 						res.ok && json?.data?.raw_material_agent_collapsed === true,
 					);
+					setBottleLabelEnabled(
+						res.ok ? (json.data?.bottle_label_enabled ?? false) : false,
+					);
 					setCasNumberEnabled(
 						res.ok ? (json.data?.cas_number_enabled ?? false) : false,
 					);
@@ -78,6 +86,7 @@ function AddRawMaterial() {
 			} catch {
 				if (!cancelled) {
 					setIsSidebarCollapsed(false);
+					setBottleLabelEnabled(false);
 					setCasNumberEnabled(false);
 				}
 			}
@@ -127,7 +136,11 @@ function AddRawMaterial() {
 	};
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
-		setLabel(proposal.suggestedLabel);
+		if (bottleLabelEnabled) {
+			setLabel(proposal.suggestedLabel);
+		} else {
+			setLabel("");
+		}
 		setName(nameFromAgentProposal(proposal.nameAsEntered));
 		setMaterialNature(proposal.materialNature);
 		setNoteType(proposal.noteType);
@@ -227,7 +240,7 @@ function AddRawMaterial() {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					label: label.trim() || null,
+					label: bottleLabelEnabled ? label.trim() || null : null,
 					name,
 					cas_number: normalizedCas,
 					category_id: selectedCategoryId,
@@ -261,7 +274,11 @@ function AddRawMaterial() {
 		}
 	};
 
-	if (isSidebarCollapsed === null || casNumberEnabled === null) {
+	if (
+		isSidebarCollapsed === null ||
+		bottleLabelEnabled === null ||
+		casNumberEnabled === null
+	) {
 		return (
 			<DashboardLayout
 				title="Raw Materials Inventory / Add Raw Material"
@@ -314,15 +331,17 @@ function AddRawMaterial() {
 								/>
 							)}
 
-							<LabelInput
-								label="Bottle Label"
-								value={label}
-								onChange={(value) => {
-									setLabel(value);
-									setError("");
-								}}
-								placeholder="e.g. LB1"
-							/>
+							{bottleLabelEnabled && (
+								<LabelInput
+									label="Bottle Label"
+									value={label}
+									onChange={(value) => {
+										setLabel(value);
+										setError("");
+									}}
+									placeholder="e.g. LB1"
+								/>
+							)}
 
 							<Select
 								label="Material Nature"

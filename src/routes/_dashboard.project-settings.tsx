@@ -151,6 +151,31 @@ function RouteComponent() {
 									Enable CAS Number
 								</label>
 							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.bottle_label_enabled ?? false}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											const enabled = e.target.checked;
+											void patchUserSettings(
+												enabled
+													? {
+															bottle_label_enabled: true,
+															inventory_columns: { label: true },
+														}
+													: {
+															bottle_label_enabled: false,
+															inventory_columns: { label: false },
+														},
+											);
+										}}
+									/>
+									Enable Bottle Label
+								</label>
+							</li>
 						</ul>
 
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -159,12 +184,22 @@ function RouteComponent() {
 
 						<ul className="mt-3 space-y-2">
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null && settings.bottle_label_enabled === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
 										checked={settings?.inventory_columns.label ?? true}
-										disabled={settings === null || saving}
+										disabled={
+											settings === null ||
+											saving ||
+											settings?.bottle_label_enabled === false
+										}
 										onChange={(e) => {
 											void patchUserSettings({
 												inventory_columns: { label: e.target.checked },
