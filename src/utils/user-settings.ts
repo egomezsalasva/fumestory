@@ -3,6 +3,7 @@ import { z } from "zod";
 /** Extend this array when you add more toggles. */
 export const INVENTORY_COLUMN_IDS = [
 	"label",
+	"cas_number",
 	"material_nature",
 	"category_name",
 	"note_type",
@@ -42,6 +43,7 @@ export type UserSettingsRow = {
 
 const inventoryColumnsPatchSchema = z.object({
 	label: z.boolean().optional(),
+	cas_number: z.boolean().optional(),
 	material_nature: z.boolean().optional(),
 	category_name: z.boolean().optional(),
 	note_type: z.boolean().optional(),
@@ -139,6 +141,7 @@ function effectiveInventoryColumns(
 ): InventoryColumnsEffective {
 	const defaults: InventoryColumnsEffective = {
 		label: true,
+		cas_number: true,
 		material_nature: true,
 		category_name: true,
 		note_type: true,

@@ -45,6 +45,8 @@ function App() {
 	const [showInventoryLabelColumn, setShowInventoryLabelColumn] = useState<
 		boolean | null
 	>(null);
+	const [showInventoryCasNumberColumn, setShowInventoryCasNumberColumn] =
+		useState<boolean | null>(null);
 	const [
 		showInventoryMaterialNatureColumn,
 		setShowInventoryMaterialNatureColumn,
@@ -81,6 +83,9 @@ function App() {
 						json.data.hide_raw_materials_without_available_dilutions,
 					);
 					setShowInventoryLabelColumn(json.data.inventory_columns.label);
+					setShowInventoryCasNumberColumn(
+						json.data.inventory_columns.cas_number,
+					);
 					setShowInventoryMaterialNatureColumn(
 						json.data.inventory_columns.material_nature,
 					);
@@ -99,6 +104,7 @@ function App() {
 					setGuestFeedbackAggregateNote(true);
 					setHideRawMaterialsWithoutAvailableDilutions(false);
 					setShowInventoryLabelColumn(true);
+					setShowInventoryCasNumberColumn(true);
 					setShowInventoryMaterialNatureColumn(true);
 					setShowInventoryCategoryNameColumn(true);
 					setShowInventoryNoteTypeColumn(true);
@@ -111,6 +117,7 @@ function App() {
 				setGuestFeedbackAggregateNote(true);
 				setHideRawMaterialsWithoutAvailableDilutions(false);
 				setShowInventoryLabelColumn(true);
+				setShowInventoryCasNumberColumn(true);
 				setShowInventoryMaterialNatureColumn(true);
 				setShowInventoryCategoryNameColumn(true);
 				setShowInventoryNoteTypeColumn(true);
@@ -310,7 +317,7 @@ function App() {
 		const cols: ColDef<RawMaterial>[] = [];
 		if (showInventoryLabelColumn !== false) cols.push(labelCol);
 		cols.push(nameCol);
-		cols.push(casNumberCol);
+		if (showInventoryCasNumberColumn !== false) cols.push(casNumberCol);
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
 		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
@@ -323,6 +330,7 @@ function App() {
 		includeGuestFeedbackInNotes,
 		guestFeedbackAggregateNote,
 		showInventoryLabelColumn,
+		showInventoryCasNumberColumn,
 		showInventoryMaterialNatureColumn,
 		showInventoryCategoryNameColumn,
 		showInventoryNoteTypeColumn,

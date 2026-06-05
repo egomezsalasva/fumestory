@@ -123,6 +123,22 @@ function RouteComponent() {
 									<input
 										type="checkbox"
 										className="mr-2"
+										checked={settings?.inventory_columns.cas_number ?? true}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												inventory_columns: { cas_number: e.target.checked },
+											});
+										}}
+									/>
+									Show CAS Number Column
+								</label>
+							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
 										checked={
 											settings?.inventory_columns.material_nature ?? true
 										}
