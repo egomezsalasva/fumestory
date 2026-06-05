@@ -23,6 +23,7 @@ export type UserSettingsJson = {
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
 	raw_material_agent_collapsed?: boolean;
+	scent_blind_test_enabled?: boolean;
 };
 
 export type UserSettingsEffective = {
@@ -32,6 +33,7 @@ export type UserSettingsEffective = {
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
 	raw_material_agent_collapsed: boolean;
+	scent_blind_test_enabled: boolean;
 };
 
 export type UserSettingsRow = {
@@ -55,6 +57,7 @@ export const patchUserSettingsSchema = z
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
 		raw_material_agent_collapsed: z.boolean().optional(),
+		scent_blind_test_enabled: z.boolean().optional(),
 	})
 	.refine(
 		(d) => {
@@ -64,6 +67,7 @@ export const patchUserSettingsSchema = z
 				return true;
 			if (typeof d.composition_agent_collapsed === "boolean") return true;
 			if (typeof d.raw_material_agent_collapsed === "boolean") return true;
+			if (d.scent_blind_test_enabled !== undefined) return true;
 
 			const ic = d.inventory_columns;
 			if (!ic) return false;
@@ -71,7 +75,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, and/or at least one inventory column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory column flag",
 		},
 	);
 
@@ -120,6 +124,9 @@ export function parseUserSettingsJson(
 	if (typeof o.raw_material_agent_collapsed === "boolean") {
 		out.raw_material_agent_collapsed = o.raw_material_agent_collapsed;
 	}
+	if (typeof o.scent_blind_test_enabled === "boolean") {
+		out.scent_blind_test_enabled = o.scent_blind_test_enabled;
+	}
 	const cols = parseInventoryColumnsJson(o.inventory_columns);
 	if (cols) {
 		out.inventory_columns = cols;
@@ -165,6 +172,7 @@ export function effectiveUserSettings(
 			stored.hide_raw_materials_without_available_dilutions === true,
 		composition_agent_collapsed: stored.composition_agent_collapsed === true,
 		raw_material_agent_collapsed: stored.raw_material_agent_collapsed === true,
+		scent_blind_test_enabled: stored.scent_blind_test_enabled === true,
 	};
 }
 
@@ -205,6 +213,9 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.raw_material_agent_collapsed === "boolean") {
 		merged.raw_material_agent_collapsed = patch.raw_material_agent_collapsed;
+	}
+	if (typeof patch.scent_blind_test_enabled === "boolean") {
+		merged.scent_blind_test_enabled = patch.scent_blind_test_enabled;
 	}
 	return merged;
 }

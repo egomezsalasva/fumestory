@@ -1,5 +1,4 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import Header from "@/components/Header";
 import { SignedIn } from "@neondatabase/neon-js/auth/react/ui";
 import SideNav from "@/components/sidenav/SideNav";
 

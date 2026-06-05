@@ -1,7 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import SuccessMessage from "@/components/SuccessMessage";
 import styles from "@/components/Form.module.css";
@@ -58,6 +65,11 @@ function buildDilutionOptions(
 }
 
 function ScentBlindTest() {
+	const navigate = useNavigate();
+	const [scentBlindTestAllowed, setScentBlindTestAllowed] = useState<
+		boolean | null
+	>(null);
+
 	const [step, setStep] = useState<Step>("select");
 	const [options, setOptions] = useState<DilutionOption[]>([]);
 	const [loadOptionsError, setLoadOptionsError] = useState("");
@@ -75,6 +87,40 @@ function ScentBlindTest() {
 		correct: number;
 		total: number;
 	} | null>(null);
+
+	// Client-only: session must be ready; beforeLoad/SSR ran too early for authedFetch.
+	useLayoutEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as {
+					data?: UserSettingsEffective;
+				};
+				if (cancelled) return;
+				if (!res.ok || !json.data?.scent_blind_test_enabled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+					return;
+				}
+				setScentBlindTestAllowed(true);
+			} catch {
+				if (!cancelled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+				}
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [navigate]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -208,6 +254,14 @@ function ScentBlindTest() {
 		}
 	};
 
+	if (scentBlindTestAllowed !== true) {
+		return (
+			<DashboardLayout title="Scent Blind Test">
+				<></>
+			</DashboardLayout>
+		);
+	}
+
 	return (
 		<DashboardLayout
 			title="Scent Blind Test"
@@ -306,7 +360,7 @@ function ScentBlindTest() {
 								order).
 							</p>
 							<ul className="space-y-4">
-								{testRows.map((row, index) => {
+								{testRows.map((row) => {
 									const matched = matchedByDilutionId[row.dilutionId];
 									return (
 										<li

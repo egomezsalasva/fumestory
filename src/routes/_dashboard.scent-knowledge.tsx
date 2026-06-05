@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import type { Dilution } from "./api.dilutions";
 import type { DilutionBlindTestStats } from "./api.scent-blind-tests";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { UserSettingsEffective } from "@/utils/user-settings";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -44,12 +45,51 @@ function resolveDilutionMeta(
 }
 
 function ScentKnowledge() {
+	const navigate = useNavigate();
+	const [scentBlindTestAllowed, setScentBlindTestAllowed] = useState<
+		boolean | null
+	>(null);
+
 	const [stats, setStats] = useState<DilutionBlindTestStats[]>([]);
 	const [dilutions, setDilutions] = useState<Dilution[]>([]);
 	const [materials, setMaterials] = useState<{ id: number; name: string }[]>(
 		[],
 	);
 	const [loading, setLoading] = useState(true);
+
+	// Client-only: session must be ready; beforeLoad/SSR ran too early for authedFetch.
+	useLayoutEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as {
+					data?: UserSettingsEffective;
+				};
+				if (cancelled) return;
+				if (!res.ok || !json.data?.scent_blind_test_enabled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+					return;
+				}
+				setScentBlindTestAllowed(true);
+			} catch {
+				if (!cancelled) {
+					navigate({
+						to: "/project-settings",
+						hash: "add-on-features",
+						replace: true,
+					});
+				}
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [navigate]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -143,6 +183,14 @@ function ScentKnowledge() {
 				params.value != null ? `${params.value}%` : "—",
 		},
 	];
+
+	if (scentBlindTestAllowed !== true) {
+		return (
+			<DashboardLayout title="Scent Knowledge">
+				<></>
+			</DashboardLayout>
+		);
+	}
 
 	return (
 		<DashboardLayout

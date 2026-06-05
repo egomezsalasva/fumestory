@@ -372,12 +372,22 @@ function RouteComponent() {
 								Guest Feedback
 							</label>
 						</li>
-						{/* <li>
-							<label>
-								<input type="checkbox" className="mr-2" />
-								Blind Scent Test
+						<li>
+							<label className="inline-flex items-center text-slate-200 cursor-pointer">
+								<input
+									type="checkbox"
+									className="mr-2"
+									checked={settings?.scent_blind_test_enabled ?? false}
+									disabled={settings === null || saving}
+									onChange={(e) => {
+										void patchUserSettings({
+											scent_blind_test_enabled: e.target.checked,
+										});
+									}}
+								/>
+								Scent Blind Test
 							</label>
-						</li> */}
+						</li>
 					</ul>
 					{loadError && (
 						<div className="mb-4 p-3 rounded-md border border-red-500/40 bg-red-500/10 text-sm text-red-200">

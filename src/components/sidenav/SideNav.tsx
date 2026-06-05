@@ -58,6 +58,9 @@ const SideNav = () => {
 	const [guestFeedbackEnabled, setGuestFeedbackEnabled] = useState<
 		boolean | null
 	>(null);
+	const [scentBlindTestEnabled, setScentBlindTestEnabled] = useState<
+		boolean | null
+	>(null);
 
 	const loadGuestFeedbackSetting = useCallback(async () => {
 		try {
@@ -67,11 +70,14 @@ const SideNav = () => {
 			};
 			if (res.ok && json.data) {
 				setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
+				setScentBlindTestEnabled(json.data.scent_blind_test_enabled);
 			} else {
 				setGuestFeedbackEnabled(false);
+				setScentBlindTestEnabled(false);
 			}
 		} catch {
 			setGuestFeedbackEnabled(false);
+			setScentBlindTestEnabled(false);
 		}
 	}, []);
 
@@ -181,21 +187,25 @@ const SideNav = () => {
 							)}
 						</div>
 					</div>
-					<div className={styles.navBodySection}>
-						<div className={styles.navBodySectionTitle}>LEARNING</div>
-						<div className={styles.navBodySectionItems}>
-							<NavBodySectionItem
-								icon={<TableIcon />}
-								to="/scent-knowledge"
-								title="Scent Knowledge"
-							/>
-							<NavBodySectionItem
-								icon={<BoxIcon />}
-								to="/scent-blind-test"
-								title="Scent Test"
-							/>
+					{scentBlindTestEnabled === true && (
+						<div className={styles.navBodySection}>
+							<div className={styles.navBodySectionTitle}>LEARNING</div>
+							<div className={styles.navBodySectionItems}>
+								<NavBodySectionItem
+									icon={<TableIcon />}
+									to="/scent-knowledge"
+									title="Scent Knowledge"
+									addOnPill
+								/>
+								<NavBodySectionItem
+									icon={<BoxIcon />}
+									to="/scent-blind-test"
+									title="Scent Test"
+									addOnPill
+								/>
+							</div>
 						</div>
-					</div>
+					)}
 					<div className={styles.navBodySection}>
 						<div className={styles.navBodySectionTitle}>PROJECT</div>
 						<div className={styles.navBodySectionItems}>

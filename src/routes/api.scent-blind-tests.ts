@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import {
+	effectiveUserSettings,
+	parseUserSettingsJson,
+	type UserSettingsRow,
+} from "@/utils/user-settings";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
@@ -71,6 +76,28 @@ export const Route = createFileRoute("/api/scent-blind-tests")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
+
+					const settingsTx = await client.transaction((txn) => [
+						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+							currentUserId,
+						]),
+						txn.query(`SELECT settings FROM user_settings WHERE user_id = $1`, [
+							currentUserId,
+						]),
+					]);
+					const settingsRows = settingsTx[1] as UserSettingsRow[];
+					const storedSettings = parseUserSettingsJson(
+						settingsRows[0]?.settings,
+					);
+					if (!effectiveUserSettings(storedSettings).scent_blind_test_enabled) {
+						return jsonResponse(
+							{
+								error:
+									"Scent blind test is turned off in Project Settings → Add-on Features",
+							},
+							403,
+						);
+					}
 
 					const body = (await request.json()) as { items?: PostItem[] };
 					const items = body.items;
