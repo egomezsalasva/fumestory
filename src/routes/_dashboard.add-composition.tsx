@@ -135,6 +135,7 @@ function AddComposition() {
 		if (formPrefill) {
 			setType(formPrefill.type);
 			setName(formPrefill.suggestedName);
+			setLabel(formPrefill.suggestedLabel);
 		}
 
 		setPrefillIngredients(nextIngredients);

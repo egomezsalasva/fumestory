@@ -17,6 +17,7 @@ import {
 	formatAvailableDilutionsForPrompt,
 	getAvailableDilutions,
 } from "@/agent/tools/getAvailableDilutions";
+import { getExistingBottleLabels } from "@/agent/tools/getExistingBottleLabels";
 import {
 	createInventoryGuidedFormulaProposalSchema,
 	inventoryGuidedFormulaProposalSchema,
@@ -86,6 +87,39 @@ const reviewFormulaChoices = (
 	options.push({ id: COMPOSITION_CHOICE.START_OVER, label: "Start over" });
 
 	return choices(options);
+};
+
+const buildReviewFormulaResponse = async (
+	userId: string,
+	state: CompositionConversationState,
+	overrides: {
+		reply?: string;
+		proposal?: SuggestAnyFormulaProposal | InventoryGuidedFormulaProposal;
+		inventoryOnlyTotalWeight?: string;
+	} = {},
+): Promise<ChatResponse> => {
+	const existingLabels = await getExistingBottleLabels(userId);
+	const formPrefill = buildCompositionFormPrefill(state, existingLabels);
+
+	return {
+		success: true,
+		reply:
+			overrides.reply ??
+			(state.inventoryMode === "inventory_only"
+				? "Formula generated. Apply it to the form or start over."
+				: "Formula generated. Choose Start over to generate another one."),
+		interaction: reviewFormulaChoices(state),
+		...(overrides.proposal ? { proposal: overrides.proposal } : {}),
+		...(state.inventoryMode === "inventory_only" &&
+		state.inventoryOnlyTotalWeight
+			? {
+					inventoryOnlyTotalWeight:
+						overrides.inventoryOnlyTotalWeight ??
+						state.inventoryOnlyTotalWeight,
+				}
+			: {}),
+		...(formPrefill ? { formPrefill } : {}),
+	};
 };
 
 const questionFor = (state: CompositionConversationState): ChatResponse => {
@@ -173,19 +207,6 @@ const questionFor = (state: CompositionConversationState): ChatResponse => {
 					"Before I generate the inventory-only formula, what total weight do you want? (e.g. 5g)",
 				expectWeightGrams: true,
 			};
-
-		case "review_formula": {
-			const formPrefill = buildCompositionFormPrefill(state);
-			return {
-				success: true,
-				reply:
-					state.inventoryMode === "inventory_only"
-						? "Formula generated. Apply it to the form or start over."
-						: "Formula generated. Choose Start over to generate another one.",
-				interaction: reviewFormulaChoices(state),
-				...(formPrefill ? { formPrefill } : {}),
-			};
-		}
 	}
 
 	return {
@@ -546,22 +567,13 @@ const generateReviewFormulaResponse = async (
 			}
 		}
 
-		const formPrefill = buildCompositionFormPrefill(state);
+		const response = await buildReviewFormulaResponse(userId, state, {
+			reply,
+			proposal: generated.proposal,
+			inventoryOnlyTotalWeight: state.inventoryOnlyTotalWeight,
+		});
 
-		return jsonResponse(
-			{
-				success: true,
-				reply,
-				...(generated.proposal ? { proposal: generated.proposal } : {}),
-				...(state.inventoryMode === "inventory_only" &&
-				state.inventoryOnlyTotalWeight
-					? { inventoryOnlyTotalWeight: state.inventoryOnlyTotalWeight }
-					: {}),
-				...(formPrefill ? { formPrefill } : {}),
-				interaction: reviewFormulaChoices(state),
-			},
-			200,
-		);
+		return jsonResponse(response, 200);
 	} catch (error) {
 		console.error("[composition-chat] formula generation failed:", error);
 		return jsonResponse(
@@ -788,7 +800,8 @@ export const Route = createFileRoute("/api/agent/composition-chat")({
 					}
 
 					case "review_formula": {
-						return jsonResponse(questionFor(state), 200);
+						const response = await buildReviewFormulaResponse(userId, state);
+						return jsonResponse(response, 200);
 					}
 				}
 
