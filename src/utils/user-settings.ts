@@ -35,6 +35,7 @@ export type UserSettingsJson = {
 	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
 	compositions_columns?: CompositionsColumnsJson;
+	cas_number_enabled?: boolean;
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
 	raw_material_agent_collapsed?: boolean;
@@ -46,6 +47,7 @@ export type UserSettingsEffective = {
 	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
 	compositions_columns: CompositionsColumnsEffective;
+	cas_number_enabled: boolean;
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
 	raw_material_agent_collapsed: boolean;
@@ -76,6 +78,7 @@ export const patchUserSettingsSchema = z
 		guest_feedback_aggregate_note: z.boolean().optional(),
 		inventory_columns: inventoryColumnsPatchSchema.optional(),
 		compositions_columns: compositionsColumnsPatchSchema.optional(),
+		cas_number_enabled: z.boolean().optional(),
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
 		raw_material_agent_collapsed: z.boolean().optional(),
@@ -85,6 +88,7 @@ export const patchUserSettingsSchema = z
 		(d) => {
 			if (d.guest_feedback_enabled !== undefined) return true;
 			if (typeof d.guest_feedback_aggregate_note === "boolean") return true;
+			if (typeof d.cas_number_enabled === "boolean") return true;
 			if (typeof d.hide_raw_materials_without_available_dilutions === "boolean")
 				return true;
 			if (typeof d.composition_agent_collapsed === "boolean") return true;
@@ -111,7 +115,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, cas_number_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -165,6 +169,9 @@ export function parseUserSettingsJson(
 	}
 	if (typeof o.guest_feedback_aggregate_note === "boolean") {
 		out.guest_feedback_aggregate_note = o.guest_feedback_aggregate_note;
+	}
+	if (typeof o.cas_number_enabled === "boolean") {
+		out.cas_number_enabled = o.cas_number_enabled;
 	}
 	if (typeof o.hide_raw_materials_without_available_dilutions === "boolean") {
 		out.hide_raw_materials_without_available_dilutions =
@@ -236,7 +243,11 @@ export function effectiveUserSettings(
 	stored: UserSettingsJson,
 ): UserSettingsEffective {
 	const guestOn = stored.guest_feedback_enabled === true;
+	const casOn = stored.cas_number_enabled === true;
 	const inventory_columns = effectiveInventoryColumns(stored.inventory_columns);
+	if (!casOn) {
+		inventory_columns.cas_number = false;
+	}
 	const compositions_columns = effectiveCompositionsColumns(
 		stored.compositions_columns,
 	);
@@ -246,6 +257,7 @@ export function effectiveUserSettings(
 			guestOn && stored.guest_feedback_aggregate_note !== false,
 		inventory_columns,
 		compositions_columns,
+		cas_number_enabled: casOn,
 		hide_raw_materials_without_available_dilutions:
 			inventory_columns.available_dilutions === true &&
 			stored.hide_raw_materials_without_available_dilutions === true,
@@ -265,6 +277,9 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.guest_feedback_aggregate_note === "boolean") {
 		merged.guest_feedback_aggregate_note = patch.guest_feedback_aggregate_note;
+	}
+	if (typeof patch.cas_number_enabled === "boolean") {
+		merged.cas_number_enabled = patch.cas_number_enabled;
 	}
 	if (
 		patch.inventory_columns !== undefined &&

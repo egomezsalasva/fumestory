@@ -104,7 +104,7 @@ function App() {
 					setGuestFeedbackAggregateNote(true);
 					setHideRawMaterialsWithoutAvailableDilutions(false);
 					setShowInventoryLabelColumn(true);
-					setShowInventoryCasNumberColumn(true);
+					setShowInventoryCasNumberColumn(false);
 					setShowInventoryMaterialNatureColumn(true);
 					setShowInventoryCategoryNameColumn(true);
 					setShowInventoryNoteTypeColumn(true);
@@ -117,7 +117,7 @@ function App() {
 				setGuestFeedbackAggregateNote(true);
 				setHideRawMaterialsWithoutAvailableDilutions(false);
 				setShowInventoryLabelColumn(true);
-				setShowInventoryCasNumberColumn(true);
+				setShowInventoryCasNumberColumn(false);
 				setShowInventoryMaterialNatureColumn(true);
 				setShowInventoryCategoryNameColumn(true);
 				setShowInventoryNoteTypeColumn(true);

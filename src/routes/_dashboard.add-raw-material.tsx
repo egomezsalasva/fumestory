@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
@@ -13,6 +13,10 @@ import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 import { nameFromAgentProposal, toTitleCaseWords } from "@/utils/display-names";
+import {
+	USER_SETTINGS_UPDATED_EVENT,
+	type UserSettingsEffective,
+} from "@/utils/user-settings";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -26,9 +30,10 @@ export const Route = createFileRoute("/_dashboard/add-raw-material")({
 
 type UserSettingsResponse = {
 	success?: boolean;
-	data?: {
-		raw_material_agent_collapsed?: boolean;
-	};
+	data?: Pick<
+		UserSettingsEffective,
+		"raw_material_agent_collapsed" | "cas_number_enabled"
+	>;
 	error?: string;
 };
 
@@ -50,38 +55,51 @@ function AddRawMaterial() {
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
+	const [casNumberEnabled, setCasNumberEnabled] = useState<boolean | null>(
+		null,
+	);
 
-	useEffect(() => {
+	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
 
-		const loadSidebarPreference = async () => {
+		const run = async () => {
 			try {
 				const res = await authedFetch("/api/user-settings");
 				const json = (await res.json()) as UserSettingsResponse;
 
-				const collapsed =
-					res.ok && json?.data?.raw_material_agent_collapsed === true;
-
 				if (!cancelled) {
-					setIsSidebarCollapsed(collapsed);
+					setIsSidebarCollapsed(
+						res.ok && json?.data?.raw_material_agent_collapsed === true,
+					);
+					setCasNumberEnabled(
+						res.ok ? (json.data?.cas_number_enabled ?? false) : false,
+					);
 				}
 			} catch {
-				// Fallback to expanded if settings fetch fails.
 				if (!cancelled) {
 					setIsSidebarCollapsed(false);
+					setCasNumberEnabled(false);
 				}
 			}
 		};
 
-		void loadSidebarPreference();
+		void run();
 
 		return () => {
 			cancelled = true;
 		};
 	}, []);
 
+	useEffect(() => {
+		const cleanup = loadUserSettings();
+		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		return () => {
+			cleanup();
+			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		};
+	}, [loadUserSettings]);
+
 	const handleToggleSidebar = async () => {
-		// Guard for edge case while still loading.
 		if (isSidebarCollapsed === null) return;
 
 		const next = !isSidebarCollapsed;
@@ -104,7 +122,7 @@ function AddRawMaterial() {
 		await authedFetch("/api/user-settings", {
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ raw_material_agent_collapsed: true }), // or raw_material...
+			body: JSON.stringify({ raw_material_agent_collapsed: true }),
 		});
 	};
 
@@ -115,13 +133,17 @@ function AddRawMaterial() {
 		setNoteType(proposal.noteType);
 		setNotes(proposal.notes.map((n) => n.trim().toLowerCase()).filter(Boolean));
 
-		const normalizedCas = normalizeCasNumber(proposal.casNumber);
 		let casError = "";
-		if (!isValidCasNumber(normalizedCas)) {
-			casError = "CAS number must look like 6790-58-5";
-			setCasNumber("");
+		if (casNumberEnabled) {
+			const normalizedCas = normalizeCasNumber(proposal.casNumber);
+			if (!isValidCasNumber(normalizedCas)) {
+				casError = "CAS number must look like 6790-58-5";
+				setCasNumber("");
+			} else {
+				setCasNumber(normalizedCas ?? "");
+			}
 		} else {
-			setCasNumber(normalizedCas ?? "");
+			setCasNumber("");
 		}
 
 		try {
@@ -170,11 +192,15 @@ function AddRawMaterial() {
 			setError("Name must be at least 3 characters long");
 			return;
 		}
-		const normalizedCas = normalizeCasNumber(casNumber);
-		if (!isValidCasNumber(normalizedCas)) {
+
+		const normalizedCas = casNumberEnabled
+			? normalizeCasNumber(casNumber)
+			: null;
+		if (casNumberEnabled && !isValidCasNumber(normalizedCas)) {
 			setError("CAS number must look like 6790-58-5");
 			return;
 		}
+
 		if (!selectedCategoryId) {
 			setError("Category is required");
 			return;
@@ -218,7 +244,6 @@ function AddRawMaterial() {
 				return;
 			}
 
-			// Success reset
 			setName("");
 			setLabel("");
 			setCasNumber("");
@@ -228,7 +253,7 @@ function AddRawMaterial() {
 			setMaterialNature("");
 			setNotes([]);
 			setSuccessMessage("Raw material added successfully!");
-		} catch (error) {
+		} catch {
 			setError(
 				"Network error: Failed to create raw material. Please try again.",
 			);
@@ -236,13 +261,13 @@ function AddRawMaterial() {
 		}
 	};
 
-	// Render shell while loading settings to avoid sidebar flicker.
-	if (isSidebarCollapsed === null) {
+	if (isSidebarCollapsed === null || casNumberEnabled === null) {
 		return (
 			<DashboardLayout
 				title="Raw Materials Inventory / Add Raw Material"
 				backButton={{ to: "/inventory" }}
 				agentToggle={true}
+				showCogButton={true}
 			>
 				<div className="dashboardSplitLayout" />
 			</DashboardLayout>
@@ -255,6 +280,7 @@ function AddRawMaterial() {
 			backButton={{ to: "/inventory" }}
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
+			showCogButton={true}
 		>
 			<div
 				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
@@ -265,7 +291,6 @@ function AddRawMaterial() {
 						className={`${styles.formContainer} space-y-6 bg-[#10151C] py-8 px-6 rounded-lg border border-[#464859]`}
 					>
 						<div className="space-y-4">
-							{/* Name Field */}
 							<TextInput
 								label="Name"
 								value={name}
@@ -277,18 +302,18 @@ function AddRawMaterial() {
 								required
 							/>
 
-							{/* CAS Number Field */}
-							<TextInput
-								label="CAS Number"
-								value={casNumber}
-								onChange={(value) => {
-									setCasNumber(value);
-									setError("");
-								}}
-								placeholder="e.g. 6790-58-5"
-							/>
+							{casNumberEnabled && (
+								<TextInput
+									label="CAS Number"
+									value={casNumber}
+									onChange={(value) => {
+										setCasNumber(value);
+										setError("");
+									}}
+									placeholder="e.g. 6790-58-5"
+								/>
+							)}
 
-							{/* Label Field */}
 							<LabelInput
 								label="Bottle Label"
 								value={label}
@@ -299,7 +324,6 @@ function AddRawMaterial() {
 								placeholder="e.g. LB1"
 							/>
 
-							{/* Material Nature Field */}
 							<Select
 								label="Material Nature"
 								value={materialNature}
@@ -315,7 +339,6 @@ function AddRawMaterial() {
 								required
 							/>
 
-							{/* Note Type Field */}
 							<Select
 								label="Note Type"
 								value={noteType}
@@ -332,7 +355,6 @@ function AddRawMaterial() {
 								required
 							/>
 
-							{/* Primary Category Field with Autocomplete */}
 							<CategoryAutocomplete
 								label="Primary Category"
 								value={categorySearch}
@@ -344,7 +366,6 @@ function AddRawMaterial() {
 								required
 							/>
 
-							{/* Notes Field */}
 							<NotesAutocomplete
 								label="Notes *"
 								selectedNotes={notes}
@@ -354,7 +375,6 @@ function AddRawMaterial() {
 								}}
 							/>
 
-							{/* Submit Button */}
 							<div className={styles.formSubmitButtonContainer}>
 								<button type="submit" className={styles.formSubmitButton}>
 									+ Add Raw Material
@@ -369,7 +389,6 @@ function AddRawMaterial() {
 								/>
 							)}
 
-							{/* Error Message */}
 							{error && (
 								<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
 									{error}

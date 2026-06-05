@@ -125,6 +125,34 @@ function RouteComponent() {
 							Raw Materials Settings
 						</h3>
 						<div className="h-px w-full bg-slate-600 my-2"></div>
+						<ul className="mt-3 space-y-2">
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.cas_number_enabled ?? false}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											const enabled = e.target.checked;
+											void patchUserSettings(
+												enabled
+													? {
+															cas_number_enabled: true,
+															inventory_columns: { cas_number: true },
+														}
+													: {
+															cas_number_enabled: false,
+															inventory_columns: { cas_number: false },
+														},
+											);
+										}}
+									/>
+									Enable CAS Number
+								</label>
+							</li>
+						</ul>
+
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
 							Raw Materials Table Settings
 						</h4>
@@ -147,12 +175,22 @@ function RouteComponent() {
 								</label>
 							</li>
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null && settings.cas_number_enabled === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
 										checked={settings?.inventory_columns.cas_number ?? true}
-										disabled={settings === null || saving}
+										disabled={
+											settings === null ||
+											saving ||
+											settings?.cas_number_enabled === false
+										}
 										onChange={(e) => {
 											void patchUserSettings({
 												inventory_columns: { cas_number: e.target.checked },
