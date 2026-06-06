@@ -17,6 +17,7 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import { HEADER_HINT_IDS } from "@/utils/toast-settings";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -308,6 +309,11 @@ function AddRawMaterial() {
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
 			showCogButton={true}
+			headerHints={[
+				HEADER_HINT_IDS.CAS_NUMBER,
+				HEADER_HINT_IDS.RAW_MATERIALS_BOTTLE_LABEL,
+				HEADER_HINT_IDS.MATERIAL_NATURE,
+			]}
 		>
 			<div
 				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}

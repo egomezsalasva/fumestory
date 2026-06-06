@@ -79,3 +79,51 @@
 	border: 1px solid #fff;
 	border-radius: 50%;
 }
+
+.headerHints {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.headerHint {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.375rem 0.625rem;
+	min-height: 2rem;
+	background: #1e293b;
+	border: 1px solid #475569;
+	border-radius: 0.5rem;
+}
+
+.headerHintMessageBold {
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: #f1f5f9;
+}
+
+.headerHintMessage {
+	margin: 0;
+	font-family: "Aspekta", sans-serif;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: #f1f5f9;
+}
+
+.headerHintDismiss {
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	color: #cbd5e1;
+	font-size: 1.125rem;
+	line-height: 1;
+	padding: 0 0.25rem;
+	border-radius: 0.25rem;
+	border: 1px solid #475569;
+}
+
+.headerHintDismiss:hover {
+	color: #ffffff;
+}

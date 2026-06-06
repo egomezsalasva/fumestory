@@ -5,6 +5,8 @@ import BackArrowIcon from "./svgs/BackArrowIcon";
 import PlusIcon from "./svgs/PlusIcon";
 import CogIcon from "../svgs/CogIcon";
 import AgentIcon from "./svgs/AgentIcon";
+import { HeaderHints } from "./HeaderHints";
+import type { HeaderHintId } from "@/utils/toast-settings";
 
 type BackButtonConfig = {
 	to: string;
@@ -17,6 +19,7 @@ type DashboardLayoutProps = {
 	showTourButton?: boolean;
 	plusButton?: BackButtonConfig;
 	showCogButton?: boolean;
+	headerHints?: HeaderHintId[];
 	backButton?: BackButtonConfig;
 	agentToggle?: boolean;
 	onAgentToggleClick?: () => void;
@@ -40,6 +43,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 	showTourButton = false,
 	plusButton,
 	showCogButton = false,
+	headerHints,
 	backButton,
 	agentToggle = false,
 	onAgentToggleClick,
@@ -53,6 +57,9 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 						<h1>{title}</h1>
 					</div>
 					<div className={styles.headerRight}>
+						{headerHints && headerHints.length > 0 && (
+							<HeaderHints hintIds={headerHints} />
+						)}
 						{showCogButton && (
 							<Link to="/project-settings">
 								<CogIcon />

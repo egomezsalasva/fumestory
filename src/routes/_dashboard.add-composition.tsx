@@ -18,6 +18,7 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import { HEADER_HINT_IDS } from "@/utils/toast-settings";
 
 type SuggestAnyFormulaProposal = z.infer<
 	typeof suggestAnyFormulaProposalSchema
@@ -236,6 +237,7 @@ function AddComposition() {
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
 			showCogButton={true}
+			headerHints={[HEADER_HINT_IDS.COMPOSITION_BOTTLE_LABEL]}
 		>
 			<div
 				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
