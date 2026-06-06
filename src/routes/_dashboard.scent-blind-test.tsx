@@ -291,31 +291,33 @@ function ScentBlindTest() {
 							</p>
 
 							{options.length > 0 && (
-								<div className="flex flex-wrap gap-2 mb-4">
+								<div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+									<div className="flex flex-wrap gap-2">
+										<button
+											type="button"
+											className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2`}
+											onClick={selectAll}
+										>
+											Select all
+										</button>
+										{uniquePercentages.map((percentage) => (
+											<button
+												key={percentage}
+												type="button"
+												className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2`}
+												onClick={() => selectByPercentage(percentage)}
+											>
+												{percentage}%
+											</button>
+										))}
+									</div>
 									<button
 										type="button"
-										className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2`}
-										onClick={selectAll}
-									>
-										Select all
-									</button>
-									<button
-										type="button"
-										className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2`}
+										className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2 shrink-0`}
 										onClick={clearSelection}
 									>
 										Clear
 									</button>
-									{uniquePercentages.map((percentage) => (
-										<button
-											key={percentage}
-											type="button"
-											className={`${styles.feedbackNoRatingButton} ${styles.feedbackNoRatingButtonInactive} inline-flex items-center justify-center h-7 py-0 px-2`}
-											onClick={() => selectByPercentage(percentage)}
-										>
-											{percentage}%
-										</button>
-									))}
 								</div>
 							)}
 
