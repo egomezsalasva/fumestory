@@ -105,7 +105,7 @@ function App() {
 					setHideRawMaterialsWithoutAvailableDilutions(false);
 					setShowInventoryLabelColumn(false);
 					setShowInventoryCasNumberColumn(false);
-					setShowInventoryMaterialNatureColumn(true);
+					setShowInventoryMaterialNatureColumn(false);
 					setShowInventoryCategoryNameColumn(true);
 					setShowInventoryNoteTypeColumn(true);
 					setShowInventoryNotesDisplayColumn(true);
@@ -118,7 +118,7 @@ function App() {
 				setHideRawMaterialsWithoutAvailableDilutions(false);
 				setShowInventoryLabelColumn(false);
 				setShowInventoryCasNumberColumn(false);
-				setShowInventoryMaterialNatureColumn(true);
+				setShowInventoryMaterialNatureColumn(false);
 				setShowInventoryCategoryNameColumn(true);
 				setShowInventoryNoteTypeColumn(true);
 				setShowInventoryNotesDisplayColumn(true);
@@ -175,6 +175,9 @@ function App() {
 			field: "material_nature",
 			headerName: "Material Nature",
 			width: 136,
+			valueFormatter: (
+				params: ValueFormatterParams<RawMaterial, string | null>,
+			) => params.value ?? "—",
 		};
 
 		const categoryNameCol: ColDef<RawMaterial> = {

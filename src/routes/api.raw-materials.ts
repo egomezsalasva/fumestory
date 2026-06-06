@@ -18,7 +18,7 @@ export type RawMaterial = {
 	label: string | null;
 	name: string;
 	category_id: number;
-	material_nature: string;
+	material_nature: string | null;
 	cas_number: string | null;
 	category_name: string;
 	note_type: string;
@@ -178,15 +178,22 @@ export const Route = createFileRoute("/api/raw-materials")({
 						);
 					}
 
+					let materialNature: string | null = null;
 					if (
-						!material_nature ||
-						typeof material_nature !== "string" ||
-						!["Natural", "Synthetic"].includes(material_nature)
+						material_nature !== null &&
+						material_nature !== undefined &&
+						material_nature !== ""
 					) {
-						return jsonResponse(
-							{ error: "Material nature must be Natural or Synthetic" },
-							400,
-						);
+						if (
+							typeof material_nature !== "string" ||
+							!["Natural", "Synthetic"].includes(material_nature)
+						) {
+							return jsonResponse(
+								{ error: "Material nature must be Natural or Synthetic" },
+								400,
+							);
+						}
+						materialNature = material_nature;
 					}
 
 					const validNotes: string[] = [];
@@ -219,7 +226,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 								name.trim(),
 								category_id || null,
 								note_type || null,
-								material_nature,
+								materialNature,
 								casNumber,
 								currentUserId,
 							],

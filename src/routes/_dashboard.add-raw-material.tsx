@@ -35,6 +35,7 @@ type UserSettingsResponse = {
 		| "raw_material_agent_collapsed"
 		| "bottle_label_enabled"
 		| "cas_number_enabled"
+		| "material_nature_enabled"
 	>;
 	error?: string;
 };
@@ -63,6 +64,9 @@ function AddRawMaterial() {
 	const [casNumberEnabled, setCasNumberEnabled] = useState<boolean | null>(
 		null,
 	);
+	const [materialNatureEnabled, setMaterialNatureEnabled] = useState<
+		boolean | null
+	>(null);
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -82,12 +86,16 @@ function AddRawMaterial() {
 					setCasNumberEnabled(
 						res.ok ? (json.data?.cas_number_enabled ?? false) : false,
 					);
+					setMaterialNatureEnabled(
+						res.ok ? (json.data?.material_nature_enabled ?? false) : false,
+					);
 				}
 			} catch {
 				if (!cancelled) {
 					setIsSidebarCollapsed(false);
 					setBottleLabelEnabled(false);
 					setCasNumberEnabled(false);
+					setMaterialNatureEnabled(false);
 				}
 			}
 		};
@@ -142,7 +150,11 @@ function AddRawMaterial() {
 			setLabel("");
 		}
 		setName(nameFromAgentProposal(proposal.nameAsEntered));
-		setMaterialNature(proposal.materialNature);
+		if (materialNatureEnabled) {
+			setMaterialNature(proposal.materialNature);
+		} else {
+			setMaterialNature("");
+		}
 		setNoteType(proposal.noteType);
 		setNotes(proposal.notes.map((n) => n.trim().toLowerCase()).filter(Boolean));
 
@@ -222,10 +234,6 @@ function AddRawMaterial() {
 			setError("Note type is required");
 			return;
 		}
-		if (!materialNature) {
-			setError("Material nature is required");
-			return;
-		}
 		if (notes.length === 0) {
 			setError("At least one note is required");
 			return;
@@ -245,7 +253,8 @@ function AddRawMaterial() {
 					cas_number: normalizedCas,
 					category_id: selectedCategoryId,
 					note_type: noteType,
-					material_nature: materialNature,
+					material_nature:
+						materialNatureEnabled && materialNature ? materialNature : null,
 					notes,
 				}),
 			});
@@ -277,7 +286,8 @@ function AddRawMaterial() {
 	if (
 		isSidebarCollapsed === null ||
 		bottleLabelEnabled === null ||
-		casNumberEnabled === null
+		casNumberEnabled === null ||
+		materialNatureEnabled === null
 	) {
 		return (
 			<DashboardLayout
@@ -343,20 +353,21 @@ function AddRawMaterial() {
 								/>
 							)}
 
-							<Select
-								label="Material Nature"
-								value={materialNature}
-								onChange={(value) => {
-									setMaterialNature(value);
-									setError("");
-								}}
-								options={[
-									{ value: "Natural", label: "Natural" },
-									{ value: "Synthetic", label: "Synthetic" },
-								]}
-								placeholder="Select material nature..."
-								required
-							/>
+							{materialNatureEnabled && (
+								<Select
+									label="Material Nature"
+									value={materialNature}
+									onChange={(value) => {
+										setMaterialNature(value);
+										setError("");
+									}}
+									options={[
+										{ value: "Natural", label: "Natural" },
+										{ value: "Synthetic", label: "Synthetic" },
+									]}
+									placeholder="Select material nature..."
+								/>
+							)}
 
 							<Select
 								label="Note Type"

@@ -217,6 +217,31 @@ function RouteComponent() {
 									Enable Bottle Label
 								</label>
 							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={settings?.material_nature_enabled ?? false}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											const enabled = e.target.checked;
+											void patchUserSettings(
+												enabled
+													? {
+															material_nature_enabled: true,
+															inventory_columns: { material_nature: true },
+														}
+													: {
+															material_nature_enabled: false,
+															inventory_columns: { material_nature: false },
+														},
+											);
+										}}
+									/>
+									Enable Material Nature
+								</label>
+							</li>
 						</ul>
 
 						<h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -277,14 +302,25 @@ function RouteComponent() {
 								</label>
 							</li>
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm cursor-pointer ${
+										settings !== null &&
+										settings.material_nature_enabled === false
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
 										checked={
 											settings?.inventory_columns.material_nature ?? true
 										}
-										disabled={settings === null || saving}
+										disabled={
+											settings === null ||
+											saving ||
+											settings?.material_nature_enabled === false
+										}
 										onChange={(e) => {
 											void patchUserSettings({
 												inventory_columns: {

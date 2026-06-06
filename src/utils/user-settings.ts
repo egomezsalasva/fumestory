@@ -38,6 +38,7 @@ export type UserSettingsJson = {
 	bottle_label_enabled?: boolean;
 	composition_bottle_label_enabled?: boolean;
 	cas_number_enabled?: boolean;
+	material_nature_enabled?: boolean;
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
 	raw_material_agent_collapsed?: boolean;
@@ -52,6 +53,7 @@ export type UserSettingsEffective = {
 	bottle_label_enabled: boolean;
 	composition_bottle_label_enabled: boolean;
 	cas_number_enabled: boolean;
+	material_nature_enabled: boolean;
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
 	raw_material_agent_collapsed: boolean;
@@ -85,6 +87,7 @@ export const patchUserSettingsSchema = z
 		bottle_label_enabled: z.boolean().optional(),
 		composition_bottle_label_enabled: z.boolean().optional(),
 		cas_number_enabled: z.boolean().optional(),
+		material_nature_enabled: z.boolean().optional(),
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
 		raw_material_agent_collapsed: z.boolean().optional(),
@@ -97,6 +100,7 @@ export const patchUserSettingsSchema = z
 			if (typeof d.bottle_label_enabled === "boolean") return true;
 			if (typeof d.composition_bottle_label_enabled === "boolean") return true;
 			if (typeof d.cas_number_enabled === "boolean") return true;
+			if (typeof d.material_nature_enabled === "boolean") return true;
 			if (typeof d.hide_raw_materials_without_available_dilutions === "boolean")
 				return true;
 			if (typeof d.composition_agent_collapsed === "boolean") return true;
@@ -123,7 +127,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, material_nature_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -186,6 +190,9 @@ export function parseUserSettingsJson(
 	}
 	if (typeof o.cas_number_enabled === "boolean") {
 		out.cas_number_enabled = o.cas_number_enabled;
+	}
+	if (typeof o.material_nature_enabled === "boolean") {
+		out.material_nature_enabled = o.material_nature_enabled;
 	}
 	if (typeof o.hide_raw_materials_without_available_dilutions === "boolean") {
 		out.hide_raw_materials_without_available_dilutions =
@@ -261,12 +268,16 @@ export function effectiveUserSettings(
 	const compositionBottleLabelOn =
 		stored.composition_bottle_label_enabled === true;
 	const casOn = stored.cas_number_enabled === true;
+	const materialNatureOn = stored.material_nature_enabled === true;
 	const inventory_columns = effectiveInventoryColumns(stored.inventory_columns);
 	if (!bottleLabelOn) {
 		inventory_columns.label = false;
 	}
 	if (!casOn) {
 		inventory_columns.cas_number = false;
+	}
+	if (!materialNatureOn) {
+		inventory_columns.material_nature = false;
 	}
 	const compositions_columns = effectiveCompositionsColumns(
 		stored.compositions_columns,
@@ -283,6 +294,7 @@ export function effectiveUserSettings(
 		bottle_label_enabled: bottleLabelOn,
 		composition_bottle_label_enabled: compositionBottleLabelOn,
 		cas_number_enabled: casOn,
+		material_nature_enabled: materialNatureOn,
 		hide_raw_materials_without_available_dilutions:
 			inventory_columns.available_dilutions === true &&
 			stored.hide_raw_materials_without_available_dilutions === true,
@@ -312,6 +324,9 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.cas_number_enabled === "boolean") {
 		merged.cas_number_enabled = patch.cas_number_enabled;
+	}
+	if (typeof patch.material_nature_enabled === "boolean") {
+		merged.material_nature_enabled = patch.material_nature_enabled;
 	}
 	if (
 		patch.inventory_columns !== undefined &&
