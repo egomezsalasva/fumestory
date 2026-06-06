@@ -393,7 +393,6 @@ function AddRawMaterial() {
 									setCategorySearch(toTitleCaseWords(name));
 									setError("");
 								}}
-								required
 							/>
 
 							<NotesAutocomplete
