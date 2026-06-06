@@ -17,10 +17,12 @@ import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
 import { useState, useEffect, useCallback } from "react";
 import { authedFetch } from "@/utils/authed-fetch";
+import type { DilutionBlindTestStats } from "@/routes/api.scent-blind-tests";
 import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import LockIcon from "./svgs/LockIcon";
 
 const NavBodySectionItem: React.FC<{
 	icon: React.ReactNode;
@@ -28,7 +30,17 @@ const NavBodySectionItem: React.FC<{
 	hash?: string;
 	title: string;
 	addOnPill?: boolean;
-}> = ({ icon, to, hash, title, addOnPill = false }) => {
+	disabled?: boolean;
+	disabledTooltip?: string;
+}> = ({
+	icon,
+	to,
+	hash,
+	title,
+	addOnPill = false,
+	disabled = false,
+	disabledTooltip,
+}) => {
 	const matchRoute = useMatchRoute();
 	const { location } = useRouterState();
 
@@ -39,6 +51,27 @@ const NavBodySectionItem: React.FC<{
 	const active = targetHashKey
 		? pathMatches && hashNorm(location.hash) === targetHashKey
 		: pathMatches && !hashNorm(location.hash);
+
+	if (disabled) {
+		return (
+			<div className={styles.navItemTooltipWrap}>
+				{disabledTooltip && (
+					<div className={styles.navItemTooltip} role="tooltip">
+						<LockIcon />
+						<span>{disabledTooltip}</span>
+					</div>
+				)}
+				<div
+					className={`${styles.navBodySectionItem} ${styles.navBodySectionItem_disabled}`}
+					aria-disabled="true"
+				>
+					{icon}
+					<span className={styles.navBodySectionItemTitle}>{title}</span>
+					{addOnPill && <span className={styles.addOnPill}>Add-on</span>}
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<Link
@@ -61,23 +94,78 @@ const SideNav = () => {
 	const [scentBlindTestEnabled, setScentBlindTestEnabled] = useState<
 		boolean | null
 	>(null);
+	const [hasScentTests, setHasScentTests] = useState(false);
+	const [hasRawMaterials, setHasRawMaterials] = useState(false);
+	const [hasDilutions, setHasDilutions] = useState(false);
+	const [hasCompositions, setHasCompositions] = useState(false);
 
 	const loadGuestFeedbackSetting = useCallback(async () => {
 		try {
-			const res = await authedFetch("/api/user-settings");
+			const [res, materialsRes, dilutionsRes, compositionsRes] =
+				await Promise.all([
+					authedFetch("/api/user-settings"),
+					authedFetch("/api/raw-materials"),
+					authedFetch("/api/dilutions"),
+					authedFetch("/api/compositions"),
+				]);
 			const json = (await res.json()) as {
 				data?: UserSettingsEffective;
 			};
+			const materialsJson = (await materialsRes.json()) as {
+				data?: unknown[];
+			};
+			const dilutionsJson = (await dilutionsRes.json()) as {
+				data?: unknown[];
+			};
+			const compositionsJson = (await compositionsRes.json()) as {
+				data?: unknown[];
+			};
+
+			setHasRawMaterials(
+				materialsRes.ok &&
+					Array.isArray(materialsJson.data) &&
+					materialsJson.data.length > 0,
+			);
+			setHasDilutions(
+				dilutionsRes.ok &&
+					Array.isArray(dilutionsJson.data) &&
+					dilutionsJson.data.length > 0,
+			);
+			setHasCompositions(
+				compositionsRes.ok &&
+					Array.isArray(compositionsJson.data) &&
+					compositionsJson.data.length > 0,
+			);
+
 			if (res.ok && json.data) {
 				setGuestFeedbackEnabled(json.data.guest_feedback_enabled);
 				setScentBlindTestEnabled(json.data.scent_blind_test_enabled);
+
+				if (json.data.scent_blind_test_enabled) {
+					const testRes = await authedFetch("/api/scent-blind-tests");
+					const testJson = (await testRes.json()) as {
+						data?: DilutionBlindTestStats[];
+					};
+					setHasScentTests(
+						testRes.ok &&
+							Array.isArray(testJson.data) &&
+							testJson.data.length > 0,
+					);
+				} else {
+					setHasScentTests(false);
+				}
 			} else {
 				setGuestFeedbackEnabled(false);
 				setScentBlindTestEnabled(false);
+				setHasScentTests(false);
 			}
 		} catch {
 			setGuestFeedbackEnabled(false);
 			setScentBlindTestEnabled(false);
+			setHasScentTests(false);
+			setHasRawMaterials(false);
+			setHasDilutions(false);
+			setHasCompositions(false);
 		}
 	}, []);
 
@@ -151,11 +239,15 @@ const SideNav = () => {
 								icon={<TableIcon />}
 								to="/compositions"
 								title="Compositions"
+								disabled={!hasCompositions}
+								disabledTooltip="Add a Composition first"
 							/>
 							<NavBodySectionItem
 								icon={<CompositionIcon />}
 								to="/add-composition"
 								title="Add Composition"
+								disabled={!hasDilutions}
+								disabledTooltip="Add a Dilution first"
 							/>
 						</div>
 					</div>
@@ -166,6 +258,8 @@ const SideNav = () => {
 								icon={<TableIcon />}
 								to="/inventory"
 								title="Raw Materials"
+								disabled={!hasRawMaterials}
+								disabledTooltip="Add a Raw Material first"
 							/>
 							<NavBodySectionItem
 								icon={<BoxIcon />}
@@ -176,6 +270,8 @@ const SideNav = () => {
 								icon={<LayersIcon />}
 								to="/add-dilution"
 								title="Add Dilution"
+								disabled={!hasRawMaterials}
+								disabledTooltip="Add a Raw Material first"
 							/>
 							{guestFeedbackEnabled === true && (
 								<NavBodySectionItem
@@ -183,6 +279,8 @@ const SideNav = () => {
 									to="/add-feedback"
 									title="Guest Feedback"
 									addOnPill
+									disabled={!hasDilutions}
+									disabledTooltip="Add a Dilution first"
 								/>
 							)}
 						</div>
@@ -196,12 +294,16 @@ const SideNav = () => {
 									to="/scent-knowledge"
 									title="Scent Knowledge"
 									addOnPill
+									disabled={!hasScentTests}
+									disabledTooltip="Add a Scent Test to view"
 								/>
 								<NavBodySectionItem
 									icon={<BoxIcon />}
 									to="/scent-blind-test"
 									title="Scent Test"
 									addOnPill
+									disabled={!hasDilutions}
+									disabledTooltip="Add a Dilution first"
 								/>
 							</div>
 						</div>
