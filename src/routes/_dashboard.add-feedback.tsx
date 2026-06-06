@@ -91,7 +91,7 @@ function AddFeedback() {
 					? (data.data as Dilution[])
 					: [];
 				const filtered = allDilutions.filter(
-					(d) => d.raw_material_id === rawMaterialId,
+					(d) => d.raw_material_id === rawMaterialId && d.available,
 				);
 				setAvailableDilutions(filtered);
 
