@@ -23,6 +23,8 @@ import {
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
 import LockIcon from "./svgs/LockIcon";
+import EyeIcon from "./svgs/EyeIcon";
+import PercentageIcon from "./svgs/PercentageIcon";
 
 const NavBodySectionItem: React.FC<{
 	icon: React.ReactNode;
@@ -290,17 +292,17 @@ const SideNav = () => {
 							<div className={styles.navBodySectionTitle}>LEARNING</div>
 							<div className={styles.navBodySectionItems}>
 								<NavBodySectionItem
-									icon={<TableIcon />}
+									icon={<PercentageIcon />}
 									to="/scent-knowledge"
 									title="Scent Knowledge"
 									addOnPill
 									disabled={!hasScentTests}
-									disabledTooltip="Add a Scent Test to view"
+									disabledTooltip="Add a Scent Blind Test to view"
 								/>
 								<NavBodySectionItem
-									icon={<BoxIcon />}
+									icon={<EyeIcon />}
 									to="/scent-blind-test"
-									title="Scent Test"
+									title="Scent Blind Test"
 									addOnPill
 									disabled={!hasDilutions}
 									disabledTooltip="Add a Dilution first"
