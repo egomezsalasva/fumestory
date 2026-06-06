@@ -32,10 +32,6 @@ type DilutionOption = {
 	displayText: string;
 };
 
-function batchGramsLabel(grams: number): string {
-	return `${grams.toLocaleString(undefined, { maximumFractionDigits: 5, useGrouping: false })} g`;
-}
-
 function buildDilutionOptions(
 	dilutions: Dilution[],
 	materials: { id: number; name: string }[],
@@ -45,11 +41,7 @@ function buildDilutionOptions(
 		.map((d) => {
 			const material = materials.find((m) => m.id === d.raw_material_id);
 			const materialName = material?.name ?? "Unknown";
-			const weightSuffix =
-				d.batch_weight_grams != null
-					? ` · ${batchGramsLabel(d.batch_weight_grams)}`
-					: "";
-			const displayText = `${materialName} - ${d.percentage}%${weightSuffix}`;
+			const displayText = `${materialName} - ${d.percentage}%`;
 			return {
 				dilutionId: d.id,
 				materialName,
