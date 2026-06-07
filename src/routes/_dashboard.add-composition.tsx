@@ -18,6 +18,7 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
 import { HEADER_HINT_IDS } from "@/utils/toast-settings";
 
 type SuggestAnyFormulaProposal = z.infer<
@@ -209,6 +210,7 @@ function AddComposition() {
 			setIngredients([]);
 			setPrefillIngredients(null);
 			setFormResetKey((k) => k + 1);
+			notifyNavEligibilityUpdated({ hasCompositions: true });
 			setSuccess(true);
 			setIsSubmitting(false);
 		} catch {

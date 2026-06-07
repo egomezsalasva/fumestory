@@ -4,6 +4,7 @@ import { DateTimeInput } from "@/components/DateTimeInput";
 import { NumberInput } from "@/components/NumberInput";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { authedFetch } from "@/utils/authed-fetch";
+import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
@@ -84,6 +85,7 @@ function AddDilution() {
 			setPercentage("");
 			setBatchWeightGrams("");
 			setDilutionDate("");
+			notifyNavEligibilityUpdated({ hasDilutions: true });
 			setSuccessMessage("Dilution added successfully!");
 		} catch (error) {
 			setError("Network error: Failed to add dilution. Please try again.");

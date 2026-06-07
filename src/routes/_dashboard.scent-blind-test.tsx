@@ -9,6 +9,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { UserSettingsEffective } from "@/utils/user-settings";
+import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import SuccessMessage from "@/components/SuccessMessage";
 import styles from "@/components/Form.module.css";
@@ -235,6 +236,7 @@ function ScentBlindTest() {
 				return;
 			}
 
+			notifyNavEligibilityUpdated({ hasScentTests: true });
 			const correct = items.filter((i) => i.matched).length;
 			setLastRunScore({ correct, total: items.length });
 			setSuccessMessage("Scent blind test saved.");

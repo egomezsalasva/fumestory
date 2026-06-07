@@ -22,6 +22,10 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import {
+	NAV_ELIGIBILITY_UPDATED_EVENT,
+	type NavEligibilityPatch,
+} from "@/utils/nav-eligibility";
 import LockIcon from "./svgs/LockIcon";
 import EyeIcon from "./svgs/EyeIcon";
 import PercentageIcon from "./svgs/PercentageIcon";
@@ -184,6 +188,20 @@ const SideNav = () => {
 			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, handler);
 		};
 	}, [loadGuestFeedbackSetting]);
+
+	useEffect(() => {
+		const handler = (e: Event) => {
+			const patch = (e as CustomEvent<NavEligibilityPatch>).detail;
+			if (patch.hasRawMaterials) setHasRawMaterials(true);
+			if (patch.hasDilutions) setHasDilutions(true);
+			if (patch.hasCompositions) setHasCompositions(true);
+			if (patch.hasScentTests) setHasScentTests(true);
+		};
+		window.addEventListener(NAV_ELIGIBILITY_UPDATED_EVENT, handler);
+		return () => {
+			window.removeEventListener(NAV_ELIGIBILITY_UPDATED_EVENT, handler);
+		};
+	}, []);
 
 	const navigate = useNavigate();
 	const handleSignOut = async () => {
