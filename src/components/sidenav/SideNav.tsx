@@ -260,14 +260,14 @@ const SideNav = () => {
 								to="/compositions"
 								title="Compositions"
 								disabled={!hasCompositions}
-								disabledTooltip="Add a Composition first"
+								disabledTooltip="Add a Composition to view"
 							/>
 							<NavBodySectionItem
 								icon={<CompositionIcon />}
 								to="/add-composition"
 								title="Add Composition"
 								disabled={!hasDilutions}
-								disabledTooltip="Add a Dilution first"
+								disabledTooltip="Add a Dilution to view"
 							/>
 						</div>
 					</div>
@@ -279,7 +279,7 @@ const SideNav = () => {
 								to="/inventory"
 								title="Raw Materials"
 								disabled={!hasRawMaterials}
-								disabledTooltip="Add a Raw Material first"
+								disabledTooltip="Add a Raw Material to view"
 							/>
 							<NavBodySectionItem
 								icon={<BoxIcon />}
@@ -291,7 +291,7 @@ const SideNav = () => {
 								to="/add-dilution"
 								title="Add Dilution"
 								disabled={!hasRawMaterials}
-								disabledTooltip="Add a Raw Material first"
+								disabledTooltip="Add a Raw Material to view"
 							/>
 							{guestFeedbackEnabled === true && (
 								<NavBodySectionItem
@@ -300,7 +300,7 @@ const SideNav = () => {
 									title="Guest Feedback"
 									addOnPill
 									disabled={!hasDilutions}
-									disabledTooltip="Add a Dilution first"
+									disabledTooltip="Add a Dilution to view"
 								/>
 							)}
 						</div>

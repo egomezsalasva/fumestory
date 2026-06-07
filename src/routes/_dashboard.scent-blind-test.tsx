@@ -263,8 +263,10 @@ function ScentBlindTest() {
 		>
 			<div className="max-w-170 mx-auto">
 				<p className="text-sm text-slate-400 mb-6">
-					Choose dilutions to test, smell each one blind, then mark whether you
-					identified it correctly. Results are saved together as one test run.
+					Choose the dilutions you want to test from the list below. Give them
+					to a partner so they can hide the labels from you. Your partner will
+					then present you with a scent strip without revealing which dilution
+					it is.
 				</p>
 
 				<div className={styles.formContainer}>
@@ -352,8 +354,8 @@ function ScentBlindTest() {
 					{step === "test" && (
 						<>
 							<p className="text-sm text-slate-300">
-								Step 2 — Mark each sample after you smell it (alphabetical
-								order).
+								Step 2 — Mark it as correct if you identified the raw material
+								correctly.
 							</p>
 							<ul className="space-y-4">
 								{testRows.map((row) => {

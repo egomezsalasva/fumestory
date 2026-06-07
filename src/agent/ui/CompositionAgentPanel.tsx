@@ -315,7 +315,7 @@ export function CompositionAgentPanel({
 			title={!hasUserResponded ? "Composition Agent" : undefined}
 			subtitle={
 				!hasUserResponded
-					? "This agent helps you come up with a strating formula for eiter an accord or a perfume.\nYou can pick materials from you inventory or let it suggest materials for you."
+					? "This agent helps you come up with a strating formula for eiter an accord or a perfume.\nYou can pick materials from your inventory or let it suggest materials for you."
 					: undefined
 			}
 			messages={messages}
