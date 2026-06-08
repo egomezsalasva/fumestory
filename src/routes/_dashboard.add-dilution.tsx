@@ -4,12 +4,16 @@ import { DateTimeInput } from "@/components/DateTimeInput";
 import { NumberInput } from "@/components/NumberInput";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { authedFetch } from "@/utils/authed-fetch";
-import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
+import {
+	notifyNavEligibilityUpdated,
+	requireNavRoute,
+} from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
 
 export const Route = createFileRoute("/_dashboard/add-dilution")({
+	...requireNavRoute("/add-dilution"),
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Add Dilution" },

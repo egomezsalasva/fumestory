@@ -1,20 +1,17 @@
-import {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useState,
-} from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import type { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
-import type { UserSettingsEffective } from "@/utils/user-settings";
-import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
+import {
+	notifyNavEligibilityUpdated,
+	requireNavRoute,
+} from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import SuccessMessage from "@/components/SuccessMessage";
 import styles from "@/components/Form.module.css";
 
 export const Route = createFileRoute("/_dashboard/scent-blind-test")({
+	...requireNavRoute("/scent-blind-test"),
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Scent Blind Test" },
@@ -58,11 +55,6 @@ function buildDilutionOptions(
 }
 
 function ScentBlindTest() {
-	const navigate = useNavigate();
-	const [scentBlindTestAllowed, setScentBlindTestAllowed] = useState<
-		boolean | null
-	>(null);
-
 	const [step, setStep] = useState<Step>("select");
 	const [options, setOptions] = useState<DilutionOption[]>([]);
 	const [loadOptionsError, setLoadOptionsError] = useState("");
@@ -80,40 +72,6 @@ function ScentBlindTest() {
 		correct: number;
 		total: number;
 	} | null>(null);
-
-	// Client-only: session must be ready; beforeLoad/SSR ran too early for authedFetch.
-	useLayoutEffect(() => {
-		let cancelled = false;
-		(async () => {
-			try {
-				const res = await authedFetch("/api/user-settings");
-				const json = (await res.json()) as {
-					data?: UserSettingsEffective;
-				};
-				if (cancelled) return;
-				if (!res.ok || !json.data?.scent_blind_test_enabled) {
-					navigate({
-						to: "/project-settings",
-						hash: "add-on-features",
-						replace: true,
-					});
-					return;
-				}
-				setScentBlindTestAllowed(true);
-			} catch {
-				if (!cancelled) {
-					navigate({
-						to: "/project-settings",
-						hash: "add-on-features",
-						replace: true,
-					});
-				}
-			}
-		})();
-		return () => {
-			cancelled = true;
-		};
-	}, [navigate]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -247,14 +205,6 @@ function ScentBlindTest() {
 			setSubmitting(false);
 		}
 	};
-
-	if (scentBlindTestAllowed !== true) {
-		return (
-			<DashboardLayout title="Scent Blind Test">
-				<></>
-			</DashboardLayout>
-		);
-	}
 
 	return (
 		<DashboardLayout

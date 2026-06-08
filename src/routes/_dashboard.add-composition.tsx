@@ -18,7 +18,10 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
-import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
+import {
+	notifyNavEligibilityUpdated,
+	requireNavRoute,
+} from "@/utils/nav-eligibility";
 import { HEADER_HINT_IDS } from "@/utils/toast-settings";
 
 type SuggestAnyFormulaProposal = z.infer<
@@ -35,6 +38,7 @@ type UserSettingsResponse = {
 };
 
 export const Route = createFileRoute("/_dashboard/add-composition")({
+	...requireNavRoute("/add-composition"),
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Add Composition" },

@@ -13,6 +13,7 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { toTitleCaseWords } from "@/utils/display-names";
 
@@ -21,6 +22,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 type InventoryNotesDisplay = "with_guest_feedback" | "without_guest_feedback";
 
 export const Route = createFileRoute("/_dashboard/inventory")({
+	...requireNavRoute("/inventory"),
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Inventory" },

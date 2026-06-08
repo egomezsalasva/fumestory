@@ -13,11 +13,13 @@ import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
+import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const Route = createFileRoute("/_dashboard/compositions")({
+	...requireNavRoute("/compositions"),
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Compositions" },
