@@ -88,11 +88,17 @@ function RouteComponent() {
 	return (
 		<DashboardLayout title="Project Settings">
 			<div className="w-full max-w-170 mx-auto">
-				<div className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6">
+				<div
+					className="p-6 bg-slate-800 rounded-lg border border-slate-700 mb-6"
+					id="project-settings"
+				>
 					<h2 className="text-lg font-medium text-white mb-4">
 						Project Settings
 					</h2>
-					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
+					<div
+						className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4"
+						id="compositions-settings"
+					>
 						<h3 className="text-sm font-medium text-slate-100">
 							Compositions Settings
 						</h3>
@@ -161,7 +167,10 @@ function RouteComponent() {
 							</li>
 						</ul>
 					</div>
-					<div className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4">
+					<div
+						className="mt-5 rounded-md border border-slate-600 bg-slate-900/40 p-4"
+						id="raw-materials-settings"
+					>
 						<h3 className="text-sm font-medium text-slate-100">
 							Raw Materials Settings
 						</h3>

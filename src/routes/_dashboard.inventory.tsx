@@ -348,6 +348,7 @@ function App() {
 			title="Raw Materials Inventory"
 			plusButton={{ to: "/add-raw-material" }}
 			showCogButton={true}
+			cogButtonHash="raw-materials-settings"
 		>
 			<div
 				className="ag-theme-quartz-dark"

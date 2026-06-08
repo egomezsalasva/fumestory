@@ -51,9 +51,12 @@ const NavBodySectionItem: React.FC<{
 	const hashNorm = (h: string | undefined) => (h ?? "").replace(/^#/, "");
 	const targetHashKey = hashNorm(hash);
 	const pathMatches = !!matchRoute({ to, fuzzy: false });
+	const currentHash = hashNorm(location.hash);
 	const active = targetHashKey
-		? pathMatches && hashNorm(location.hash) === targetHashKey
-		: pathMatches && !hashNorm(location.hash);
+		? pathMatches &&
+			(currentHash === targetHashKey ||
+				(targetHashKey === "project-settings" && !currentHash))
+		: pathMatches && !currentHash;
 
 	if (disabled) {
 		return (
@@ -263,6 +266,7 @@ const SideNav = () => {
 							<NavBodySectionItem
 								icon={<CogIcon />}
 								to="/project-settings"
+								hash="#project-settings"
 								title="Settings"
 							/>
 							<NavBodySectionItem

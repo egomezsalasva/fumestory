@@ -243,6 +243,7 @@ function AddComposition() {
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
 			showCogButton={true}
+			cogButtonHash="compositions-settings"
 			headerHints={[HEADER_HINT_IDS.COMPOSITION_BOTTLE_LABEL]}
 		>
 			<div

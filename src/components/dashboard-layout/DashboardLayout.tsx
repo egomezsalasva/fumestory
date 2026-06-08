@@ -19,6 +19,7 @@ type DashboardLayoutProps = {
 	showTourButton?: boolean;
 	plusButton?: BackButtonConfig;
 	showCogButton?: boolean;
+	cogButtonHash?: string;
 	headerHints?: HeaderHintId[];
 	backButton?: BackButtonConfig;
 	agentToggle?: boolean;
@@ -43,6 +44,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 	showTourButton = false,
 	plusButton,
 	showCogButton = false,
+	cogButtonHash,
 	headerHints,
 	backButton,
 	agentToggle = false,
@@ -61,7 +63,10 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 							<HeaderHints hintIds={headerHints} />
 						)}
 						{showCogButton && (
-							<Link to="/project-settings">
+							<Link
+								to="/project-settings"
+								hash={cogButtonHash?.replace(/^#/, "") || undefined}
+							>
 								<CogIcon />
 							</Link>
 						)}

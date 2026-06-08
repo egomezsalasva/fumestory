@@ -311,6 +311,7 @@ function AddRawMaterial() {
 			agentToggle={true}
 			onAgentToggleClick={handleToggleSidebar}
 			showCogButton={true}
+			cogButtonHash="raw-materials-settings"
 			headerHints={[
 				HEADER_HINT_IDS.CAS_NUMBER,
 				HEADER_HINT_IDS.RAW_MATERIALS_BOTTLE_LABEL,

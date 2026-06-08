@@ -150,6 +150,7 @@ function Compositions() {
 				title="Compositions"
 				plusButton={{ to: "/add-composition" }}
 				showCogButton={true}
+				cogButtonHash="compositions-settings"
 			>
 				<div
 					className="ag-theme-quartz-dark"
