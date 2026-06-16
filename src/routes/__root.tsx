@@ -43,7 +43,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const path = location.pathname;
 
 	// Public pages: login/index and all /auth/* routes
-	const isPublic = path === "/" || path.startsWith("/auth/");
+	const isPublic =
+		path === "/" || path.startsWith("/auth/") || path.startsWith("/features");
 
 	return (
 		<html lang="en">

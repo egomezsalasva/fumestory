@@ -156,13 +156,14 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 10rem;
+	min-width: 10rem;
 	height: 3rem;
 	border-radius: 0.75rem;
 	border: 2px solid #f5f7fa;
 	background-color: transparent;
 	color: #f5f7fa;
 	font-size: 20px;
+	padding: 0 1rem;
 }
 
 .interfaceContainer {
@@ -260,9 +261,14 @@
 .featuresContainer {
 	margin: 0 5.25rem;
 	padding-top: 12rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4rem;
 }
 
 .featuresContainer h2 {
+	width: 100%;
 	font-family: "Aspekta";
 	font-weight: 500;
 	font-size: 3rem;
@@ -275,7 +281,7 @@
 	gap: 1rem;
 	grid-template-columns: repeat(3, 1fr);
 	/* grid-template-rows: repeat(3, 1fr); */
-	margin-top: 4rem;
+	/* margin-top: 4rem; */
 	width: 100%;
 }
 

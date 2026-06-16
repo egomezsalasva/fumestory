@@ -1,0 +1,235 @@
+.heroContainer {
+	margin: 7rem 5.25rem;
+	text-align: center;
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: repeat(16, 1fr);
+}
+
+.heroContainer h1,
+.heroContainer p {
+	grid-column: 4 / span 10;
+}
+.heroContainer h1 {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 4rem;
+	line-height: 1;
+}
+
+.heroContainer p {
+	font-family: "Aspekta";
+	font-weight: 400;
+	font-size: 1.5rem;
+	line-height: 1.4;
+}
+
+.stickyNavWrap {
+	position: sticky;
+	top: 2rem;
+	left: 50vw;
+	transform: translateX(-50%);
+	z-index: 100;
+	display: inline-flex;
+	justify-content: center;
+	margin: 0 5.25rem 2rem;
+}
+
+.stickyNav {
+	display: flex;
+	height: 3rem;
+	padding: 0 0.75rem;
+	border-radius: 8px;
+}
+
+.stickyNavLink,
+.stickyNavButton {
+	font-family: "Aspekta";
+	font-style: normal;
+	font-size: 1rem;
+	line-height: 1;
+	text-decoration: none;
+	color: #f5f7fa;
+}
+
+.stickyNavLink {
+	margin: 1rem 0.75rem;
+	font-weight: 400;
+	opacity: 0.75;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.stickyNavLink:hover {
+	opacity: 1;
+}
+
+.stickyNavGlass {
+	--intensity: 0.8;
+	--frost: 8px;
+	--depth: 32px;
+	--angle: -45deg;
+
+	position: relative;
+	isolation: isolate;
+	border-radius: 8px;
+	background-color: rgba(11, 23, 45, calc(0.5 * var(--intensity)));
+	background-image: linear-gradient(
+		var(--angle),
+		rgba(245, 247, 250, calc(0.14 * var(--intensity))) 0%,
+		rgba(245, 247, 250, calc(0.03 * var(--intensity))) 42%,
+		rgba(245, 247, 250, calc(0.08 * var(--intensity))) 100%
+	);
+	-webkit-backdrop-filter: blur(var(--frost)) saturate(1.65);
+	backdrop-filter: blur(var(--frost)) saturate(1.65);
+	border: 1px solid rgba(245, 247, 250, calc(0.14 * var(--intensity)));
+	box-shadow:
+		0 calc(var(--depth) * 0.25) var(--depth) rgba(0, 0, 0, 0.35),
+		inset 0 1px 0 rgba(245, 247, 250, calc(0.12 * var(--intensity)));
+}
+
+.stickyNavGlass::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	box-shadow:
+		inset 0 0 0 1px rgba(255, 200, 220, 0.04),
+		inset 0 0 0 1px rgba(200, 230, 255, 0.04);
+	mix-blend-mode: soft-light;
+	opacity: 0.35;
+}
+
+.featureBlock {
+	display: grid;
+	grid-template-columns: 0.8fr 1.2fr;
+	gap: 2rem;
+	margin: 0 5.25rem;
+	padding: 3rem 0;
+}
+
+.featureContent {
+	padding-right: 2rem;
+	align-self: center;
+	padding-bottom: 1rem;
+}
+
+.featureContent h3 {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 2rem;
+	line-height: 1.2;
+	margin-bottom: 1.25rem;
+}
+
+.featureContent p {
+	font-family: "Aspekta";
+	font-size: 1.125rem;
+	line-height: 1.4;
+	margin-bottom: 0.5rem;
+}
+
+.featureImage {
+	/* Brand-aligned palette */
+	--g-base: #0b172d;
+	--g-highlight: rgba(245, 247, 250, 0.14);
+	--g-glow: rgba(110, 150, 210, 0.24);
+	--g-mid: rgba(35, 60, 95, 0.4);
+	--g-deep: rgba(18, 32, 55, 0.35);
+	--g-vignette: rgba(4, 8, 16, 0.5);
+	border-radius: 12px;
+	padding: 2rem;
+	border: 1px solid rgba(245, 247, 250, 0.14);
+	box-shadow:
+		0 16px 32px rgba(0, 0, 0, 0.35),
+		inset 0 1px 0 rgba(245, 247, 250, 0.12);
+	overflow: hidden;
+	min-height: 280px;
+	display: flex;
+	align-items: flex-end;
+	background-color: var(--g-base);
+	/* bright glass sheen */
+	background-image:
+		radial-gradient(
+			ellipse var(--b1-w, 70%) var(--b1-h, 60%) at var(--b1-x, 15%)
+				var(--b1-y, 20%),
+			var(--g-highlight),
+			transparent 58%
+		), /* soft blue bloom */
+		radial-gradient(
+			ellipse var(--b2-w, 55%) var(--b2-h, 75%) at var(--b2-x, 85%)
+				var(--b2-y, 75%),
+			var(--g-glow),
+			transparent 65%
+		), /* mid depth — keep translucent */
+		radial-gradient(
+			ellipse var(--b3-w, 90%) var(--b3-h, 70%) at var(--b3-x, 50%)
+				var(--b3-y, 100%),
+			var(--g-mid),
+			transparent 68%
+		), /* secondary depth blob */
+		radial-gradient(
+			ellipse var(--b4-w, 60%) var(--b4-h, 50%) at var(--b4-x, 30%)
+				var(--b4-y, 55%),
+			var(--g-deep),
+			transparent 70%
+		), /* edge vignette — grounds the frame */
+		radial-gradient(
+			ellipse 120% 100% at 50% 50%,
+			transparent 40%,
+			var(--g-vignette) 100%
+		);
+}
+
+.featureImageInner {
+	overflow: hidden;
+	border-radius: 0.5rem;
+}
+
+.featureImageInner img {
+	display: block;
+	width: 100%;
+	box-shadow: 0 0 32px rgba(255, 255, 255, 0.08);
+}
+
+.relatedFeatures p {
+	margin-top: 2rem;
+	margin-bottom: 0.5rem;
+}
+
+.relatedFeatures li {
+	list-style: square;
+	list-style-position: inside;
+	margin-bottom: 0.25rem;
+}
+
+.relatedFeatures a {
+	color: var(--color-primary);
+	text-decoration: underline;
+}
+
+.relatedFeatures a:hover {
+	color: var(--color-primary-dark);
+}
+
+.featureSection {
+	margin-top: 4rem;
+}
+
+.featureSection:first-of-type {
+	margin-top: 6rem;
+}
+
+.featureSectionTitle {
+	margin: 2rem 5.25rem 0;
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 3rem;
+	line-height: 1;
+	color: #f5f7fa;
+}
+
+.stickyNavLinkActive {
+	opacity: 1;
+	font-weight: 500;
+}

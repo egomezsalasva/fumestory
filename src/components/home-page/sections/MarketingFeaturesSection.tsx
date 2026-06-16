@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 type MarketingFeaturesSectionProps = {
@@ -128,6 +129,9 @@ const MarketingFeaturesSection = ({
 					</p>
 				</FeatureItem>
 			</div>
+			<Link to="/features" className={styles.buttonSecondaryHero}>
+				View All Features
+			</Link>
 		</div>
 	);
 };

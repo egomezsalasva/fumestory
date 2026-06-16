@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
@@ -38,6 +39,11 @@ import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/
 import { Route as DashboardAddFormulaCompositionIdRouteImport } from './routes/_dashboard.add-formula.$compositionId'
 import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboard.account.$pathname'
 
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
@@ -186,6 +192,7 @@ const DashboardAccountPathnameRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/features': typeof FeaturesRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/features': typeof FeaturesRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/features': typeof FeaturesRoute
   '/_dashboard/add-composition': typeof DashboardAddCompositionRoute
   '/_dashboard/add-dilution': typeof DashboardAddDilutionRoute
   '/_dashboard/add-feedback': typeof DashboardAddFeedbackRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/features'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/features'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_dashboard'
+    | '/features'
     | '/_dashboard/add-composition'
     | '/_dashboard/add-dilution'
     | '/_dashboard/add-feedback'
@@ -367,6 +379,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  FeaturesRoute: typeof FeaturesRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
@@ -383,6 +396,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_dashboard': {
       id: '/_dashboard'
       path: ''
@@ -635,6 +655,7 @@ const ApiCompositionsRouteWithChildren = ApiCompositionsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  FeaturesRoute: FeaturesRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,

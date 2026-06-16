@@ -11,14 +11,16 @@ const MarketingHeaderSection = ({
 }: MarketingHeaderSectionProps) => {
 	return (
 		<header className={styles.header}>
-			<div className={`${styles.logo} ${styles.glassFigma}`}>Fumestory</div>
+			<Link to="/" className={styles.logoLink}>
+				<div className={`${styles.logo} ${styles.glassFigma}`}>Fumestory</div>
+			</Link>
 			<div className={`${styles.headerLinks} ${styles.glassFigma}`}>
-				<a href="#features" className={styles.link}>
+				<Link to="/features" className={styles.link}>
 					Features
-				</a>
-				<a href="#roadmap" className={styles.link}>
+				</Link>
+				<Link to="/" hash="roadmap" className={styles.link}>
 					Roadmap
-				</a>
+				</Link>
 				{isLoggedIn ? (
 					<Link to="/inventory" className={styles.linkButton}>
 						Dashboard
