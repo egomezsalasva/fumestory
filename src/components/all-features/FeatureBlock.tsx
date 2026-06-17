@@ -43,19 +43,23 @@ export function FeatureBlock({ feature }: FeatureBlockProps) {
 			<div className={styles.featureContent}>
 				<h3>{feature.title}</h3>
 				{feature.descriptions.map((text) => (
-					<p key={text}>{text}</p>
+					<p key={typeof text === "string" ? text : JSON.stringify(text)}>
+						{text}
+					</p>
 				))}
 				{feature.relatedFeatureIds && (
 					<FeatureRelatedLinks relatedFeatureIds={feature.relatedFeatureIds} />
 				)}
 			</div>
 			{feature.image && (
-				<div
-					className={styles.featureImage}
-					style={blobStyleForFeature(feature.id)}
-				>
-					<div className={styles.featureImageInner}>
-						<img src={feature.image} alt={feature.title} />
+				<div className={styles.featureImageContainer}>
+					<div
+						className={styles.featureImage}
+						style={blobStyleForFeature(feature.id)}
+					>
+						<div className={styles.featureImageInner}>
+							<img src={feature.image} alt={feature.title} />
+						</div>
 					</div>
 				</div>
 			)}

@@ -57,9 +57,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --mobile-side: 1.5rem;
+	--h1-size: 4rem;
+	--h2-size: 3rem;
   --header-index: 100;
   background-color: #070707;
 
+}
+
+@media (max-width: 768px) {
+  body {
+    --h1-size: 3.5rem;
+    --h2-size: 2.5rem;
+  }
 }
 
 code {

@@ -26,7 +26,7 @@ function RouteComponent() {
 						support different workflows.
 					</p>
 				</div>
-				<div className={styles.stickyNavWrap}>
+				{/* <div className={styles.stickyNavWrap}>
 					<div className={`${styles.stickyNav} ${styles.stickyNavGlass}`}>
 						<a href="#inventory" className={styles.stickyNavLink}>
 							Inventory
@@ -41,7 +41,7 @@ function RouteComponent() {
 							Add-On Features
 						</a>
 					</div>
-				</div>
+				</div> */}
 				{FEATURE_SECTIONS.filter((s) => s.features.length > 0).map(
 					(section) => (
 						<div

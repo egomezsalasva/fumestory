@@ -4,16 +4,26 @@
 	display: grid;
 	gap: 2rem;
 	grid-template-columns: repeat(16, 1fr);
+	@media (max-width: 768px) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 4rem var(--mobile-side);
+		gap: 1.75rem;
+	}
 }
 
 .heroContainer h1,
 .heroContainer p {
 	grid-column: 4 / span 10;
+	@media (max-width: 1024px) {
+		grid-column: 1 / span 16;
+	}
 }
 .heroContainer h1 {
 	font-family: "Aspekta";
 	font-weight: 500;
-	font-size: 4rem;
+	font-size: var(--h1-size);
 	line-height: 1;
 }
 
@@ -106,12 +116,21 @@
 	gap: 2rem;
 	margin: 0 5.25rem;
 	padding: 3rem 0;
+	@media (max-width: 1024px) {
+		grid-template-columns: 1fr;
+		margin: 0 var(--mobile-side);
+		text-align: center;
+		padding: 3rem var(--mobile-side);
+	}
 }
 
 .featureContent {
 	padding-right: 2rem;
 	align-self: center;
 	padding-bottom: 1rem;
+	@media (max-width: 1024px) {
+		padding-right: 0;
+	}
 }
 
 .featureContent h3 {
@@ -129,6 +148,12 @@
 	margin-bottom: 0.5rem;
 }
 
+.featureImageContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .featureImage {
 	/* Brand-aligned palette */
 	--g-base: #0b172d;
@@ -144,7 +169,7 @@
 		0 16px 32px rgba(0, 0, 0, 0.35),
 		inset 0 1px 0 rgba(245, 247, 250, 0.12);
 	overflow: hidden;
-	min-height: 280px;
+	/* min-height: 280px; */
 	display: flex;
 	align-items: flex-end;
 	background-color: var(--g-base);
@@ -195,12 +220,18 @@
 .relatedFeatures p {
 	margin-top: 2rem;
 	margin-bottom: 0.5rem;
+	@media (max-width: 1024px) {
+		margin-bottom: 1rem;
+	}
 }
 
 .relatedFeatures li {
 	list-style: square;
 	list-style-position: inside;
 	margin-bottom: 0.25rem;
+	@media (max-width: 1024px) {
+		margin-bottom: 0.75rem;
+	}
 }
 
 .relatedFeatures a {
@@ -224,9 +255,13 @@
 	margin: 2rem 5.25rem 0;
 	font-family: "Aspekta";
 	font-weight: 500;
-	font-size: 3rem;
+	font-size: var(--h2-size);
 	line-height: 1;
 	color: #f5f7fa;
+	@media (max-width: 1024px) {
+		margin: 2rem var(--mobile-side) 0;
+		text-align: center;
+	}
 }
 
 .stickyNavLinkActive {
