@@ -14,7 +14,7 @@ const MarketingHeaderSection = ({
 			<Link to="/" className={styles.logoLink}>
 				<div className={`${styles.logo} ${styles.glassFigma}`}>Fumestory</div>
 			</Link>
-			<div className={`${styles.headerLinks} ${styles.glassFigma}`}>
+			<div className={`${styles.headerLinks_desktop} ${styles.glassFigma}`}>
 				<Link to="/features" className={styles.link}>
 					Features
 				</Link>
