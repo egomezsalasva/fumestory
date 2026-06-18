@@ -94,7 +94,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<NeonAuthUIProvider authClient={authClient}>
 					{isPublic ? (
-						children
+						<main id="main-content">{children}</main>
 					) : (
 						<div
 							style={{
@@ -103,7 +103,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 								overflow: "hidden",
 							}}
 						>
-							<SignedIn>{children}</SignedIn>
+							<SignedIn>
+								<main id="main-content">{children}</main>
+							</SignedIn>
 							<RedirectToSignIn />
 						</div>
 					)}
