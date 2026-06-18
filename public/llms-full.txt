@@ -1,6 +1,6 @@
 # Fumestory - Detailed Product Notes
 
-Canonical Site: https://fumestory.com/
+Canonical Site: [https://fumestory.com/](https://fumestory.com/)
 
 Fumestory is a web-based perfumery software product for perfume creators who need to organize materials, formulas, and development workflows in one place.
 
@@ -8,26 +8,26 @@ Fumestory is a web-based perfumery software product for perfume creators who nee
 Fumestory is designed for independent perfumers and scent professionals who want structured workflows without unnecessary complexity.
 
 ## Core Workflow
-1) Raw materials inventory
-2) Dilution creation and tracking
-3) Formula creation and management
-4) Composition development for perfumes and accords with multiple formula versions
+1. Raw materials inventory
+2. Dilution creation and tracking
+3. Formula creation and management
+4. Composition development for perfumes and accords with multiple formula versions
 
 ## Composition Model
-A composition represents a perfume idea or an accord idea.
-Each composition can contain multiple formula versions also know as mods, so users can iterate and compare modifications over time.
+A composition represents a perfume idea or an accord idea.  
+Each composition can contain multiple formula versions, so users can iterate and compare modifications over time.
 
 ## Feature Areas
 - Raw material inventory management
 - Dilution tracking
 - Perfume and accord formula management
-- Compositions for organizing ideas with multiple formula(mod) versions
+- Compositions for organizing ideas with multiple formula versions
 - Project and workflow settings
 
 ## Public URLs
-- Home: https://fumestory.com/
-- Features: https://fumestory.com/features
+- [Home](https://fumestory.com/)
+- [Features](https://fumestory.com/features)
 
 ## Brand
 - Name: Fumestory
-- Website: https://fumestory.com/
+- Website: [https://fumestory.com/](https://fumestory.com/)
