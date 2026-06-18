@@ -6,7 +6,79 @@ import { FeatureBlock } from "@/components/all-features/FeatureBlock";
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
 import styles from "../components/all-features/all-features.module.css";
 
+const featuresItemListJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "ItemList",
+	name: "Fumestory Features",
+	url: "https://fumestory.com/features",
+	itemListElement: [
+		{
+			"@type": "ListItem",
+			position: 1,
+			name: "Inventory",
+			url: "https://fumestory.com/features#inventory",
+		},
+		{
+			"@type": "ListItem",
+			position: 2,
+			name: "Compositions",
+			url: "https://fumestory.com/features#compositions",
+		},
+		{
+			"@type": "ListItem",
+			position: 3,
+			name: "Settings",
+			url: "https://fumestory.com/features#settings",
+		},
+		{
+			"@type": "ListItem",
+			position: 4,
+			name: "Add-On Features",
+			url: "https://fumestory.com/features#addons",
+		},
+	],
+};
+
 export const Route = createFileRoute("/features")({
+	head: () => ({
+		meta: [
+			{ title: "Fumestory Features | Perfumery Software" },
+			{
+				name: "description",
+				content:
+					"Explore Fumestory's perfumery software features for raw materials, dilutions, formulas, compositions, and workflow customization.",
+			},
+			{ name: "robots", content: "index,follow" },
+			{
+				property: "og:title",
+				content: "Fumestory Features | Perfumery Software",
+			},
+			{
+				property: "og:description",
+				content:
+					"Explore perfumery software features in Fumestory for raw materials, dilutions, formulas, compositions, and scent workflow tools.",
+			},
+			{ property: "og:type", content: "website" },
+			{ property: "og:url", content: "https://fumestory.com/features" },
+			{ name: "twitter:card", content: "summary_large_image" },
+			{
+				name: "twitter:title",
+				content: "Fumestory Features | Perfumery Software",
+			},
+			{
+				name: "twitter:description",
+				content:
+					"Fumestory is perfumery software for organizing raw materials, formulas, and compositions in one workflow.",
+			},
+		],
+		links: [{ rel: "canonical", href: "https://fumestory.com/features" }],
+		scripts: [
+			{
+				type: "application/ld+json",
+				children: JSON.stringify(featuresItemListJsonLd),
+			},
+		],
+	}),
 	component: RouteComponent,
 });
 
