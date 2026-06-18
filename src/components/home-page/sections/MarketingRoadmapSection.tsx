@@ -46,12 +46,18 @@ const RoadmapFeature = ({
 					data-upvoted={hasUpvoted ? "true" : "false"}
 					className={styles.voteButton}
 					style={{ borderColor: hasUpvoted ? "#0CCE6B" : "#F5F7FA" }}
+					aria-label={
+						hasUpvoted ? `Remove upvote for ${title}` : `Upvote ${title}`
+					}
+					aria-pressed={hasUpvoted}
+					aria-busy={isPending}
 				>
 					{isPending ? (
 						<svg
 							className={styles.roadmapSpinner}
 							viewBox="0 0 24 24"
 							aria-hidden="true"
+							focusable="false"
 						>
 							<circle
 								cx="12"
@@ -73,6 +79,8 @@ const RoadmapFeature = ({
 									viewBox="0 0 18 10"
 									fill="none"
 									xmlns="http://www.w3.org/2000/svg"
+									aria-hidden="true"
+									focusable="false"
 								>
 									<path
 										d="M1 8.9895L7.50518 1.67117C8.30076 0.776143 9.69924 0.776143 10.4948 1.67117L17 8.9895"
@@ -90,6 +98,8 @@ const RoadmapFeature = ({
 									viewBox="0 0 14 14"
 									fill="none"
 									xmlns="http://www.w3.org/2000/svg"
+									aria-hidden="true"
+									focusable="false"
 								>
 									<path
 										d="M3 3L11 11M11 3L3 11"
