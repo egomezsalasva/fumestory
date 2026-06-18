@@ -1,0 +1,48 @@
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-quartz.css";
+
+/* AG Grid theme overrides used in dashboard */
+.ag-theme-quartz-dark,
+.ag-theme-quartz {
+	--ag-border-color: #404959;
+	--ag-background-color: #151c24;
+	--ag-data-background-color: #12151b;
+	--ag-header-background-color: #151c24;
+	--ag-wrapper-border-radius: 0.25rem;
+	--ag-cell-horizontal-padding: 0.75rem;
+	--ag-cell-horizontal-border: solid var(--ag-border-color);
+	--ag-header-column-separator-display: block;
+	--ag-header-column-separator-color: var(--ag-border-color);
+	--ag-header-column-separator-height: 100%;
+	--ag-header-column-separator-width: 1px;
+	--ag-header-height: calc(1rem + var(--ag-grid-size) * 3);
+	--ag-row-hover-color: #18222e;
+	--ag-icon-size: 0.75rem;
+}
+
+.ag-theme-quartz-dark .ag-cell,
+.ag-theme-quartz .ag-cell,
+.ag-theme-quartz-dark .ag-header-cell,
+.ag-theme-quartz .ag-header-cell,
+.ag-theme-quartz-dark .ag-paging-panel,
+.ag-theme-quartz .ag-paging-panel {
+	font-size: 0.75rem;
+}
+
+.ag-theme-quartz-dark .ag-header-cell,
+.ag-theme-quartz .ag-header-cell,
+.ag-theme-quartz-dark .ag-paging-panel,
+.ag-theme-quartz .ag-paging-panel {
+	opacity: 0.75;
+}
+
+.ag-theme-quartz-dark .ag-header-cell-resize::after,
+.ag-theme-quartz .ag-header-cell-resize::after {
+	display: none !important;
+}
+
+.ag-theme-quartz-dark .notes-cell {
+	line-height: 1.5 !important;
+	padding-top: 0.25rem !important;
+	padding-bottom: 0.25rem !important;
+}

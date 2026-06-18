@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SignedIn } from "@neondatabase/neon-js/auth/react/ui";
 import SideNav from "@/components/sidenav/SideNav";
+import "@/dashboard-ag-grid.css";
 import styles from "@/components/dashboard-layout/DashboardLayout.module.css";
 
 export const Route = createFileRoute("/_dashboard")({
