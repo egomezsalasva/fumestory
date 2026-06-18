@@ -32,9 +32,9 @@ const MarketingHeroSection = ({
 						Get Started
 					</Link>
 				)}
-				<a href="#features" className={styles.buttonSecondaryHero}>
+				<Link to="/features" resetScroll className={styles.buttonSecondaryHero}>
 					See Features
-				</a>
+				</Link>
 			</div>
 		</div>
 	);

@@ -40,8 +40,8 @@
 	z-index: 100;
 	display: flex;
 	justify-content: center;
-	width: 100%;
-	margin-bottom: 2rem;
+	width: fit-content;
+	margin: 0 auto 2rem;
 	@media (max-width: 1340px) {
 		top: calc(var(--header-height) + 2rem + 1rem);
 	}
@@ -125,7 +125,7 @@
 		grid-template-columns: 1fr;
 		margin: 0 var(--mobile-side);
 		text-align: center;
-		padding: 3rem var(--mobile-side);
+		padding: 3rem 0;
 	}
 }
 
@@ -134,7 +134,7 @@
 	align-self: center;
 	padding-bottom: 1rem;
 	@media (max-width: 1024px) {
-		padding-right: 0;
+		padding: 0 var(--mobile-side);
 	}
 }
 
@@ -209,6 +209,9 @@
 			transparent 40%,
 			var(--g-vignette) 100%
 		);
+	@media (max-width: 768px) {
+		padding: 1.25rem;
+	}
 }
 
 .featureImageInner {

@@ -129,7 +129,7 @@ const MarketingFeaturesSection = ({
 					</p>
 				</FeatureItem>
 			</div>
-			<Link to="/features" className={styles.buttonSecondaryHero}>
+			<Link to="/features" resetScroll className={styles.buttonSecondaryHero}>
 				View All Features
 			</Link>
 		</div>
