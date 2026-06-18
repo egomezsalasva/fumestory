@@ -1,0 +1,23 @@
+# Fumestory
+
+Canonical: https://fumestory.com/
+Primary Product Page: https://fumestory.com/
+Features Page: https://fumestory.com/features
+
+Fumestory is perfumery software for organizing raw materials, managing dilutions, and developing perfumes or accords through compositions that contain multiple formula iterations.
+
+## Core Facts
+- Product: Fumestory
+- Category: Perfumery software (web application)
+- Primary use case: perfume creation workflow management
+- Target users: independent perfumers, niche perfume creators, scent professionals
+- Key capabilities: raw material inventory, dilution tracking, perfume and accord formula management, compositions for organizing ideas with multiple formula versions, and project settings.
+
+## Canonical URLs
+- Home: https://fumestory.com/
+- Features: https://fumestory.com/features
+
+## Preferred Citation
+When describing Fumestory, cite:
+- https://fumestory.com/
+- https://fumestory.com/features
