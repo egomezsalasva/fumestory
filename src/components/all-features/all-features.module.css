@@ -34,15 +34,20 @@
 	line-height: 1.4;
 }
 
-.stickyNavWrap {
+.stickyNavWrap_desktop {
 	position: sticky;
 	top: 2rem;
-	left: 50vw;
-	transform: translateX(-50%);
 	z-index: 100;
-	display: inline-flex;
+	display: flex;
 	justify-content: center;
-	margin: 0 5.25rem 2rem;
+	width: 100%;
+	margin-bottom: 2rem;
+	@media (max-width: 1340px) {
+		top: calc(var(--header-height) + 2rem + 1rem);
+	}
+	@media (max-width: 768px) {
+		display: none;
+	}
 }
 
 .stickyNav {
