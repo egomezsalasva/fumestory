@@ -49,7 +49,11 @@ function RouteComponent() {
 							id={section.id}
 							style={{ scrollMarginTop: "10rem" }}
 						>
-							<h2 className={styles.featureSectionTitle}>{section.title}</h2>
+							<h2
+								className={`${styles.featureSectionTitle} ${styles.stickyNavWrapGlass_mobile}`}
+							>
+								{section.title}
+							</h2>
 							{section.features.map((feature) => (
 								<FeatureBlock key={feature.id} feature={feature} />
 							))}

@@ -225,7 +225,7 @@ export const FEATURE_SECTIONS: FeatureSectionDefinition[] = [
 			},
 			{
 				id: "autofill-with-previous-formula",
-				title: "Autofill with previous formula",
+				title: "Autofill With Previous Formula",
 				descriptions: [
 					"A common scenario is updating the last formula mod you created. This button quickly fills in the previous formula data so you can easily modify it.",
 				],
