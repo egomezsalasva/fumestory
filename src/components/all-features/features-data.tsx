@@ -15,7 +15,7 @@ export type FeatureId =
 	| "composition-details"
 	| "add-formula"
 	| "autofill-with-previous-formula"
-	| "formulas-agent"
+	| "formula-mod-agent"
 	| "bottle-labels"
 	| "toggle-agents"
 	| "toggle-columns"
@@ -232,15 +232,19 @@ export const FEATURE_SECTIONS: FeatureSectionDefinition[] = [
 				image: "/features/autofill-with-previous-formula.webp",
 				relatedFeatureIds: ["add-formula"],
 			},
-			// {
-			// 	id: "formulas-agent",
-			// 	title: "Formulas Agent",
-			// 	descriptions: [
-			// 		"This agent helps you modify and improve the composition you are working on by suggesting updates. You can pick to update with the same ingredients or you can let it suggest adding/deleting new ones, or ask it for a completly new approch.",
-			// 	],
-			// 	image: "/inventory.webp",
-			// 	relatedFeatureIds: ["add-composition"],
-			// },
+			{
+				id: "formula-mod-agent",
+				title: "Formula Mod Agent",
+				descriptions: [
+					"This agent helps you modify and improve the composition you are working on by suggesting updates. You can pick to update with the same ingredients or you can let it suggest adding/deleting new ones from your inventory, or ask it to add new raw materials not in your inventory.",
+				],
+				image: "/features/formula-mod-agent.webp",
+				relatedFeatureIds: [
+					"add-composition",
+					"composition-details",
+					"add-formula",
+				],
+			},
 		],
 	},
 	{
@@ -266,7 +270,7 @@ export const FEATURE_SECTIONS: FeatureSectionDefinition[] = [
 				relatedFeatureIds: [
 					"raw-materials-agent",
 					"compositions-agent",
-					"formulas-agent",
+					"formula-mod-agent",
 				],
 			},
 			{
