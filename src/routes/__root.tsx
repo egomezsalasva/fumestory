@@ -1,21 +1,30 @@
+import { NeonAuthUIProvider } from "@neondatabase/neon-js/auth/react";
+import {
+	RedirectToSignIn,
+	SignedIn,
+} from "@neondatabase/neon-js/auth/react/ui";
+import { PostHogProvider } from "posthog-js/react";
+import type { QueryClient } from "@tanstack/react-query";
 import {
 	HeadContent,
 	Scripts,
 	createRootRouteWithContext,
 	useRouterState,
 } from "@tanstack/react-router";
-import { NeonAuthUIProvider } from "@neondatabase/neon-js/auth/react";
-import {
-	SignedIn,
-	RedirectToSignIn,
-} from "@neondatabase/neon-js/auth/react/ui";
 import { authClient } from "../../auth";
 import appCss from "../styles.css?url";
-import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
 }
+
+const posthogOptions = {
+	api_host: import.meta.env.VITE_POSTHOG_HOST,
+	defaults: "2026-01-30",
+	capture_pageview: "history_change",
+	autocapture: true,
+	disable_session_recording: true,
+} as const;
 
 const organizationJsonLd = {
 	"@context": "https://schema.org",
@@ -92,24 +101,29 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<NeonAuthUIProvider authClient={authClient}>
-					{isPublic ? (
-						<main id="main-content">{children}</main>
-					) : (
-						<div
-							style={{
-								position: "fixed",
-								inset: 0,
-								overflow: "hidden",
-							}}
-						>
-							<SignedIn>
-								<main id="main-content">{children}</main>
-							</SignedIn>
-							<RedirectToSignIn />
-						</div>
-					)}
-				</NeonAuthUIProvider>
+				<PostHogProvider
+					apiKey={import.meta.env.VITE_POSTHOG_PROJECT_TOKEN}
+					options={posthogOptions}
+				>
+					<NeonAuthUIProvider authClient={authClient}>
+						{isPublic ? (
+							<main id="main-content">{children}</main>
+						) : (
+							<div
+								style={{
+									position: "fixed",
+									inset: 0,
+									overflow: "hidden",
+								}}
+							>
+								<SignedIn>
+									<main id="main-content">{children}</main>
+								</SignedIn>
+								<RedirectToSignIn />
+							</div>
+						)}
+					</NeonAuthUIProvider>
+				</PostHogProvider>
 				<Scripts />
 			</body>
 		</html>
