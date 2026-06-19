@@ -182,6 +182,8 @@ export function FormulaModAgentPanel({
 	>(null);
 	const [showStartOverAction, setShowStartOverAction] = useState(false);
 
+	const hasUserResponded = messages.some((m) => m.role === "user");
+
 	const buildModOptions = (
 		formulas: CompositionFormula[],
 	): ChatChoiceOption[] => {
@@ -552,8 +554,12 @@ export function FormulaModAgentPanel({
 
 	return (
 		<ChatPanel
-			title="Formula Mod Agent"
-			subtitle="This agent helps you update an existing formula mod."
+			title={!hasUserResponded ? "Formula Mod Agent" : undefined}
+			subtitle={
+				!hasUserResponded
+					? "This agent helps you update an existing formula mod."
+					: undefined
+			}
 			messages={messages}
 			onSendMessage={handleSendMessage}
 			isLoading={isLoading}
