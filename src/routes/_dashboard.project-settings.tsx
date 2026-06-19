@@ -511,6 +511,22 @@ function RouteComponent() {
 									Show Compositions Agent
 								</label>
 							</li>
+							<li>
+								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+									<input
+										type="checkbox"
+										className="mr-2"
+										checked={!settings?.formula_mod_agent_collapsed}
+										disabled={settings === null || saving}
+										onChange={(e) => {
+											void patchUserSettings({
+												formula_mod_agent_collapsed: !e.target.checked,
+											});
+										}}
+									/>
+									Show Formula Mod Agent
+								</label>
+							</li>
 						</ul>
 					</div>
 				</div>

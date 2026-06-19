@@ -42,6 +42,7 @@ export type UserSettingsJson = {
 	hide_raw_materials_without_available_dilutions?: boolean;
 	composition_agent_collapsed?: boolean;
 	raw_material_agent_collapsed?: boolean;
+	formula_mod_agent_collapsed?: boolean;
 	scent_blind_test_enabled?: boolean;
 };
 
@@ -57,6 +58,7 @@ export type UserSettingsEffective = {
 	hide_raw_materials_without_available_dilutions: boolean;
 	composition_agent_collapsed: boolean;
 	raw_material_agent_collapsed: boolean;
+	formula_mod_agent_collapsed: boolean;
 	scent_blind_test_enabled: boolean;
 };
 
@@ -91,6 +93,7 @@ export const patchUserSettingsSchema = z
 		hide_raw_materials_without_available_dilutions: z.boolean().optional(),
 		composition_agent_collapsed: z.boolean().optional(),
 		raw_material_agent_collapsed: z.boolean().optional(),
+		formula_mod_agent_collapsed: z.boolean().optional(),
 		scent_blind_test_enabled: z.boolean().optional(),
 	})
 	.refine(
@@ -105,6 +108,7 @@ export const patchUserSettingsSchema = z
 				return true;
 			if (typeof d.composition_agent_collapsed === "boolean") return true;
 			if (typeof d.raw_material_agent_collapsed === "boolean") return true;
+			if (typeof d.formula_mod_agent_collapsed === "boolean") return true;
 			if (d.scent_blind_test_enabled !== undefined) return true;
 
 			const ic = d.inventory_columns;
@@ -127,7 +131,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, material_nature_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, material_nature_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, formula_mod_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -203,6 +207,9 @@ export function parseUserSettingsJson(
 	}
 	if (typeof o.raw_material_agent_collapsed === "boolean") {
 		out.raw_material_agent_collapsed = o.raw_material_agent_collapsed;
+	}
+	if (typeof o.formula_mod_agent_collapsed === "boolean") {
+		out.formula_mod_agent_collapsed = o.formula_mod_agent_collapsed;
 	}
 	if (typeof o.scent_blind_test_enabled === "boolean") {
 		out.scent_blind_test_enabled = o.scent_blind_test_enabled;
@@ -300,6 +307,7 @@ export function effectiveUserSettings(
 			stored.hide_raw_materials_without_available_dilutions === true,
 		composition_agent_collapsed: stored.composition_agent_collapsed === true,
 		raw_material_agent_collapsed: stored.raw_material_agent_collapsed === true,
+		formula_mod_agent_collapsed: stored.formula_mod_agent_collapsed === true,
 		scent_blind_test_enabled: stored.scent_blind_test_enabled === true,
 	};
 }
@@ -369,6 +377,9 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.raw_material_agent_collapsed === "boolean") {
 		merged.raw_material_agent_collapsed = patch.raw_material_agent_collapsed;
+	}
+	if (typeof patch.formula_mod_agent_collapsed === "boolean") {
+		merged.formula_mod_agent_collapsed = patch.formula_mod_agent_collapsed;
 	}
 	if (typeof patch.scent_blind_test_enabled === "boolean") {
 		merged.scent_blind_test_enabled = patch.scent_blind_test_enabled;

@@ -75,6 +75,7 @@ export function ChatPanel({
 	const textInputRef = useRef<HTMLInputElement>(null);
 	const numberInputRef = useRef<HTMLInputElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const chatBodyRef = useRef<HTMLDivElement>(null);
 
 	const isLoadingRef = useRef(isLoading);
 	const choiceOptionsRef = useRef(choiceOptions);
@@ -171,6 +172,11 @@ export function ChatPanel({
 			const el = eventTargetElement(e.target);
 			if (el?.closest("[data-chat-collapse]")) return;
 
+			if (el && chatBodyRef.current?.contains(el)) {
+				// Allow native text selection in chat message area.
+				return;
+			}
+
 			const options = choiceOptionsRef.current;
 			const hasChoices = Boolean(options?.length && onChoiceRef.current);
 
@@ -260,7 +266,7 @@ export function ChatPanel({
 					</div>
 				)}
 
-				<div className={styles.chatPanelBody}>
+				<div ref={chatBodyRef} className={styles.chatPanelBody}>
 					{messages.map((msg, idx) => (
 						<div
 							key={idx}
@@ -481,11 +487,11 @@ export function ChatPanel({
 											{" "}
 										</span>
 										<span
-											className={
+											className={`inline-block align-top w-[calc(100%-2ch)] whitespace-normal break-words ${
 												focused
 													? "underline underline-offset-2 decoration-slate-400"
-													: undefined
-											}
+													: ""
+											}`}
 										>
 											{opt.label}
 										</span>

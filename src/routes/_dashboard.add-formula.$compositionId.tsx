@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { FormulaModAgentPanel } from "@/agent/ui/FormulaModAgentPanel";
 import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
+import {
+	USER_SETTINGS_UPDATED_EVENT,
+	type UserSettingsEffective,
+} from "@/utils/user-settings";
+
+type UserSettingsResponse = {
+	success?: boolean;
+	data?: Pick<UserSettingsEffective, "formula_mod_agent_collapsed">;
+	error?: string;
+};
 
 export const Route = createFileRoute("/_dashboard/add-formula/$compositionId")({
 	head: () => ({
@@ -29,6 +40,74 @@ function AddFormula() {
 	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
+		null,
+	);
+
+	const loadUserSettings = useCallback(() => {
+		let cancelled = false;
+
+		const run = async () => {
+			try {
+				const res = await authedFetch("/api/user-settings");
+				const json = (await res.json()) as UserSettingsResponse;
+
+				if (!cancelled) {
+					setIsSidebarCollapsed(
+						res.ok && json?.data?.formula_mod_agent_collapsed === true,
+					);
+				}
+			} catch {
+				if (!cancelled) {
+					setIsSidebarCollapsed(false);
+				}
+			}
+		};
+
+		void run();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	useEffect(() => {
+		const cleanup = loadUserSettings();
+		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		return () => {
+			cleanup();
+			window.removeEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
+		};
+	}, [loadUserSettings]);
+
+	const handleToggleSidebar = async () => {
+		if (isSidebarCollapsed === null) return;
+
+		const next = !isSidebarCollapsed;
+		setIsSidebarCollapsed(next);
+
+		try {
+			await authedFetch("/api/user-settings", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ formula_mod_agent_collapsed: next }),
+			});
+		} catch {
+			// Keep optimistic UI state even if save fails.
+		}
+	};
+
+	const handleCloseSidebar = async () => {
+		if (isSidebarCollapsed === true) return;
+
+		setIsSidebarCollapsed(true);
+		await authedFetch("/api/user-settings", {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ formula_mod_agent_collapsed: true }),
+		});
+	};
 
 	const handleAutofillFromPrevious = async () => {
 		setError(null);
@@ -88,6 +167,13 @@ function AddFormula() {
 		}
 	};
 
+	const handleApplyFromAgent = (nextIngredients: Ingredient[]) => {
+		setError(null);
+		setSuccess(false);
+		setPrefillIngredients(nextIngredients);
+		setFormResetKey((k) => k + 1);
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsSubmitting(true);
@@ -144,6 +230,22 @@ function AddFormula() {
 		}
 	};
 
+	if (isSidebarCollapsed === null) {
+		return (
+			<DashboardLayout
+				title="Compositions / Composition Details / Add Formula"
+				backButton={{
+					to: "/composition/$compositionId",
+					params: { compositionId },
+				}}
+				agentToggle={true}
+				showCogButton={true}
+			>
+				<></>
+			</DashboardLayout>
+		);
+	}
+
 	return (
 		<DashboardLayout
 			title="Compositions / Composition Details / Add Formula"
@@ -151,61 +253,83 @@ function AddFormula() {
 				to: "/composition/$compositionId",
 				params: { compositionId },
 			}}
+			agentToggle={true}
+			onAgentToggleClick={handleToggleSidebar}
+			showCogButton={true}
+			cogButtonHash="project-settings"
 		>
-			<div className="max-w-170 mx-auto">
-				<form onSubmit={handleSubmit} className={styles.formContainer}>
-					<FormulaIngredientsFields
-						key={formResetKey}
-						styleHeader={{ marginBottom: "1.5rem" }}
-						onIngredientsChange={setIngredients}
-						prefillIngredients={prefillIngredients}
-						headerRight={
-							<button
-								type="button"
-								onClick={handleAutofillFromPrevious}
-								disabled={isAutofilling || isSubmitting}
-								className={styles.formSubmitButton}
-								style={{
-									padding: "0.375rem 1.5rem",
-									fontWeight: "400",
-									fontSize: "0.875rem",
-								}}
-							>
-								{isAutofilling
-									? "Autofilling..."
-									: "Autofill with previous formula"}
-							</button>
-						}
-					/>
-
-					<div
-						className={styles.formSubmitButtonContainer}
-						style={{ marginTop: "0" }}
-					>
-						<button
-							type="submit"
-							disabled={isSubmitting}
-							className={styles.formSubmitButton}
-						>
-							{isSubmitting ? "Submitting..." : "+ Create Formula"}
-						</button>
-					</div>
-					{success && (
-						<SuccessMessage
-							message="Formula created successfully!"
-							link={{
-								text: "Go to Composition",
-								to: `/composition/${compositionId}`,
-							}}
-							onClose={() => setSuccess(false)}
+			<div
+				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
+			>
+				<div className={styles.formContainerWrapper}>
+					<form onSubmit={handleSubmit} className={styles.formContainer}>
+						<FormulaIngredientsFields
+							key={formResetKey}
+							styleHeader={{ marginBottom: "1.5rem" }}
+							onIngredientsChange={setIngredients}
+							prefillIngredients={prefillIngredients}
+							headerRight={
+								<button
+									type="button"
+									onClick={handleAutofillFromPrevious}
+									disabled={isAutofilling || isSubmitting}
+									className={styles.formSubmitButton}
+									style={{
+										padding: "0.375rem 1.5rem",
+										fontWeight: "400",
+										fontSize: "0.875rem",
+									}}
+								>
+									{isAutofilling
+										? "Autofilling..."
+										: "Autofill with previous formula"}
+								</button>
+							}
 						/>
-					)}
-					{error && (
-						<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-							{error}
+
+						<div
+							className={styles.formSubmitButtonContainer}
+							style={{ marginTop: "0" }}
+						>
+							<button
+								type="submit"
+								disabled={isSubmitting}
+								className={styles.formSubmitButton}
+							>
+								{isSubmitting ? "Submitting..." : "+ Create Formula"}
+							</button>
 						</div>
-					)}
-				</form>
+
+						{success && (
+							<SuccessMessage
+								message="Formula created successfully!"
+								link={{
+									text: "Go to Composition",
+									to: `/composition/${compositionId}`,
+								}}
+								onClose={() => setSuccess(false)}
+							/>
+						)}
+
+						{error && (
+							<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+								{error}
+							</div>
+						)}
+					</form>
+				</div>
+
+				<div className="dashboardSplitSidebar">
+					<div className="dashboardSplitSidebarSticky">
+						<div className="dashboardSplitSidebarClip">
+							<FormulaModAgentPanel
+								compositionId={compositionId}
+								hidePanel={handleCloseSidebar}
+								onApplyToForm={handleApplyFromAgent}
+							/>
+						</div>
+					</div>
+				</div>
 			</div>
 		</DashboardLayout>
 	);

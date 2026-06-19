@@ -33,6 +33,7 @@ import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
+import { Route as ApiAgentFormulaModChatRouteImport } from './routes/api/agent/formula-mod-chat'
 import { Route as ApiAgentCompositionChatRouteImport } from './routes/api/agent/composition-chat'
 import { Route as DashboardManageDilutionsMaterialIdRouteImport } from './routes/_dashboard.manage-dilutions.$materialId'
 import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/_dashboard.composition.$compositionId'
@@ -160,6 +161,11 @@ const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
   path: '/api/agent/raw-material-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgentFormulaModChatRoute = ApiAgentFormulaModChatRouteImport.update({
+  id: '/api/agent/formula-mod-chat',
+  path: '/api/agent/formula-mod-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAgentCompositionChatRoute = ApiAgentCompositionChatRouteImport.update({
   id: '/api/agent/composition-chat',
   path: '/api/agent/composition-chat',
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
   '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
+  '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
   '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
+  '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
@@ -279,6 +287,7 @@ export interface FileRoutesById {
   '/_dashboard/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
   '/_dashboard/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
+  '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
@@ -311,6 +320,7 @@ export interface FileRouteTypes {
     | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/composition-chat'
+    | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
     | '/api/compositions/$compositionId'
   fileRoutesByTo: FileRoutesByTo
@@ -341,6 +351,7 @@ export interface FileRouteTypes {
     | '/composition/$compositionId'
     | '/manage-dilutions/$materialId'
     | '/api/agent/composition-chat'
+    | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
     | '/api/compositions/$compositionId'
   id:
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/_dashboard/composition/$compositionId'
     | '/_dashboard/manage-dilutions/$materialId'
     | '/api/agent/composition-chat'
+    | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
     | '/api/compositions/$compositionId'
   fileRoutesById: FileRoutesById
@@ -391,6 +403,7 @@ export interface RootRouteChildren {
   ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
   ApiAgentCompositionChatRoute: typeof ApiAgentCompositionChatRoute
+  ApiAgentFormulaModChatRoute: typeof ApiAgentFormulaModChatRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
 }
 
@@ -564,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentRawMaterialChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agent/formula-mod-chat': {
+      id: '/api/agent/formula-mod-chat'
+      path: '/api/agent/formula-mod-chat'
+      fullPath: '/api/agent/formula-mod-chat'
+      preLoaderRoute: typeof ApiAgentFormulaModChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agent/composition-chat': {
       id: '/api/agent/composition-chat'
       path: '/api/agent/composition-chat'
@@ -667,6 +687,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUserSettingsRoute: ApiUserSettingsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
   ApiAgentCompositionChatRoute: ApiAgentCompositionChatRoute,
+  ApiAgentFormulaModChatRoute: ApiAgentFormulaModChatRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
 }
 export const routeTree = rootRouteImport
