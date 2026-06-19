@@ -40,10 +40,15 @@ function AddFormula() {
 	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+	const [hasSelectedAgentMod, setHasSelectedAgentMod] = useState(false);
+	const [hasUsedPreviousAutofill, setHasUsedPreviousAutofill] = useState(false);
 
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
+
+	const shouldHideAutofillButton =
+		hasSelectedAgentMod || hasUsedPreviousAutofill;
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -110,6 +115,7 @@ function AddFormula() {
 	};
 
 	const handleAutofillFromPrevious = async () => {
+		setHasUsedPreviousAutofill(true);
 		setError(null);
 		setIsAutofilling(true);
 
@@ -265,19 +271,24 @@ function AddFormula() {
 					<form onSubmit={handleSubmit} className={styles.formContainer}>
 						<FormulaIngredientsFields
 							key={formResetKey}
-							styleHeader={{ marginBottom: "1.5rem" }}
+							styleHeader={{ marginBottom: "1.5rem", minHeight: "2.5rem" }}
 							onIngredientsChange={setIngredients}
 							prefillIngredients={prefillIngredients}
 							headerRight={
 								<button
 									type="button"
 									onClick={handleAutofillFromPrevious}
-									disabled={isAutofilling || isSubmitting}
+									disabled={
+										isAutofilling || isSubmitting || shouldHideAutofillButton
+									}
+									aria-hidden={shouldHideAutofillButton}
 									className={styles.formSubmitButton}
 									style={{
 										padding: "0.375rem 1.5rem",
 										fontWeight: "400",
 										fontSize: "0.875rem",
+										visibility: shouldHideAutofillButton ? "hidden" : "visible",
+										pointerEvents: shouldHideAutofillButton ? "none" : "auto",
 									}}
 								>
 									{isAutofilling
@@ -326,6 +337,7 @@ function AddFormula() {
 								compositionId={compositionId}
 								hidePanel={handleCloseSidebar}
 								onApplyToForm={handleApplyFromAgent}
+								onFirstModSelected={() => setHasSelectedAgentMod(true)}
 							/>
 						</div>
 					</div>

@@ -13,6 +13,7 @@ type FormulaModAgentPanelProps = {
 	compositionId: string;
 	hidePanel: () => void;
 	onApplyToForm?: (ingredients: Ingredient[]) => void;
+	onFirstModSelected?: () => void;
 };
 
 type CompositionFormulaLine = {
@@ -156,6 +157,7 @@ export function FormulaModAgentPanel({
 	compositionId,
 	hidePanel,
 	onApplyToForm,
+	onFirstModSelected,
 }: FormulaModAgentPanelProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([
 		{
@@ -411,6 +413,7 @@ export function FormulaModAgentPanel({
 				choiceId;
 
 			setSelectedFormulaId(choiceId);
+			onFirstModSelected?.();
 			setChangeRequest(null);
 			setPendingApplyIngredients(null);
 			setShowStartOverAction(false);
