@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { LabelInput } from "@/components/LabelInput";
+import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
@@ -14,11 +15,18 @@ import SuccessMessage from "@/components/SuccessMessage";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 import { nameFromAgentProposal, toTitleCaseWords } from "@/utils/display-names";
 import {
+	findMaterialByName,
+	findMaterialByCas,
+	getIfraStatuses,
+	IFRA_STATUS_ORDER,
+} from "@/utils/ifra";
+import {
 	USER_SETTINGS_UPDATED_EVENT,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
 import { notifyNavEligibilityUpdated } from "@/utils/nav-eligibility";
 import { HEADER_HINT_IDS } from "@/utils/toast-settings";
+import type { IfraStatus, MaterialRecord } from "@/curation/materials/types";
 
 export const Route = createFileRoute("/_dashboard/add-raw-material")({
 	head: () => ({
@@ -69,6 +77,52 @@ function AddRawMaterial() {
 	const [materialNatureEnabled, setMaterialNatureEnabled] = useState<
 		boolean | null
 	>(null);
+
+	const curatedMaterialMatch = useMemo(() => {
+		const fromName = findMaterialByName(name);
+		let fromCas: MaterialRecord | null = null;
+
+		if (casNumberEnabled) {
+			const normalized = normalizeCasNumber(casNumber);
+			if (normalized && isValidCasNumber(normalized)) {
+				fromCas = findMaterialByCas(normalized);
+			}
+		}
+
+		return { fromName, fromCas };
+	}, [name, casNumber, casNumberEnabled]);
+
+	const ifraStatuses = useMemo(() => {
+		const materials = new Map<string, MaterialRecord>();
+
+		if (curatedMaterialMatch.fromName) {
+			materials.set(
+				curatedMaterialMatch.fromName.canonicalName,
+				curatedMaterialMatch.fromName,
+			);
+		}
+		if (curatedMaterialMatch.fromCas) {
+			materials.set(
+				curatedMaterialMatch.fromCas.canonicalName,
+				curatedMaterialMatch.fromCas,
+			);
+		}
+
+		const found = new Set<IfraStatus>();
+		for (const material of materials.values()) {
+			for (const status of getIfraStatuses(material)) {
+				found.add(status);
+			}
+		}
+
+		return IFRA_STATUS_ORDER.filter((status) => found.has(status));
+	}, [curatedMaterialMatch]);
+
+	const showIdentityMismatch = useMemo(() => {
+		const { fromName, fromCas } = curatedMaterialMatch;
+		if (!fromName || !fromCas) return false;
+		return fromName.canonicalName !== fromCas.canonicalName;
+	}, [curatedMaterialMatch]);
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -327,16 +381,18 @@ function AddRawMaterial() {
 						className={`${styles.formContainer} space-y-6 bg-[#10151C] py-8 px-6 rounded-lg border border-[#464859]`}
 					>
 						<div className="space-y-4">
-							<TextInput
-								label="Name"
-								value={name}
-								onChange={(value) => {
-									setName(value);
-									setError("");
-								}}
-								placeholder="e.g. Ambroxan"
-								required
-							/>
+							<div>
+								<TextInput
+									label="Name"
+									value={name}
+									onChange={(value) => {
+										setName(value);
+										setError("");
+									}}
+									placeholder="e.g. Ambroxan"
+									required
+								/>
+							</div>
 
 							{casNumberEnabled && (
 								<TextInput
@@ -348,6 +404,26 @@ function AddRawMaterial() {
 									}}
 									placeholder="e.g. 6790-58-5"
 								/>
+							)}
+
+							{ifraStatuses.length > 0 && (
+								<div
+									className={`flex items-center gap-2 mt-2 ${styles.noteChipContainer}`}
+								>
+									<span className="text-sm text-gray-500">IFRA:</span>
+									{ifraStatuses.map((status) => (
+										<IfraStatusLabel key={status} status={status} />
+									))}
+								</div>
+							)}
+
+							{showIdentityMismatch && (
+								<p className="text-xs text-amber-300 mt-1">
+									Name and CAS match different IFRA materials (
+									{curatedMaterialMatch.fromName!.canonicalName} vs{" "}
+									{curatedMaterialMatch.fromCas!.canonicalName}). One of them
+									may be wrong.
+								</p>
 							)}
 
 							{bottleLabelEnabled && (
