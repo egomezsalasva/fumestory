@@ -127,6 +127,24 @@ function AddRawMaterial() {
 		return fromName.canonicalName !== fromCas.canonicalName;
 	}, [curatedMaterialMatch]);
 
+	const showCasMismatch = useMemo(() => {
+		const { fromName, fromCas } = curatedMaterialMatch;
+
+		if (!fromName || !casNumberEnabled) return false;
+
+		const normalized = normalizeCasNumber(casNumber);
+		if (!normalized || !isValidCasNumber(normalized)) return false;
+
+		if (fromCas && fromCas.canonicalName !== fromName.canonicalName) {
+			return false;
+		}
+
+		if (fromCas?.canonicalName === fromName.canonicalName) return false;
+		if (fromName.cas?.includes(normalized)) return false;
+
+		return true;
+	}, [curatedMaterialMatch, casNumber, casNumberEnabled]);
+
 	useEffect(() => {
 		if (selectedIfraStatus && !ifraStatuses.includes(selectedIfraStatus)) {
 			setSelectedIfraStatus(null);
@@ -437,6 +455,14 @@ function AddRawMaterial() {
 									{curatedMaterialMatch.fromName!.canonicalName} vs{" "}
 									{curatedMaterialMatch.fromCas!.canonicalName}). One of them
 									may be wrong.
+								</p>
+							)}
+
+							{showCasMismatch && (
+								<p className="text-xs text-amber-300 mt-1">
+									The CAS number doesn&apos;t match the known CAS numbers for{" "}
+									{curatedMaterialMatch.fromName!.canonicalName}. Please verify
+									manually.
 								</p>
 							)}
 
