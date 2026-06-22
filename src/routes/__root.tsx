@@ -23,7 +23,6 @@ const posthogOptions = {
 	defaults: "2026-01-30",
 	capture_pageview: "history_change",
 	autocapture: true,
-	disable_session_recording: true,
 } as const;
 
 const organizationJsonLd = {
