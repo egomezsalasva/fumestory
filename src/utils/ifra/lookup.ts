@@ -1,5 +1,9 @@
 import { curatedMaterialsData } from "@/curation/materials/data";
-import type { IfraStatus, MaterialRecord } from "@/curation/materials/types";
+import type {
+	IfraRule,
+	IfraStatus,
+	MaterialRecord,
+} from "@/curation/materials/types";
 
 export const IFRA_STATUS_ORDER: IfraStatus[] = [
 	"prohibition",
@@ -50,4 +54,33 @@ export function getIfraStatuses(material: MaterialRecord): IfraStatus[] {
 	}
 
 	return IFRA_STATUS_ORDER.filter((status) => found.has(status));
+}
+
+export function collectMatchedMaterials(
+	fromName: MaterialRecord | null,
+	fromCas: MaterialRecord | null,
+): MaterialRecord[] {
+	const materials = new Map<string, MaterialRecord>();
+	if (fromName) materials.set(fromName.canonicalName, fromName);
+	if (fromCas) materials.set(fromCas.canonicalName, fromCas);
+	return [...materials.values()];
+}
+
+export type IfraMaterialRules = {
+	material: MaterialRecord;
+	rules: IfraRule[];
+};
+
+export function getIfraRulesForStatus(
+	materials: MaterialRecord[],
+	status: IfraStatus,
+): IfraMaterialRules[] {
+	return materials
+		.map((material) => ({
+			material,
+			rules: (material.regulatory?.ifra?.rules ?? []).filter(
+				(rule) => rule.status === status,
+			),
+		}))
+		.filter((entry) => entry.rules.length > 0);
 }

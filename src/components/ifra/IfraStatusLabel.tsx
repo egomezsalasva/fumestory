@@ -17,16 +17,20 @@ const statusConfig: Record<IfraStatus, { label: string; className: string }> = {
 
 type IfraStatusLabelProps = {
 	status: IfraStatus;
+	onClick?: () => void;
 };
 
-export function IfraStatusLabel({ status }: IfraStatusLabelProps) {
+export function IfraStatusLabel({ status, onClick }: IfraStatusLabelProps) {
 	const { label, className } = statusConfig[status];
 
 	return (
-		<span
-			className={`inline-flex items-center px-2 py-1 rounded text-sm border ${className}`}
+		<button
+			type="button"
+			onClick={onClick}
+			aria-label={`View IFRA ${label} details`}
+			className={`inline-flex items-center px-2 py-1 rounded text-sm border cursor-pointer hover:opacity-80 ${className}`}
 		>
 			{label}
-		</span>
+		</button>
 	);
 }

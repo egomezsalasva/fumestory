@@ -6,6 +6,7 @@ import { Select } from "@/components/Select";
 import { NotesAutocomplete } from "@/components/NotesAutocomplete";
 import { LabelInput } from "@/components/LabelInput";
 import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
+import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
@@ -18,6 +19,8 @@ import {
 	findMaterialByName,
 	findMaterialByCas,
 	getIfraStatuses,
+	collectMatchedMaterials,
+	getIfraRulesForStatus,
 	IFRA_STATUS_ORDER,
 } from "@/utils/ifra";
 import {
@@ -63,6 +66,8 @@ function AddRawMaterial() {
 	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
+	const [selectedIfraStatus, setSelectedIfraStatus] =
+		useState<IfraStatus | null>(null);
 
 	// null = loading settings, true/false = resolved preference
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
@@ -92,37 +97,41 @@ function AddRawMaterial() {
 		return { fromName, fromCas };
 	}, [name, casNumber, casNumberEnabled]);
 
-	const ifraStatuses = useMemo(() => {
-		const materials = new Map<string, MaterialRecord>();
-
-		if (curatedMaterialMatch.fromName) {
-			materials.set(
-				curatedMaterialMatch.fromName.canonicalName,
+	const matchedMaterials = useMemo(
+		() =>
+			collectMatchedMaterials(
 				curatedMaterialMatch.fromName,
-			);
-		}
-		if (curatedMaterialMatch.fromCas) {
-			materials.set(
-				curatedMaterialMatch.fromCas.canonicalName,
 				curatedMaterialMatch.fromCas,
-			);
-		}
+			),
+		[curatedMaterialMatch],
+	);
 
+	const ifraStatuses = useMemo(() => {
 		const found = new Set<IfraStatus>();
-		for (const material of materials.values()) {
+		for (const material of matchedMaterials) {
 			for (const status of getIfraStatuses(material)) {
 				found.add(status);
 			}
 		}
-
 		return IFRA_STATUS_ORDER.filter((status) => found.has(status));
-	}, [curatedMaterialMatch]);
+	}, [matchedMaterials]);
+
+	const selectedIfraEntries = useMemo(() => {
+		if (!selectedIfraStatus) return [];
+		return getIfraRulesForStatus(matchedMaterials, selectedIfraStatus);
+	}, [matchedMaterials, selectedIfraStatus]);
 
 	const showIdentityMismatch = useMemo(() => {
 		const { fromName, fromCas } = curatedMaterialMatch;
 		if (!fromName || !fromCas) return false;
 		return fromName.canonicalName !== fromCas.canonicalName;
 	}, [curatedMaterialMatch]);
+
+	useEffect(() => {
+		if (selectedIfraStatus && !ifraStatuses.includes(selectedIfraStatus)) {
+			setSelectedIfraStatus(null);
+		}
+	}, [ifraStatuses, selectedIfraStatus]);
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -330,6 +339,7 @@ function AddRawMaterial() {
 			setNoteType("");
 			setMaterialNature("");
 			setNotes([]);
+			setSelectedIfraStatus(null);
 			notifyNavEligibilityUpdated({ hasRawMaterials: true });
 			setSuccessMessage("Raw material added successfully!");
 		} catch {
@@ -412,7 +422,11 @@ function AddRawMaterial() {
 								>
 									<span className="text-sm text-gray-500">IFRA:</span>
 									{ifraStatuses.map((status) => (
-										<IfraStatusLabel key={status} status={status} />
+										<IfraStatusLabel
+											key={status}
+											status={status}
+											onClick={() => setSelectedIfraStatus(status)}
+										/>
 									))}
 								</div>
 							)}
@@ -510,6 +524,14 @@ function AddRawMaterial() {
 							)}
 						</div>
 					</form>
+
+					{selectedIfraStatus && (
+						<IfraRuleModal
+							status={selectedIfraStatus}
+							entries={selectedIfraEntries}
+							onClose={() => setSelectedIfraStatus(null)}
+						/>
+					)}
 				</div>
 				<div className="dashboardSplitSidebar">
 					<div className="dashboardSplitSidebarSticky">
