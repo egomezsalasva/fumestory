@@ -68,32 +68,29 @@ const MarketingFeaturesSection = ({
 					</p>
 				</FeatureItem>
 
-				<FeatureItem title="Inventory Agent" styles={styles}>
+				<FeatureItem title="IFRA Compliance" styles={styles}>
 					<p>
-						The Inventory Agent is a AI assistant that helps with adding new raw
-						materials to the inventory. It will fetch the needed information
-						from the AI model and format it so you can autocomplete the form in
-						seconds.
+						When adding a raw material name or CAS number, you will get IFRA
+						Standard Category 4 warnings including prohibition, restriction, or
+						specification details.
 					</p>
-					<p>This significantly speeds up the data entry process.</p>
+					<p>
+						If enabled, you will get restrictions warnings on formulas when
+						going over the allowed percentage.
+					</p>
 				</FeatureItem>
 
-				<FeatureItem
-					title="Formulas Agent"
-					image="/formulas.webp"
-					styles={styles}
-				>
+				<FeatureItem title="Agents" image="/formulas.webp" styles={styles}>
 					<p>
-						The Formulas Agent is a AI assistant that helps with creating
-						compositions and formulas. You can let the agent know what your idea
-						is or you can give it a reference of a perfume you like and it will
-						suggest you a formula to start with. You can let the agent know if
-						you want to exclusively use raw materials from your inventory or if
-						you want the agent to suggest additional materials.
+						Fumestory has three agents to assist you. The Raw Materials Agent
+						helps with data entry. The Compositions Agent helps you create a
+						starter formula. The Formula Mod Agent helps you modify and improve
+						the composition you are working on.
 					</p>
 					<p>
-						Once you have a starting point, the agent will keep on helping you
-						with iterations to fine-tune the formula to your liking.
+						You can easily disable agents if you prefer to work without AI
+						assistance and it will save in your settings and not show up again
+						unless you re-enable them.
 					</p>
 				</FeatureItem>
 
