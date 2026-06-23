@@ -1,5 +1,6 @@
 export type FeatureId =
 	| "add-raw-material"
+	| "raw-material-ifra-standards"
 	| "raw-materials-agent"
 	| "raw-materials-table"
 	| "cas-number"
@@ -14,6 +15,7 @@ export type FeatureId =
 	| "compositions-table"
 	| "composition-details"
 	| "add-formula"
+	| "ifra-standard-formula"
 	| "autofill-with-previous-formula"
 	| "formula-mod-agent"
 	| "bottle-labels"
@@ -58,6 +60,16 @@ export const FEATURE_SECTIONS: FeatureSectionDefinition[] = [
 					"cas-number",
 					"material-nature",
 				],
+			},
+			{
+				id: "raw-material-ifra-standards",
+				title: "Raw Material IFRA Standards",
+				descriptions: [
+					"Get IFRA Standard Category 4 warnings including prohibition, restriction, or specification details when adding a material name or CAS number.",
+					"View detailed modal with information about the IFRA Standard and open the official IFRA Standard PDF.",
+				],
+				image: "/features/raw-material-ifra-standards.webp",
+				relatedFeatureIds: ["add-raw-material", "ifra-standard-formula"],
 			},
 			{
 				id: "raw-materials-agent",
