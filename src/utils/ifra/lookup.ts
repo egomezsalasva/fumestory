@@ -1,4 +1,4 @@
-import { curatedMaterialsData } from "@/curation/materials/data";
+import { curatedMaterialsData } from "@/curation/materials/data/data";
 import type {
 	IfraRule,
 	IfraStatus,
