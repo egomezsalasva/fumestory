@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MaterialsQuizRouteImport } from './routes/materials-quiz'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -40,6 +41,11 @@ import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/
 import { Route as DashboardAddFormulaCompositionIdRouteImport } from './routes/_dashboard.add-formula.$compositionId'
 import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboard.account.$pathname'
 
+const MaterialsQuizRoute = MaterialsQuizRouteImport.update({
+  id: '/materials-quiz',
+  path: '/materials-quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
@@ -199,6 +205,7 @@ const DashboardAccountPathnameRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/features': typeof FeaturesRoute
+  '/materials-quiz': typeof MaterialsQuizRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/features': typeof FeaturesRoute
+  '/materials-quiz': typeof MaterialsQuizRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
   '/features': typeof FeaturesRoute
+  '/materials-quiz': typeof MaterialsQuizRoute
   '/_dashboard/add-composition': typeof DashboardAddCompositionRoute
   '/_dashboard/add-dilution': typeof DashboardAddDilutionRoute
   '/_dashboard/add-feedback': typeof DashboardAddFeedbackRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/features'
+    | '/materials-quiz'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/features'
+    | '/materials-quiz'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_dashboard'
     | '/features'
+    | '/materials-quiz'
     | '/_dashboard/add-composition'
     | '/_dashboard/add-dilution'
     | '/_dashboard/add-feedback'
@@ -392,6 +404,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   FeaturesRoute: typeof FeaturesRoute
+  MaterialsQuizRoute: typeof MaterialsQuizRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
@@ -409,6 +422,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/materials-quiz': {
+      id: '/materials-quiz'
+      path: '/materials-quiz'
+      fullPath: '/materials-quiz'
+      preLoaderRoute: typeof MaterialsQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/features': {
       id: '/features'
       path: '/features'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   FeaturesRoute: FeaturesRoute,
+  MaterialsQuizRoute: MaterialsQuizRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,

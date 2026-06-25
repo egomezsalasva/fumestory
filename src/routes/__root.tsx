@@ -92,7 +92,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 	// Public pages: login/index and all /auth/* routes
 	const isPublic =
-		path === "/" || path.startsWith("/auth/") || path.startsWith("/features");
+		path === "/" ||
+		path.startsWith("/auth/") ||
+		path.startsWith("/features") ||
+		path.startsWith("/materials-quiz");
 
 	return (
 		<html lang="en">
