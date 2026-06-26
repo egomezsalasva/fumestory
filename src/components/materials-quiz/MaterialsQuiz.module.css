@@ -59,8 +59,26 @@
 	white-space: nowrap;
 }
 
+.learnProgress {
+	font-size: 0.875rem;
+	color: rgb(255 255 255 / 0.5);
+	text-align: center;
+	margin: 0 0 1.25rem;
+}
+
+.learnHint {
+	font-size: 0.875rem;
+	color: rgb(255 255 255 / 0.75);
+	text-align: center;
+	margin: 0 0 1.25rem;
+}
+
 .quizMaterialSection {
 	margin-bottom: 1.5rem;
+}
+
+.quizMaterialSection + .revealCards {
+	margin-top: 0;
 }
 
 .quizOptionsSection {
@@ -241,4 +259,54 @@
 	display: flex;
 	justify-content: center;
 	margin-top: 1.25rem;
+}
+
+.lessonCompleteCard {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.25rem;
+	padding: 2rem 1.5rem;
+	text-align: center;
+}
+
+.lessonCompleteTitle {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1.5rem;
+	line-height: 1.2;
+	margin: 0;
+	color: #f5f7fa;
+}
+
+.lessonCompleteStreak {
+	font-size: 1.125rem;
+	font-weight: 500;
+	color: rgb(187 247 208);
+	margin: 0;
+}
+
+.lessonStartOverTitle {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1.5rem;
+	line-height: 1.2;
+	margin: 0;
+	color: #f5f7fa;
+}
+
+.lessonStreakAchieved {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 2rem;
+	line-height: 1.1;
+	margin: 0;
+	color: rgb(187 247 208);
+}
+
+.lessonStartOverMessage {
+	font-size: 0.875rem;
+	color: rgb(255 255 255 / 0.65);
+	margin: 0;
+	max-width: 20rem;
 }

@@ -4,6 +4,7 @@ import {
 	getMaterialProducerSources,
 	getSourceLink,
 } from "@/components/materials-quiz/utils/materialSources";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 type QuizAnswerRevealProps = {
 	material: MaterialRecord;
@@ -51,7 +52,7 @@ export default function QuizAnswerReveal({
 												: quizStyles.revealNoteChip
 										}
 									>
-										{note}
+										{toTitleCaseWords(note)}
 									</li>
 								);
 							})}

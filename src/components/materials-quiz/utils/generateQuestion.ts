@@ -73,3 +73,34 @@ export function generateQuestion(materials: MaterialRecord[]): QuizQuestion {
 		options,
 	};
 }
+
+export function generateQuestionForMaterial(
+	material: MaterialRecord,
+	allMaterials: MaterialRecord[],
+): QuizQuestion {
+	const materialNotes = getMaterialProducerNotes(material);
+
+	if (materialNotes.length === 0) {
+		throw new Error(
+			`Material "${material.canonicalName}" has no producer notes`,
+		);
+	}
+
+	const correctNote = pickRandomItem(materialNotes);
+	const pool = getProducerNotesPool(allMaterials);
+	const materialNoteKeys = new Set(
+		materialNotes.map((note) => note.toLowerCase()),
+	);
+	const distractorPool = pool.filter(
+		(note) => !materialNoteKeys.has(note.toLowerCase()),
+	);
+	const distractors = pickRandomItems(distractorPool, 3);
+	const options = shuffle([correctNote, ...distractors]);
+
+	return {
+		material,
+		displayNames: getMaterialDisplayNames(material),
+		correctNote,
+		options,
+	};
+}
