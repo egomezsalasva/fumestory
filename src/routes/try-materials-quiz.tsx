@@ -4,7 +4,7 @@ import MarketingHeaderSection from "@/components/home-page/sections/MarketingHea
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
 import MaterialsQuiz from "@/components/materials-quiz/MaterialsQuiz";
 
-export const Route = createFileRoute("/materials-quiz")({
+export const Route = createFileRoute("/try-materials-quiz")({
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Materials Quiz" },

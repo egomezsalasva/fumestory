@@ -543,6 +543,22 @@ function RouteComponent() {
 								<input
 									type="checkbox"
 									className="mr-2"
+									checked={settings?.materials_quiz_enabled ?? true}
+									disabled={settings === null || saving}
+									onChange={(e) => {
+										void patchUserSettings({
+											materials_quiz_enabled: e.target.checked,
+										});
+									}}
+								/>
+								Materials Quiz
+							</label>
+						</li>
+						<li>
+							<label className="inline-flex items-center text-slate-200 cursor-pointer">
+								<input
+									type="checkbox"
+									className="mr-2"
 									checked={settings?.guest_feedback_enabled ?? false}
 									disabled={settings === null || saving}
 									onChange={(e) => {

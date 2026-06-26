@@ -147,6 +147,10 @@ const SideNav = () => {
 		setIsAccountMenuOpen(false);
 	};
 
+	const showLearningSection =
+		eligibility?.materialsQuizEnabled === true ||
+		eligibility?.scentBlindTestEnabled === true;
+
 	return (
 		<header className={styles.container}>
 			<nav>
@@ -237,26 +241,38 @@ const SideNav = () => {
 							)}
 						</div>
 					</div>
-					{eligibility?.scentBlindTestEnabled === true && (
+					{showLearningSection && (
 						<div className={styles.navBodySection}>
 							<div className={styles.navBodySectionTitle}>LEARNING</div>
 							<div className={styles.navBodySectionItems}>
-								<NavBodySectionItem
-									icon={<PercentageIcon />}
-									to="/scent-knowledge"
-									title="Scent Knowledge"
-									addOnPill
-									disabled={!eligibility.hasScentTests}
-									disabledTooltip="Add a Scent Blind Test to view"
-								/>
-								<NavBodySectionItem
-									icon={<EyeIcon />}
-									to="/scent-blind-test"
-									title="Scent Blind Test"
-									addOnPill
-									disabled={!eligibility.hasDilutions}
-									disabledTooltip="Add a Dilution to view"
-								/>
+								{eligibility?.materialsQuizEnabled === true && (
+									<NavBodySectionItem
+										icon={<BoxIcon />}
+										to="/materials-quiz"
+										title="Materials Quiz"
+										addOnPill
+									/>
+								)}
+								{eligibility?.scentBlindTestEnabled === true && (
+									<>
+										<NavBodySectionItem
+											icon={<PercentageIcon />}
+											to="/scent-knowledge"
+											title="Scent Knowledge"
+											addOnPill
+											disabled={!eligibility.hasScentTests}
+											disabledTooltip="Add a Scent Blind Test to view"
+										/>
+										<NavBodySectionItem
+											icon={<EyeIcon />}
+											to="/scent-blind-test"
+											title="Scent Blind Test"
+											addOnPill
+											disabled={!eligibility.hasDilutions}
+											disabledTooltip="Add a Dilution to view"
+										/>
+									</>
+								)}
 							</div>
 						</div>
 					)}

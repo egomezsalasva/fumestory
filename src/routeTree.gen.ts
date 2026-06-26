@@ -9,7 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MaterialsQuizRouteImport } from './routes/materials-quiz'
+import { Route as TryMaterialsQuizRouteImport } from './routes/try-materials-quiz'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -26,6 +26,7 @@ import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 import { Route as DashboardScentKnowledgeRouteImport } from './routes/_dashboard.scent-knowledge'
 import { Route as DashboardScentBlindTestRouteImport } from './routes/_dashboard.scent-blind-test'
 import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
+import { Route as DashboardMaterialsQuizRouteImport } from './routes/_dashboard.materials-quiz'
 import { Route as DashboardInventoryRouteImport } from './routes/_dashboard.inventory'
 import { Route as DashboardCompositionsRouteImport } from './routes/_dashboard.compositions'
 import { Route as DashboardAddRawMaterialRouteImport } from './routes/_dashboard.add-raw-material'
@@ -41,9 +42,9 @@ import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/
 import { Route as DashboardAddFormulaCompositionIdRouteImport } from './routes/_dashboard.add-formula.$compositionId'
 import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboard.account.$pathname'
 
-const MaterialsQuizRoute = MaterialsQuizRouteImport.update({
-  id: '/materials-quiz',
-  path: '/materials-quiz',
+const TryMaterialsQuizRoute = TryMaterialsQuizRouteImport.update({
+  id: '/try-materials-quiz',
+  path: '/try-materials-quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeaturesRoute = FeaturesRouteImport.update({
@@ -126,6 +127,11 @@ const DashboardProjectSettingsRoute =
     path: '/project-settings',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardMaterialsQuizRoute = DashboardMaterialsQuizRouteImport.update({
+  id: '/materials-quiz',
+  path: '/materials-quiz',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardInventoryRoute = DashboardInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -205,13 +211,14 @@ const DashboardAccountPathnameRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/features': typeof FeaturesRoute
-  '/materials-quiz': typeof MaterialsQuizRoute
+  '/try-materials-quiz': typeof TryMaterialsQuizRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
   '/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
+  '/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
@@ -237,13 +244,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/features': typeof FeaturesRoute
-  '/materials-quiz': typeof MaterialsQuizRoute
+  '/try-materials-quiz': typeof TryMaterialsQuizRoute
   '/add-composition': typeof DashboardAddCompositionRoute
   '/add-dilution': typeof DashboardAddDilutionRoute
   '/add-feedback': typeof DashboardAddFeedbackRoute
   '/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
+  '/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
@@ -271,13 +279,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
   '/features': typeof FeaturesRoute
-  '/materials-quiz': typeof MaterialsQuizRoute
+  '/try-materials-quiz': typeof TryMaterialsQuizRoute
   '/_dashboard/add-composition': typeof DashboardAddCompositionRoute
   '/_dashboard/add-dilution': typeof DashboardAddDilutionRoute
   '/_dashboard/add-feedback': typeof DashboardAddFeedbackRoute
   '/_dashboard/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/_dashboard/compositions': typeof DashboardCompositionsRoute
   '/_dashboard/inventory': typeof DashboardInventoryRoute
+  '/_dashboard/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
   '/_dashboard/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/_dashboard/scent-knowledge': typeof DashboardScentKnowledgeRoute
@@ -305,13 +314,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/features'
-    | '/materials-quiz'
+    | '/try-materials-quiz'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
+    | '/materials-quiz'
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
@@ -337,13 +347,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/features'
-    | '/materials-quiz'
+    | '/try-materials-quiz'
     | '/add-composition'
     | '/add-dilution'
     | '/add-feedback'
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
+    | '/materials-quiz'
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
@@ -370,13 +381,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_dashboard'
     | '/features'
-    | '/materials-quiz'
+    | '/try-materials-quiz'
     | '/_dashboard/add-composition'
     | '/_dashboard/add-dilution'
     | '/_dashboard/add-feedback'
     | '/_dashboard/add-raw-material'
     | '/_dashboard/compositions'
     | '/_dashboard/inventory'
+    | '/_dashboard/materials-quiz'
     | '/_dashboard/project-settings'
     | '/_dashboard/scent-blind-test'
     | '/_dashboard/scent-knowledge'
@@ -404,7 +416,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   FeaturesRoute: typeof FeaturesRoute
-  MaterialsQuizRoute: typeof MaterialsQuizRoute
+  TryMaterialsQuizRoute: typeof TryMaterialsQuizRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
@@ -422,11 +434,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/materials-quiz': {
-      id: '/materials-quiz'
-      path: '/materials-quiz'
-      fullPath: '/materials-quiz'
-      preLoaderRoute: typeof MaterialsQuizRouteImport
+    '/try-materials-quiz': {
+      id: '/try-materials-quiz'
+      path: '/try-materials-quiz'
+      fullPath: '/try-materials-quiz'
+      preLoaderRoute: typeof TryMaterialsQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/features': {
@@ -541,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProjectSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/materials-quiz': {
+      id: '/_dashboard/materials-quiz'
+      path: '/materials-quiz'
+      fullPath: '/materials-quiz'
+      preLoaderRoute: typeof DashboardMaterialsQuizRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/inventory': {
       id: '/_dashboard/inventory'
       path: '/inventory'
@@ -649,6 +668,7 @@ interface DashboardRouteChildren {
   DashboardAddRawMaterialRoute: typeof DashboardAddRawMaterialRoute
   DashboardCompositionsRoute: typeof DashboardCompositionsRoute
   DashboardInventoryRoute: typeof DashboardInventoryRoute
+  DashboardMaterialsQuizRoute: typeof DashboardMaterialsQuizRoute
   DashboardProjectSettingsRoute: typeof DashboardProjectSettingsRoute
   DashboardScentBlindTestRoute: typeof DashboardScentBlindTestRoute
   DashboardScentKnowledgeRoute: typeof DashboardScentKnowledgeRoute
@@ -665,6 +685,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAddRawMaterialRoute: DashboardAddRawMaterialRoute,
   DashboardCompositionsRoute: DashboardCompositionsRoute,
   DashboardInventoryRoute: DashboardInventoryRoute,
+  DashboardMaterialsQuizRoute: DashboardMaterialsQuizRoute,
   DashboardProjectSettingsRoute: DashboardProjectSettingsRoute,
   DashboardScentBlindTestRoute: DashboardScentBlindTestRoute,
   DashboardScentKnowledgeRoute: DashboardScentKnowledgeRoute,
@@ -696,7 +717,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   FeaturesRoute: FeaturesRoute,
-  MaterialsQuizRoute: MaterialsQuizRoute,
+  TryMaterialsQuizRoute: TryMaterialsQuizRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,

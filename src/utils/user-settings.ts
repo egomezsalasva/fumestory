@@ -44,6 +44,7 @@ export type UserSettingsJson = {
 	raw_material_agent_collapsed?: boolean;
 	formula_mod_agent_collapsed?: boolean;
 	scent_blind_test_enabled?: boolean;
+	materials_quiz_enabled?: boolean;
 };
 
 export type UserSettingsEffective = {
@@ -60,6 +61,7 @@ export type UserSettingsEffective = {
 	raw_material_agent_collapsed: boolean;
 	formula_mod_agent_collapsed: boolean;
 	scent_blind_test_enabled: boolean;
+	materials_quiz_enabled: boolean;
 };
 
 export type UserSettingsRow = {
@@ -95,6 +97,7 @@ export const patchUserSettingsSchema = z
 		raw_material_agent_collapsed: z.boolean().optional(),
 		formula_mod_agent_collapsed: z.boolean().optional(),
 		scent_blind_test_enabled: z.boolean().optional(),
+		materials_quiz_enabled: z.boolean().optional(),
 	})
 	.refine(
 		(d) => {
@@ -110,6 +113,7 @@ export const patchUserSettingsSchema = z
 			if (typeof d.raw_material_agent_collapsed === "boolean") return true;
 			if (typeof d.formula_mod_agent_collapsed === "boolean") return true;
 			if (d.scent_blind_test_enabled !== undefined) return true;
+			if (d.materials_quiz_enabled !== undefined) return true;
 
 			const ic = d.inventory_columns;
 			if (
@@ -131,7 +135,7 @@ export const patchUserSettingsSchema = z
 		},
 		{
 			message:
-				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, material_nature_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, formula_mod_agent_collapsed, scent_blind_test_enabled, and/or at least one inventory or compositions column flag",
+				"Provide guest_feedback_enabled, guest_feedback_aggregate_note, bottle_label_enabled, composition_bottle_label_enabled, cas_number_enabled, material_nature_enabled, hide_raw_materials_without_available_dilutions, composition_agent_collapsed, raw_material_agent_collapsed, formula_mod_agent_collapsed, scent_blind_test_enabled, materials_quiz_enabled, and/or at least one inventory or compositions column flag",
 		},
 	);
 
@@ -213,6 +217,9 @@ export function parseUserSettingsJson(
 	}
 	if (typeof o.scent_blind_test_enabled === "boolean") {
 		out.scent_blind_test_enabled = o.scent_blind_test_enabled;
+	}
+	if (typeof o.materials_quiz_enabled === "boolean") {
+		out.materials_quiz_enabled = o.materials_quiz_enabled;
 	}
 	const inventoryCols = parseInventoryColumnsJson(o.inventory_columns);
 	if (inventoryCols) {
@@ -309,6 +316,7 @@ export function effectiveUserSettings(
 		raw_material_agent_collapsed: stored.raw_material_agent_collapsed === true,
 		formula_mod_agent_collapsed: stored.formula_mod_agent_collapsed === true,
 		scent_blind_test_enabled: stored.scent_blind_test_enabled === true,
+		materials_quiz_enabled: stored.materials_quiz_enabled !== false,
 	};
 }
 
@@ -383,6 +391,9 @@ export function mergeUserSettingsJson(
 	}
 	if (typeof patch.scent_blind_test_enabled === "boolean") {
 		merged.scent_blind_test_enabled = patch.scent_blind_test_enabled;
+	}
+	if (typeof patch.materials_quiz_enabled === "boolean") {
+		merged.materials_quiz_enabled = patch.materials_quiz_enabled;
 	}
 	return merged;
 }

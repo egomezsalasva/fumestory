@@ -95,7 +95,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		path === "/" ||
 		path.startsWith("/auth/") ||
 		path.startsWith("/features") ||
-		path.startsWith("/materials-quiz");
+		path.startsWith("/try-materials-quiz");
 
 	return (
 		<html lang="en">
