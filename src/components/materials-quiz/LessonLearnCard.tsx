@@ -5,6 +5,7 @@ import {
 	getMaterialProducerSources,
 	getSourceLink,
 } from "@/components/materials-quiz/utils";
+import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
 import {
 	capitalizeWordStartsIfLower,
 	toTitleCaseWords,
@@ -39,7 +40,7 @@ export default function LessonLearnCard({
 							{capitalizeWordStartsIfLower(name)}
 						</h2>
 					))}
-					{sources.length > 0 && (
+					{/* {sources.length > 0 && (
 						<div className={quizStyles.producerLogos}>
 							{sources.map((source) => (
 								<ProducerLogo
@@ -48,7 +49,7 @@ export default function LessonLearnCard({
 								/>
 							))}
 						</div>
-					)}
+					)} */}
 				</div>
 				<p className={quizStyles.materialCas}>
 					CAS: {material.cas?.join(", ") ?? "—"}
@@ -74,19 +75,28 @@ export default function LessonLearnCard({
 
 							{source.data.nameUsed && (
 								<p className={quizStyles.revealTradeName}>
-									{source.data.nameUsed}
+									{capitalizeWordStartsIfLower(source.data.nameUsed)}
 								</p>
 							)}
 
-							{/* <img src="https://res.cloudinary.com/cross-systems/image/upload/c_fill,f_auto,g_auto,q_auto,w_800,q_auto/firmenich.com/prod/sites/default/files/dam-medias/product/ingredient/981810/main/bbd93686-1cb523a893aebf1909b55024175c8c84-scentenal.jpg" alt={source.sourceName} className={quizStyles.revealImage} /> */}
-
 							<p className={quizStyles.revealLabel}>Notes</p>
 							<ul className={quizStyles.revealNotes}>
-								{notes.map((note) => (
-									<li key={note} className={quizStyles.revealNoteChip}>
-										{toTitleCaseWords(note)}
-									</li>
-								))}
+								{notes.map((note) => {
+									const dotStyle = getNoteDotStyle(note);
+
+									return (
+										<li key={note} className={quizStyles.revealNoteChip}>
+											{dotStyle ? (
+												<span
+													className={quizStyles.revealNoteDot}
+													style={{ background: dotStyle }}
+													aria-hidden="true"
+												/>
+											) : null}
+											<span>{toTitleCaseWords(note)}</span>
+										</li>
+									);
+								})}
 							</ul>
 
 							{href && (

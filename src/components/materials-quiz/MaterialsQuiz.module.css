@@ -290,6 +290,14 @@
 	color: #fff;
 }
 
+.revealNoteDot {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 9999px;
+	flex-shrink: 0;
+	margin-right: 0.375rem;
+}
+
 .gameActions {
 	display: flex;
 	justify-content: center;

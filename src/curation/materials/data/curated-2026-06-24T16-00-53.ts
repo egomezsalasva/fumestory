@@ -102,6 +102,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						pdfUrl:
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_PC_Datenblaetter/SYM_PC-Allyl_Phenoxyacetate.pdf",
+						nameUsed: "Allyl Phenoxyacetate",
 						notes: [
 							"green",
 							"tropical",
@@ -388,6 +389,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						pdfUrl:
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_PC_Datenblaetter/SYM_PC-Benzyl_Cinnamate.pdf",
+						nameUsed: "Benzyl Cinnamate",
 						notes: [
 							"balsamic",
 							"benzoin",

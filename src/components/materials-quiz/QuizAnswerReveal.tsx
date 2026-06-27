@@ -4,6 +4,7 @@ import {
 	getMaterialProducerSources,
 	getSourceLink,
 } from "@/components/materials-quiz/utils/materialSources";
+import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
 import { toTitleCaseWords } from "@/utils/display-names";
 
 type QuizAnswerRevealProps = {
@@ -42,6 +43,7 @@ export default function QuizAnswerReveal({
 							{notes.map((note) => {
 								const isCorrect =
 									note.toLowerCase() === correctNote.toLowerCase();
+								const dotStyle = getNoteDotStyle(note);
 
 								return (
 									<li
@@ -52,7 +54,14 @@ export default function QuizAnswerReveal({
 												: quizStyles.revealNoteChip
 										}
 									>
-										{toTitleCaseWords(note)}
+										{dotStyle ? (
+											<span
+												className={quizStyles.revealNoteDot}
+												style={{ background: dotStyle }}
+												aria-hidden="true"
+											/>
+										) : null}
+										<span>{toTitleCaseWords(note)}</span>
 									</li>
 								);
 							})}
