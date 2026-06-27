@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { authClient } from "auth";
 import MarketingHeaderSection from "@/components/home-page/sections/MarketingHeaderSection";
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
@@ -17,6 +18,34 @@ export const Route = createFileRoute("/try-materials-quiz")({
 function MaterialsQuizRoute() {
 	const { data } = authClient.useSession();
 	const isLoggedIn = !!data?.session;
+	const [ready, setReady] = useState(false);
+
+	useEffect(() => {
+		if (document.readyState === "complete") {
+			setReady(true);
+			return;
+		}
+		const onLoad = () => setReady(true);
+		window.addEventListener("load", onLoad);
+		return () => window.removeEventListener("load", onLoad);
+	}, []);
+
+	if (!ready) {
+		return (
+			<div className={homeStyles.container}>
+				<div
+					style={{
+						minHeight: "100vh",
+						display: "grid",
+						placeItems: "center",
+						color: "rgba(245,247,250,0.85)",
+					}}
+				>
+					Loading quiz...
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className={homeStyles.container}>
