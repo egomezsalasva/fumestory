@@ -232,9 +232,12 @@ export default function MaterialsQuiz() {
 	}
 
 	function handleStartOver() {
-		setLessonStreak(0);
+		const restartLevel = currentLevel;
+		const completedLessonsAtLevelStart = (restartLevel - 1) * LESSONS_PER_LEVEL;
+
+		setLessonStreak(completedLessonsAtLevelStart);
 		setLives(MAX_LIVES);
-		startNewLesson(1);
+		startNewLesson(restartLevel);
 	}
 
 	const completedLevel =
@@ -322,8 +325,9 @@ export default function MaterialsQuiz() {
 									aria-hidden="true"
 								/>
 								<p className={quizStyles.streak}>
-									Lesson {currentLevel} - {currentLessonInLevel}/
-									{LESSONS_PER_LEVEL}
+									{currentLevel === 3
+										? `Lesson streak: ${lessonStreak}`
+										: `Lesson ${currentLevel} - ${currentLessonInLevel}/${LESSONS_PER_LEVEL}`}
 								</p>
 							</div>
 
