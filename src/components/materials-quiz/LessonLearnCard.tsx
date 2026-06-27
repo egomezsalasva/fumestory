@@ -1,12 +1,15 @@
 import type { MaterialRecord } from "@/curation/materials/types";
-import formStyles from "@/components/Form.module.css";
 import quizStyles from "./MaterialsQuiz.module.css";
 import {
 	getMaterialDisplayNames,
 	getMaterialProducerSources,
 	getSourceLink,
 } from "@/components/materials-quiz/utils";
-import { toTitleCaseWords } from "@/utils/display-names";
+import {
+	capitalizeWordStartsIfLower,
+	toTitleCaseWords,
+} from "@/utils/display-names";
+import ProducerLogo from "@/components/svgs/ProducerLogo";
 
 type LessonLearnCardProps = {
 	material: MaterialRecord;
@@ -30,12 +33,22 @@ export default function LessonLearnCard({
 			<p className={quizStyles.learnHint}>Remember The Notes</p>
 
 			<div className={quizStyles.quizMaterialSection}>
-				<div className={quizStyles.materialNames}>
+				<div className={quizStyles.materialNameLine}>
 					{displayNames.map((name) => (
 						<h2 key={name} className={quizStyles.materialName}>
-							{toTitleCaseWords(name)}
+							{capitalizeWordStartsIfLower(name)}
 						</h2>
 					))}
+					{sources.length > 0 && (
+						<div className={quizStyles.producerLogos}>
+							{sources.map((source) => (
+								<ProducerLogo
+									key={source.sourceName}
+									sourceName={source.sourceName}
+								/>
+							))}
+						</div>
+					)}
 				</div>
 				<p className={quizStyles.materialCas}>
 					CAS: {material.cas?.join(", ") ?? "—"}
@@ -53,13 +66,19 @@ export default function LessonLearnCard({
 							className={quizStyles.revealCard}
 						>
 							<p className={quizStyles.revealLabel}>Source</p>
-							<p className={quizStyles.revealSourceName}>{source.sourceName}</p>
+							<div
+								className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
+							>
+								<ProducerLogo sourceName={source.sourceName} />
+							</div>
 
 							{source.data.nameUsed && (
 								<p className={quizStyles.revealTradeName}>
-									Trade name: {source.data.nameUsed}
+									{source.data.nameUsed}
 								</p>
 							)}
+
+							{/* <img src="https://res.cloudinary.com/cross-systems/image/upload/c_fill,f_auto,g_auto,q_auto,w_800,q_auto/firmenich.com/prod/sites/default/files/dam-medias/product/ingredient/981810/main/bbd93686-1cb523a893aebf1909b55024175c8c84-scentenal.jpg" alt={source.sourceName} className={quizStyles.revealImage} /> */}
 
 							<p className={quizStyles.revealLabel}>Notes</p>
 							<ul className={quizStyles.revealNotes}>
