@@ -3,21 +3,42 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 		"linear-gradient(120deg, rgba(173, 216, 230, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(70, 130, 180, 1) 100%)",
 	alcoholic: "linear-gradient(45deg, #A9C6E8 0%, #E0E0E0 50%, #B0C4DE 100%)",
 	aldehyde: "linear-gradient(135deg, #f0e68c, #d1d0f4, #a76d6d, #4d3f78)",
+	almond: "linear-gradient(135deg, #efc8b0 0%, #d5b48e 50%, #b09a76 100%)",
+	amber:
+		"linear-gradient(135deg, #FFC107 0%, #FFB300 33%, #FFA000 66%, #FF8F00 100%)",
+	ambergris: "linear-gradient(135deg, #6f5f4b 0%, #c3b9a6 50%, #d1b685 100%)",
 	animalic: "linear-gradient(135deg, #554B36 20%, #C5B07D 60%, #9D6B4E 100%)",
 	anis: "linear-gradient(120deg, #7B5B3A 30%, #A16E4C 60%, #C18A5B 100%)",
+	anthranilate:
+		"linear-gradient(135deg, #4B3C6D 0%, #69709D 40%, #7F91BD 70%, #B2C9E3 100%)",
 	apple: "linear-gradient(135deg, #FF4F00, #A8B400, #A8C300, #FFB300)",
 	balsam:
 		"linear-gradient(135deg, #3E5B4D 0%, #B9DFA6 50%, #E2E8D4 70%, #C2EDC9 100%)",
 	balsamic: "linear-gradient(135deg, #7A4B3A, #C43D30, #E1B99B)",
+	banana: "linear-gradient(135deg, #E3C239, #F6EB61, #F9E070)",
 	basil: "linear-gradient(135deg, #A8D5BA, #4B8C2A, #1F3C26)",
 	benzoin: "linear-gradient(45deg, #8C6A4D, #D2B48C, #F6EBDC)",
+	berry: "linear-gradient(135deg, #7B1F8D 0%, #D5006D 50%, #FF4081 100%)",
 	bitter: "linear-gradient(135deg, #e63946 0%, #f1faee 50%, #a8dadc 100%)",
+	blondwood:
+		"linear-gradient(135deg, #D9CDA6 0%, #EAE0B2 30%, #DAC2A0 70%, #BC9B6A 100%)",
+	botanical: "linear-gradient(135deg, #6dca91 30%, #3c7c5a 60%, #2e564e 100%)",
+	bread: "linear-gradient(45deg, #d2b48c 0%, #f5deb3 50%, #deb887 100%)",
+	caramel: "linear-gradient(135deg, #b76e3c 0%, #e4b649 50%, #c19a6c 100%)",
 	carnation: "linear-gradient(135deg, #FF6F81 0%, #FFA07A 50%, #FFB6C1 100%)",
+	cassia: "linear-gradient(135deg, #BDA76C 0%, #C7A25A 50%, #7E5B35 100%)",
+	cedarwood: "linear-gradient(135deg, #a0522d 0%, #d19a6a 50%, #5c4033 100%)",
+	celery: "linear-gradient(135deg, #7ED957, #B4D80D, #C8E88C, #F3F5C5)",
 	chamomile: "linear-gradient(135deg, #EEDC82 0%, #F6F5D0 50%, #F8EDD7 100%)",
+	cherry: "linear-gradient(135deg, #D50032, #B71C1C, #FF4081)",
+	chocolate: "linear-gradient(135deg, #7b3f00, #a65e2e, #dba48d)",
 	chrysanthemum: "linear-gradient(135deg, #e6e600, #ffcc00, #ff6699, #cc0066)",
 	cinnamon: "linear-gradient(45deg, #7B4B3A 20%, #A65E2E 50%, #D09157 80%)",
 	citrus: "linear-gradient(135deg, #ffeb3b 0%, #ff9800 50%, #ff5722 100%)",
+	clove: "linear-gradient(135deg, #4B3C3A, #7D5A4D, #9B6F6F, #C6B9A6)",
 	cocoa: "linear-gradient(135deg, #4E3B31, #8B5B29, #D5C7B6)",
+	coconut: "linear-gradient(120deg, #FFE4B5, #FFFFFF, #FFEBCD)",
+	coffee: "linear-gradient(135deg, #4b3c29 0%, #6f5a42 50%, #9c7b5b 100%)",
 	"crushed foliage":
 		"linear-gradient(135deg, #4caf50 0%, #8bc34a 50%, #cddc39 100%)",
 	cucumber:
@@ -36,6 +57,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	fruity: "linear-gradient(45deg, #ff6f61, #6f5b95, #88b04b, #ffcc5c)",
 	geranium: "linear-gradient(135deg, #A855F7 0%, #FBBF24 100%)",
 	gourmand: "linear-gradient(135deg, #a0522d, #f5deb3, #f4a460, #ffdead)",
+	grapefruit: "linear-gradient(135deg, #FF6F61, #FF3C26, #FFB6C1)",
 	grass: "linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)",
 	green: "linear-gradient(135deg, #4caf50 0%, #c5e1a5 100%)",
 	heliotrope: "linear-gradient(135deg, #d05fb5, #a07bb3, #b46be8, #7a0dc9)",
@@ -54,10 +76,13 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	lily: "linear-gradient(135deg, #f2b2d9, #d1e8e2, #e3b0c0)",
 	"lily of the valley":
 		"linear-gradient(135deg, #a2d5ab 0%, #f9f4d2 50%, #f6a7a1 100%)",
+	lime: "linear-gradient(45deg, #00FF00, #AFFF00, #7FFF00, #4CFF00)",
 	mango: "linear-gradient(45deg, #FFCC33, #FFB400, #FF9F00, #FF6F00)",
 	marine: "linear-gradient(135deg, #003d5b, #007f94, #009eab, #00c4e4)",
 	mint: "linear-gradient(135deg, #a8e0d0, #7fddb3, #4cb29b)",
 	moss: "linear-gradient(135deg, #8A9A5B 0%, #556B2F 50%, #3B3C36 100%)",
+	muguet: "linear-gradient(135deg, #EAEAE0 30%, #B8E5C7 60%, #F2F4EE 90%)",
+	musk: "linear-gradient(135deg, #C1B7A9 0%, #8B6C55 50%, #D4B8A1 75%, #4A2C2A 100%)",
 	"new mown hay":
 		"linear-gradient(135deg, #b5b22d 0%, #e4e54d 50%, #d2c169 75%, #949f40 100%)",
 	"opulent flowers":
@@ -66,6 +91,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	orris: "linear-gradient(135deg, #c2b2d6, #e0c2e9, #a07d9d, #d9a6c2)",
 	ozonic: "linear-gradient(120deg, #0099cc, #66ccff, #cceeff)",
 	papaya: "linear-gradient(135deg, #ffcc5c 0%, #ff6f20 50%, #ff1744 100%)",
+	peony: "linear-gradient(135deg, #D5006D 0%, #F8BBD0 50%, #FCE4EC 100%)",
 	"peru balm":
 		"linear-gradient(45deg, #B76E45 0%, #D17A24 50%, #E5AA73 75%, #FFF9E3 100%)",
 	phenolic:
@@ -81,6 +107,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 		"linear-gradient(135deg, #FF6F61 0%, #D5006D 50%, #FFB6C1 100%)",
 	smoke:
 		"linear-gradient(135deg, rgba(192, 192, 192, 0.7) 0%, rgba(169, 169, 169, 0.5) 50%, rgba(255, 255, 255, 0.1) 100%)",
+	soap: "linear-gradient(135deg, #f1f1f1 10%, #cfe2f3 50%, #a0d6e5 90%)",
 	soft: "linear-gradient(135deg, #f5e1e1, #f9c6c6, #f08d8d)",
 	spices: "linear-gradient(120deg, #8B4513, #D2691E, #FF4500)",
 	spicy:
@@ -98,6 +125,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	vegetable: "linear-gradient(135deg, #6db65f, #a8e3a0, #f0f3b0)",
 	velvet:
 		"linear-gradient(135deg, #5A3030 0%, #A0526C 40%, #8B4A66 80%, #DAA520 100%)",
+	verbena: "linear-gradient(135deg, #8F2F70, #A75586, #D6B9D8, #F5E3F8)",
 	violet: "linear-gradient(135deg, #8A2BE2, #9370DB, #DA70D6, #EE82EE)",
 	"violet leaf":
 		"linear-gradient(135deg, #8A2BE2 0%, #4B0082 50%, #7FFF00 100%)",
