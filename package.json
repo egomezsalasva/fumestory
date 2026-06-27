@@ -11,7 +11,9 @@
     "pretty": "biome format --write",
     "lint": "biome lint",
     "check": "biome check",
-    "db:dump": "dotenv -e .env -- sh -c 'pg_dump \"$VITE_DATABASE_URL\" --schema-only --no-owner --no-privileges --schema=public --schema=neon_auth --file=db/schema-latest.sql' && mkdir -p db/snapshots && cp db/schema-latest.sql db/snapshots/schema-$(date +%Y-%m-%d-%H%M).sql"
+    "db:dump": "dotenv -e .env -- sh -c 'pg_dump \"$VITE_DATABASE_URL\" --schema-only --no-owner --no-privileges --schema=public --schema=neon_auth --file=db/schema-latest.sql' && mkdir -p db/snapshots && cp db/schema-latest.sql db/snapshots/schema-$(date +%Y-%m-%d-%H%M).sql",
+    "notes:audit": "tsx src/components/materials-quiz/utils/note-dot-styles-audit.ts",
+    "notes:audit:write": "tsx src/components/materials-quiz/utils/note-dot-styles-audit.ts --write"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
