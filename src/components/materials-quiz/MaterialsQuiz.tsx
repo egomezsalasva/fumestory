@@ -143,14 +143,22 @@ export default function MaterialsQuiz() {
 	const [quizIndex, setQuizIndex] = useState(0);
 	const [question, setQuestion] = useState<QuizQuestion | null>(null);
 	const [selected, setSelected] = useState<string | null>(null);
+
+	// Level checkpoint progression (drives level + lesson number).
+	const [progressLessons, setProgressLessons] = useState(0);
+
+	// Run streak (carries through levels until game over).
 	const [lessonStreak, setLessonStreak] = useState(0);
+	const [gameOverStreak, setGameOverStreak] = useState(0);
+
 	const [lives, setLives] = useState(MAX_LIVES);
 	const [learnedMaterialKeys, setLearnedMaterialKeys] = useState<Set<string>>(
 		() => new Set(),
 	);
 
-	const currentLevel = levelForCompletedLessons(lessonStreak);
-	const currentLessonInLevel = (lessonStreak % LESSONS_PER_LEVEL) + 1;
+	const currentLevel = levelForCompletedLessons(progressLessons);
+	const currentLessonInLevel = (progressLessons % LESSONS_PER_LEVEL) + 1;
+	const currentLevelBaseLessons = (currentLevel - 1) * LESSONS_PER_LEVEL;
 
 	const allReliableMaterialsCount = materials.length;
 	const learnedUniqueCount = learnedMaterialKeys.size;
@@ -181,17 +189,21 @@ export default function MaterialsQuiz() {
 			return next;
 		});
 
-		setLessonStreak((current) => {
+		setProgressLessons((current) => {
 			const next = current + 1;
 			const oldLevel = levelForCompletedLessons(current);
 			const newLevel = levelForCompletedLessons(next);
 
+			// Restore lives whenever the user enters a new level.
 			if (newLevel > oldLevel) {
 				setLives(MAX_LIVES);
 			}
 
 			return next;
 		});
+
+		// Streak is independent from level and only resets on game over.
+		setLessonStreak((current) => current + 1);
 
 		setPhase("complete");
 		setQuestion(null);
@@ -222,6 +234,13 @@ export default function MaterialsQuiz() {
 			setLives(nextLives);
 
 			if (nextLives === 0) {
+				// Snapshot streak for game over card, then reset run streak.
+				setGameOverStreak(lessonStreak);
+				setLessonStreak(0);
+
+				// Keep the same level, but reset to lesson 1 of that level.
+				setProgressLessons(currentLevelBaseLessons);
+
 				setPhase("gameOver");
 				setQuestion(null);
 				setSelected(null);
@@ -249,33 +268,35 @@ export default function MaterialsQuiz() {
 	}
 
 	function handleNextLesson() {
-		const nextLevel = levelForCompletedLessons(lessonStreak);
+		const nextLevel = levelForCompletedLessons(progressLessons);
 		startNewLesson(nextLevel);
 	}
 
 	function handleStartOver() {
-		const restartLevel = currentLevel;
-		const completedLessonsAtLevelStart = (restartLevel - 1) * LESSONS_PER_LEVEL;
-
-		setLessonStreak(completedLessonsAtLevelStart);
+		setGameOverStreak(0);
 		setLives(MAX_LIVES);
-		startNewLesson(restartLevel);
+		setLessonStreak(0);
+
+		// Ensure restart begins at lesson 1 for this same level.
+		setProgressLessons(currentLevelBaseLessons);
+
+		startNewLesson(currentLevel);
 	}
 
 	const completedLevel =
-		lessonStreak > 0
+		progressLessons > 0
 			? (Math.min(
 					MAX_LEVEL,
-					Math.floor((lessonStreak - 1) / LESSONS_PER_LEVEL) + 1,
+					Math.floor((progressLessons - 1) / LESSONS_PER_LEVEL) + 1,
 				) as Level)
 			: 1;
 
 	const completedLessonInLevel =
-		lessonStreak > 0 ? ((lessonStreak - 1) % LESSONS_PER_LEVEL) + 1 : 1;
+		progressLessons > 0 ? ((progressLessons - 1) % LESSONS_PER_LEVEL) + 1 : 1;
 
 	const hasLeveledUp =
-		lessonStreak > 0 &&
-		lessonStreak % LESSONS_PER_LEVEL === 0 &&
+		progressLessons > 0 &&
+		progressLessons % LESSONS_PER_LEVEL === 0 &&
 		completedLevel < MAX_LEVEL;
 
 	const promotedToLevel = hasLeveledUp ? completedLevel + 1 : null;
@@ -318,7 +339,7 @@ export default function MaterialsQuiz() {
 					/>
 				) : phase === "gameOver" ? (
 					<LessonStartOverCard
-						lessonStreak={lessonStreak}
+						lessonStreak={gameOverStreak}
 						maxLives={MAX_LIVES}
 						onStartOver={handleStartOver}
 					/>
