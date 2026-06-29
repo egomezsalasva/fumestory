@@ -3,9 +3,9 @@ import type { MaterialRecord, SourceName } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
 import quizStyles from "./MaterialsQuiz.module.css";
 import {
+	LESSON_SIZE,
 	generateQuestionForMaterial,
 	getProducerMaterials,
-	pickRandomMaterials,
 	shuffleMaterials,
 	type QuizQuestion,
 } from "@/components/materials-quiz/utils";
@@ -74,10 +74,34 @@ function isMaterialInLevel(material: MaterialRecord, level: Level): boolean {
 	return noteCount >= 10;
 }
 
+// Local lesson picker to avoid global source-count filtering in pickRandomMaterials.ts
+function pickLessonMaterials(
+	pool: MaterialRecord[],
+	count: number = LESSON_SIZE,
+): MaterialRecord[] {
+	if (pool.length < count) {
+		throw new Error(
+			`Need ${count} lesson materials but only ${pool.length} available`,
+		);
+	}
+
+	const copy = [...pool];
+	const picked: MaterialRecord[] = [];
+
+	for (let i = 0; i < count; i++) {
+		const index = Math.floor(Math.random() * copy.length);
+		picked.push(copy[index]);
+		copy.splice(index, 1);
+	}
+
+	return picked;
+}
+
 function createLesson(level: Level): LessonState {
 	const levelMaterials = materials.filter((m) => isMaterialInLevel(m, level));
-	const pool = levelMaterials.length > 0 ? levelMaterials : materials;
-	const lessonSet = pickRandomMaterials(pool);
+	const pool =
+		levelMaterials.length >= LESSON_SIZE ? levelMaterials : materials;
+	const lessonSet = pickLessonMaterials(pool);
 
 	return {
 		lessonSet,
@@ -149,7 +173,6 @@ export default function MaterialsQuiz() {
 	}
 
 	function completeLesson() {
-		// Mark this lesson's materials as learned (unique).
 		setLearnedMaterialKeys((current) => {
 			const next = new Set(current);
 			for (const material of lesson.lessonSet) {
@@ -163,7 +186,6 @@ export default function MaterialsQuiz() {
 			const oldLevel = levelForCompletedLessons(current);
 			const newLevel = levelForCompletedLessons(next);
 
-			// Restore lives whenever the user enters a new level.
 			if (newLevel > oldLevel) {
 				setLives(MAX_LIVES);
 			}
