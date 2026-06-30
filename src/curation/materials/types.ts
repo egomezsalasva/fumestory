@@ -11,11 +11,13 @@ export type SourceName =
 	| "Scent VN"
 	| "Givaudan"
 	| "Firmenich"
+	| "Bedoukian"
 	| "IFF";
 
 export type ProducerId =
 	| "IFF"
 	| "Firmenich"
+	| "Bedoukian"
 	| "Givaudan"
 	| "Symrise"
 	| "Mane"
@@ -58,6 +60,44 @@ export type SourceData = {
 	vendor?: string;
 };
 
+type CommonSourceData = {
+	notes: string[];
+};
+
+type SourceDataByName = {
+	"Google AI": CommonSourceData;
+	Symrise: CommonSourceData & {
+		pdfUrl: string;
+		nameUsed: string;
+	};
+	Givaudan: CommonSourceData & {
+		url: string;
+		nameUsed: string;
+	};
+	Firmenich: CommonSourceData & {
+		url: string;
+		nameUsed: string;
+	};
+	IFF: CommonSourceData & {
+		url: string;
+		nameUsed: string;
+	};
+	Fraterworks: CommonSourceData & {
+		url: string;
+		type?: string;
+		featured_image?: string;
+		vendor?: string;
+	};
+	"Scent VN": CommonSourceData & {
+		url: string;
+		nameUsed: string;
+	};
+	Bedoukian: CommonSourceData & {
+		pdfUrl: string;
+		nameUsed: string;
+	};
+};
+
 export type SourceEntry = {
 	// distributorId: distributorId;
 	// notes: string[];
@@ -65,9 +105,11 @@ export type SourceEntry = {
 	// url?: string;
 	// description?: string;
 	// extractedAt?: string; // ISO datetime
-	sourceName: SourceName;
-	data: SourceData;
-};
+	[K in SourceName]: {
+		sourceName: K;
+		data: SourceDataByName[K];
+	};
+}[SourceName];
 
 export type MaterialRecord = {
 	canonicalName: string;
