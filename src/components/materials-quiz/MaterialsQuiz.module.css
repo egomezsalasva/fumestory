@@ -90,7 +90,8 @@
 
 .materialNameLine {
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	/* align-items: center; */
 	flex-wrap: wrap;
 	gap: 0 0.75rem;
 }

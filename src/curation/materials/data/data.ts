@@ -1065,7 +1065,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						pdfUrl:
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_FC_Einzel-PDF/SYM_FC-Macrolide_Supra.pdf",
-						nameUsed: "Macrolide Supra",
+						nameUsed: "Macrolide® Supra",
 						notes: ["musk", "soap"],
 					},
 				},
@@ -2518,6 +2518,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Heliogan",
 				"Helional",
 				"Tropional",
+				"Helional®",
 			],
 			noteType: "mid(heart)",
 			sources: [
@@ -2525,7 +2526,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/helional/",
-						nameUsed: "Helional",
+						nameUsed: "Helional®",
 						notes: ["green", "floral", "ozonic", "new mown hay"],
 					},
 				},
@@ -4315,7 +4316,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"coconut",
 							"citrus",
 							"sharp",
-							"acrid",
+							"acid",
 							"woody",
 						],
 					},
@@ -8414,7 +8415,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/floral-super/",
 						nameUsed: "Floral Super",
-						notes: ["fresh", "cyclamen", "floral", "intese"],
+						notes: ["fresh", "cyclamen", "floral", "intense"],
 					},
 				},
 			],

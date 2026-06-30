@@ -9,22 +9,14 @@ const __dirname = path.dirname(__filename);
 const repoRoot = process.cwd();
 
 const noteStylesPath = path.join(__dirname, "note-dot-styles.ts");
-const dataDir = path.join(repoRoot, "src/curation/materials/data");
+const dataFilePath = path.join(repoRoot, "src/curation/materials/data/data.ts");
 
-const curatedFiles = fs
-	.readdirSync(dataDir)
-	.filter((f) => /^curated-.*\.ts$/.test(f))
-	.sort();
-
-if (curatedFiles.length === 0) {
-	throw new Error(`No curated data files found in ${dataDir}`);
+if (!fs.existsSync(dataFilePath)) {
+	throw new Error(`Data file not found: ${dataFilePath}`);
 }
 
-const latestCuratedFile = curatedFiles[curatedFiles.length - 1];
-const curatedPath = path.join(dataDir, latestCuratedFile);
-
 const noteModule = await import(pathToFileURL(noteStylesPath).href);
-const dataModule = await import(pathToFileURL(curatedPath).href);
+const dataModule = await import(pathToFileURL(dataFilePath).href);
 
 const NOTE_DOT_STYLES = noteModule.NOTE_DOT_STYLES as Record<string, string>;
 const normalizeNoteLabel = (
@@ -72,7 +64,7 @@ function printList(title: string, list: string[]) {
 	for (const item of list) console.log(`- ${item}`);
 }
 
-console.log(`Using curated data file: ${latestCuratedFile}`);
+console.log(`Using data file: ${path.basename(dataFilePath)}`);
 console.log(`Mapped keys: ${mapped.length}`);
 console.log(`Unique notes in data: ${dataNoteSet.size}`);
 console.log(`Missing: ${missing.length}`);
