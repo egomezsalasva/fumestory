@@ -15,7 +15,7 @@ const byName = new Map<string, MaterialRecord>();
 const byCas = new Map<string, MaterialRecord>();
 
 for (const material of curatedMaterialsData.materials) {
-	for (const name of [material.canonicalName, ...material.otherNames]) {
+	for (const name of [material.canonicalName, ...(material.otherNames ?? [])]) {
 		const key = name.trim().toLowerCase();
 		if (key && !byName.has(key)) {
 			byName.set(key, material);

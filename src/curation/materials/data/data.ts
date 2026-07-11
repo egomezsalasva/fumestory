@@ -4,7 +4,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 	meta: {
 		version: "2026-06-20",
 		createdAt: "2026-06-20T16:00:00+00:00",
-		updatedAt: "2026-06-24T16:00:53.527Z",
+		updatedAt: "2026-07-04T08:46:54.880Z",
 	},
 	materials: [
 		{
@@ -225,16 +225,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			noteType: "mid(heart)",
 			sources: [
 				{
-					sourceName: "Google AI",
+					sourceName: "Givaudan",
 					data: {
-						notes: [
-							"floral",
-							"sweet",
-							"powder",
-							"spice",
-							"hawthorn",
-							"vanilla",
-							"anis",
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/anisyl-alcohol",
+						nameUsed: "Anisyl Alcohol",
+						notes: ["herbal", "anis", "floral", "powdery"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Anisyl Alcohol adds volume and gives a natural aspect to floral compositions such as mimosa, lilac, cassia, apple-blossom, jasmine and heliotrope as well as to clove and fougere perfumes. It has an excellent blending effect and can give a heliotropic character without the problem of coloration.",
 						],
 					},
 				},
@@ -355,7 +353,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -511,7 +508,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -536,14 +532,26 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Bourgeonal",
 				"Liliphenal",
 			],
-			noteType: "mid(heart)",
+			noteType: "base",
 			sources: [
 				{
 					sourceName: "Givaudan",
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/bourgeonal",
 						nameUsed: "Bourgeonal",
-						notes: ["floral", "green", "muguet", "fresh", "powerful", "water"],
+						notes: [
+							"floral",
+							"green",
+							"muguet",
+							"fresh",
+							"powerful",
+							"water",
+							"diffusive",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Bourgeonal is a powerful, diffusive and substantive fresh floral muguet, with a watery green character. Its unique muguet-aldehyde character is extensively used in toiletries and alcoholic fragrances.",
+						],
 					},
 				},
 			],
@@ -722,7 +730,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -895,7 +902,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -966,13 +972,20 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"4-Isopropylbenzaldehyde",
 				"p-Isopropylbenzaldehyde",
 				"4-Isopropylbenzenecarboxaldehyde",
+				"Cuminic Aldehyde",
 			],
 			noteType: "high",
 			sources: [
 				{
-					sourceName: "Google AI",
+					sourceName: "Givaudan",
 					data: {
-						notes: ["spice", "cumin", "green", "herbal"],
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cuminic-aldehyde",
+						nameUsed: "Cuminic Aldehyde",
+						notes: ["spicy", "green", "herbal", "animal"],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Cuminic Aldehyde has a spicy green note with herbaceous and animalic undertones. It can be used at low dosage as a modifier in chypre, spicy or fougere notes.",
+						],
 					},
 				},
 			],
@@ -1007,7 +1020,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclaviol",
 				"Cyclosal",
 			],
-			noteType: "mid(heart)",
+			noteType: "base",
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -1015,6 +1028,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cyclamen-aldehyde-extra",
 						nameUsed: "Cyclamen Aldehyde Extra",
 						notes: ["floral", "green", "powerful", "fresh", "marine"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Cyclamen Aldehyde Extra can be used in many floral, green, fresh and marine accords. Its stability and substantivity are especially useful for functional perfumery.",
+						],
 					},
 				},
 			],
@@ -1065,7 +1082,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						pdfUrl:
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_FC_Einzel-PDF/SYM_FC-Macrolide_Supra.pdf",
-						nameUsed: "Macrolide® Supra",
+						nameUsed: "Macrolide Supra",
 						notes: ["musk", "soap"],
 					},
 				},
@@ -1253,6 +1270,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclovertal",
 				"Ligustral",
 				"Aldehyde AA",
+				"Cyclal C",
 			],
 			noteType: "high",
 			sources: [
@@ -1269,6 +1287,18 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"citrus",
 							"herbal",
 							"chrysanthemum",
+						],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cyclal-c",
+						nameUsed: "Cyclal C",
+						notes: ["green", "leaf", "floral", "powerful"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Cyclal C is a key product in many modern compositions for its extremely natural green character. It blends beautifully with fruity, citrus, agrestic, floral compositions where it imparts its unique vibrant quality. It is also used to enrich and reinforce classic green notes.",
 						],
 					},
 				},
@@ -1322,7 +1352,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1370,7 +1399,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1411,6 +1439,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ultravanil-80dpg",
 						nameUsed: "Ultravanil 80%/DPG",
 						notes: ["gourmand", "vanilla", "sweet", "phenolic", "powerful"],
+						olfactiveFamily: "Gourmand",
+						olfactiveDescription: [
+							"Ultravanil 80%/DPG has a very powerful vanilla absolute note. Neat it has a strong phenolic background. 1%-2% of a 10% dilution can be used as a booster to other vanillic notes in a formulation. Ultravanil 80%/DPG works well in combination with vanillin and ethyl vanillin. It is also used to boost the performance of Isobutavan. Ultravanil is far less discolouring than other vanillic notes.",
+						],
 					},
 				},
 			],
@@ -1442,7 +1474,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1486,7 +1517,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1579,7 +1609,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1612,7 +1641,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -1778,6 +1806,18 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: ["floral", "green", "water lily", "chrysanthemum"],
 					},
 				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/hexyl-salicylate",
+						nameUsed: "Hexyl Salicylate",
+						notes: ["floral", "green", "fruity"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Hexyl Salicylate has a floral fruity character, with a mild, sweet herbaceous slant. It is a very useful modifier of floral fragrances especially with Amyl Salicylate.",
+						],
+					},
+				},
 			],
 			regulatory: {
 				ifra: {
@@ -1895,7 +1935,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Silvial",
 				"Suzaral",
 			],
-			noteType: "mid(heart)",
+			noteType: "base",
 			sources: [
 				{
 					sourceName: "Google AI",
@@ -1910,6 +1950,18 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"greasy",
 							"marine",
 							"balsamic",
+						],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/silvialtm",
+						nameUsed: "Silvial™",
+						notes: ["floral", "muguet", "powerful", "fresh", "citrus"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Silvial™ is a powerful, vibrant muguet ingredient with a slight citrus undertone and a fresh, aldehydic touch. It is used in perfumery in the same way as the other related muguet products.",
 						],
 					},
 				},
@@ -2129,6 +2181,11 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"fresh",
 							"honey",
 						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmine sambac has an intriguing floral green bouquet. Compared to Jasmine grandiflorum, it has an intense floral note with more anthranilate compound, giving orange blossom nuances to the jasmine scent found in Jasmine grandiflorum.",
+							"The indole molecule in it gives a more natural animal side that is quite floral in the background. It also has a strong green fruity facet, reminiscent of honeysuckle or banana. The freshness is a little dazzling at the top and the background is quite animal, very green and honeyed.",
+						],
 					},
 				},
 				{
@@ -2188,7 +2245,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -2384,7 +2440,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -2466,7 +2521,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Valspice",
 				"Methyl Guaiacol-4",
 			],
-			noteType: "base",
+			noteType: "mid(heart)",
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -2483,6 +2538,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/creosol",
 						nameUsed: "Creosol",
 						notes: ["spicy", "vanilla", "balsam", "leather", "medicinal"],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Creosol has a spicy vanilla note with leathery inflexions and medicinal, balsam undertones. It can be used as a modifier in white floral accords and is interesting in floral, leather and animalic compositions.",
+						],
 					},
 				},
 			],
@@ -2518,7 +2577,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Heliogan",
 				"Helional",
 				"Tropional",
-				"Helional®",
 			],
 			noteType: "mid(heart)",
 			sources: [
@@ -2526,7 +2584,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/helional/",
-						nameUsed: "Helional®",
+						nameUsed: "Helional",
 						notes: ["green", "floral", "ozonic", "new mown hay"],
 					},
 				},
@@ -2649,6 +2707,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"violet",
 							"cucumber",
 						],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Folione™, used in traces, produces violet-leaf and cucumber notes. It blends extremely well with products in the orris family like the Isoraldeine™s and the ionones.",
+						],
 					},
 				},
 			],
@@ -2695,6 +2757,24 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"spicy",
 							"oriental",
 						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Isoraldeine™ 95 has a fine violet note, often used in flowery, woody, spicy and oriental accords. It brings volume and diffusion to compounds as well as a skin care effect that is more powdery than with Isoraldeine™ 70.",
+						],
+						relatedCas: ["1335-46-2", "127-51-5", "15789-90-9"],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isoraldeinetm-cetone-alpha",
+						nameUsed: "Isoraldeine™ Cetone Alpha",
+						notes: ["floral", "orris", "woody", "powdery"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Isoraldeine™ Cetone Alpha is a highly refined alpha-iso-methyl ionone used in rich floral perfumes where an exceptional quality of methyl ionone is required.",
+						],
+						relatedCas: ["1335-46-2", "127-51-5", "15789-90-9"],
 					},
 				},
 			],
@@ -2774,11 +2854,15 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"fruit",
 							"vegetable",
 							"cucumber",
+							"powerful",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Methyl Octyne Carbonate is widely used in floral notes. It produces the powerful yet subtle note of violet leaves with a fruity-vegetable, cucumber undertone.",
 						],
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -3220,6 +3304,11 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/phenyl-acetaldehyde-85pea",
 						nameUsed: "Phenyl Acetaldehyde 85%/PEA",
 						notes: ["floral", "green", "honey", "rose", "diffusive"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Phenyl Acetaldehyde 85%/PEA has a very diffusive rosy top note with honey facets.",
+						],
+						relatedCas: ["122-78-1", "60-12-8"],
 					},
 				},
 			],
@@ -3358,7 +3447,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				},
 			},
 		},
-		//TODO split rose ketones into multiple records and add groupifra
 		{
 			canonicalName: "Rose ketones",
 			cas: [
@@ -3542,24 +3630,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						],
 					},
 				},
-				{
-					sourceName: "Givaudan",
-					data: {
-						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/natural-ingredients/benzoin-powder-resinoid-laos",
-						nameUsed: "Benzoin Powder Resinoid Laos",
-						notes: [
-							"balsam",
-							"vanilla",
-							"resin",
-							"wood",
-							"sweet",
-							"cream",
-							"caramel",
-							"cinnamon",
-							"oriental",
-						],
-					},
-				},
 			],
 			regulatory: {
 				ifra: {
@@ -3737,7 +3807,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Dehydro-β-cyclocitral",
 				"Safranal",
 			],
-			noteType: "base",
+			noteType: "high",
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -3745,6 +3815,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/safranal",
 						nameUsed: "Safranal",
 						notes: ["spicy", "safron", "herbaceous", "tobacco", "floral"],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Safranal has a spicy saffron-like note with herbaceous, tobacco facets and floral undertones. It is very useful in spicy, agrestic, tobacco, orris and woody compositions.",
+						],
 					},
 				},
 			],
@@ -3920,6 +3994,12 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/natural-ingredients/angelica-root-oil-belgium",
 						nameUsed: "Angelica Root Oil Belgium",
 						notes: ["zest", "spicy", "earth", "musk", "terpenic"],
+						olfactiveFamily: "Aromatic",
+						olfactiveDescription: [
+							"Angelica Root Oil Belgium has an aromatic and spicy profile with musky and earthy undertones. The essential oil contains very small amounts of components such as exaltolide, which gives the musky notes.",
+							"Its particular profile blends perfectly with green accords, giving them a fresh, natural character. Its musky, terpenic and spicy facets are an excellent addition to floral heart notes or woody bases.",
+						],
+						relatedCas: ["8015-64-3"],
 					},
 				},
 			],
@@ -3941,7 +4021,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Bergamot oil expressed",
 			cas: ["8007-75-8", "89957-91-5"],
-			otherNames: [],
 			noteType: "base",
 			sources: [
 				{
@@ -3959,9 +4038,15 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"floral",
 							"balsamic",
 							"bright",
-							"sparking",
+							"sparkling",
 							"citrus",
 						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"With its extremely rich, sweet and fruity top note, followed by floral and balsamic undertones, this oil brings a beautifully bright and sparkling citrus facet to fragrances.",
+							"Bergamot is the mainstay of the first modern perfume accord: cologne. From the beginning of the 18th century to the present day, bergamot has been used in all types of perfume to bring freshness and naturalness to the fragrance. It is particularly used in floral top notes to accompany tea and citrus accords, and in the heart of woody or ambery compositions to add a fresh and floral freshness.",
+						],
+						relatedCas: ["8007-75-8"],
 					},
 				},
 			],
@@ -4006,6 +4091,11 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"wood",
 							"herb",
 						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"A fresh, green and sweet floral reminiscent of orange blossom with a woody, herbaceous undertone. Petitgrain oil is often used in colognes to accompany an orange blossom absolute or neroli. It is also sometimes used in tea notes. It is also used in soap perfumery, where its great strength and versatility are appreciated.",
+						],
+						relatedCas: ["72968-50-4"],
 					},
 				},
 			],
@@ -4024,11 +4114,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				},
 			},
 		},
-		//TODO this has no cas
 		{
 			canonicalName:
 				"Citrus oils and other furocoumarins containing essential oils",
-			otherNames: [],
 			noteType: "high",
 			sources: [
 				{
@@ -4118,6 +4206,12 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"citrus",
 							"sweet",
 						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Grapefruit essential oil is a vibrant citrus note with a fresh sweetness and bitter notes that set it apart from other citrus fruits.",
+							"Often found in eau de cologne, grapefruit essential oil blossoms with vetyver notes or as an accompaniment to floral notes, giving them a natural aldehydic freshness.",
+						],
+						relatedCas: ["8016-20-4"],
 					},
 				},
 			],
@@ -4139,7 +4233,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Lemon oil cold pressed",
 			cas: ["8008-56-8", "84929-31-7"],
-			otherNames: [],
 			noteType: "high",
 			sources: [
 				{
@@ -4175,7 +4268,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Lime oil expressed",
 			cas: ["8008-26-2", "90063-52-8"],
-			otherNames: [],
 			noteType: "high",
 			sources: [
 				{
@@ -4225,16 +4317,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			noteType: "mid(heart)",
 			sources: [
 				{
-					sourceName: "Google AI",
+					sourceName: "Givaudan",
 					data: {
-						notes: [
-							"floral",
-							"orange-blossom",
-							"neroli",
-							"sweet",
-							"fruity",
-							"grape",
-							"mandarin",
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/dimethyl-anthranilate",
+						nameUsed: "Dimethyl Anthranilate",
+						notes: ["floral", "orange blossom", "neroli", "mandarin"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Dimethyl Anthranilate is similar in use to Methyl Anthranilate, but it will not form Schiff bases with the aldehydes and has little or no tendency to discolour.",
 						],
 					},
 				},
@@ -4284,6 +4374,18 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: ["floral", "orange blossom", "anthranilate", "powder"],
 					},
 				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/oranger-crystals",
+						nameUsed: "Oranger Crystals",
+						notes: ["floral", "orange blossom", "sweet", "honey"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Oranger Crystals is very useful in neroli / orange blossom blends. It gives pretty effects in jasmine accords and colognes. Its stability and substantivity allow it to be used to great advantage in soap and detergent compositions.",
+						],
+					},
+				},
 			],
 			regulatory: {
 				ifra: {
@@ -4303,7 +4405,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Rue oil",
 			cas: ["8014-29-7", "84929-47-5"],
-			otherNames: [],
 			noteType: "high",
 			sources: [
 				{
@@ -4316,7 +4417,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"coconut",
 							"citrus",
 							"sharp",
-							"acid",
+							"acrid",
 							"woody",
 						],
 					},
@@ -5539,7 +5640,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -5985,7 +6085,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -7248,7 +7347,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -7446,7 +7544,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Santolina oil",
 			cas: ["84961-58-0"],
-			otherNames: [],
 			noteType: "base",
 			sources: [
 				{
@@ -7745,7 +7842,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		},
 		{
 			canonicalName: "Allyl esters",
-			otherNames: [],
 			noteType: "high",
 			sources: [
 				{
@@ -7927,7 +8023,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -8114,7 +8209,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -8196,7 +8290,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -8415,7 +8508,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/floral-super/",
 						nameUsed: "Floral Super",
-						notes: ["fresh", "cyclamen", "floral", "intense"],
+						notes: ["fresh", "cyclamen", "floral", "intese"],
 					},
 				},
 			],
@@ -8626,6 +8719,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"powerful",
 							"diffusive",
 							"rich",
+						],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Sandalore™, a powerful, diffusive and extremely tenacious product, imparts a rich, warm, natural sandalwood character to perfumes, as well as volume and substantivity. It is an interesting sandalwood replacement in combination with Ebanol™.",
 						],
 					},
 				},
@@ -8915,7 +9012,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Ethyl (2R,3R)-3-isopropylbicyclo[2.2.1]hept-5-ene-2-carboxylate",
 				"Herbanate",
 			],
-			noteType: "mid(heart)",
+			noteType: "base",
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -8933,6 +9030,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"herbal",
 							"warm",
 							"spicy",
+						],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Herbanate has a fruity note with hints of banana, pineapple and blackcurrant. The background is fresh and herbal with a warm spicy element. Herbanate is a versatile material that provides or enhances the natural effect of fragrances, particularly in fruity notes where it gives a juicy tropical fruit effect. It can also be used as a 10% dilution to give a green herbal freshness and blends well with citrus, green and even spicy notes.",
 						],
 					},
 				},
@@ -9119,7 +9220,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -9206,7 +9306,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -9603,6 +9702,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/dimethyl-octenone",
 						nameUsed: "Dimethyl Octenone",
 						notes: ["citrus", "fruit", "fresh", "bitter", "diffusive"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Dimethyl Octenone can be used to great advantage in citrus accords where it underlines the natural bitterness of the fruit. Its combination with fresh notes is much appreciated for the diffusion that it brings to compositions. Its utilisation with certain modern accords can give original and natural grapefruit effects.",
+						],
 					},
 				},
 			],
@@ -9867,6 +9970,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"rose",
 							"powerful",
 						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Peonile™, with its geranium-rosy character, gives interesting combinations in floral, fougere or hesperidic accords. Peonile™ is powerful, relatively non-volatile and is very stable in almost all media. It has very high substantivity on wet and dry laundry and helps to increase volume and tenacity in functional perfumes.",
+						],
 					},
 				},
 				{
@@ -10106,7 +10213,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -10194,7 +10300,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -10234,7 +10339,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -10623,7 +10727,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"3-Cyclohexene-1-methanol, 3(or 4)-(4-methyl-3-pentenyl)-, acetate",
 				"4(or 3)-(4-Methyl-3-pentenyl)-3-cyclohexenylmethyl acetate & isomers",
 			],
-			noteType: "mid(heart)",
+			noteType: "base",
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -10638,6 +10742,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"green",
 							"muguet",
 							"diffusive",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Myraldyl Acetate brings a diffusive jasmine / muguet odour. It gives an exceptionally full bodied, floral character to compositions. Its good stability and long lasting qualities, combined with its original floral character, make this ingredient an attractive choice for soap and detergent perfumery.",
 						],
 					},
 				},
@@ -10742,7 +10850,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -10891,7 +10998,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -11037,41 +11143,2898 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				},
 			},
 		},
-		// {
-		//   canonicalName: "Blue Tansy Oil",
-		//   cas: ["8016-87-3"],
-		//   otherNames: [],
-		//   sources: [
-		//     {
-		//       sourceName: "Fraterworks",
-		//       data: {
-		//         title: "Blue Tansy Oil",
-		//         vendor: "biolandes",
-		//         type: "natural",
-		//         featured_image:
-		//           "https://cdn.shopify.com/s/files/1/0682/1448/9400/files/iStock-1414908029.jpg?v=1782161446",
-		//         url: "https://fraterworks.com/products/blue-tansy-oil",
-		//       },
-		//     },
-		//   ],
-		// },
-		// {
-		//   canonicalName: "Myrrh Wildii Oil, Namibia",
-		//   cas: ["1082996-27-7"],
-		//   otherNames: [],
-		//   sources: [
-		//     {
-		//       sourceName: "Fraterworks",
-		//       data: {
-		//         nameUsed: "Myrrh Wildii Oil, Namibia",
-		//         vendor: "mane",
-		//         type: "natural",
-		//         featured_image:
-		//           "https://cdn.shopify.com/s/files/1/0682/1448/9400/files/myrrhwildii.jpg?v=1781564296",
-		//         url: "https://fraterworks.com/products/myrrh-wildii-oil-namibia",
-		//       },
-		//     },
-		//   ],
-		// },
+		{
+			canonicalName: "Acetal CD",
+			cas: ["29895-73-6"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/acetal-cd",
+						nameUsed: "Acetal CD",
+						notes: ["floral", "green", "honey", "rose"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Acetal CD blends well with floral notes such as hyacinth, rose and lilac, with green accords, and with linden blossom and chypre compositions.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Acetate C9 Nonylic",
+			cas: ["143-13-5"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/acetate-c9-nonylic",
+						nameUsed: "Acetate C9 Nonylic",
+						notes: ["fruity", "tropical"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Acetate C9 Nonylic has a fruity and tropical note with aromatic undertones.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Adoxal",
+			cas: ["141-13-9"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/adoxal",
+						nameUsed: "Adoxal",
+						notes: [
+							"marine",
+							"aldehydic",
+							"floral",
+							"fresh",
+							"powerful",
+							"ozonic",
+						],
+						olfactiveFamily: "Marine",
+						olfactiveDescription: [
+							'Adoxal has a natural, ozonic aspect. It is very powerful and must be used carefully. Adoxal blends extremely well with floral notes such as muguet and cyclamen, as well as with fruity and woody compositions. It can also be seen as having a typical "fresh linen" odour which makes it very useful for detergent applications.',
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Aldehyde C11 Undecylenic",
+			cas: ["112-45-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/aldehyde-c11-undecylenic",
+						nameUsed: "Aldehyde C11 Undecylenic",
+						notes: [
+							"aldehyde",
+							"floral",
+							"green",
+							"rosy",
+							"citrus",
+							"zest",
+							"orange",
+							"mandarin",
+						],
+						olfactiveFamily: "Aldehydic",
+						olfactiveDescription: [
+							"Aldehyde C11 Undecylenic has an aldehydic and floral note with zesty and citrus undertones, reminiscent of orange and mandarin. It is very useful in floral and spicy composition and has a good fabric substantivity.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Aldehyde Iso C11",
+			cas: ["1337-83-3"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/aldehyde-iso-c-11",
+						nameUsed: "Aldehyde Iso C11",
+						notes: ["aldehydic", "green", "rose", "powerful"],
+						olfactiveFamily: "Aldehydic",
+						olfactiveDescription: [
+							"Aldehyde Iso C 11 has a predominant place in the fatty aldehyde series. It is several times stronger than Aldehyde C 11 Undecylenic and has a fresher, more complex odour profile. This aldehyde is particularly effective for modern soap accords and has a good fabric substantivity.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Alicate",
+			cas: ["10250-45-0"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/alicate",
+						nameUsed: "Alicate",
+						notes: ["fruity", "rhubarb", "aromatic", "lilac"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Alicate is a fresh herbal note with hints of rhubarb and banana and a lilac background. It gives excellent performance and stability across the range of toiletry, soaps and detergents. Alicate blends well with fruity, citrus and herbal ingredients and gives a boost to top-note freshness.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Amberketal IPM",
+			cas: ["110-27-0", "57345-19-4"],
+			otherNames: ["Amberketal"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/amberketal-ipm",
+						nameUsed: "Amberketal IPM",
+						notes: ["amber", "wood", "dry", "powerful"],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Amberketal is a powerful ambery note for use in most applications, with good stability in non aggressive media. It is effective as a modifier in association with existing woody / ambery ingredients.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Sandela™ 85%/IPM",
+			cas: ["110-27-0", "3407-42-9"],
+			otherNames: ["Sandela™", "Sandela"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/sandelatm-85ipm",
+						nameUsed: "Sandela™ 85%/IPM",
+						notes: ["wood", "sandalwood", "balsamic"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Sandela™ is a classical sandalwood note that can be used in all fragrance types.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Silvanone™ Supra",
+			cas: ["110-27-0", "109-29-5", "502-72-7"],
+			otherNames: ["Silvanone™", "Silvanone"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/silvanonetm-supra",
+						nameUsed: "Silvanone™ Supra",
+						notes: ["musk", "sweet", "powdery", "animalic"],
+						olfactiveFamily: "Musky",
+						olfactiveDescription: [
+							"Silvanone™ Supra is a sweet powdery animalic macrocyclic musk with aspects of nitromusk. It is highly substantive and tenacious and can be used in all application areas to give a full body and long lasting effect. Silvanone™ Supra works well with woody and amber notes, adds richness to floral creations especially in the sophisticated white florals, spicy carnation and oriental accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ambermax",
+			cas: ["929625-08-1", "1001252-30-7", "77-93-0"],
+			otherNames: ["Ambermax™ 10%/TEC", "Ambermax 10%"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambermaxtm-10tec",
+						nameUsed: "Ambermax™ 10%/TEC",
+						notes: ["ambery", "woody", "cedarwood"],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Ambermax™ is a powerful, fusing and substantive rich ambery note with some woody cedarwood facets. Its outstanding fabric substantivity makes it a key building block for fabric care fragrances beating all benchmarks on dry cloth. Ambermax™ is a perfect fit to our existing range of ambery-woody notes including Okoumal™ / Amberketal / Ambrofix and can be used across all categories.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ambermax 50%/Dowanol TPM",
+			cas: ["929625-08-1", "1001252-30-7", "25498-49-1"],
+			otherNames: ["Ambermax™ 50%", "Ambermax 50%", "Dowanol TPM", "Dowanol"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambermaxtm-50dowanol-tpm",
+						nameUsed: "Ambermax™ 50%/Dowanol TPM",
+						notes: ["ambery", "woody", "cedarwood"],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Ambermax™ is a powerful, fusing and substantive rich ambery note with some woody cedarwood facets. Its outstanding fabric substantivity makes it a key building block for fabric care fragrances beating all benchmarks on dry cloth. Ambermax™ is a perfect fit to our existing range of ambery-woody notes including Okoumal™ / Amberketal / Ambrofix and can be used across all categories.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Levistamel 25%/TEC",
+			cas: ["675-09-2", "77-93-0"],
+			otherNames: ["Levistamel 25%"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/levistamel-25tec",
+						nameUsed: "Levistamel 25%/TEC",
+						notes: ["gourmand", "caramel", "liquorice", "balsamic"],
+						olfactiveFamily: "Gourmand",
+						olfactiveDescription: [
+							"Levistamel 25%/TEC has a sweet note of caramelised sugar with a green, celery, fenugreek, balsamic and aromatic background. At levels up to 1% Levistamel 25%/TEC can add an interesting effect in…",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Laitone 10%/TEC",
+			cas: ["77-93-0", "94201-19-1", "81783-01-9"],
+			otherNames: ["Methyl Laitone 10%"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-laitone-10tec",
+						nameUsed: "Methyl Laitone 10%/TEC",
+						notes: ["fruity", "coconut milk", "lactonic", "creamy"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Methyl Laitone 10% is one of the new spiro-lactones developed and patented by Givaudan. It is extremely powerful and very effective in all accords where a creamy, fruity volume is required. Methyl Laitone 10% provides cosmetic body to white flower notes such as jasmine, gardenia, tuberose and ylang ylang, and to fruity accords like peach and osmanthus. It provides milkiness to sandalwood accords and combines nicely with coumarin and tonka notes. Good substantivity on humid and dry fabric.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Undecatriene 10%/TEC",
+			cas: ["929625-08-1", "1001252-30-7", "77-93-0"],
+			otherNames: ["Undecatriene 10%"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/undecatriene-10tec",
+						nameUsed: "Undecatriene 10%/TEC",
+						notes: ["green", "galbanum", "aromatic", "intense"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Undecatriene 10%/TEC is a very natural and vibrant metallic green galbanum note. It is used in traces to provide a natural galbanum-like effect in compositions. It rounds out the palette of available green notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Labienoxime 10%/IPM-TEC",
+			cas: ["77-93-0", "110-27-0", "81783-01-9"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/labienoxime-10ipm-tec",
+						nameUsed: "Labienoxime 10%/IPM-TEC",
+						notes: ["fruit", "blackcurrant", "grapefruit", "green"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Labienoxime 10%/IPM-TEC surprises with its natural, fresh, cassis, sage flower character. As a modifier, it blends well with accords where a fresh fruity, green aspect is needed - for example, citrus, modern lily of the valley, lavender. Compared to other products in this olfactive area, Labienoxime is more linear and substantive on fabric.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ambrettolide",
+			cas: ["28645-51-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambrettolide",
+						nameUsed: "Ambrettolide",
+						notes: ["musk", "ambrette seed", "powerful", "warm", "fruit"],
+						olfactiveFamily: "Musky",
+						olfactiveDescription: [
+							"Ambrettolide is a macrocyclic musk with an exceptional diffusion and a very fine character. Its influence in a composition can be perceived at all evaporation levels. It is a superb fixative and highly substantive, and yet exalts the top note of a fragrance in an exceptional manner.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ambrofix™",
+			cas: ["6790-58-5", "3738-00-9"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambrofix",
+						nameUsed: "Ambrofix™",
+						notes: ["amber", "wood", "tobacco", "dry"],
+						olfactiveFamily: "Amber",
+						olfactiveDescription: [
+							"Ambrofix™ is a highly powerful, highly substantive and highly stable ambery note. It is the most suitable material to deliver an authentic Ambergris note. Ambrofix™ also brings a woody sensuality to the composition and can be easily overdosed. It is the most widely used and most biodegradable ambery molecule. Traditionally, Ambrofix™ can be produced from a natural starting material derived from clary sage. Givaudan has developed a completely unique multi-step bioconversion process to produce Ambrofix™ starting from sugar cane. This new process is considered as one of the most sustainable process for Ambrofix™ in the market.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Amyl Salicylate",
+			cas: ["2050-08-0", "51115-63-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/amyl-salicylate",
+						nameUsed: "Amyl Salicylate",
+						notes: ["floral", "sweet", "aromatic", "balsamic"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Amyl Salicylate has a floral and sweet, herbaceous and balsamic character, with a green undertone. It is extensively used in florals and can be an important ingredient for fougere accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Amyl Vinyl Carbinol",
+			cas: ["3391-86-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/amyl-vinyl-carbinol",
+						nameUsed: "Amyl Vinyl Carbinol",
+						notes: ["herbal", "lavender"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Amyl Vinyl Carbinol is an impactful herbal note with mushroom effect. It is a top note used as a modifier in agrestic-aromatic accords like lavender and fougere.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Anisyl Acetate",
+			cas: ["104-21-2"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/anisyl-acetate",
+						nameUsed: "Anisyl Acetate",
+						notes: ["herb", "anis", "floral", "fruit"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Anisyl Acetate is a good modifier in floral, fruity, oriental and chypre fragrances where it imparts sweetness and a natural effect.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Anther",
+			cas: ["56011-02-0"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/anther",
+						nameUsed: "Anther",
+						notes: ["green", "floral", "hyacinth", "fresh"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Anther is a powerful ingredient with a green, fruity and fresh character. It is a strong modifier of tropical notes and hyacinth freshness. Used primarily in soaps and detergents, Anther gives great power to floral and green-floral creations.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Aurantiol™ Pure",
+			cas: ["89-43-0"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/aurantioltm-pure",
+						nameUsed: "Aurantiol™ Pure",
+						notes: [
+							"floral",
+							"orange blossom",
+							"linden blossom",
+							"tuberose",
+							"oriental",
+							"citrus",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Aurantiol™ Pure is perhaps the best known Schiff base and is extensively used in a large variety of floral notes such as orange-blossom, linden-blossom and tuberose. Used in citrus cologne types, it acts as an excellent fixative as well as exalting the top notes. It gives an oriental character when used in amber and chypre compositions and blends particularly well with macrocyclic musks.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Azarbre",
+			cas: ["68845-36-3"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/azarbre",
+						nameUsed: "Azarbre",
+						notes: [
+							"gourmand",
+							"honey",
+							"wood",
+							"orris",
+							"warm",
+							"dried flower",
+						],
+						olfactiveFamily: "Gourmand",
+						olfactiveDescription: [
+							"Azarbre has a warm honey note with aspects of dried flowers. It will enhance the effect of ionones at 2 to 3%. When used at higher dosage up to 10% it blends the woody and floral components of a fragrance together. Particularly suited for honey-sweet florals.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Benzyl Propionate",
+			cas: ["122-63-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/benzyl-propionate",
+						nameUsed: "Benzyl Propionate",
+						notes: ["floral", "jasmine", "fruit"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Benzyl Propionate has a floral jasmine note, distinctively more fruity than the corresponding Acetate.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Berryflor™",
+			cas: ["104986-28-9"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/berryflortm",
+						nameUsed: "Berryflor™",
+						notes: [
+							"fruit",
+							"raspberry",
+							"floral",
+							"fresh",
+							"balsam",
+							"jasmine",
+							"anis",
+						],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Berryflor™ is a floral, fruity, raspberry-like product with jasmine, anisic and balsamic aspects. It blends well with floral, woody and musky notes, and with the Isoraldeine™s and other ionones. It enriches and softens accords in all fields of perfumery.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Bisabolene",
+			cas: ["17627-44-0", "502-61-4", "18794-84-8", "495-62-5"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/bisabolene",
+						nameUsed: "Bisabolene",
+						notes: [
+							"floral",
+							"orange blossom",
+							"balsam",
+							"myrrh",
+							"sweet",
+							"warm",
+							"spicy",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Bisabolene has a warm, sweet-spicy-balsamic odour very typical of opoponax and ‘oriental’ fragrance types. It finds use in reconstitutions of oils of bergamot, myrrh and lemon, and is an excellent fixative for neroli bases.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Boisiris™",
+			cas: ["68845-00-1"],
+			otherNames: ["Boisiris"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/boisiristm",
+						nameUsed: "Boisiris™",
+						notes: ["wood", "amber", "orris", "rich", "tobacco", "elegant"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Boisiris™ is a rich woody chemical with a distinct orris note. Ambery and tobacco undertones add to its elegant character. Designed for use as a heart note in fine perfumery, it gives more volume and blends well with the citrus top notes and the woody back notes of patchouli, sandalwood or vetiver oil.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Butyl Quinoline Secondary",
+			cas: ["65442-31-1", "67634-06-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/butyl-quinoline-secondary",
+						nameUsed: "Butyl Quinoline Secondary",
+						notes: ["leather", "green", "wood", "earth", "powerful", "vetiver"],
+						olfactiveFamily: "Leather - Moss",
+						olfactiveDescription: [
+							"Butyl Quinoline Secondary has a smooth, fine, woody-vetiver-leather character. It is used in chypre, leather, woody compositions and in masculine colognes where it imparts great diffusion and fixation.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Pyralone",
+			cas: ["65442-31-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/pyralone",
+						nameUsed: "Pyralone",
+						notes: ["leather", "green", "wood", "powerful", "tobacco"],
+						olfactiveFamily: "Leather - Moss",
+						olfactiveDescription: [
+							"Pyralone is finer, more aromatic and tobacco-like, and has less of a dry, earthy character than Butyl Quinoline Secondary. It is used in chypre, fougere and tobacco accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Celery Ketone",
+			cas: ["3720-16-9"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/celery-ketone",
+						nameUsed: "Celery Ketone",
+						notes: ["herbal", "spicy", "celery"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Celery Ketone is used as a modifier of aldehydic chypres and fougeres. It blends well with basil and tarragon oils in top note compositions, and also supports jasmine complexes. Celery Ketone is very useful wherever lovage and celery notes are desired.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Cervolide",
+			cas: ["6707-60-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cervolide",
+						nameUsed: "Cervolide",
+						notes: ["musk", "powder", "fruit", "wood"],
+						olfactiveFamily: "Musky",
+						olfactiveDescription: [
+							"Cervolide has a fine musk note, slightly fruity with a woody background.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Cetonal™",
+			cas: ["65405-84-7"],
+			otherNames: ["Cetonal"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cetonaltm",
+						nameUsed: "Cetonal™",
+						notes: ["floral", "orris", "wood", "powerful"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Cetonal™ is an elegant ingredient used in woody, orris accords as well as with leather, tobacco and animal notes where it acts as an excellent blending agent and adds to the harmony of a fragrance.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Cetone V",
+			cas: ["79-78-7"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cetone-v",
+						nameUsed: "Cetone V",
+						notes: ["floral", "green", "fruit", "wood", "powerful"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Cetone V has many facets to its character and thus has many uses. It blends very well with ionones, citrus notes, lavender, fruity, woody and oriental accords where it adds body and excellent diffusion.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Citrathal™ Conc S",
+			cas: ["147060-73-9"],
+			otherNames: [
+				"Citrathal™ Conc S",
+				"Citrathal™ Concentrate S TW",
+				"Citrathal™ Tech",
+				"Citrathal Conc S",
+				"Citrathal Concentrate S TW",
+				"Citrathal Tech",
+			],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/citrathaltm-conc-s",
+						nameUsed: "Citrathal™ Conc S",
+						notes: ["citrus", "lime", "lemon", "clean", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Citrathal™ Conc S has a distinctive clean-fresh, lemon-lime character and is one of the more chemically stable citrus materials. Citrathal™ is available in three grades.",
+						],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/citrathaltm-concentrate-s-tw",
+						nameUsed: "Citrathal™ Concentrate S TW",
+						notes: ["citrus", "lime", "lemon", "clean", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Citrathal™ Concentrate S TW has a distinctive clean-fresh, lemon-lime character and is one of the more chemically stable citrus materials. Citrathal™ is available in three grades.",
+						],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/citrathaltm-tech",
+						nameUsed: "Citrathal™ Tech",
+						notes: ["citrus", "lime", "lemon", "clean", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Citrathal™ Tech has a distinctive clean-fresh, lemon-lime character and is one of the more chemically stable citrus materials. Citrathal™ is available in three grades.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Cumin Nitrile",
+			cas: ["13816-33-6"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cumin-nitrile",
+						nameUsed: "Cumin Nitrile",
+						notes: ["spicy", "cumin", "green"],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Cumin Nitrile is a spicy cuminic ingredient, with a dry character and a hint of green. It is less pungent than the aldehyde but more stable and tenacious.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Cyclohexyl Salicylate",
+			cas: ["25485-88-5"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/cyclohexyl-salicylate",
+						nameUsed: "Cyclohexyl Salicylate",
+						notes: ["floral", "balsamic", "green", "jasmine"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Cyclohexyl Salicylate has a powerful floral and balsamic note with green inflexions reminiscent of jasmine. It can be used in all type of compositions and is especially useful to create carnation, hyacinth or orchid accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Decatone",
+			cas: ["34131-98-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/decatone",
+						nameUsed: "Decatone",
+						notes: [
+							"citrus",
+							"grapefruit",
+							"wood",
+							"fruit",
+							"fresh",
+							"vetiver",
+							"rhubarb",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Decatone has a woody, vetiver, citrus-grapefruit and green-rhubarb character. It can be used in simple citrus accords where it produces contrast and fixation, and in sophisticated perfumes where it is an excellent blender for oakmoss, vetiver, sandalwood and quinolines. It is powerful and long lasting.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Decenal-4-Trans",
+			cas: ["65405-70-1", "30390-50-2"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/decenal-4-trans",
+						nameUsed: "Decenal-4-Trans",
+						notes: [
+							"aldehydic",
+							"orange",
+							"green",
+							"floral",
+							"powerful",
+							"diffusive",
+							"fresh",
+							"citrus",
+						],
+						olfactiveFamily: "Aldehydic",
+						olfactiveDescription: [
+							"Decenal-4-Trans is an exceptionally powerful and diffusive chemical. Used mainly as a top note ingredient, it produces a fresh, natural, citrus-orange effect, imparting tremendous lift.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Dihydro Ambrate",
+			cas: ["37172-02-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/dihydro-ambrate",
+						nameUsed: "Dihydro Ambrate",
+						notes: ["amber", "wood", "warm", "diffusive"],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Dihydro Ambrate gives richness and balance to compounds, strengthening them and adding warmth and fullness. It can also be used as a diffusive woody note.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Dihydro Ionone Beta",
+			cas: ["17283-81-7"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/dihydro-ionone-beta",
+						nameUsed: "Dihydro Ionone Beta",
+						notes: ["wood", "floral", "orris", "amber", "fruit"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Dihydro Ionone Beta, a less well-known member of the ionone family, is increasingly used for its original woody and slightly ambery character. It brings a rich sophisticated volume to perfumes in combination with floral elements.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Dupical",
+			cas: ["30168-23-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/dupical",
+						nameUsed: "Dupical",
+						notes: ["floral", "green", "muguet", "fresh", "transparent"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Dupical is a powerful, fresh, transparent aldehydic muguet. It is a wonderful modifier and enhancer of the muguet character in a fragrance. It can be used across all applications thanks to its high performance.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ebanol™",
+			cas: ["67801-20-1"],
+			otherNames: ["Ebanol"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ebanoltm",
+						nameUsed: "Ebanol™",
+						notes: ["wood", "sandalwood", "musk", "powerful"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Ebanol™ has a very rich, natural sandalwood odour. It is powerful and intense, bringing volume and elegance to woody accords and a diffusive sandalwood effect to compositions. Ebanol™ is highly substantive on all supports.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Elintaal",
+			cas: ["40910-49-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/elintaal",
+						nameUsed: "Elintaal",
+						notes: ["floral", "green", "muguet", "fresh", "herb"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Elintaal has a natural and fresh muguet note with herbaceous undertones.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ethyl Linalool",
+			cas: ["10339-55-6"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ethyl-linalool",
+						nameUsed: "Ethyl Linalool",
+						notes: ["floral", "fresh", "bergamot"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Ethyl Linalool has a floral, fresh, bergamot character and is sweeter and less agrestic than Linalool. As with Linalool, it is used in a wide variety of notes for floral bouquets.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ethyl Linalyl Acetate",
+			cas: ["61931-80-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ethyl-linalyl-acetate",
+						nameUsed: "Ethyl Linalyl Acetate",
+						notes: [
+							"citrus",
+							"bergamot",
+							"fruit",
+							"pear",
+							"fresh",
+							"elegant",
+							"floral",
+							"soft",
+							"elegant",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Ethyl Linalyl Acetate is softer, more floral, more bergamot and less lavender than Linalyl Acetate. It has an elegant, refreshing effect in floral bouquets.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ethyl Methyl-2-Butyrate",
+			cas: ["7452-79-1"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ethyl-methyl-2-butyrate",
+						nameUsed: "Ethyl Methyl-2-Butyrate",
+						notes: ["fruit", "green", "apple", "pineapple skin", "diffusive"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Ethyl Methyl-2-Butyrate has a very diffusive fruity effect that serves as a modifier in floral accords or in combination with fruity esters.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Ethyl Safranate",
+			cas: ["35044-59-8", "35044-57-6", "35044-58-7"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ethyl-safranate",
+						nameUsed: "Ethyl Safranate",
+						notes: ["floral", "rose", "fruit", "apple", "spicy", "diffusive"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Ethyl Safranate is a complex diffusive spicy rose note with apple cider and spicy aspects. This rich and versatile ingredient is used in a wide range of fragrance types, from floral through to fruity, particularly apple. Ethyl Safranate gives body and radiance in fine fragrance and toiletries, but is also unexpectedly stable in detergents, thus broadening the possibilities for use.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Florhydral™",
+			cas: ["125109-85-5"],
+			otherNames: ["Florhydral"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/florhydraltm",
+						nameUsed: "Florhydral™",
+						notes: [
+							"floral",
+							"green",
+							"muguet",
+							"fresh",
+							"powerful",
+							"lily of the valley",
+							"hyacinth",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Florhydral™ has a very floral, fresh, natural odour (such as lily of the valley, hyacinth...). Its great intensity and pleasant quality make it useful in all areas of perfumery. Florhydral™ is also valuable in fragrances for laundry products where a fresh residual odour is desired. Florhydral™ gives natural volume together with aldehydes in citrus accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Florocyclene",
+			cas: ["68912-13-0", "17511-60-3"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/florocyclene",
+						nameUsed: "Florocyclene",
+						notes: [
+							"floral",
+							"green",
+							"fruit",
+							"sweet",
+							"jasmine",
+							"anise",
+							"soft",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Florocyclene has a sweet fruity floral note with aspects of jasmine and anise. This is the propionate ester of the cyclene family, and is much softer than Jasmacyclene. It works well in combination with the other cyclenes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Florosa",
+			cas: ["63500-71-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/florosa",
+						nameUsed: "Florosa",
+						notes: ["floral", "muguet", "sweet", "cream"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Florosa has a creamy floral muguet note. It is commonly used in combination with muguet aldehydes such as Bourgeonal and Dupical. It is a general floraliser and can be taken in a number of different odour directions from herbal through floral to citrus.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Freskomenthe™",
+			cas: ["14765-30-1"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/freskomenthetm",
+						nameUsed: "Freskomenthe™",
+						notes: ["herbal", "mint", "fresh", "wood"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Freskomenthe™ adds an element of freshness to a wide range of accords, including lavender, citrus, aromatic, geranium and green notes. It contributes to a unique cooling effect in powder detergent, without becoming overly minty. Freskomenthe™ can be used to modify a typical mint character and suggest peppermint in a blend containing none of the natural mint. Very stable in all applications, including bleach.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Frutonile",
+			cas: ["69300-15-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/frutonile",
+						nameUsed: "Frutonile",
+						notes: ["fruit", "peach", "lactonic", "intense"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Frutonile has an intense peach character with lactonic undertones. It is stable across the whole pH range, allowing the perfumers to create a stable fruity effect at low concentration in any applications, including bleach system.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Gardamide",
+			cas: ["84434-18-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/gardamide",
+						nameUsed: "Gardamide",
+						notes: [
+							"citrus",
+							"grapefruit",
+							"rhubarb",
+							"zest",
+							"crisp",
+							"fresh",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Gardamide is a zesty grapefruit citrus heart note, with aspects of crisp rhubarb. It works well with other citrus and earthy green notes. Gardamide increases in strength over the first few hours, giving a long lasting citrus freshness to a fragrance.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Gardocyclene",
+			cas: ["67634-20-2"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/gardocyclene",
+						nameUsed: "Gardocyclene",
+						notes: ["fruit", "green", "floral"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Gardocyclene is a fruity floral and slightly green material, less anise-like than the other cyclenes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Geranodyle",
+			cas: ["42822-86-6", "50373-36-9"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/geranodyle",
+						nameUsed: "Geranodyle",
+						notes: [
+							"floral",
+							"geranium",
+							"rose",
+							"fruit",
+							"fresh",
+							"diffusive",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Geranodyle is a complex mixture with a fresh geranium odour. A top note ingredient, it has good diffusivity and increases the fruity character of compositions.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Givescone™",
+			cas: ["57934-97-1", "77851-07-1"],
+			otherNames: ["Givescone"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/givesconetm",
+						nameUsed: "Givescone™",
+						notes: ["floral", "rose", "spicy", "fruit", "wood", "herb"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Givescone™ is used where real innovation is required. It has a complex odour picture, with floral, spicy, fruity, woody and even herbaceous nuances. It blends particularly well with rose, carnation, aldehydes, chypre and fougère, and with aromatic and spicy notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Glycolierral",
+			cas: ["68901-32-6", "94087-23-7"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/glycolierral",
+						nameUsed: "Glycolierral",
+						notes: ["floral", "green", "ivy leaves", "wood", "milk", "soft"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Glycolierral offers a soft, green, milky nuance when used as a green top note modifier. It fits very well with green floral fruity concepts and especially fig accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Gyrane",
+			cas: ["24237-00-1", "24237-01-2", "24237-02-3"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/gyrane",
+						nameUsed: "Gyrane",
+						notes: ["floral", "geranium", "green", "spicy"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Gyrane is a radiant green floral with spicy geranium aspects. It supports the fresh green top-notes of a fragrance, and works well with materials such as Cyclal C, NeoFolione™ and cis-3 hexenol derivatives.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Herboxane",
+			cas: ["54546-26-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/herboxane",
+						nameUsed: "Herboxane",
+						notes: [
+							"herbal",
+							"green",
+							"spicy",
+							"fresh",
+							"basil",
+							"sweet red pepper",
+						],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Herboxane is a spicy whilst distinctively herbal note particularly basil, reminiscent of sweet red pepper. Herboxane adds a distinctive freshness to a fragrance. It is also very stable in detergent powders with bleaching system.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Hexyl Acetate",
+			cas: ["142-92-7"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/hexyl-acetate",
+						nameUsed: "Hexyl Acetate",
+						notes: ["fruit", "green", "pear", "floral"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Hexyl Acetate has a fruity green note reminiscent of pear with floral facets. It can be used in all type of compositions and is a very useful top note in fresh and fruity accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Indolene 50%/CSO",
+			cas: ["68908-82-7", "8001-79-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/indolene-50cso",
+						nameUsed: "Indolene 50%/CSO",
+						notes: ["floral", "animalic", "jasmine"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Indolene 50% has a floral animalic note. It is very useful to extend the natural jasmin character of a composition.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Irisone™ Alpha",
+			cas: ["127-41-3", "8013-90-9"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/irisonetm-alpha",
+						nameUsed: "Irisone™ Alpha",
+						notes: [
+							"floral",
+							"orris",
+							"violet",
+							"wood",
+							"balsam",
+							"pine",
+							"citrus",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Irisone™ Alpha is used widely in perfume compositions mainly in woody, floral, balsamic, piney or citrus notes for its high substantivity. It is also know to bring an interesting twist to rose accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Irisone™ Pure",
+			cas: ["127-41-3", "8013-90-9", "14901-07-6"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/irisonetm-pure",
+						nameUsed: "Irisone™ Pure",
+						notes: [
+							"floral",
+							"orris",
+							"violet",
+							"fruity",
+							"woody",
+							"powerful",
+							"rich",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Irisone™ Pure is of high interest for its powerful, rich, floral-violet character. It is easy to blend with many floral, woody, aldehydic, fruity and chypre accords. Sweeter than Irisone™ Alpha, this grade of ionone has an excellent price-performance ratio and an excellent substantivity in functional fragrances.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Irone Alpha",
+			cas: ["79-69-6"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/irone-alpha",
+						nameUsed: "Irone Alpha",
+						notes: ["floral", "orris", "wood", "rich", "violet"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Irone Alpha has a rich, floral and natural character and constitutes an important element in orris and violet compositions as well as being useful when an exotic nuance is required. Irone Alpha is extremely diffusive and gives volume and tenacity to compositions",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isobutavan",
+			cas: ["20665-85-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isobutavan",
+						nameUsed: "Isobutavan",
+						notes: [
+							"gourmand",
+							"vanilla",
+							"sweet",
+							"fruit",
+							"cream",
+							"white chocolate",
+							"cream soda",
+							"apricot",
+							"soft",
+						],
+						olfactiveFamily: "Gourmand",
+						olfactiveDescription: [
+							"Isobutavan has a sweet and creamy vanillic character reminiscent of white chocolate, cream soda with a soft apricot feeling. Isobutavan is much less discolouring than vanillin or ethyl vanillin and can be used at levels up to 2% including in toilet soap fragrances before discolouration becomes a problem. It is less powdery than vanillin and has a more creamy effect.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isobutyl Quinoline-2",
+			cas: ["93-19-6"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isobutyl-quinoline-2",
+						nameUsed: "Isobutyl Quinoline-2",
+						notes: ["leather", "wood", "powerful", "intense"],
+						olfactiveFamily: "Leather - Moss",
+						olfactiveDescription: [
+							"Isobutyl Quinoline-2 is widely used in masculine colognes for its vibrant, intense leathery character. It combines nicely in chypre, leathery and woody accords where it is extremely powerful and long lasting.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isojasmone B 11",
+			cas: ["95-41-0"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isojasmone-b-11",
+						nameUsed: "Isojasmone B 11",
+						notes: ["floral", "jasmine", "aromatic", "warm"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Isojasmone B 11 is widely used in jasmine and floral bouquets for its powerful and natural volume effect to top and heart notes. It also blends nicely with quinolines in chypre accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isolongifolanone",
+			cas: ["23787-90-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isolongifolanone",
+						nameUsed: "Isolongifolanone",
+						notes: ["wood", "amber", "dry", "fresh", "diffusive"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Isolongifolanone has a fresh woody note, dry and diffusive with rich amber quality.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isomenthone DL",
+			cas: ["491-07-6", "89-80-5"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isomenthone-dl",
+						nameUsed: "Isomenthone DL",
+						notes: [
+							"herbal",
+							"aromatic",
+							"green",
+							"mint",
+							"fresh",
+							"peppermint",
+						],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Isomenthone DL has a a fresh and aromatic herbal note with green inflexions reminiscent of peppermint. It can be used in fresh, minty, agrestic or fougere composition as well as in lavender or geranium accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isopropyl Methyl-2-Butyrate",
+			cas: ["66576-71-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isopropyl-methyl-2-butyrate",
+						nameUsed: "Isopropyl Methyl-2-Butyrate",
+						notes: [
+							"fruit",
+							"pear",
+							"pineapple",
+							"green",
+							"diffusive",
+							"apple",
+						],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Isopropyl Methyl-2-Butyrate is used for green-fruity accords like pear and apple. It provides significant freshness to perfumes in combination with floral elements.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Isopropyl Quinoline",
+			cas: ["135-79-5", "6457-30-3"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isopropyl-quinoline",
+						nameUsed: "Isopropyl Quinoline",
+						notes: ["leather", "wood", "moss"],
+						olfactiveFamily: "Leather - Moss",
+						olfactiveDescription: [
+							"Isopropyl Quinoline is an indispensable element in the formulation of masculine notes, where it blends very well with mossy vetiver, chypre and tobacco accords, as well as with animal and spicy types. It is a rich and vibrant material which leads to great originality in compounds. Its influence is constant throughout the evaporation of a fragrance and gives volume, strength and diffusion.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmacyclene",
+			cas: ["54830-99-8", "2500-83-6", "5413-60-5"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmacyclene",
+						nameUsed: "Jasmacyclene",
+						notes: ["floral", "green", "fruit"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmacyclene is the acetate ester of the cyclene family with the typical fruity anisic floral note of the family. Jasmacyclene gives to floral accords an attractive green fruity volume with a sweet anise and woody background.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmatone",
+			cas: ["13074-65-2"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmatone",
+						nameUsed: "Jasmatone",
+						notes: ["floral", "jasmine", "fruit"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmatone has a floral aromatic jasmine note, diffusive and warm with a hint of fruit. It can be considered as a very good floraliser, suitable for jasmine, floral and fruity fragrances. It has good chemical stability and is particularly effective in toilet soaps.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmone Cis",
+			cas: ["488-10-8"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmone-cis",
+						nameUsed: "Jasmone Cis",
+						notes: ["floral", "jasmine", "green", "warm"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmone Cis is widely used in the creation of high quality florals like jasmine and tuberose. Also used in the reconstitutions of essential oils.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmonyl™ LG",
+			cas: ["18871-14-2", "38285-49-3"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmonyltm-lg",
+						nameUsed: "Jasmonyl™ LG",
+						notes: ["floral", "jasmine", "lactonic", "mushroom", "diffusivd"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmonyl LG is used in many types of compositions for its lactonic jasmine effect. It also has a mushroom-like facet that blends well with lavender. It enhances and improves the diffusion of compositions, particularly in fragrances designed for soaps.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmonyl™",
+			cas: ["18871-14-2", "63270-14-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmonyltm",
+						nameUsed: "Jasmonyl™",
+						notes: ["floral", "jasmine", "lactonic", "mushroom", "diffusive"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmonyl™ is used in many perfume types for its lactonic jasmine effect. It also possesses a mushroom-like note that blends well with lavender. Jasmonyl™ enhances and improves the diffusion of most fragrances, particularly in perfumes designed for soap.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmopyrane Forte",
+			cas: ["18871-14-2"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmopyrane-forte",
+						nameUsed: "Jasmopyrane Forte",
+						notes: [
+							"floral",
+							"jasmine",
+							"aromatic",
+							"sweet",
+							"herb",
+							"rich",
+							"tea",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmopyrane Forte has a floral jasmine note with a rich sweet herbaceous character and hints of tea. Jasmopyrane Forte is a broader-cut, lower cost option that is slightly more tenacious and has a more pronounced green mushroom.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Jasmopyrane",
+			cas: ["18871-14-2"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmopyrane",
+						nameUsed: "Jasmopyrane",
+						notes: [
+							"floral",
+							"jasmine",
+							"aromatic",
+							"rich",
+							"sweet",
+							"herb",
+							"tea",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Jasmopyrane has a floral jasmine note with a rich sweet herbaceous character and hints of tea. Jasmopyrane Forte is a broader-cut, lower cost option that is slightly more tenacious and has a more pronounced green mushroom.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Javanol™ Super",
+			cas: ["198404-98-7"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/javanoltm-super",
+						nameUsed: "Javanol™ Super",
+						notes: [
+							"wood",
+							"sandalwood",
+							"warm",
+							"cream",
+							"lactonic",
+							"cedarwood",
+						],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Javanol™ Super is a new quality of Javanol™. It has a rich natural sandalwood creamy note, enhancing the lactonic cedarwood facets, while Javanol™ enhance fresh rosy powdery facets. Javanol™ and Javanol™ Super have a similar richness and power, which make them ones of the most powerful Sandalwood molecules.",
+						],
+					},
+				},
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/javanol",
+						nameUsed: "Javanol™",
+						notes: ["wood", "sandalwood", "cream", "rose", "powerful"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Javanol™ is the latest generation of sandalwood molecule with unprecedented power and substantivity. It has a rich, natural, creamy sandalwood note like beta santanol combined with some rosy nuances. It can also be used at very low dosage (below 0.1%) to bring richness and creaminess to all types of accords. With its exceptional low threshold, Javanol™ is approximately 8 times more effective in wash tests than the most powerful sandalwood product. Its very good stability, mainly due to the complete absence of double bond, makes it suitable for all applications except bleach.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Kephalis",
+			cas: ["36306-87-3"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/kephalis",
+						nameUsed: "Kephalis",
+						notes: ["wood", "amber", "tobacco", "rich"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Kephalis is a very versatile and rich product, used as a long lasting heart and base notes. It blends well with floral notes (jasmine, rose, violet, lavender, etc.) as well as sophisticated ambery, woody-aldehydic, tobacco and masculine creations.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Lemonile™",
+			cas: ["61792-11-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/lemoniletm",
+						nameUsed: "Lemonile™",
+						notes: ["citrus", "lemon", "intense", "fresh", "diffusive"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Lemonile™ is used in lemon, verbena and lime compositions where it imparts freshness and diffusion. This nitrile is an extremely powerful chemical and has excellent stability in alkaline media. More natural and long lasting than Geranitrile.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Lime Oxide",
+			cas: ["73018-51-6"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/lime-oxide",
+						nameUsed: "Lime Oxide",
+						notes: ["citrus", "lime", "green", "aromatic", "fresh", "powerful"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Lime Oxide adds freshness and intensity to perfumes designed for functional products. It is also a powerful citrus booster with excellent stability in many applications, including bleach.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Limetol",
+			cas: ["7392-19-0"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/limetol",
+						nameUsed: "Limetol",
+						notes: ["herbal", "camphor", "wood", "lime", "pine needle"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Limetol is used where a lemon-woody note is desired. It also offers pine needle and lime nuances.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalool Oxide",
+			cas: ["1365-19-1", "60047-17-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalool-oxide",
+						nameUsed: "Linalool Oxide",
+						notes: ["herbal", "pine", "floral", "fresh", "sweet", "earth"],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Linalool Oxide is a fresh, sweet material which is very useful for its ability to give additional lift to floral accords. It also has a fresh earthy quality which makes it invaluable in reconstitutions of essential oils. It blends harmoniously with patchouli in chypre accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalyl Benzoate",
+			cas: ["126-64-7"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalyl-benzoate",
+						nameUsed: "Linalyl Benzoate",
+						notes: ["floral", "tuberose", "warm", "soft"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Linalyl Benzoate has a beautiful floral, tuberose character. It blends extremely well in oriental and floral types where its use gives warmth and softness.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalyl Cinnamate",
+			cas: ["78-37-5"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalyl-cinnamate",
+						nameUsed: "Linalyl Cinnamate",
+						notes: ["floral", "fruit", "balsamic", "sweet"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Linalyl Cinnamate gives a sweet natural effect to floral, fruity and oriental compositions. It is ideal for use in delicate floral accords where it acts as a blending agent and as a fixative.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalyl Formate",
+			cas: ["115-99-1"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalyl-formate",
+						nameUsed: "Linalyl Formate",
+						notes: ["citrus", "bergamot", "green", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Linalyl Formate introduces freshness and lift to the top note of citrus and lavender fragrances. It helps to combine the fruity character of Linalyl Acetate with the fatty notes of the aldehydes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalyl Isobutyrate",
+			cas: ["78-35-3"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalyl-isobutyrate",
+						nameUsed: "Linalyl Isobutyrate",
+						notes: ["fruit", "fresh", "lavender"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Linalyl Isobutyrate has a natural, fresh character which enhances the top note of many compositions, especially lavender, cologne and fruity blends. Its modifying action is also much appreciated in various floral bases such as lilac. It is also a useful component in synthetic bergamots.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Linalyl Propionate",
+			cas: ["144-39-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/linalyl-propionate",
+						nameUsed: "Linalyl Propionate",
+						notes: [
+							"herbal",
+							"lavender",
+							"bergamot",
+							"fruit",
+							"clean",
+							"fresh",
+						],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Linalyl Propionate falls into the category of modern bergamot-lavender notes. A pronounced fruity nuance distinguishes it from Linalyl Acetate. Its excellent stability and intensive clean, fresh character make it ideal for use in fragrances designed for functional products.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Maceal",
+			cas: ["68259-31-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/maceal",
+						nameUsed: "Maceal",
+						notes: [
+							"green",
+							"fresh",
+							"herbal",
+							"powerful",
+							"nutmeg",
+							"spicy",
+							"tree bark",
+						],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Maceal has an intensely powerful, fresh green note, with a hint of spicy nutmeg. It is best used as a 10% dilution where its natural, green, tree bark character is highlighted. Maceal can be used at this dilution in most product types to give a powerful boost to the fresh top note, particularly in green florals.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Madrox™",
+			cas: ["37514-30-0"],
+			noteType: "mid(heart)",
+			otherNames: ["Madrox"],
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/madroxtm",
+						nameUsed: "Madrox™",
+						notes: ["wood", "amber", "tobacco", "warm", "ambergris"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Madrox™ is extremely useful in woody, fougere and chypre compositions, where it imparts an interesting ambergris note. Used as a main constituent, it blends the top notes and strengthens the body of a fragrance.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Manzanate",
+			cas: ["39255-32-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/manzanate",
+						nameUsed: "Manzanate",
+						notes: ["fruit", "apple", "pineapple", "cider", "sweet"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Manzanate has a fruity ripe apple character with aspects of cider and sweet pineapple. It brings a great impact and bloom in water-contact products.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Mefranal",
+			cas: ["55066-49-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/mefranal",
+						nameUsed: "Mefranal",
+						notes: [
+							"citrus",
+							"aldehydic",
+							"geranium",
+							"lemon",
+							"fresh",
+							"floral",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Mefranal has a refreshing lemon geranium note with an aldehydic floral heart.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Anthranilate Extra",
+			cas: ["134-20-3"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-anthranilate-extra",
+						nameUsed: "Methyl Anthranilate Extra",
+						notes: ["floral", "neroli", "sweet", "warm"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Methyl Anthranilate Extra is extensively used in many types of floral blends such as neroli and orange blossom, as well as in exotic compositions, gardenia, tuberose and jasmine, Methyl Anthranilate Extra imparts warmth, volume and sweetness and is used in all types of perfumery.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Diantilis™",
+			cas: ["5595-79-9"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-diantilistm",
+						nameUsed: "Methyl Diantilis™",
+						notes: ["spicy", "carnation", "vanilla", "sweet", "elegant"],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Methyl Diantilis™ is an elegant, spicy, sweet ingredient with a similar olfactive profile to Isoeugenol, but with an additional powdery aspect reminiscent of carnation (Dianthus caryophyllus). Unlike Isoeugenol, it is much less susceptible to discolouration and is not restricted by IFRA.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Heptenone Pure",
+			cas: ["110-93-0"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-heptenone-pure",
+						nameUsed: "Methyl Heptenone Pure",
+						notes: ["citrus", "lemongrass", "green", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Methyl Heptenone Pure is used to provide a natural green freshness to agrestic or hesperidic top notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Laitone 10%/DPG",
+			cas: ["94201-19-1", "91069-37-3", "25265-71-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-laitone-10dpg",
+						nameUsed: "Methyl Laitone 10%/DPG",
+						notes: ["fruit", "coconut milk", "lactonic", "cream", "powerful"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Methyl Laitone 10% is one of the new spiro-lactones developed and patented by Givaudan. It is extremely powerful and very effective in all accords where a creamy, fruity volume is required. Methyl Laitone 10% provides cosmetic body to white flower notes such as jasmine, gardenia, tuberose and ylang ylang, and to fruity accords like peach and osmanthus. It provides milkiness to sandalwood accords and combines nicely with coumarin and tonka notes. Good substantivity on humid and dry fabric.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Pharaone™ 10%/DPG",
+			cas: ["25265-71-8", "313973-37-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/pharaonetm-10dpg",
+						nameUsed: "Pharaone™ 10%/DPG",
+						notes: [
+							"green",
+							"fruit",
+							"pineapple",
+							"aromatic",
+							"diffusive",
+							"powerful",
+							"fresh",
+						],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Pharaone™ 10%/DPG has a new fruity green, natural aspect which adds value to both consumer products and fine fragrance creation. It is extremely powerful and diffusive. It gives freshness and lift to the top and mid notes. It is suitable in all kind of accords, especially citrus, floral, fruity, green, woody, agrestic and fougere.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Sclarene 80%/DPG",
+			cas: ["94201-19-1", "91069-37-3", "25265-71-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/sclarene-80dpg",
+						nameUsed: "Sclarene 80%/DPG",
+						notes: [
+							"wood",
+							"dry",
+							"amber",
+							"strong",
+							"warm",
+							"metallic",
+							"camphor",
+						],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Sclarene brings a strong dry woody note with camphor and warm metallic undertones. It can be used in small quantity with musky and ambery notes such as Ambrofix to bring warm and metallic facets. Sclarene is also often considered as a musk booster as it shows interesting musky facets with good substantivity and fixative properties without being musky. Sclarene is commonly used at low dosages below 1% but can be overdosed to bring very unique signature to the fragrance.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Pamplemousse",
+			cas: ["67674-46-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-pamplemousse",
+						nameUsed: "Methyl Pamplemousse",
+						notes: ["citrus", "grapefruit peel", "fresh", "bitter"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Methyl Pamplemousse, with its fresh bitterness, blends very well with citrus bases. It can also be used as a booster for vetiver accords. Methyl Pamplemousse is a key ingredient in modern colognes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Methyl Tuberate Pure",
+			cas: ["33673-62-0", "35205-76-6"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/methyl-tuberate-pure",
+						nameUsed: "Methyl Tuberate Pure",
+						notes: ["floral", "tuberose", "lactonic", "powerful"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Methyl Tuberate Pure is a powerful modifier in all kinds of floral accords. The characteristic note of Methyl Tuberate Pure imparts a natural touch of white flower, such as tuberose and gardenia. It can be used effectively in combination with fruity lactones to provide lift.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Musk R1",
+			cas: ["3391-83-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/musk-r1",
+						nameUsed: "Musk R1",
+						notes: ["musk", "powder", "sensual", "cream", "sophisticated"],
+						olfactiveFamily: "Musky",
+						olfactiveDescription: [
+							"Musk R1 is a sensual, sophisticated, creamy, powdery macrocyclic musk. It gives an exalting effect when used in combination with other macrocyclic musks.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Nectaryl",
+			cas: ["95962-14-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/nectaryl",
+						nameUsed: "Nectaryl",
+						notes: ["fruit", "peach", "apricot", "lactonic", "sophisticated"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Nectaryl produces a natural, fruity and sophisticated note in fine fragrance. Its stability and substantivity makes it valuable as a lactonic element in powder detergent.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Orcinyl 3",
+			cas: ["3209-13-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/orcinyl-3",
+						nameUsed: "Orcinyl 3",
+						notes: ["leather", "oakmoss", "sweet", "phenolic"],
+						olfactiveFamily: "Leather - Moss",
+						olfactiveDescription: [
+							"Orcinyl 3 brings a typical oakmoss note reinforcing the character of this absolute in all compounds. It can be used in combination with Evernyl as the heart of an oakmoss substitute. It blends very well with chypre, leather, woody and tobacco accords.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Oxyoctaline Formate",
+			cas: ["65405-72-3"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/oxyoctaline-formate",
+						nameUsed: "Oxyoctaline Formate",
+						notes: ["wood", "amber", "rich", "elegant"],
+						olfactiveFamily: "Woody",
+						olfactiveDescription: [
+							"Oxyoctaline Formate has an original, ambery and long lasting character, blending very well with most woody notes. Its richness and elegance allow perfect harmony with natural woody products bringing an interesting olibanum effect.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Paradisamide™",
+			cas: ["406488-30-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/paradisamidetm",
+						nameUsed: "Paradisamide™",
+						notes: [
+							"tropical fruit",
+							"guava",
+							"grapefruit",
+							"rhubarb",
+							"cassis",
+						],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Paradisamide™ is a long lasting, fresh tropical fruit note of guava and passion fruit with nuances of grapefruit, rhubarb and cassis. Paradisamide™ can be overdosed in tropical fruit accords up to 20% or use at lower dosage to give a tropical juicy twist to other fruity notes. It is also often used to bring bloom in shampoo and shower gels.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Pelargene",
+			cas: ["30310-41-9", "68039-41-8", "68039-40-7"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/pelargene",
+						nameUsed: "Pelargene",
+						notes: ["floral", "geranium", "crushed leaves"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Pelargene has a powerful geranium character, reminiscent of crushed leaves. It adds substantivity and body, particularly to floral fragrances, especially rose and geranium.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Petiole",
+			cas: ["68039-47-4"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/petiole",
+						nameUsed: "Petiole",
+						notes: [
+							"green",
+							"floral",
+							"hyacinth",
+							"powerful",
+							"rose",
+							"watercress",
+						],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Petiole is a green and powerful ingredient, with floral shades of hyacinth and rose, and a hint of watercress. It gives a natural green freshness to top notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Pivacyclene",
+			cas: ["68039-44-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/pivacyclene",
+						nameUsed: "Pivacyclene",
+						notes: ["fruit", "peach", "green", "soft"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Pivacyclene is part of the cyclene family and offers a dry fruity peach note with a fresh green softness. It works well with the other cyclenes as a modifier around 1% in soaps and detergents. Also ideal for cosmetics and toiletries at 5% or above if fragrance character allows. It is often used in combination with gamma-lactones to soften the fatty aspects.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Pivarose",
+			cas: ["67662-96-8"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/pivarose",
+						nameUsed: "Pivarose",
+						notes: [
+							"floral",
+							"rose",
+							"fruit",
+							"tea",
+							"balsamic",
+							"honey",
+							"sweet",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Pivarose is a floral tea-rose note with a fruity balsamic character and a hint of honey sweetness. It is a useful modifier of the more common rose alcohols and esters.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Rhubafuran",
+			cas: ["82461-14-1", "99343-91-6", "99343-90-5"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/rhubafuran",
+						nameUsed: "Rhubafuran",
+						notes: [
+							"citrus",
+							"rhubarb",
+							"green",
+							"fresh",
+							"intense",
+							"tangy",
+							"eucalyptus",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Rhubafuran has an intense tangy rhubarb character, with a green eucalyptus heart very suitable in fruity and citrus accords. It can be used across all functional fragrances with good performance in air fresheners.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Rosyrane Super",
+			cas: ["60335-74-2", "60335-71-9"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/rosyrane-super",
+						nameUsed: "Rosyrane Super",
+						notes: [
+							"floral",
+							"rose",
+							"geranium",
+							"green",
+							"intense",
+							"diffusive",
+							"metallic",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Rosyrane Super has an intense, diffusive rose character with green, geranium and metallic notes. It is particularly suited to be the heart of a very diffusive rose or geranium complex especially in…",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Safraleine™",
+			cas: ["54440-17-4"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/safraleinetm",
+						nameUsed: "Safraleine™",
+						notes: [
+							"spicy",
+							"leather",
+							"wood",
+							"warm",
+							"vibrant",
+							"saffron",
+							"rose",
+						],
+						olfactiveFamily: "Spicy",
+						olfactiveDescription: [
+							"Safraleine™ has a very unique warm and vibrant character offering a new alternative to existing spicy ingredients. Safraleine™ exhibits warm, powerful, leathery and tobacco facets but its complexity also reveals characteristics of spices reminiscent of natural saffron, enriched by rose ketone-like floral aspects.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Spirambrene",
+			cas: ["121251-68-1", "121251-67-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/spirambrene",
+						nameUsed: "Spirambrene",
+						notes: ["amber", "wood", "spicy", "aldehydic", "powerful"],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Spirambrene blends well with sparkling, green, spicy and aldehydic top notes. It is an interesting complement in woody accords for providing a diffusive ambery effect. Due to its high impact, it produces unique and original effects when combined with other woody elements.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Spirogalbanone™ Pure",
+			cas: ["224031-70-3", "224031-71-4"],
+			otherNames: ["Spirogalbanone Pure"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/spirogalbanone-pure",
+						nameUsed: "Spirogalbanone™ Pure",
+						notes: ["green", "galbanum", "fruit", "pineapple", "powerful"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Spirogalbanone™ Pure is a powerful, stable and highly substantive green galbanum note combined with fruity facets. Spirogalbanone™ Pure combines nicely with Pharaone™ to build a linear green galbanum effect in the fragrance working from top and heart notes with Pharaone™ down to base notes thanks to the outstanding substantivity of Spirogalbanone™.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Stemone™",
+			cas: ["22457-23-4"],
+			otherNames: ["Stemone"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/stemonetm",
+						nameUsed: "Stemone™",
+						notes: ["green", "natural", "leafy", "fresh"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Stemone™ imparts a natural and fresh nuance to fragrance notes such as lily of the valley, narcissus, mandarin, fig leaves, grapefruit, blackcurrant and tomato. It is an excellent modifier that strengthens and modernises green notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Strawberry Pure",
+			cas: ["77-83-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/strawberry-pure",
+						nameUsed: "Strawberry Pure",
+						notes: ["fruit", "strawberry", "powerful"],
+						olfactiveFamily: "Fruity",
+						olfactiveDescription: [
+							"Strawberry Pure is obviously used for strawberry compounds, but this product is also useful in a variety of floral compositions, such as jasmine and rose. Strawberry Pure adds warmth to a fragrance as well as reinforces top notes. It blends particularly well with ionones, hydroxycitronellal, woody notes, aldehydes and fruity lactones.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Syringa Aldehyde 50%",
+			cas: ["104-09-6", "699-02-5", "60-12-8"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/syringa-aldehyde-50",
+						nameUsed: "Syringa Aldehyde 50%",
+						notes: ["floral", "green", "sweet", "powerful"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Syringa Aldehyde is an impactful floral-green note, used as a top note in lilac, hyacinth and rose accords but less pungent than Phenyl Acetaldehyde.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Tangerinol",
+			cas: ["3239-35-8", "3239-37-0", "91482-37-0"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/tangerinol",
+						nameUsed: "Tangerinol",
+						notes: ["citrus", "bitter", "fruit", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Tangerinol blends well with fresh and sparkling compounds thanks to its fresh hesperidic character. Mixed with aldehydes and fruity notes, it gives more natural volume. Tangerinol is also effective as a sandalwood booster in soap.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Tetrahydro Citral",
+			cas: ["5988-91-0"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/tetrahydro-citral",
+						nameUsed: "Tetrahydro Citral",
+						notes: ["citrus", "aldehydic", "sweet", "fresh"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Tetrahydro Citral enhances the citrus effect in colognes. It can partially replace Citral in soap and detergent formulations thanks to its better stability.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Toscanol™",
+			cas: ["16510-27-3"],
+			otherNames: ["Toscanol"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/toscanoltm",
+						nameUsed: "Toscanol™",
+						notes: [
+							"herbal",
+							"anis",
+							"green",
+							"sweet",
+							"spicy",
+							"liquorice",
+							"sassafras",
+							"saffron",
+							"myrtle",
+							"opoponax",
+							"carvi",
+						],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Toscanol™ has a powerful and linear anisic, sweet-spicy note of estragole (methyl chavicol), liquorice and sassafras oil character with a touch of saffron, myrtle, opoponax and carvi seeds. Toscanol™ can be used in all kind of accords to add anisic agrestic and aromatic character. Useful in Fine Fragrance and in Consumer Products as a substitute for basil oil, tarragon oil, synthetic estragole (methyl chavicol) and safrole.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Tridecene-2-Nitrile",
+			cas: ["22629-49-8"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/tridecene-2-nitrile",
+						nameUsed: "Tridecene-2-Nitrile",
+						notes: ["citrus", "tangerine", "aldehydic", "powerful"],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Tridecene-2-Nitrile has a powerful citrus, tangerine note with an aldehydic character and a hint of fresh coriander.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Undecavertol",
+			cas: ["81782-77-6"],
+			noteType: "mid(heart)",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/undecavertol",
+						nameUsed: "Undecavertol",
+						notes: [
+							"floral",
+							"violet",
+							"green",
+							"fresh",
+							"lily of the valley",
+							"linden blossom",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Undecavertol was developed in connection with structural elucidation work on unknown trace components of lily of the valley. It has a powerful green-floral character, somewhat related to lily-of-the-valley, with natural, fresh, fruity violet leaf and linden-blossom aspects. Undecavertol can be used successfully in rose and fruity pear accords. Although easy to use in most perfumery types, Undecavertol requires careful dosage and blending due to its exceptional strength.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Velvione™",
+			cas: ["37609-25-9"],
+			otherNames: ["Velvione"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/velvionetm",
+						nameUsed: "Velvione™",
+						notes: ["musk", "powder", "animalic", "soft"],
+						olfactiveFamily: "Musky",
+						olfactiveDescription: [
+							"Velvione™ is powerful powdery macrocyclic musk with some nitro-musk aspects. It is highly substantive and stable, as well as biodegradable It is excellent in fine fragrance where it adds a powdery volume and musky softness, and in laundry care, where its high substantivity and clean musky note are highly valued.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Verdantiol",
+			cas: ["91-51-0"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/verdantiol",
+						nameUsed: "Verdantiol",
+						notes: ["floral", "linden blossom", "orange blossom", "intense"],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Verdantiol offers an intense floral note to delicate flower type creations, such as neroli, orange blossom, narcissus and frangipani. It provides excellent fixative value on all supports.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Verdoracine",
+			cas: ["14374-92-6"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/verdoracine",
+						nameUsed: "Verdoracine",
+						notes: ["green", "galbanum", "carrot", "earth"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"Verdoracine has a green note with aspects of freshly peeled carrots and dry earthy qualities of galbanum. It can be used in detergents up to 3% to support the green galbanum heart of a fragrance. It can also be used in toiletries and fine fragrances as a 10% dilution at 1% to support earthy, herbaceous notes.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Vernaldehyde™",
+			cas: ["66327-54-6", "693252-50-5"],
+			otherNames: ["Vernaldehyde"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/vernaldehydetm",
+						nameUsed: "Vernaldehyde™",
+						notes: [
+							"herbal",
+							"natural",
+							"green",
+							"aldehydic",
+							"fresh",
+							"mountain air",
+						],
+						olfactiveFamily: "Herbal - Agrestic",
+						olfactiveDescription: [
+							"Vernaldehyde™ has a fresh, green, mountain air character and blends very well with aldehydic citrus and woody notes. Vernaldehyde™ adds originality to a fragrance and imparts a natural aura. Its unique freshness and diffusion are demonstrated when incorporated into floral blends such as lily of the valley and lilac.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Neobergamate Forte",
+			cas: ["69103-01-1"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/neobergamate-forte",
+						nameUsed: "Neobergamate Forte",
+						notes: [
+							"citrus",
+							"bergamot",
+							"agrestic",
+							"fresh",
+							"floral",
+							"herb",
+						],
+						olfactiveFamily: "Citrus",
+						olfactiveDescription: [
+							"Neobergamate Forte has a powerful and fresh citrus bergamot top note combined with a floral, herbaceous heart. It is excellent for adding a fresh citrus lime effect.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "NeoFolione™",
+			cas: ["111-79-5", "14952-06-8"],
+			otherNames: ["NeoFolione"],
+			noteType: "high",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/neofolionetm",
+						nameUsed: "NeoFolione™",
+						notes: ["green", "floral", "fresh", "powerful", "diffusive"],
+						olfactiveFamily: "Green",
+						olfactiveDescription: [
+							"NeoFolione™ blends very well with most floral notes, especially violet, where it is particularly useful in replacing Folione™. It imparts freshness and diffusion and has good stability.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Nympheal™",
+			cas: ["1637294-12-2"],
+			otherNames: ["Nympheal"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/nympheal",
+						nameUsed: "Nympheal™",
+						notes: [
+							"floral",
+							"muguet",
+							"cyclamen",
+							"diffusive",
+							"green",
+							"water",
+							"linden blossom",
+							"white flower",
+							"cream",
+						],
+						olfactiveFamily: "Floral",
+						olfactiveDescription: [
+							"Nympheal™ is a diffusive floral cyclamen muguet note with green, watery and linden blossom facets. Nympheal™ imparts white floral watery density and brings a floral creaminess to the composition and high diffusivity.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Okoumal™",
+			cas: ["131812-67-4", "131812-52-7", "131812-51-6"],
+			otherNames: ["Okoumal"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/okoumaltm",
+						nameUsed: "Okoumal™",
+						notes: [
+							"amber",
+							"wood",
+							"tobacco",
+							"musk",
+							"elegant",
+							"rich",
+							"warm",
+						],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Okoumal™ brings an attractive and elegant woody-ambery effect. It gives significant volume, richness and warmth to fragrance compositions and combines well with cedar derivatives, patchouli oil and sandalwood products like Ebanol™. With its low vapour pressure and high MW, Okoumal™ is a heart note and is extremely long lasting and substantive on every support as well as stable in major applications.",
+						],
+					},
+				},
+			],
+		},
+		{
+			canonicalName: "Benzoin Powder Resinoid Laos™",
+			cas: ["9000-72-0"],
+			otherNames: ["Benzoin Powder Resinoid Laos"],
+			noteType: "base",
+			sources: [
+				{
+					sourceName: "Givaudan",
+					data: {
+						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/natural-ingredients/benzoin-powder-resinoid-laos",
+						nameUsed: "Benzoin Powder Resinoid Laos",
+						notes: [
+							"balsam",
+							"vanilla",
+							"resin",
+							"wood",
+							"sweet",
+							"cream",
+							"caramel",
+							"cinnamon",
+							"oriental",
+						],
+						olfactiveFamily: "Ambery",
+						olfactiveDescription: [
+							"Benzoin resinoid is woody, vanilla-like, sweet and creamy, it smells sort of like caramel when it starts to set. In the dry down, benzoin resinoid develops interesting cinnamic notes that can last a long time.",
+							"Benzoin is used in oriental accords or with floral raw materials such as rose or frangipani. Its cinnamic facet works well with raw materials with animalic and smoky notes, such as those of a tobacco accord.",
+						],
+					},
+				},
+			],
+		},
 	],
 };

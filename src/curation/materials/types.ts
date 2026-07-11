@@ -73,6 +73,9 @@ type SourceDataByName = {
 	Givaudan: CommonSourceData & {
 		url: string;
 		nameUsed: string;
+		olfactiveFamily: string;
+		olfactiveDescription: string[];
+		relatedCas?: string[];
 	};
 	Firmenich: CommonSourceData & {
 		url: string;
@@ -114,7 +117,7 @@ export type SourceEntry = {
 export type MaterialRecord = {
 	canonicalName: string;
 	cas?: string[];
-	otherNames: string[];
+	otherNames?: string[];
 	noteType: NoteType;
 	sources: SourceEntry[];
 	regulatory?: {

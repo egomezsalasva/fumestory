@@ -50,7 +50,7 @@ export const ifraGroupsSchema = z.array(ifraGroupSchema);
 export const materialRecordSchema = z.object({
 	canonicalName: z.string().min(1),
 	cas: z.array(z.string().regex(casRegex)).optional(),
-	otherNames: z.array(z.string().min(1)),
+	otherNames: z.array(z.string().min(1)).optional(),
 	sources: z.array(sourceEntrySchema).optional(),
 	regulatory: z
 		.object({
