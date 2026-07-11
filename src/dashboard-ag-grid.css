@@ -46,3 +46,81 @@
 	padding-top: 0.25rem !important;
 	padding-bottom: 0.25rem !important;
 }
+
+.ag-theme-quartz-dark .encyclopedia-name-cell {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.encyclopedia-list-cell {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.15;
+	padding: 0.75rem;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.encyclopedia-list-item {
+	line-height: 1.4;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.encyclopedia-note-item {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	line-height: 1.4;
+}
+
+.encyclopedia-note-dot {
+	--size: 0.75rem;
+	width: var(--size);
+	height: var(--size);
+	border-radius: 9999px;
+	flex-shrink: 0;
+}
+
+.ag-cell.encyclopedia-other-names-cell {
+	height: 100%;
+	display: flex;
+	align-items: stretch;
+	padding: 0 !important;
+	overflow: hidden;
+}
+
+.encyclopedia-other-names-scroll {
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	min-width: 0;
+	overflow-x: hidden;
+	overflow-y: scroll; /* always show scrollbar track */
+	scrollbar-gutter: stable;
+	padding: 0.75rem 0; /* left/top/bottom only — scrollbar sits on right edge */
+	box-sizing: border-box;
+}
+
+.encyclopedia-other-names-scroll .encyclopedia-list-cell {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* Force a visible scrollbar (esp. macOS overlay scrollbars) */
+.encyclopedia-other-names-scroll::-webkit-scrollbar {
+	width: 6px;
+}
+
+.encyclopedia-other-names-scroll::-webkit-scrollbar-track {
+	background: rgb(18 21 27 / 0.8);
+}
+
+.encyclopedia-other-names-scroll::-webkit-scrollbar-thumb {
+	background: rgb(64 73 89);
+	border-radius: 3px;
+}

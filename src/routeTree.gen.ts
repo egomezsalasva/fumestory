@@ -27,6 +27,7 @@ import { Route as DashboardScentKnowledgeRouteImport } from './routes/_dashboard
 import { Route as DashboardScentBlindTestRouteImport } from './routes/_dashboard.scent-blind-test'
 import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
 import { Route as DashboardMaterialsQuizRouteImport } from './routes/_dashboard.materials-quiz'
+import { Route as DashboardMaterialsEncyclopediaRouteImport } from './routes/_dashboard.materials-encyclopedia'
 import { Route as DashboardInventoryRouteImport } from './routes/_dashboard.inventory'
 import { Route as DashboardCompositionsRouteImport } from './routes/_dashboard.compositions'
 import { Route as DashboardAddRawMaterialRouteImport } from './routes/_dashboard.add-raw-material'
@@ -132,6 +133,12 @@ const DashboardMaterialsQuizRoute = DashboardMaterialsQuizRouteImport.update({
   path: '/materials-quiz',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardMaterialsEncyclopediaRoute =
+  DashboardMaterialsEncyclopediaRouteImport.update({
+    id: '/materials-encyclopedia',
+    path: '/materials-encyclopedia',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardInventoryRoute = DashboardInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
+  '/materials-encyclopedia': typeof DashboardMaterialsEncyclopediaRoute
   '/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/compositions': typeof DashboardCompositionsRoute
   '/inventory': typeof DashboardInventoryRoute
+  '/materials-encyclopedia': typeof DashboardMaterialsEncyclopediaRoute
   '/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/_dashboard/add-raw-material': typeof DashboardAddRawMaterialRoute
   '/_dashboard/compositions': typeof DashboardCompositionsRoute
   '/_dashboard/inventory': typeof DashboardInventoryRoute
+  '/_dashboard/materials-encyclopedia': typeof DashboardMaterialsEncyclopediaRoute
   '/_dashboard/materials-quiz': typeof DashboardMaterialsQuizRoute
   '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
   '/_dashboard/scent-blind-test': typeof DashboardScentBlindTestRoute
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
+    | '/materials-encyclopedia'
     | '/materials-quiz'
     | '/project-settings'
     | '/scent-blind-test'
@@ -354,6 +365,7 @@ export interface FileRouteTypes {
     | '/add-raw-material'
     | '/compositions'
     | '/inventory'
+    | '/materials-encyclopedia'
     | '/materials-quiz'
     | '/project-settings'
     | '/scent-blind-test'
@@ -388,6 +400,7 @@ export interface FileRouteTypes {
     | '/_dashboard/add-raw-material'
     | '/_dashboard/compositions'
     | '/_dashboard/inventory'
+    | '/_dashboard/materials-encyclopedia'
     | '/_dashboard/materials-quiz'
     | '/_dashboard/project-settings'
     | '/_dashboard/scent-blind-test'
@@ -560,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMaterialsQuizRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/materials-encyclopedia': {
+      id: '/_dashboard/materials-encyclopedia'
+      path: '/materials-encyclopedia'
+      fullPath: '/materials-encyclopedia'
+      preLoaderRoute: typeof DashboardMaterialsEncyclopediaRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/inventory': {
       id: '/_dashboard/inventory'
       path: '/inventory'
@@ -668,6 +688,7 @@ interface DashboardRouteChildren {
   DashboardAddRawMaterialRoute: typeof DashboardAddRawMaterialRoute
   DashboardCompositionsRoute: typeof DashboardCompositionsRoute
   DashboardInventoryRoute: typeof DashboardInventoryRoute
+  DashboardMaterialsEncyclopediaRoute: typeof DashboardMaterialsEncyclopediaRoute
   DashboardMaterialsQuizRoute: typeof DashboardMaterialsQuizRoute
   DashboardProjectSettingsRoute: typeof DashboardProjectSettingsRoute
   DashboardScentBlindTestRoute: typeof DashboardScentBlindTestRoute
@@ -685,6 +706,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAddRawMaterialRoute: DashboardAddRawMaterialRoute,
   DashboardCompositionsRoute: DashboardCompositionsRoute,
   DashboardInventoryRoute: DashboardInventoryRoute,
+  DashboardMaterialsEncyclopediaRoute: DashboardMaterialsEncyclopediaRoute,
   DashboardMaterialsQuizRoute: DashboardMaterialsQuizRoute,
   DashboardProjectSettingsRoute: DashboardProjectSettingsRoute,
   DashboardScentBlindTestRoute: DashboardScentBlindTestRoute,

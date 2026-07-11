@@ -96,6 +96,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	diffusive:
 		"linear-gradient(120deg, rgba(255, 223, 186, 0.8) 0%, rgba(186, 223, 255, 0.6) 50%, rgba(186, 255, 223, 0.4) 100%)",
 	earth: "linear-gradient(135deg, #5C3A27 0%, #7F4B2D 50%, #B75B28 100%)",
+	earthy: "linear-gradient(135deg, #5C3A27 0%, #7F4B2D 50%, #B75B28 100%)",
 	fennel: "linear-gradient(135deg, #3B9A57, #A4D65E, #B2E1B9, #F1FAE6)",
 	floral: "linear-gradient(135deg, #ff7eb3 0%, #ff65a1 50%, #ff5a00 100%)",
 	fougere:
@@ -121,11 +122,13 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	indole: "linear-gradient(135deg, #6F2C91 0%, #A26B9D 50%, #FFB6D1 100%)",
 	intense: "linear-gradient(135deg, #ff0000, #b30000, #ff6666)",
 	jasmine: "linear-gradient(135deg, #E8F5E9 30%, #C5E1A5 60%, #8BC34A 90%)",
+	jasmin: "linear-gradient(135deg, #E8F5E9 30%, #C5E1A5 60%, #8BC34A 90%)",
 	juicy: "linear-gradient(135deg, #ff6f61, #ff8e8e, #ffcc5c)",
 	"laurel leaf":
 		"linear-gradient(135deg, #B3C88B 0%, #8DAA93 50%, #69793A 100%)",
 	lavender: "linear-gradient(135deg, #E6E6FA, #D8BFD8, #9370DB)",
 	leather: "linear-gradient(135deg, #7d4b3a 0%, #b68b67 50%, #eee5e0 100%)",
+	leathery: "linear-gradient(135deg, #7d4b3a 0%, #b68b67 50%, #eee5e0 100%)",
 	lemon: "linear-gradient(135deg, #f6e05e 0%, #d8ca00 50%, #b4cc00 100%)",
 	licorice: "linear-gradient(135deg, #1a1a1a 0%, #2b2b2b 50%, #4d4d4d 100%)",
 	lilac: "linear-gradient(135deg, #d8c6e5, #b09ed8, #6b4d92)",
@@ -138,6 +141,7 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	metallic:
 		"linear-gradient(135deg, #8A8A8A 0%, #C0C0C0 50%, #FFFFFF 75%, #A0A0A0 100%)",
 	mint: "linear-gradient(135deg, #a8e0d0, #7fddb3, #4cb29b)",
+	minty: "linear-gradient(135deg, #a8e0d0, #7fddb3, #4cb29b)",
 	moss: "linear-gradient(135deg, #8A9A5B 0%, #556B2F 50%, #3B3C36 100%)",
 	mossy: "linear-gradient(135deg, #8A9A5B 0%, #556B2F 50%, #3B3C36 100%)",
 	muguet: "linear-gradient(135deg, #EAEAE0 30%, #B8E5C7 60%, #F2F4EE 90%)",

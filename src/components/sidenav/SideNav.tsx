@@ -147,9 +147,8 @@ const SideNav = () => {
 		setIsAccountMenuOpen(false);
 	};
 
-	const showLearningSection =
-		eligibility?.materialsQuizEnabled === true ||
-		eligibility?.scentBlindTestEnabled === true;
+	// Encyclopedia is always shown for now; quiz/scent blind test remain add-ons.
+	const showLearningSection = true;
 
 	return (
 		<header className={styles.container}>
@@ -245,6 +244,11 @@ const SideNav = () => {
 						<div className={styles.navBodySection}>
 							<div className={styles.navBodySectionTitle}>LEARNING</div>
 							<div className={styles.navBodySectionItems}>
+								<NavBodySectionItem
+									icon={<TableIcon />}
+									to="/materials-encyclopedia"
+									title="Materials Encyclopedia"
+								/>
 								{eligibility?.materialsQuizEnabled === true && (
 									<NavBodySectionItem
 										icon={<BoxIcon />}
