@@ -4,9 +4,14 @@ import formStyles from "@/components/Form.module.css";
 import quizStyles from "./MaterialsQuiz.module.css";
 import {
 	LESSON_SIZE,
+	applyMasteryDelta,
 	generateQuestionForMaterial,
+	getMasteryValue,
 	getProducerMaterials,
 	shuffleMaterials,
+	type LessonQuizEvent,
+	type MaterialMasteryMap,
+	normalizeMaterialKey,
 	type QuizQuestion,
 } from "@/components/materials-quiz/utils";
 import { toTitleCaseWords } from "@/utils/display-names";
@@ -36,16 +41,19 @@ type LessonState = {
 	learnSequence: MaterialRecord[];
 };
 
+type CompleteSnapshot = {
+	previousKnownCount: number;
+	newKnownCount: number;
+	lessonMaterials: MaterialRecord[];
+	lessonStartMastery: MaterialMasteryMap;
+};
+
 function getOptionLetter(index: number): string {
 	return OPTION_LETTERS[index] ?? String.fromCharCode(97 + index);
 }
 
 function normalizeNote(note: string): string {
 	return note.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function normalizeMaterialKey(material: MaterialRecord): string {
-	return material.canonicalName.trim().toLowerCase();
 }
 
 function countReliableNotes(material: MaterialRecord): number {
@@ -74,7 +82,6 @@ function isMaterialInLevel(material: MaterialRecord, level: Level): boolean {
 	return noteCount >= 10;
 }
 
-// Local lesson picker to avoid global source-count filtering in pickRandomMaterials.ts
 function pickLessonMaterials(
 	pool: MaterialRecord[],
 	count: number = LESSON_SIZE,
@@ -144,24 +151,30 @@ export default function MaterialsQuiz() {
 	const [question, setQuestion] = useState<QuizQuestion | null>(null);
 	const [selected, setSelected] = useState<string | null>(null);
 
-	// Level checkpoint progression (drives level + lesson number).
 	const [progressLessons, setProgressLessons] = useState(0);
-
-	// Run streak (carries through levels until game over).
 	const [lessonStreak, setLessonStreak] = useState(0);
 	const [gameOverStreak, setGameOverStreak] = useState(0);
-
 	const [lives, setLives] = useState(MAX_LIVES);
+
 	const [learnedMaterialKeys, setLearnedMaterialKeys] = useState<Set<string>>(
 		() => new Set(),
 	);
+	const [materialMastery, setMaterialMastery] = useState<MaterialMasteryMap>(
+		{},
+	);
+	const [lessonStartMastery, setLessonStartMastery] =
+		useState<MaterialMasteryMap>({});
+	const [lessonQuizEvents, setLessonQuizEvents] = useState<LessonQuizEvent[]>(
+		[],
+	);
+	const [completeSnapshot, setCompleteSnapshot] =
+		useState<CompleteSnapshot | null>(null);
 
 	const currentLevel = levelForCompletedLessons(progressLessons);
 	const currentLessonInLevel = (progressLessons % LESSONS_PER_LEVEL) + 1;
 	const currentLevelBaseLessons = (currentLevel - 1) * LESSONS_PER_LEVEL;
 
 	const allReliableMaterialsCount = materials.length;
-	const learnedUniqueCount = learnedMaterialKeys.size;
 
 	const isCorrect =
 		question !== null &&
@@ -178,23 +191,33 @@ export default function MaterialsQuiz() {
 		setPhase("learn");
 		setQuestion(null);
 		setSelected(null);
+		setLessonStartMastery({});
+		setLessonQuizEvents([]);
+		setCompleteSnapshot(null);
 	}
 
 	function completeLesson() {
-		setLearnedMaterialKeys((current) => {
-			const next = new Set(current);
-			for (const material of lesson.lessonSet) {
-				next.add(normalizeMaterialKey(material));
-			}
-			return next;
+		const previousKnownCount = learnedMaterialKeys.size;
+		const nextLearnedKeys = new Set(learnedMaterialKeys);
+
+		for (const material of lesson.lessonSet) {
+			nextLearnedKeys.add(normalizeMaterialKey(material));
+		}
+
+		setCompleteSnapshot({
+			previousKnownCount,
+			newKnownCount: nextLearnedKeys.size,
+			lessonMaterials: lesson.lessonSet,
+			lessonStartMastery,
 		});
+
+		setLearnedMaterialKeys(nextLearnedKeys);
 
 		setProgressLessons((current) => {
 			const next = current + 1;
 			const oldLevel = levelForCompletedLessons(current);
 			const newLevel = levelForCompletedLessons(next);
 
-			// Restore lives whenever the user enters a new level.
 			if (newLevel > oldLevel) {
 				setLives(MAX_LIVES);
 			}
@@ -202,9 +225,7 @@ export default function MaterialsQuiz() {
 			return next;
 		});
 
-		// Streak is independent from level and only resets on game over.
 		setLessonStreak((current) => current + 1);
-
 		setPhase("complete");
 		setQuestion(null);
 		setSelected(null);
@@ -222,9 +243,17 @@ export default function MaterialsQuiz() {
 			return;
 		}
 
+		const startMastery: MaterialMasteryMap = {};
+		for (const material of lesson.lessonSet) {
+			const key = normalizeMaterialKey(material);
+			startMastery[key] = getMasteryValue(materialMastery, key);
+		}
+
 		const sequence = shuffleMaterials(lesson.lessonSet);
 		setQuizSequence(sequence);
 		setQuizIndex(0);
+		setLessonStartMastery(startMastery);
+		setLessonQuizEvents([]);
 		setPhase("quiz");
 		setQuestion(generateQuestionForMaterial(sequence[0], materials));
 		setSelected(null);
@@ -235,18 +264,24 @@ export default function MaterialsQuiz() {
 
 		setSelected(option);
 
-		if (option.toLowerCase() !== question.correctNote.toLowerCase()) {
+		const isAnswerCorrect =
+			option.toLowerCase() === question.correctNote.toLowerCase();
+		const materialKey = normalizeMaterialKey(question.material);
+		const delta: 1 | -1 = isAnswerCorrect ? 1 : -1;
+
+		setMaterialMastery((current) =>
+			applyMasteryDelta(current, materialKey, delta),
+		);
+		setLessonQuizEvents((current) => [...current, { materialKey, delta }]);
+
+		if (!isAnswerCorrect) {
 			const nextLives = lives - 1;
 			setLives(nextLives);
 
 			if (nextLives === 0) {
-				// Snapshot streak for game over card, then reset run streak.
 				setGameOverStreak(lessonStreak);
 				setLessonStreak(0);
-
-				// Keep the same level, but reset to lesson 1 of that level.
 				setProgressLessons(currentLevelBaseLessons);
-
 				setPhase("gameOver");
 				setQuestion(null);
 				setSelected(null);
@@ -282,10 +317,7 @@ export default function MaterialsQuiz() {
 		setGameOverStreak(0);
 		setLives(MAX_LIVES);
 		setLessonStreak(0);
-
-		// Ensure restart begins at lesson 1 for this same level.
 		setProgressLessons(currentLevelBaseLessons);
-
 		startNewLesson(currentLevel);
 	}
 
@@ -306,7 +338,6 @@ export default function MaterialsQuiz() {
 		completedLevel < MAX_LEVEL;
 
 	const promotedToLevel = hasLeveledUp ? completedLevel + 1 : null;
-
 	const currentLearnMaterial = lesson.learnSequence[learnIndex];
 
 	return (
@@ -343,13 +374,18 @@ export default function MaterialsQuiz() {
 							</button>
 						</div>
 					</>
-				) : phase === "complete" ? (
+				) : phase === "complete" && completeSnapshot ? (
 					<LessonCompleteCard
 						level={completedLevel}
 						lessonInLevel={completedLessonInLevel}
 						lessonsPerLevel={LESSONS_PER_LEVEL}
-						learnedUniqueCount={learnedUniqueCount}
+						previousKnownCount={completeSnapshot.previousKnownCount}
+						knownMaterialsCount={completeSnapshot.newKnownCount}
 						allReliableMaterialsCount={allReliableMaterialsCount}
+						lessonMaterials={completeSnapshot.lessonMaterials}
+						lessonStartMastery={completeSnapshot.lessonStartMastery}
+						materialMastery={materialMastery}
+						lessonQuizEvents={lessonQuizEvents}
 						lives={lives}
 						maxLives={MAX_LIVES}
 						onNextLesson={handleNextLesson}

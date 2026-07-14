@@ -6,7 +6,7 @@ import {
 	getSourceLink,
 	getSourceNameUsed,
 	isManufacturerSource,
-} from "@/components/materials-quiz/utils/materialSources";
+} from "@/components/materials-quiz/utils";
 import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
 import {
 	capitalizeWordStartsIfLower,
@@ -69,20 +69,6 @@ export default function QuizAnswerReveal({
 						</p>
 
 						<div className={quizStyles.revealSource}>
-							<div>
-								<div
-									className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
-								>
-									<ProducerLogo sourceName={source.sourceName} />
-								</div>
-
-								{nameUsed && (
-									<p className={quizStyles.revealTradeName}>
-										{capitalizeWordStartsIfLower(nameUsed)}
-									</p>
-								)}
-							</div>
-
 							{href && (
 								<a
 									href={href}
@@ -90,7 +76,17 @@ export default function QuizAnswerReveal({
 									rel="noopener noreferrer"
 									className={quizStyles.revealSourceLink}
 								>
-									View source
+									<div
+										className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
+									>
+										<ProducerLogo sourceName={source.sourceName} />
+									</div>
+
+									{nameUsed && (
+										<p className={quizStyles.revealTradeName}>
+											{capitalizeWordStartsIfLower(nameUsed)}
+										</p>
+									)}
 								</a>
 							)}
 						</div>
