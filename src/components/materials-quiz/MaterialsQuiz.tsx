@@ -210,6 +210,12 @@ export default function MaterialsQuiz() {
 		setSelected(null);
 	}
 
+	function handleLearnBack() {
+		if (learnIndex > 0) {
+			setLearnIndex((current) => current - 1);
+		}
+	}
+
 	function handleLearnNext() {
 		if (learnIndex < lesson.learnSequence.length - 1) {
 			setLearnIndex((current) => current + 1);
@@ -301,6 +307,8 @@ export default function MaterialsQuiz() {
 
 	const promotedToLevel = hasLeveledUp ? completedLevel + 1 : null;
 
+	const currentLearnMaterial = lesson.learnSequence[learnIndex];
+
 	return (
 		<section className={quizStyles.quizSection}>
 			<div
@@ -309,11 +317,21 @@ export default function MaterialsQuiz() {
 				{phase === "learn" ? (
 					<>
 						<LessonLearnCard
-							material={lesson.learnSequence[learnIndex]}
+							key={normalizeMaterialKey(currentLearnMaterial)}
+							material={currentLearnMaterial}
 							cardIndex={learnIndex}
 							totalCards={lesson.learnSequence.length}
 						/>
 						<div className={quizStyles.gameActions}>
+							{learnIndex > 0 && (
+								<button
+									type="button"
+									className={formStyles.formSubmitButton}
+									onClick={handleLearnBack}
+								>
+									Back
+								</button>
+							)}
 							<button
 								type="button"
 								className={formStyles.formSubmitButton}
@@ -375,7 +393,12 @@ export default function MaterialsQuiz() {
 							</div>
 
 							<div className={quizStyles.quizMaterialSection}>
-								<p className={formStyles.formLabel}>Raw material</p>
+								<p
+									className={formStyles.formLabel}
+									style={{ textAlign: "center" }}
+								>
+									Raw material
+								</p>
 								<div className={quizStyles.materialNames}>
 									{question.displayNames.map((name) => (
 										<h2 key={name} className={quizStyles.materialName}>

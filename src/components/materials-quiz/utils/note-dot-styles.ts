@@ -228,6 +228,8 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	violet: "linear-gradient(135deg, #8A2BE2, #9370DB, #DA70D6, #EE82EE)",
 	"violet leaf":
 		"linear-gradient(135deg, #8A2BE2 0%, #4B0082 50%, #7FFF00 100%)",
+	"violet-leaf":
+		"linear-gradient(135deg, #8A2BE2 0%, #4B0082 50%, #7FFF00 100%)",
 	warm: "linear-gradient(45deg, #FF6F61, #FF9F40, #FFCC00, #F7EA00)",
 	water: "linear-gradient(135deg, #00bfff, #1e90ff, #4682b4)",
 	"water lily":
@@ -240,6 +242,13 @@ export const NOTE_DOT_STYLES: Record<string, string> = {
 	zest: "linear-gradient(120deg, #FFEA00 40%, #A8D600 60%, #FFEA00 80%, #A8D600 100%)",
 	zesty:
 		"linear-gradient(120deg, #FFEA00 40%, #A8D600 60%, #FFEA00 80%, #A8D600 100%)",
+	smooth:
+		"linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 25%, #c2e9fb 75%, #a1c4fd 100%)",
+	vetiver:
+		"linear-gradient(135deg, #4B7F6C 0%, #6BBE8B 33%, #C2D5A4 67%, #A2B8B5 100%)",
+	dry: "linear-gradient(135deg, #d2b48c, #c2c2c2, #f5deb3, #a0522d)",
+	strong: "linear-gradient(135deg, #FF5733, #C70039, #900C3F)",
+	wax: "linear-gradient(45deg, #f7e6a4, #e7b10a, #d4b681)",
 };
 
 export function normalizeNoteLabel(note: string): string {

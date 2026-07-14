@@ -2,10 +2,17 @@ import type { MaterialRecord } from "@/curation/materials/types";
 import quizStyles from "./MaterialsQuiz.module.css";
 import {
 	getMaterialProducerSources,
+	getSourceCardKey,
 	getSourceLink,
+	getSourceNameUsed,
+	isManufacturerSource,
 } from "@/components/materials-quiz/utils/materialSources";
 import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
-import { toTitleCaseWords } from "@/utils/display-names";
+import {
+	capitalizeWordStartsIfLower,
+	toTitleCaseWords,
+} from "@/utils/display-names";
+import ProducerLogo from "@/components/svgs/ProducerLogo";
 
 type QuizAnswerRevealProps = {
 	material: MaterialRecord;
@@ -23,21 +30,10 @@ export default function QuizAnswerReveal({
 			{sources.map((source) => {
 				const href = getSourceLink(source.data);
 				const notes = source.data.notes ?? [];
+				const nameUsed = getSourceNameUsed(source.data);
 
 				return (
-					<div
-						key={`${source.sourceName}-${source.data.nameUsed ?? source.data.url ?? source.data.pdfUrl}`}
-						className={quizStyles.revealCard}
-					>
-						<p className={quizStyles.revealLabel}>Source</p>
-						<p className={quizStyles.revealSourceName}>{source.sourceName}</p>
-
-						{source.data.nameUsed && (
-							<p className={quizStyles.revealTradeName}>
-								Trade name: {source.data.nameUsed}
-							</p>
-						)}
-
+					<div key={getSourceCardKey(source)} className={quizStyles.revealCard}>
 						<p className={quizStyles.revealLabel}>Notes</p>
 						<ul className={quizStyles.revealNotes}>
 							{notes.map((note) => {
@@ -67,16 +63,37 @@ export default function QuizAnswerReveal({
 							})}
 						</ul>
 
-						{href && (
-							<a
-								href={href}
-								target="_blank"
-								rel="noopener noreferrer"
-								className={quizStyles.revealSourceLink}
-							>
-								View source
-							</a>
-						)}
+						<p className={quizStyles.revealLabel}>
+							Source
+							{isManufacturerSource(source) ? " / Manufacturer" : ""}
+						</p>
+
+						<div className={quizStyles.revealSource}>
+							<div>
+								<div
+									className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
+								>
+									<ProducerLogo sourceName={source.sourceName} />
+								</div>
+
+								{nameUsed && (
+									<p className={quizStyles.revealTradeName}>
+										{capitalizeWordStartsIfLower(nameUsed)}
+									</p>
+								)}
+							</div>
+
+							{href && (
+								<a
+									href={href}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={quizStyles.revealSourceLink}
+								>
+									View source
+								</a>
+							)}
+						</div>
 					</div>
 				);
 			})}
