@@ -33,8 +33,9 @@ type LessonCompleteCardProps = {
 
 const LESSON_SCREEN_DURATION_MS = 1500;
 const KNOWN_COUNT_ANIMATION_MS = 1200;
-const MASTERY_BAR_ANIMATION_MS = 1200;
-const MASTERY_ROW_STAGGER_MS = 300;
+const MASTERY_BAR_ANIMATION_MS = 600;
+const MASTERY_ROW_PAUSE_MS = 100;
+const MASTERY_ROW_CYCLE_MS = MASTERY_BAR_ANIMATION_MS + MASTERY_ROW_PAUSE_MS;
 const LESSON_SEGMENT_FILL_MS = 1200;
 
 function AnimatedNumber({
@@ -80,40 +81,21 @@ function MaterialMasteryRow({
 	targetValue: number;
 	animationDelayMs?: number;
 }) {
-	const [displayValue, setDisplayValue] = useState(0);
+	const targetScale = targetValue / MASTERY_TARGET;
+	const [fillScale, setFillScale] = useState(0);
 
 	useEffect(() => {
-		setDisplayValue(0);
+		setFillScale(0);
+		if (targetValue === 0) return;
 
-		let cancelled = false;
-		let rafId = 0;
-
-		const delayTimer = setTimeout(() => {
-			const start = performance.now();
-			const duration = MASTERY_BAR_ANIMATION_MS;
-
-			const tick = (now: number) => {
-				if (cancelled) return;
-
-				const progress = Math.min(1, (now - start) / duration);
-				setDisplayValue(Math.round(targetValue * progress));
-
-				if (progress < 1) {
-					rafId = requestAnimationFrame(tick);
-				}
-			};
-
-			rafId = requestAnimationFrame(tick);
+		const timer = setTimeout(() => {
+			setFillScale(targetScale);
 		}, animationDelayMs);
 
-		return () => {
-			cancelled = true;
-			clearTimeout(delayTimer);
-			cancelAnimationFrame(rafId);
-		};
-	}, [targetValue, animationDelayMs]);
+		return () => clearTimeout(timer);
+	}, [targetValue, targetScale, animationDelayMs]);
 
-	const isComplete = displayValue >= MASTERY_TARGET;
+	const isComplete = targetValue >= MASTERY_TARGET && fillScale >= targetScale;
 
 	return (
 		<div
@@ -125,15 +107,15 @@ function MaterialMasteryRow({
 			<div className={quizStyles.materialMasteryTrack}>
 				<div className={quizStyles.materialMasteryTrackInner}>
 					{Array.from({ length: MASTERY_TARGET }, (_, index) => (
-						<span
-							key={index}
-							className={`${quizStyles.materialMasterySegment} ${
-								index < displayValue
-									? quizStyles.materialMasterySegmentFilled
-									: ""
-							}`}
-						/>
+						<span key={index} className={quizStyles.materialMasterySegment} />
 					))}
+					<span
+						className={quizStyles.materialMasteryFill}
+						style={{
+							transform: `scaleX(${fillScale})`,
+							transitionDuration: `${MASTERY_BAR_ANIMATION_MS}ms`,
+						}}
+					/>
 				</div>
 			</div>
 		</div>
@@ -171,21 +153,22 @@ function LessonCompleteSummary({
 					const isPreviouslyCompleted = index < lessonInLevel - 1;
 
 					return (
-						<span
-							key={index}
-							className={`${quizStyles.lessonProgressSegment}${
-								isCompleted ? ` ${quizStyles.lessonProgressSegmentFilled}` : ""
-							}${
-								isPreviouslyCompleted
-									? ` ${quizStyles.lessonProgressSegmentFilledStatic}`
-									: ""
-							}`}
-							style={
-								isCompleted && !isPreviouslyCompleted
-									? { animationDuration: `${LESSON_SEGMENT_FILL_MS}ms` }
-									: undefined
-							}
-						/>
+						<span key={index} className={quizStyles.lessonProgressSegment}>
+							{isCompleted ? (
+								<span
+									className={`${quizStyles.lessonProgressSegmentFill}${
+										isPreviouslyCompleted
+											? ` ${quizStyles.lessonProgressSegmentFillStatic}`
+											: ""
+									}`}
+									style={
+										!isPreviouslyCompleted
+											? { animationDuration: `${LESSON_SEGMENT_FILL_MS}ms` }
+											: undefined
+									}
+								/>
+							) : null}
+						</span>
 					);
 				})}
 			</div>
@@ -258,7 +241,7 @@ function LessonCompleteMaterials({
 							label={capitalizeWordStartsIfLower(displayName)}
 							targetValue={targetValue}
 							animationDelayMs={
-								KNOWN_COUNT_ANIMATION_MS + index * MASTERY_ROW_STAGGER_MS
+								KNOWN_COUNT_ANIMATION_MS + index * MASTERY_ROW_CYCLE_MS
 							}
 						/>
 					);
