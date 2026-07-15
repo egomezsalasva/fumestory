@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
-import quizStyles from "./MaterialsQuiz.module.css";
+import academyStyles from "./Academy.module.css";
 import {
 	getMaterialDisplayNames,
 	getMaterialProducerSources,
@@ -8,8 +8,8 @@ import {
 	getSourceLink,
 	getSourceNameUsed,
 	isManufacturerSource,
-} from "@/components/materials-quiz/utils";
-import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
+} from "@/components/academy/utils";
+import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
 import {
 	capitalizeWordStartsIfLower,
 	toTitleCaseWords,
@@ -57,13 +57,13 @@ export default function LessonLearnCard({
 
 	return (
 		<>
-			<p className={quizStyles.learnProgress}>
+			<p className={academyStyles.learnProgress}>
 				Material {cardIndex + 1} of {totalCards}
 			</p>
 
 			<button
 				type="button"
-				className={quizStyles.flipCard}
+				className={academyStyles.flipCard}
 				data-revealed={isRevealed}
 				onClick={() => setIsRevealed((current) => !current)}
 				aria-pressed={isRevealed}
@@ -71,36 +71,36 @@ export default function LessonLearnCard({
 					isRevealed ? "Show material name" : "Reveal notes for this material"
 				}
 			>
-				<div className={quizStyles.flipFront}>
-					<div className={quizStyles.flipContent}>
-						<p className={quizStyles.learnHint}>Remember The Material</p>
+				<div className={academyStyles.flipFront}>
+					<div className={academyStyles.flipContent}>
+						<p className={academyStyles.learnHint}>Remember The Material</p>
 
-						<div className={quizStyles.quizMaterialSection}>
-							<div className={quizStyles.materialNameLine}>
+						<div className={academyStyles.quizMaterialSection}>
+							<div className={academyStyles.materialNameLine}>
 								{displayNames.map((name) => (
-									<h2 key={name} className={quizStyles.materialName}>
+									<h2 key={name} className={academyStyles.materialName}>
 										{capitalizeWordStartsIfLower(name)}
 									</h2>
 								))}
 							</div>
-							<p className={quizStyles.materialCas}>
+							<p className={academyStyles.materialCas}>
 								CAS: {material.cas?.join(" ∙ ") ?? "—"}
 							</p>
 						</div>
 					</div>
 
-					<div className={quizStyles.flipFooter}>
-						<div className={quizStyles.flipRevealBtn}>
+					<div className={academyStyles.flipFooter}>
+						<div className={academyStyles.flipRevealBtn}>
 							<FlipIcon />
 							<span>Click to reveal notes</span>
 						</div>
 					</div>
 				</div>
 
-				<div className={quizStyles.flipBack}>
-					<div className={quizStyles.flipContent}>
-						<p className={quizStyles.learnHint}>Remember The Notes</p>
-						<div className={quizStyles.revealCards}>
+				<div className={academyStyles.flipBack}>
+					<div className={academyStyles.flipContent}>
+						<p className={academyStyles.learnHint}>Remember The Notes</p>
+						<div className={academyStyles.revealCards}>
 							{sources.map((source) => {
 								const href = getSourceLink(source.data);
 								const notes = source.data.notes ?? [];
@@ -109,18 +109,21 @@ export default function LessonLearnCard({
 								return (
 									<div
 										key={getSourceCardKey(source)}
-										className={quizStyles.revealCard}
+										className={academyStyles.revealCard}
 									>
-										<p className={quizStyles.revealLabel}>Notes</p>
-										<ul className={quizStyles.revealNotes}>
+										<p className={academyStyles.revealLabel}>Notes</p>
+										<ul className={academyStyles.revealNotes}>
 											{notes.map((note) => {
 												const dotStyle = getNoteDotStyle(note);
 
 												return (
-													<li key={note} className={quizStyles.revealNoteChip}>
+													<li
+														key={note}
+														className={academyStyles.revealNoteChip}
+													>
 														{dotStyle ? (
 															<span
-																className={quizStyles.revealNoteDot}
+																className={academyStyles.revealNoteDot}
 																style={{ background: dotStyle }}
 																aria-hidden="true"
 															/>
@@ -131,28 +134,28 @@ export default function LessonLearnCard({
 											})}
 										</ul>
 
-										<p className={quizStyles.revealLabel}>
+										<p className={academyStyles.revealLabel}>
 											Source
 											{isManufacturerSource(source) ? " / Manufacturer" : ""}
 										</p>
 
-										<div className={quizStyles.revealSource}>
+										<div className={academyStyles.revealSource}>
 											{href && (
 												<a
 													href={href}
 													target="_blank"
 													rel="noopener noreferrer"
-													className={quizStyles.revealSourceLink}
+													className={academyStyles.revealSourceLink}
 													onClick={(event) => event.stopPropagation()}
 												>
 													<div
-														className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
+														className={`${academyStyles.producerLogos} ${academyStyles.producerLogosReveal}`}
 													>
 														<ProducerLogo sourceName={source.sourceName} />
 													</div>
 
 													{nameUsed && (
-														<p className={quizStyles.revealTradeName}>
+														<p className={academyStyles.revealTradeName}>
 															{capitalizeWordStartsIfLower(nameUsed)}
 														</p>
 													)}
@@ -165,8 +168,8 @@ export default function LessonLearnCard({
 						</div>
 					</div>
 
-					<div className={quizStyles.flipFooter}>
-						<div className={quizStyles.flipRevealBtn}>
+					<div className={academyStyles.flipFooter}>
+						<div className={academyStyles.flipRevealBtn}>
 							<FlipIcon />
 							<span>Click to show material</span>
 						</div>

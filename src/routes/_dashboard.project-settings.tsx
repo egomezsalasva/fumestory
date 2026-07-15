@@ -543,11 +543,11 @@ function RouteComponent() {
 								<input
 									type="checkbox"
 									className="mr-2"
-									checked={settings?.materials_quiz_enabled ?? true}
+									checked={settings?.academy_enabled ?? true}
 									disabled={settings === null || saving}
 									onChange={(e) => {
 										void patchUserSettings({
-											materials_quiz_enabled: e.target.checked,
+											academy_enabled: e.target.checked,
 										});
 									}}
 								/>

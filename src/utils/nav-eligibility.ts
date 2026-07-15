@@ -91,7 +91,7 @@ export async function loadNavEligibility(): Promise<NavEligibility> {
 				settingsJson.data.guest_feedback_enabled;
 			eligibility.scentBlindTestEnabled =
 				settingsJson.data.scent_blind_test_enabled;
-			eligibility.academyEnabled = settingsJson.data.materials_quiz_enabled;
+			eligibility.academyEnabled = settingsJson.data.academy_enabled;
 
 			if (settingsJson.data.scent_blind_test_enabled) {
 				const testsRes = await authedFetch("/api/scent-blind-tests");

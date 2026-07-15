@@ -1,13 +1,13 @@
 import type { MaterialRecord } from "@/curation/materials/types";
-import quizStyles from "./MaterialsQuiz.module.css";
+import academyStyles from "./Academy.module.css";
 import {
 	getMaterialProducerSources,
 	getSourceCardKey,
 	getSourceLink,
 	getSourceNameUsed,
 	isManufacturerSource,
-} from "@/components/materials-quiz/utils";
-import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
+} from "@/components/academy/utils";
+import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
 import {
 	capitalizeWordStartsIfLower,
 	toTitleCaseWords,
@@ -26,16 +26,19 @@ export default function QuizAnswerReveal({
 	const sources = getMaterialProducerSources(material);
 
 	return (
-		<div className={quizStyles.revealCards}>
+		<div className={academyStyles.revealCards}>
 			{sources.map((source) => {
 				const href = getSourceLink(source.data);
 				const notes = source.data.notes ?? [];
 				const nameUsed = getSourceNameUsed(source.data);
 
 				return (
-					<div key={getSourceCardKey(source)} className={quizStyles.revealCard}>
-						<p className={quizStyles.revealLabel}>Notes</p>
-						<ul className={quizStyles.revealNotes}>
+					<div
+						key={getSourceCardKey(source)}
+						className={academyStyles.revealCard}
+					>
+						<p className={academyStyles.revealLabel}>Notes</p>
+						<ul className={academyStyles.revealNotes}>
 							{notes.map((note) => {
 								const isCorrect =
 									note.toLowerCase() === correctNote.toLowerCase();
@@ -46,13 +49,13 @@ export default function QuizAnswerReveal({
 										key={note}
 										className={
 											isCorrect
-												? `${quizStyles.revealNoteChip} ${quizStyles.revealNoteChipCorrect}`
-												: quizStyles.revealNoteChip
+												? `${academyStyles.revealNoteChip} ${academyStyles.revealNoteChipCorrect}`
+												: academyStyles.revealNoteChip
 										}
 									>
 										{dotStyle ? (
 											<span
-												className={quizStyles.revealNoteDot}
+												className={academyStyles.revealNoteDot}
 												style={{ background: dotStyle }}
 												aria-hidden="true"
 											/>
@@ -63,27 +66,27 @@ export default function QuizAnswerReveal({
 							})}
 						</ul>
 
-						<p className={quizStyles.revealLabel}>
+						<p className={academyStyles.revealLabel}>
 							Source
 							{isManufacturerSource(source) ? " / Manufacturer" : ""}
 						</p>
 
-						<div className={quizStyles.revealSource}>
+						<div className={academyStyles.revealSource}>
 							{href && (
 								<a
 									href={href}
 									target="_blank"
 									rel="noopener noreferrer"
-									className={quizStyles.revealSourceLink}
+									className={academyStyles.revealSourceLink}
 								>
 									<div
-										className={`${quizStyles.producerLogos} ${quizStyles.producerLogosReveal}`}
+										className={`${academyStyles.producerLogos} ${academyStyles.producerLogosReveal}`}
 									>
 										<ProducerLogo sourceName={source.sourceName} />
 									</div>
 
 									{nameUsed && (
-										<p className={quizStyles.revealTradeName}>
+										<p className={academyStyles.revealTradeName}>
 											{capitalizeWordStartsIfLower(nameUsed)}
 										</p>
 									)}

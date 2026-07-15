@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { MaterialRecord, SourceName } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
-import quizStyles from "./MaterialsQuiz.module.css";
+import academyStyles from "./Academy.module.css";
 import {
 	LESSON_SIZE,
 	applyMasteryDelta,
@@ -13,7 +13,7 @@ import {
 	type MaterialMasteryMap,
 	normalizeMaterialKey,
 	type QuizQuestion,
-} from "@/components/materials-quiz/utils";
+} from "@/components/academy/utils";
 import { toTitleCaseWords } from "@/utils/display-names";
 import LessonCompleteCard from "./LessonCompleteCard";
 import LessonLearnCard from "./LessonLearnCard";
@@ -121,7 +121,7 @@ function optionClass(
 	selected: string | null,
 	correctNote: string,
 ): string {
-	const base = `${formStyles.feedbackNoRatingButton} ${quizStyles.optionButton}`;
+	const base = `${formStyles.feedbackNoRatingButton} ${academyStyles.optionButton}`;
 
 	if (!selected) {
 		return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
@@ -132,17 +132,17 @@ function optionClass(
 		option === selected && selected.toLowerCase() !== correctNote.toLowerCase();
 
 	if (isCorrectOption) {
-		return `${base} ${quizStyles.optionCorrect}`;
+		return `${base} ${academyStyles.optionCorrect}`;
 	}
 
 	if (isSelectedWrong) {
-		return `${base} ${quizStyles.optionWrong}`;
+		return `${base} ${academyStyles.optionWrong}`;
 	}
 
 	return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
 }
 
-export default function MaterialsQuiz() {
+export default function Academy() {
 	const [phase, setPhase] = useState<LessonPhase>("learn");
 	const [lesson, setLesson] = useState<LessonState>(() => createLesson(1));
 	const [quizSequence, setQuizSequence] = useState<MaterialRecord[]>([]);
@@ -341,9 +341,9 @@ export default function MaterialsQuiz() {
 	const currentLearnMaterial = lesson.learnSequence[learnIndex];
 
 	return (
-		<section className={quizStyles.quizSection}>
+		<section className={academyStyles.quizSection}>
 			<div
-				className={`${formStyles.formContainer} ${quizStyles.quizContainer}`}
+				className={`${formStyles.formContainer} ${academyStyles.quizContainer}`}
 			>
 				{phase === "learn" ? (
 					<>
@@ -353,7 +353,7 @@ export default function MaterialsQuiz() {
 							cardIndex={learnIndex}
 							totalCards={lesson.learnSequence.length}
 						/>
-						<div className={quizStyles.gameActions}>
+						<div className={academyStyles.gameActions}>
 							{learnIndex > 0 && (
 								<button
 									type="button"
@@ -400,58 +400,58 @@ export default function MaterialsQuiz() {
 				) : (
 					question && (
 						<>
-							<div className={quizStyles.gameStatus}>
+							<div className={academyStyles.gameStatus}>
 								<div
-									className={quizStyles.lives}
+									className={academyStyles.lives}
 									aria-label={`${lives} of ${MAX_LIVES} lives remaining`}
 								>
 									{Array.from({ length: MAX_LIVES }, (_, index) => (
 										<span
 											key={index}
-											className={`${quizStyles.life} ${
+											className={`${academyStyles.life} ${
 												index < lives
-													? quizStyles.lifeActive
-													: quizStyles.lifeLost
+													? academyStyles.lifeActive
+													: academyStyles.lifeLost
 											}`}
 											aria-hidden="true"
 										/>
 									))}
 								</div>
 								<span
-									className={quizStyles.gameStatusDivider}
+									className={academyStyles.gameStatusDivider}
 									aria-hidden="true"
 								/>
-								<p className={quizStyles.streak}>
+								<p className={academyStyles.streak}>
 									{currentLevel === 3
 										? `Lesson streak: ${lessonStreak}`
 										: `Lesson ${currentLevel} - ${currentLessonInLevel}/${LESSONS_PER_LEVEL}`}
 								</p>
 							</div>
 
-							<div className={quizStyles.quizMaterialSection}>
+							<div className={academyStyles.quizMaterialSection}>
 								<p
 									className={formStyles.formLabel}
 									style={{ textAlign: "center" }}
 								>
 									Raw material
 								</p>
-								<div className={quizStyles.materialNames}>
+								<div className={academyStyles.materialNames}>
 									{question.displayNames.map((name) => (
-										<h2 key={name} className={quizStyles.materialName}>
+										<h2 key={name} className={academyStyles.materialName}>
 											{toTitleCaseWords(name)}
 										</h2>
 									))}
 								</div>
-								<p className={quizStyles.materialCas}>
+								<p className={academyStyles.materialCas}>
 									CAS: {question.material.cas?.join(", ") ?? "—"}
 								</p>
 							</div>
 
-							<div className={quizStyles.quizOptionsSection}>
-								<p className={quizStyles.prompt}>
+							<div className={academyStyles.quizOptionsSection}>
+								<p className={academyStyles.prompt}>
 									Which note belongs to this material?
 								</p>
-								<ul className={quizStyles.options}>
+								<ul className={academyStyles.options}>
 									{question.options.map((option, index) => (
 										<li key={option}>
 											<button
@@ -464,7 +464,7 @@ export default function MaterialsQuiz() {
 												disabled={selected !== null}
 												onClick={() => handleSelect(option)}
 											>
-												<span className={quizStyles.optionLetter}>
+												<span className={academyStyles.optionLetter}>
 													{getOptionLetter(index)})
 												</span>
 												{toTitleCaseWords(option)}
@@ -482,7 +482,7 @@ export default function MaterialsQuiz() {
 							)}
 
 							{selected && isCorrect && (
-								<div className={quizStyles.gameActions}>
+								<div className={academyStyles.gameActions}>
 									<button
 										type="button"
 										className={formStyles.formSubmitButton}
@@ -494,7 +494,7 @@ export default function MaterialsQuiz() {
 							)}
 
 							{selected && !isCorrect && lives > 0 && (
-								<div className={quizStyles.gameActions}>
+								<div className={academyStyles.gameActions}>
 									<button
 										type="button"
 										className={formStyles.formSubmitButton}

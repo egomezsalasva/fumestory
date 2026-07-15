@@ -10,7 +10,7 @@ import {
 } from "ag-grid-community";
 import { curatedMaterialsData } from "@/curation/materials/data/data";
 import type { MaterialRecord } from "@/curation/materials/types";
-import { getNoteDotStyle } from "@/components/materials-quiz/utils/note-dot-styles";
+import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
 import { toTitleCaseWords } from "@/utils/display-names";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
-import quizStyles from "./MaterialsQuiz.module.css";
+import academyStyles from "./Academy.module.css";
 import {
 	getMaterialDisplayNames,
 	getMasteryValue,
@@ -9,7 +9,7 @@ import {
 	normalizeMaterialKey,
 	type LessonQuizEvent,
 	type MaterialMasteryMap,
-} from "@/components/materials-quiz/utils";
+} from "@/components/academy/utils";
 import { capitalizeWordStartsIfLower } from "@/utils/display-names";
 
 type CompleteStep = "lesson" | "materials";
@@ -99,18 +99,21 @@ function MaterialMasteryRow({
 
 	return (
 		<div
-			className={`${quizStyles.materialMasteryRow} ${
-				isComplete ? quizStyles.materialMasteryComplete : ""
+			className={`${academyStyles.materialMasteryRow} ${
+				isComplete ? academyStyles.materialMasteryComplete : ""
 			}`}
 		>
-			<p className={quizStyles.materialMasteryLabel}>{label}</p>
-			<div className={quizStyles.materialMasteryTrack}>
-				<div className={quizStyles.materialMasteryTrackInner}>
+			<p className={academyStyles.materialMasteryLabel}>{label}</p>
+			<div className={academyStyles.materialMasteryTrack}>
+				<div className={academyStyles.materialMasteryTrackInner}>
 					{Array.from({ length: MASTERY_TARGET }, (_, index) => (
-						<span key={index} className={quizStyles.materialMasterySegment} />
+						<span
+							key={index}
+							className={academyStyles.materialMasterySegment}
+						/>
 					))}
 					<span
-						className={quizStyles.materialMasteryFill}
+						className={academyStyles.materialMasteryFill}
 						style={{
 							transform: `scaleX(${fillScale})`,
 							transitionDuration: `${MASTERY_BAR_ANIMATION_MS}ms`,
@@ -138,14 +141,14 @@ function LessonCompleteSummary({
 	promotedToLevel: number | null;
 }) {
 	return (
-		<div className={quizStyles.lessonCompleteCard}>
-			<p className={quizStyles.lessonCompleteLevel}>Level {level}</p>
-			<p className={quizStyles.lessonCompleteStreak}>
+		<div className={academyStyles.lessonCompleteCard}>
+			<p className={academyStyles.lessonCompleteLevel}>Level {level}</p>
+			<p className={academyStyles.lessonCompleteStreak}>
 				Lesson {lessonInLevel}/{lessonsPerLevel}
 			</p>
 
 			<div
-				className={quizStyles.lessonProgressTrack}
+				className={academyStyles.lessonProgressTrack}
 				aria-label={`Lesson ${lessonInLevel} of ${lessonsPerLevel} complete`}
 			>
 				{Array.from({ length: lessonsPerLevel }, (_, index) => {
@@ -153,12 +156,12 @@ function LessonCompleteSummary({
 					const isPreviouslyCompleted = index < lessonInLevel - 1;
 
 					return (
-						<span key={index} className={quizStyles.lessonProgressSegment}>
+						<span key={index} className={academyStyles.lessonProgressSegment}>
 							{isCompleted ? (
 								<span
-									className={`${quizStyles.lessonProgressSegmentFill}${
+									className={`${academyStyles.lessonProgressSegmentFill}${
 										isPreviouslyCompleted
-											? ` ${quizStyles.lessonProgressSegmentFillStatic}`
+											? ` ${academyStyles.lessonProgressSegmentFillStatic}`
 											: ""
 									}`}
 									style={
@@ -174,20 +177,20 @@ function LessonCompleteSummary({
 			</div>
 
 			{promotedToLevel ? (
-				<p className={quizStyles.lessonCompleteStreak}>
+				<p className={academyStyles.lessonCompleteStreak}>
 					Congrats! You moved up to level {promotedToLevel}!
 				</p>
 			) : null}
 
 			<div
-				className={quizStyles.lives}
+				className={academyStyles.lives}
 				aria-label={`${lives} of ${maxLives} lives remaining`}
 			>
 				{Array.from({ length: maxLives }, (_, index) => (
 					<span
 						key={index}
-						className={`${quizStyles.life} ${
-							index < lives ? quizStyles.lifeActive : quizStyles.lifeLost
+						className={`${academyStyles.life} ${
+							index < lives ? academyStyles.lifeActive : academyStyles.lifeLost
 						}`}
 						aria-hidden="true"
 					/>
@@ -213,22 +216,22 @@ function LessonCompleteMaterials({
 	onNextLesson: () => void;
 }) {
 	return (
-		<div className={quizStyles.lessonCompleteCard}>
-			<div className={quizStyles.lessonCompleteKnownCountContainer}>
-				<p className={quizStyles.lessonCompleteKnownLabel}>You now know</p>
-				<p className={quizStyles.lessonCompleteKnownCount}>
+		<div className={academyStyles.lessonCompleteCard}>
+			<div className={academyStyles.lessonCompleteKnownCountContainer}>
+				<p className={academyStyles.lessonCompleteKnownLabel}>You now know</p>
+				<p className={academyStyles.lessonCompleteKnownCount}>
 					<AnimatedNumber
 						from={previousKnownCount}
 						to={knownMaterialsCount}
 						duration={KNOWN_COUNT_ANIMATION_MS}
-						className={quizStyles.lessonStreakAchieved}
+						className={academyStyles.lessonStreakAchieved}
 					/>
 					/{allReliableMaterialsCount}
 				</p>
-				<p className={quizStyles.lessonCompleteKnownSubLabel}>materials</p>
+				<p className={academyStyles.lessonCompleteKnownSubLabel}>materials</p>
 			</div>
 
-			<div className={quizStyles.lessonCompleteMaterialsList}>
+			<div className={academyStyles.lessonCompleteMaterialsList}>
 				{lessonMaterials.map((material, index) => {
 					const materialKey = normalizeMaterialKey(material);
 					const displayName =
@@ -248,11 +251,11 @@ function LessonCompleteMaterials({
 				})}
 			</div>
 
-			<p className={quizStyles.lessonStartOverMessage}>
+			<p className={academyStyles.lessonStartOverMessage}>
 				Great job, let's keep learning.
 			</p>
 
-			<div className={quizStyles.gameActions}>
+			<div className={academyStyles.gameActions}>
 				<button
 					type="button"
 					className={formStyles.formSubmitButton}

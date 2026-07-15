@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { authClient } from "auth";
 import MarketingHeaderSection from "@/components/home-page/sections/MarketingHeaderSection";
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
-import MaterialsQuiz from "@/components/materials-quiz/MaterialsQuiz";
+import Academy from "@/components/academy/Academy";
 
 export const Route = createFileRoute("/try-academy")({
 	head: () => ({
@@ -12,10 +12,10 @@ export const Route = createFileRoute("/try-academy")({
 			{ name: "robots", content: "index,follow" },
 		],
 	}),
-	component: MaterialsQuizRoute,
+	component: AcademyRoute,
 });
 
-function MaterialsQuizRoute() {
+function AcademyRoute() {
 	const { data } = authClient.useSession();
 	const isLoggedIn = !!data?.session;
 	const [ready, setReady] = useState(false);
@@ -51,7 +51,7 @@ function MaterialsQuizRoute() {
 		<div className={homeStyles.container}>
 			<MarketingHeaderSection isLoggedIn={isLoggedIn} styles={homeStyles} />
 			<div className={homeStyles.content}>
-				<MaterialsQuiz />
+				<Academy />
 			</div>
 		</div>
 	);

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
-import MaterialsQuiz from "@/components/materials-quiz/MaterialsQuiz";
+import Academy from "@/components/academy/Academy";
 
 export const Route = createFileRoute("/_dashboard/academy")({
 	...requireNavRoute("/academy"),
@@ -11,13 +11,13 @@ export const Route = createFileRoute("/_dashboard/academy")({
 			{ name: "robots", content: "noindex" },
 		],
 	}),
-	component: MaterialsQuizPage,
+	component: AcademyPage,
 });
 
-function MaterialsQuizPage() {
+function AcademyPage() {
 	return (
 		<DashboardLayout title="Academy">
-			<MaterialsQuiz />
+			<Academy />
 		</DashboardLayout>
 	);
 }
