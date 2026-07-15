@@ -551,7 +551,7 @@ function RouteComponent() {
 										});
 									}}
 								/>
-								Materials Quiz
+								Academy
 							</label>
 						</li>
 						<li>

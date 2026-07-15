@@ -3,11 +3,11 @@ import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import MaterialsQuiz from "@/components/materials-quiz/MaterialsQuiz";
 
-export const Route = createFileRoute("/_dashboard/materials-quiz")({
-	...requireNavRoute("/materials-quiz"),
+export const Route = createFileRoute("/_dashboard/academy")({
+	...requireNavRoute("/academy"),
 	head: () => ({
 		meta: [
-			{ title: "Fumestory | Materials Quiz" },
+			{ title: "Fumestory | Academy" },
 			{ name: "robots", content: "noindex" },
 		],
 	}),
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_dashboard/materials-quiz")({
 
 function MaterialsQuizPage() {
 	return (
-		<DashboardLayout title="Materials Quiz">
+		<DashboardLayout title="Academy">
 			<MaterialsQuiz />
 		</DashboardLayout>
 	);

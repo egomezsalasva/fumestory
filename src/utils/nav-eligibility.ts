@@ -22,7 +22,7 @@ export type NavEligibility = {
 	hasScentTests: boolean;
 	guestFeedbackEnabled: boolean;
 	scentBlindTestEnabled: boolean;
-	materialsQuizEnabled: boolean;
+	academyEnabled: boolean;
 };
 
 export type NavRedirectTarget = {
@@ -42,7 +42,7 @@ const EMPTY_ELIGIBILITY: NavEligibility = {
 	hasScentTests: false,
 	guestFeedbackEnabled: false,
 	scentBlindTestEnabled: false,
-	materialsQuizEnabled: true,
+	academyEnabled: true,
 };
 
 function hasNonEmptyData(res: Response, json: { data?: unknown[] }): boolean {
@@ -83,7 +83,7 @@ export async function loadNavEligibility(): Promise<NavEligibility> {
 			hasScentTests: false,
 			guestFeedbackEnabled: false,
 			scentBlindTestEnabled: false,
-			materialsQuizEnabled: true,
+			academyEnabled: true,
 		};
 
 		if (settingsRes.ok && settingsJson.data) {
@@ -91,8 +91,7 @@ export async function loadNavEligibility(): Promise<NavEligibility> {
 				settingsJson.data.guest_feedback_enabled;
 			eligibility.scentBlindTestEnabled =
 				settingsJson.data.scent_blind_test_enabled;
-			eligibility.materialsQuizEnabled =
-				settingsJson.data.materials_quiz_enabled;
+			eligibility.academyEnabled = settingsJson.data.materials_quiz_enabled;
 
 			if (settingsJson.data.scent_blind_test_enabled) {
 				const testsRes = await authedFetch("/api/scent-blind-tests");
@@ -155,8 +154,8 @@ export function redirectForRoute(
 			}
 			return eligibility.hasScentTests ? null : { to: "/scent-blind-test" };
 
-		case "/materials-quiz":
-			if (!eligibility.materialsQuizEnabled) {
+		case "/academy":
+			if (!eligibility.academyEnabled) {
 				return ADD_ON_FEATURES_REDIRECT;
 			}
 			return null;

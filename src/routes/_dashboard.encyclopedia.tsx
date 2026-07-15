@@ -20,7 +20,7 @@ const OTHER_NAMES_SCROLL_THRESHOLD = 10;
 const LIST_LINE_PX = 17; // ~1.4 line-height at 0.75rem
 const LIST_PADDING_PX = 24; // 0.75rem top + bottom
 
-export const Route = createFileRoute("/_dashboard/materials-encyclopedia")({
+export const Route = createFileRoute("/_dashboard/encyclopedia")({
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Materials Encyclopedia" },
@@ -243,7 +243,7 @@ function MaterialsEncyclopedia() {
 	];
 
 	return (
-		<DashboardLayout title="Materials Encyclopedia">
+		<DashboardLayout title="Encyclopedia">
 			<div
 				className="ag-theme-quartz-dark"
 				style={{ height: "100%", width: "100%", minHeight: "680px" }}

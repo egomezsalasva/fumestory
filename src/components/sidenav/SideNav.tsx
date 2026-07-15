@@ -246,15 +246,14 @@ const SideNav = () => {
 							<div className={styles.navBodySectionItems}>
 								<NavBodySectionItem
 									icon={<TableIcon />}
-									to="/materials-encyclopedia"
-									title="Materials Encyclopedia"
+									to="/encyclopedia"
+									title="Encyclopedia"
 								/>
-								{eligibility?.materialsQuizEnabled === true && (
+								{eligibility?.academyEnabled === true && (
 									<NavBodySectionItem
 										icon={<BoxIcon />}
-										to="/materials-quiz"
-										title="Materials Quiz"
-										addOnPill
+										to="/academy"
+										title="Academy"
 									/>
 								)}
 								{eligibility?.scentBlindTestEnabled === true && (

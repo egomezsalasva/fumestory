@@ -5,10 +5,10 @@ import MarketingHeaderSection from "@/components/home-page/sections/MarketingHea
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
 import MaterialsQuiz from "@/components/materials-quiz/MaterialsQuiz";
 
-export const Route = createFileRoute("/try-materials-quiz")({
+export const Route = createFileRoute("/try-academy")({
 	head: () => ({
 		meta: [
-			{ title: "Fumestory | Materials Quiz" },
+			{ title: "Fumestory | Academy" },
 			{ name: "robots", content: "index,follow" },
 		],
 	}),
@@ -41,7 +41,7 @@ function MaterialsQuizRoute() {
 						color: "rgba(245,247,250,0.85)",
 					}}
 				>
-					Loading quiz...
+					Loading...
 				</div>
 			</div>
 		);
