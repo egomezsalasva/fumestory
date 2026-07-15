@@ -3814,7 +3814,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/safranal",
 						nameUsed: "Safranal",
-						notes: ["spicy", "safron", "herbaceous", "tobacco", "floral"],
+						notes: ["spicy", "saffron", "herbaceous", "tobacco", "floral"],
 						olfactiveFamily: "Spicy",
 						olfactiveDescription: [
 							"Safranal has a spicy saffron-like note with herbaceous, tobacco facets and floral undertones. It is very useful in spicy, agrestic, tobacco, orris and woody compositions.",
@@ -5025,13 +5025,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"sweet",
-							"aromatic",
-							"solvent-like",
-							"chemical",
-							"medicinal",
-						],
+						notes: ["sweet", "aromatic", "solvent", "chemical", "medicinal"],
 					},
 				},
 			],
@@ -7606,7 +7600,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["sweet", "gasoline", "paint-fumes"],
+						notes: ["sweet", "gasoline", "paint fumes"],
 					},
 				},
 			],
@@ -8544,7 +8538,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"magnolia blossom",
 							"tuberose blossom",
 							"cyclamen blossom",
-							"slightly spicy",
+							"spicy",
 							"aldehydic",
 						],
 					},
@@ -10209,7 +10203,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["fruity", "fleshy", "pear", "green", "tropical", "herbal"],
+						notes: ["fruit", "flesh", "pear", "green", "tropical", "herb"],
 					},
 				},
 			],
@@ -11087,7 +11081,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"plum",
 							"raisin",
 							"fruit",
-							"dried fruit",
+							"dried fruits",
 							"rum",
 							"caramellic",
 						],
@@ -11574,7 +11568,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"wood",
 							"orris",
 							"warm",
-							"dried flower",
+							"dried flowers",
 						],
 						olfactiveFamily: "Gourmand",
 						olfactiveDescription: [
@@ -13384,7 +13378,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/paradisamidetm",
 						nameUsed: "Paradisamide™",
 						notes: [
-							"tropical fruit",
+							"tropical fruits",
 							"guava",
 							"grapefruit",
 							"rhubarb",
