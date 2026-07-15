@@ -21,7 +21,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["ambergris", "woody", "musk"],
+						notes: ["ambergris", "wood", "musk"],
 					},
 				},
 			],
@@ -229,7 +229,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/anisyl-alcohol",
 						nameUsed: "Anisyl Alcohol",
-						notes: ["herbal", "anis", "floral", "powdery"],
+						notes: ["herbal", "anise", "floral", "powdery"],
 						olfactiveFamily: "Herbal - Agrestic",
 						olfactiveDescription: [
 							"Anisyl Alcohol adds volume and gives a natural aspect to floral compositions such as mimosa, lilac, cassia, apple-blossom, jasmine and heliotrope as well as to clove and fougere perfumes. It has an excellent blending effect and can give a heliotropic character without the problem of coloration.",
@@ -798,7 +798,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"deep",
 							"cumin",
 							"floral",
-							"oily",
+							"oil",
 						],
 					},
 				},
@@ -1470,7 +1470,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["almond", "sweet", "cherry", "spice", "anis"],
+						notes: ["almond", "sweet", "cherry", "spice", "anise"],
 					},
 				},
 			],
@@ -1680,7 +1680,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"apple",
 							"banana",
 							"fruit",
-							"oily",
+							"oil",
 							"pungent",
 						],
 					},
@@ -1726,7 +1726,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"apple",
 							"banana",
 							"fruit",
-							"oily",
+							"oil",
 							"pungent",
 						],
 					},
@@ -1946,10 +1946,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"lily",
 							"green",
 							"tropical",
-							"oily",
-							"greasy",
+							"oil",
+							"grease",
 							"marine",
-							"balsamic",
+							"balsam",
 						],
 					},
 				},
@@ -2352,7 +2352,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"floral",
 							"sweet",
 							"hawthorn",
-							"anis",
+							"anise",
 							"almond",
 							"powder",
 							"vanilla",
@@ -2483,7 +2483,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/canthoxal/",
 						nameUsed: "Canthoxal",
-						notes: ["licorice", "basil", "fennel", "anis", "fruit", "water"],
+						notes: ["licorice", "basil", "fennel", "anise", "fruit", "water"],
 					},
 				},
 			],
@@ -2658,8 +2658,8 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"green",
 							"spicy",
 							"herbal",
-							"woody",
-							"fruity",
+							"wood",
+							"fruit",
 							"cinnamon",
 							"coconut",
 						],
@@ -2701,7 +2701,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						nameUsed: "Folione",
 						notes: [
 							"green",
-							"leafy",
+							"leaf",
 							"floral",
 							"powerful",
 							"violet",
@@ -2769,7 +2769,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/isoraldeinetm-cetone-alpha",
 						nameUsed: "Isoraldeine™ Cetone Alpha",
-						notes: ["floral", "orris", "woody", "powdery"],
+						notes: ["floral", "orris", "wood", "powder"],
 						olfactiveFamily: "Floral",
 						olfactiveDescription: [
 							"Isoraldeine™ Cetone Alpha is a highly refined alpha-iso-methyl ionone used in rich floral perfumes where an exceptional quality of methyl ionone is required.",
@@ -3674,7 +3674,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "herbal", "hay", "leafy", "smoky", "woody", "tea"],
+						notes: ["green", "herbal", "hay", "leaf", "smoke", "wood", "tea"],
 					},
 				},
 			],
@@ -3861,7 +3861,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"green",
 							"floral",
 							"sweet",
-							"woody",
+							"wood",
 						],
 					},
 				},
@@ -3917,7 +3917,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"spicy",
 							"exotic",
 							"warm",
-							"white flower",
+							"white flowers",
 							"fruit",
 							"wintergreen",
 							"soft",
@@ -3958,7 +3958,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["musk", "sweet", "powdery", "floral", "woody"],
+						notes: ["musk", "sweet", "powder", "floral", "wood"],
 					},
 				},
 			],
@@ -4418,7 +4418,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"citrus",
 							"sharp",
 							"acrid",
-							"woody",
+							"wood",
 						],
 					},
 				},
@@ -4517,12 +4517,12 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"bready",
+							"bread",
 							"almond",
 							"sweet",
 							"baked",
 							"brown",
-							"woody",
+							"wood",
 							"caramel",
 						],
 					},
@@ -4563,11 +4563,11 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"anisic",
+							"anise",
 							"licorice",
 							"sweet",
 							"phenolic",
-							"herbal",
+							"herb",
 							"basil",
 							"spicy",
 						],
@@ -4611,11 +4611,11 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"anisic",
+							"anise",
 							"licorice",
 							"sweet",
 							"phenolic",
-							"herbal",
+							"herb",
 							"basil",
 							"spicy",
 						],
@@ -4658,7 +4658,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"medicinal",
 							"fruity",
 							"grape",
-							"violet-leaf",
+							"violet leaf",
 						],
 					},
 				},
@@ -4701,10 +4701,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"herbal",
 							"camphoreous",
-							"woody",
+							"wood",
 							"cedar",
 							"spicy",
-							"minty",
+							"mint",
 							"medicinal",
 						],
 					},
@@ -4770,7 +4770,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["buttery", "creamy", "oily", "sweet", "cheesy", "fatty"],
+						notes: ["butter", "cream", "oil", "sweet", "cheese", "fat"],
 					},
 				},
 			],
@@ -4803,9 +4803,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"woody",
+							"wood",
 							"herbal",
-							"earthy",
+							"earth",
 							"medicinal",
 							"warm",
 							"honey",
@@ -4838,7 +4838,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "violet-leaf", "cucumber", "fruity", "vegetal"],
+						notes: ["green", "violet leaf", "cucumber", "fruity", "vegetal"],
 					},
 				},
 			],
@@ -4951,14 +4951,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"sweet",
-							"floral",
-							"creamy",
-							"balsamic",
-							"hawthorn",
-							"anisic",
-						],
+						notes: ["sweet", "floral", "cream", "balsam", "hawthorn", "anise"],
 					},
 				},
 			],
@@ -4997,7 +4990,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["spicy", "herbal", "sweet", "woody", "warm"],
+						notes: ["spicy", "herbal", "sweet", "wood", "warm"],
 					},
 				},
 			],
@@ -5123,7 +5116,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"powdery",
 							"spicy",
 							"cinnamon",
-							"coumarinic",
+							"coumarin",
 						],
 					},
 				},
@@ -5168,7 +5161,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"smoky",
 							"leather",
-							"woody",
+							"wood",
 							"burnt",
 							"phenolic",
 							"tar",
@@ -5300,7 +5293,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "hyacinth", "floral", "leafy", "sharp", "sweet"],
+						notes: ["green", "hyacinth", "floral", "leaf", "sharp", "sweet"],
 					},
 				},
 			],
@@ -5339,9 +5332,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"oakmoss",
 							"phenolic",
 							"medicinal",
-							"smoky",
+							"smoke",
 							"spicy",
-							"woody",
+							"wood",
 						],
 					},
 				},
@@ -5374,7 +5367,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"smoky",
 							"leather",
 							"tar",
-							"woody",
+							"wood",
 							"burnt",
 							"phenolic",
 							"balsamic",
@@ -5459,7 +5452,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["camphoreous", "herbal", "sharp", "woody", "sweet"],
+						notes: ["camphoreous", "herbal", "sharp", "wood", "sweet"],
 					},
 				},
 			],
@@ -5492,14 +5485,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"spicy",
-							"cinnamon",
-							"sweet",
-							"balsamic",
-							"woody",
-							"powdery",
-						],
+						notes: ["spicy", "cinnamon", "sweet", "balsamic", "wood", "powder"],
 					},
 				},
 			],
@@ -5527,7 +5513,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["balsamic", "resinous", "woody", "pine", "warm", "smoky"],
+						notes: ["balsamic", "resinous", "wood", "pine", "warm", "smoky"],
 					},
 				},
 			],
@@ -5560,7 +5546,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["animalic", "musky", "woody", "iris", "fatty", "sebum"],
+						notes: ["animalic", "musk", "wood", "iris", "fat", "sebum"],
 					},
 				},
 			],
@@ -5595,7 +5581,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"floral",
 							"cyclamen",
-							"linden-blossom",
+							"linden blossom",
 							"green",
 							"mild",
 							"rhubarb",
@@ -5756,12 +5742,12 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"fatty",
-							"oily",
+							"fat",
+							"oil",
 							"citrus",
 							"orange",
 							"green",
-							"grassy",
+							"grass",
 							"fried",
 						],
 					},
@@ -5892,7 +5878,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["floral", "rose", "geranium", "waxy", "fresh", "citrus"],
+						notes: ["floral", "rose", "geranium", "wax", "fresh", "citrus"],
 					},
 				},
 			],
@@ -5980,7 +5966,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["fatty", "oily", "waxy", "green", "melon", "citrus"],
+						notes: ["fat", "oil", "wax", "green", "melon", "citrus"],
 					},
 				},
 			],
@@ -6014,7 +6000,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "violet-leaf", "cucumber", "fruity", "waxy"],
+						notes: ["green", "violet leaf", "cucumber", "fruit", "wax"],
 					},
 				},
 			],
@@ -6052,7 +6038,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "violet-leaf", "cucumber", "fruity", "waxy"],
+						notes: ["green", "violet leaf", "cucumber", "fruit", "wax"],
 					},
 				},
 			],
@@ -6188,9 +6174,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						notes: [
 							"green",
-							"mossy",
-							"woody",
-							"earthy",
+							"moss",
+							"wood",
+							"earth",
 							"vegetal",
 							"sweet",
 							"coconut",
@@ -6232,7 +6218,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						notes: [
 							"burnt",
-							"bready",
+							"bread",
 							"caramel",
 							"sweet",
 							"coffee",
@@ -6355,7 +6341,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "fatty", "fruity", "apple", "oily", "herbal"],
+						notes: ["green", "fat", "fruit", "apple", "oil", "herbal"],
 					},
 				},
 			],
@@ -6389,7 +6375,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "pineapple", "herbal", "sweet", "almond", "nutty"],
+						notes: ["green", "pineapple", "herb", "sweet", "almond", "nut"],
 					},
 				},
 			],
@@ -6423,7 +6409,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["coconut", "tonka", "coumarinic"],
+						notes: ["coconut", "tonka", "coumarin"],
 					},
 				},
 			],
@@ -6459,10 +6445,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"green",
 							"pepper",
 							"spicy",
-							"fruity",
+							"fruit",
 							"apple",
 							"pear",
-							"winey",
+							"wine",
 						],
 					},
 				},
@@ -6522,7 +6508,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["balsamic", "pine", "woody", "resinous"],
+						notes: ["balsamic", "pine", "wood", "resinous"],
 					},
 				},
 			],
@@ -6558,7 +6544,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"sweet",
 							"floral",
-							"anisic",
+							"anise",
 							"smoky",
 							"phenolic",
 							"medicinal",
@@ -6596,7 +6582,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["sweet", "phenolic", "medicinal", "smoky", "anisic"],
+						notes: ["sweet", "phenolic", "medicinal", "smoky", "anise"],
 					},
 				},
 			],
@@ -6677,7 +6663,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "earthy", "mossy", "warm"],
+						notes: ["wood", "earth", "moss", "warm"],
 					},
 				},
 			],
@@ -6836,14 +6822,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"powdery",
+							"powder",
 							"ketone",
 							"sweet",
-							"anisic",
+							"anise",
 							"floral",
 							"hawthorn",
 							"butter",
-							"creamy",
+							"cream",
 						],
 					},
 				},
@@ -6911,7 +6897,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["sweet", "herbaceous", "tonka", "coumarinic"],
+						notes: ["sweet", "herb", "tonka", "coumarin"],
 					},
 				},
 			],
@@ -6942,7 +6928,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["sharp", "fruity", "green", "sweet", "winey", "apple"],
+						notes: ["sharp", "fruit", "green", "sweet", "wine", "apple"],
 					},
 				},
 			],
@@ -6980,10 +6966,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"sweet",
 							"coconut",
 							"tonka",
-							"coumarinic",
+							"coumarin",
 							"hay",
 							"caramel",
-							"anisic",
+							"anise",
 						],
 					},
 				},
@@ -7219,14 +7205,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"musk",
-							"sweet",
-							"powdery",
-							"animalic",
-							"fatty",
-							"tenacious",
-						],
+						notes: ["musk", "sweet", "powder", "animalic", "fat", "tenacious"],
 					},
 				},
 			],
@@ -7283,7 +7262,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["fruity", "green", "herbal", "nutty"],
+						notes: ["fruity", "green", "herbal", "nut"],
 					},
 				},
 			],
@@ -7377,14 +7356,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"balsamic",
+							"balsam",
 							"sweet",
-							"waxy",
+							"wax",
 							"citrus",
 							"floral",
 							"dry",
-							"dusty",
-							"powdery",
+							"dust",
+							"powder",
 							"spicy",
 						],
 					},
@@ -7426,7 +7405,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["powerful", "oily-woody", "floral"],
+						notes: ["powerful", "oil", "wood", "floral"],
 					},
 				},
 			],
@@ -7579,7 +7558,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						notes: [
 							"herbal",
-							"woody",
+							"wood",
 							"pine",
 							"camphoreous",
 							"sharp",
@@ -7662,7 +7641,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "sweet", "amber", "balsamic", "sandalwood", "dry"],
+						notes: ["wood", "sweet", "amber", "balsam", "sandalwood", "dry"],
 					},
 				},
 			],
@@ -7689,7 +7668,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["pine", "woody", "resinous", "balsamic", "fresh"],
+						notes: ["pine", "wood", "resin", "balsam", "fresh"],
 					},
 				},
 			],
@@ -7847,7 +7826,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["green", "leafy", "strong"],
+						notes: ["green", "leaf", "strong"],
 					},
 				},
 			],
@@ -7881,7 +7860,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["fatty", "musk", "soapy", "dry", "floral", "powdery"],
+						notes: ["fat", "musk", "soap", "dry", "floral", "powder"],
 					},
 				},
 			],
@@ -7922,13 +7901,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"sweet",
 							"vanilla",
-							"woody",
+							"wood",
 							"tobacco",
 							"spicy",
 							"phenolic",
-							"powdery",
-							"anisic",
-							"creamy",
+							"powder",
+							"anise",
+							"cream",
 							"floral",
 						],
 					},
@@ -8138,7 +8117,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["waxy", "aldehydic"],
+						notes: ["wax", "aldehyde"],
 					},
 				},
 			],
@@ -8173,7 +8152,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "cedar", "dry", "amber", "balsamic"],
+						notes: ["wood", "cedar", "dry", "amber", "balsam"],
 					},
 				},
 			],
@@ -8238,7 +8217,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "sweet", "pine", "resinous"],
+						notes: ["wood", "sweet", "pine", "resin"],
 					},
 				},
 			],
@@ -8285,7 +8264,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"intense",
 							"strawberry",
 							"pineapple",
-							"exotic fruit",
+							"exotic fruits",
 						],
 					},
 				},
@@ -8469,8 +8448,8 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"dry",
 							"floral",
 							"herbal",
-							"waxy",
-							"aldehydic",
+							"wax",
+							"aldehyde",
 							"citrus",
 							"rose",
 							"green",
@@ -8508,7 +8487,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/floral-super/",
 						nameUsed: "Floral Super",
-						notes: ["fresh", "cyclamen", "floral", "intese"],
+						notes: ["fresh", "cyclamen", "floral", "intense"],
 					},
 				},
 			],
@@ -8880,13 +8859,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"animalic",
-							"civet",
-							"leather",
-							"quinoline-like",
-							"chemical",
-						],
+						notes: ["animalic", "civet", "leather", "chemical"],
 					},
 				},
 			],
@@ -8924,14 +8897,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: [
-							"sweet",
-							"fruity",
-							"berry",
-							"raspberry",
-							"jammy",
-							"powdery",
-						],
+						notes: ["sweet", "fruity", "berry", "raspberry", "jam", "powdery"],
 					},
 				},
 			],
@@ -9172,7 +9138,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["amber", "woody", "ambrette"],
+						notes: ["amber", "wood", "ambrette"],
 					},
 				},
 			],
@@ -9434,12 +9400,12 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"aldehydic",
 							"floral",
 							"jasmin",
-							"herbal",
+							"herb",
 							"fresh",
 							"sweet",
 							"spicy",
-							"waxy",
-							"woody",
+							"wax",
+							"wood",
 						],
 					},
 				},
@@ -9474,16 +9440,16 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Google AI",
 					data: {
 						notes: [
-							"yeasty",
-							"jammy",
+							"yeast",
+							"jam",
 							"tropical",
-							"fruity",
+							"fruit",
 							"mushroom",
 							"metallic",
-							"bready",
+							"bread",
 							"pineapple",
 							"horseradish",
-							"earthy",
+							"earth",
 						],
 					},
 				},
@@ -9667,9 +9633,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"herbal",
 							"sweet",
 							"earth",
-							"ketonic",
+							"ketone",
 							"cheese",
-							"spic",
+							"spicy",
 							"mushroom",
 						],
 					},
@@ -9833,7 +9799,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_FC-reduziert-Einzelseiten/SYM_F-Allyl-Cyclohexyl-Propionate.pdf",
 						nameUsed: "Allyl Cyclohexyl Propionate",
 						notes: [
-							"yellow fruit",
+							"yellow fruits",
 							"tropical",
 							"fruit",
 							"pineapple",
@@ -9881,7 +9847,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["floral", "leafy", "mild", "green"],
+						notes: ["floral", "leaf", "mild", "green"],
 					},
 				},
 			],
@@ -9989,7 +9955,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"tea",
 							"lime pulp",
 							"pear",
-							"lilly of the valley",
+							"lily of the valley",
 							"orris",
 							"violet",
 							"fruit",
@@ -10133,10 +10099,10 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"tropical",
 							"banana",
 							"vegetable",
-							"fatty",
+							"fat",
 							"passion fruit",
 							"violet",
-							"earthy",
+							"earth",
 						],
 					},
 				},
@@ -10918,7 +10884,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "minty", "spearmint", "cooling", "green"],
+						notes: ["wood", "mint", "spearmint", "cooling", "green"],
 					},
 				},
 			],
@@ -10950,7 +10916,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				{
 					sourceName: "Google AI",
 					data: {
-						notes: ["woody", "mint", "patchouli", "musk", "leather"],
+						notes: ["wood", "mint", "patchouli", "musk", "leather"],
 					},
 				},
 			],
@@ -11072,7 +11038,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						notes: [
 							"sweet",
 							"musty",
-							"nutty",
+							"nut",
 							"earthy",
 							"cocoa",
 							"corn",
@@ -11122,7 +11088,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"raisin",
 							"fruit",
 							"dried fruit",
-							"rummy",
+							"rum",
 							"caramellic",
 						],
 					},
@@ -11221,7 +11187,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"aldehyde",
 							"floral",
 							"green",
-							"rosy",
+							"rose",
 							"citrus",
 							"zest",
 							"orange",
@@ -11344,7 +11310,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambermaxtm-10tec",
 						nameUsed: "Ambermax™ 10%/TEC",
-						notes: ["ambery", "woody", "cedarwood"],
+						notes: ["amber", "wood", "cedarwood"],
 						olfactiveFamily: "Ambery",
 						olfactiveDescription: [
 							"Ambermax™ is a powerful, fusing and substantive rich ambery note with some woody cedarwood facets. Its outstanding fabric substantivity makes it a key building block for fabric care fragrances beating all benchmarks on dry cloth. Ambermax™ is a perfect fit to our existing range of ambery-woody notes including Okoumal™ / Amberketal / Ambrofix and can be used across all categories.",
@@ -11364,7 +11330,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/ambermaxtm-50dowanol-tpm",
 						nameUsed: "Ambermax™ 50%/Dowanol TPM",
-						notes: ["ambery", "woody", "cedarwood"],
+						notes: ["amber", "wood", "cedarwood"],
 						olfactiveFamily: "Ambery",
 						olfactiveDescription: [
 							"Ambermax™ is a powerful, fusing and substantive rich ambery note with some woody cedarwood facets. Its outstanding fabric substantivity makes it a key building block for fabric care fragrances beating all benchmarks on dry cloth. Ambermax™ is a perfect fit to our existing range of ambery-woody notes including Okoumal™ / Amberketal / Ambrofix and can be used across all categories.",
@@ -11538,7 +11504,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/anisyl-acetate",
 						nameUsed: "Anisyl Acetate",
-						notes: ["herb", "anis", "floral", "fruit"],
+						notes: ["herb", "anise", "floral", "fruit"],
 						olfactiveFamily: "Herbal - Agrestic",
 						olfactiveDescription: [
 							"Anisyl Acetate is a good modifier in floral, fruity, oriental and chypre fragrances where it imparts sweetness and a natural effect.",
@@ -11654,7 +11620,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"fresh",
 							"balsam",
 							"jasmine",
-							"anis",
+							"anise",
 						],
 						olfactiveFamily: "Fruity",
 						olfactiveDescription: [
@@ -12498,8 +12464,8 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"floral",
 							"orris",
 							"violet",
-							"fruity",
-							"woody",
+							"fruit",
+							"wood",
 							"powerful",
 							"rich",
 						],
@@ -12754,7 +12720,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/jasmonyltm-lg",
 						nameUsed: "Jasmonyl™ LG",
-						notes: ["floral", "jasmine", "lactonic", "mushroom", "diffusivd"],
+						notes: ["floral", "jasmine", "lactonic", "mushroom", "diffusive"],
 						olfactiveFamily: "Floral",
 						olfactiveDescription: [
 							"Jasmonyl LG is used in many types of compositions for its lactonic jasmine effect. It also has a mushroom-like facet that blends well with lavender. It enhances and improves the diffusion of compositions, particularly in fragrances designed for soaps.",
@@ -13654,7 +13620,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.givaudan.com/fragrance-beauty/fragrance-ingredients-business/fragrance-molecules/stemonetm",
 						nameUsed: "Stemone™",
-						notes: ["green", "natural", "leafy", "fresh"],
+						notes: ["green", "natural", "leaf", "fresh"],
 						olfactiveFamily: "Green",
 						olfactiveDescription: [
 							"Stemone™ imparts a natural and fresh nuance to fragrance notes such as lily of the valley, narcissus, mandarin, fig leaves, grapefruit, blackcurrant and tomato. It is an excellent modifier that strengthens and modernises green notes.",
@@ -13752,7 +13718,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 						nameUsed: "Toscanol™",
 						notes: [
 							"herbal",
-							"anis",
+							"anise",
 							"green",
 							"sweet",
 							"spicy",
@@ -13966,7 +13932,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"green",
 							"water",
 							"linden blossom",
-							"white flower",
+							"white flowers",
 							"cream",
 						],
 						olfactiveFamily: "Floral",

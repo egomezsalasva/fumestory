@@ -624,3 +624,9 @@
 	align-items: center;
 	gap: 1rem;
 }
+
+.lessonProgressSegmentFilledStatic {
+	animation: none;
+	transform: scaleX(1);
+	opacity: 1;
+}

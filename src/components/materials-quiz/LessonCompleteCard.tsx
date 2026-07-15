@@ -31,10 +31,11 @@ type LessonCompleteCardProps = {
 	promotedToLevel: number | null;
 };
 
-const LESSON_SCREEN_DURATION_MS = 1000;
+const LESSON_SCREEN_DURATION_MS = 1500;
 const KNOWN_COUNT_ANIMATION_MS = 1200;
-const MASTERY_EVENT_STEP_MS = 200;
-const MASTERY_ROW_STAGGER_MS = 150;
+const MASTERY_BAR_ANIMATION_MS = 1200;
+const MASTERY_ROW_STAGGER_MS = 300;
+const LESSON_SEGMENT_FILL_MS = 1200;
 
 function AnimatedNumber({
 	from,
@@ -72,55 +73,45 @@ function AnimatedNumber({
 
 function MaterialMasteryRow({
 	label,
-	startValue,
 	targetValue,
-	events,
 	animationDelayMs = 0,
 }: {
 	label: string;
-	startValue: number;
 	targetValue: number;
-	events: LessonQuizEvent[];
 	animationDelayMs?: number;
 }) {
-	const [displayValue, setDisplayValue] = useState(startValue);
-	const eventKey = events.map((event) => event.delta).join(",");
+	const [displayValue, setDisplayValue] = useState(0);
 
 	useEffect(() => {
-		setDisplayValue(startValue);
+		setDisplayValue(0);
 
 		let cancelled = false;
-		const timeouts: ReturnType<typeof setTimeout>[] = [];
+		let rafId = 0;
 
-		const schedule = (fn: () => void, delay: number) => {
-			timeouts.push(
-				setTimeout(() => {
-					if (cancelled) return;
-					fn();
-				}, delay),
-			);
-		};
+		const delayTimer = setTimeout(() => {
+			const start = performance.now();
+			const duration = MASTERY_BAR_ANIMATION_MS;
 
-		let value = startValue;
-		let at = animationDelayMs;
+			const tick = (now: number) => {
+				if (cancelled) return;
 
-		for (const event of events) {
-			schedule(() => {
-				value = Math.min(MASTERY_TARGET, Math.max(0, value + event.delta));
-				setDisplayValue(value);
-			}, at);
-			at += MASTERY_EVENT_STEP_MS;
-		}
+				const progress = Math.min(1, (now - start) / duration);
+				setDisplayValue(Math.round(targetValue * progress));
 
-		schedule(() => {
-			setDisplayValue(targetValue);
-		}, at);
+				if (progress < 1) {
+					rafId = requestAnimationFrame(tick);
+				}
+			};
+
+			rafId = requestAnimationFrame(tick);
+		}, animationDelayMs);
 
 		return () => {
 			cancelled = true;
-			for (const id of timeouts) clearTimeout(id);
+			clearTimeout(delayTimer);
+			cancelAnimationFrame(rafId);
 		};
-	}, [startValue, targetValue, animationDelayMs, eventKey, events]);
+	}, [targetValue, animationDelayMs]);
 
 	const isComplete = displayValue >= MASTERY_TARGET;
 
@@ -175,21 +166,28 @@ function LessonCompleteSummary({
 				className={quizStyles.lessonProgressTrack}
 				aria-label={`Lesson ${lessonInLevel} of ${lessonsPerLevel} complete`}
 			>
-				{Array.from({ length: lessonsPerLevel }, (_, index) => (
-					<span
-						key={index}
-						className={`${quizStyles.lessonProgressSegment} ${
-							index < lessonInLevel
-								? quizStyles.lessonProgressSegmentFilled
-								: ""
-						}`}
-						style={
-							index < lessonInLevel
-								? { animationDelay: `${index * 120}ms` }
-								: undefined
-						}
-					/>
-				))}
+				{Array.from({ length: lessonsPerLevel }, (_, index) => {
+					const isCompleted = index < lessonInLevel;
+					const isPreviouslyCompleted = index < lessonInLevel - 1;
+
+					return (
+						<span
+							key={index}
+							className={`${quizStyles.lessonProgressSegment}${
+								isCompleted ? ` ${quizStyles.lessonProgressSegmentFilled}` : ""
+							}${
+								isPreviouslyCompleted
+									? ` ${quizStyles.lessonProgressSegmentFilledStatic}`
+									: ""
+							}`}
+							style={
+								isCompleted && !isPreviouslyCompleted
+									? { animationDuration: `${LESSON_SEGMENT_FILL_MS}ms` }
+									: undefined
+							}
+						/>
+					);
+				})}
 			</div>
 
 			{promotedToLevel ? (
@@ -221,18 +219,14 @@ function LessonCompleteMaterials({
 	knownMaterialsCount,
 	allReliableMaterialsCount,
 	lessonMaterials,
-	lessonStartMastery,
 	materialMastery,
-	lessonQuizEvents,
 	onNextLesson,
 }: {
 	previousKnownCount: number;
 	knownMaterialsCount: number;
 	allReliableMaterialsCount: number;
 	lessonMaterials: MaterialRecord[];
-	lessonStartMastery: MaterialMasteryMap;
 	materialMastery: MaterialMasteryMap;
-	lessonQuizEvents: LessonQuizEvent[];
 	onNextLesson: () => void;
 }) {
 	return (
@@ -256,19 +250,13 @@ function LessonCompleteMaterials({
 					const materialKey = normalizeMaterialKey(material);
 					const displayName =
 						getMaterialDisplayNames(material)[0] ?? material.canonicalName;
-					const startValue = getMasteryValue(lessonStartMastery, materialKey);
 					const targetValue = getMasteryValue(materialMastery, materialKey);
-					const materialEvents = lessonQuizEvents.filter(
-						(event) => event.materialKey === materialKey,
-					);
 
 					return (
 						<MaterialMasteryRow
 							key={materialKey}
 							label={capitalizeWordStartsIfLower(displayName)}
-							startValue={startValue}
 							targetValue={targetValue}
-							events={materialEvents}
 							animationDelayMs={
 								KNOWN_COUNT_ANIMATION_MS + index * MASTERY_ROW_STAGGER_MS
 							}
@@ -302,9 +290,7 @@ export default function LessonCompleteCard({
 	knownMaterialsCount,
 	allReliableMaterialsCount,
 	lessonMaterials,
-	lessonStartMastery,
 	materialMastery,
-	lessonQuizEvents,
 	lives,
 	maxLives,
 	onNextLesson,
@@ -339,9 +325,7 @@ export default function LessonCompleteCard({
 			knownMaterialsCount={knownMaterialsCount}
 			allReliableMaterialsCount={allReliableMaterialsCount}
 			lessonMaterials={lessonMaterials}
-			lessonStartMastery={lessonStartMastery}
 			materialMastery={materialMastery}
-			lessonQuizEvents={lessonQuizEvents}
 			onNextLesson={onNextLesson}
 		/>
 	);
