@@ -76,19 +76,45 @@ function CompositionDetail() {
 
 	const columnDefs = useMemo<ColDef<FormulaLine>[]>(
 		() => [
-			{
-				field: "material_label",
-				headerName: "Label",
-				width: 110,
-				valueFormatter: (params) => params.value ?? "—",
-			},
+			// {
+			// 	field: "material_label",
+			// 	headerName: "Label",
+			// 	width: 110,
+			// 	valueFormatter: (params) => params.value ?? "—",
+			// },
 			{
 				field: "material_name",
 				headerName: "Material",
 				flex: 1,
 				minWidth: 220,
 			},
-			{ field: "percentage", headerName: "Formula %", width: 130 },
+			{
+				field: "percentage",
+				headerName: "Formula %",
+				width: 150,
+				sort: "desc",
+				cellRenderer: (params: { value?: number }) => {
+					const pct = typeof params.value === "number" ? params.value : 0;
+					const fill = Math.max(0, Math.min(100, pct));
+
+					return (
+						<div className="flex h-full items-center gap-8">
+							<span className="w-6 shrink-0 tabular-nums text-right">
+								{Number.isInteger(pct) ? pct : pct.toFixed(2)}
+							</span>
+							<div
+								className="h-4 w-16 shrink-0 overflow-hidden  border border-slate-500 bg-slate-800"
+								aria-hidden="true"
+							>
+								<div
+									className="h-full bg-slate-300"
+									style={{ width: `${fill}%` }}
+								/>
+							</div>
+						</div>
+					);
+				},
+			},
 			{ field: "weight_grams", headerName: "Weight (g)", width: 130 },
 		],
 		[],
