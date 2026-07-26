@@ -39,6 +39,7 @@ export function NumberInput({
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
 				onKeyDown={handleKeyDown}
+				onWheel={(e) => e.currentTarget.blur()}
 				className={styles.formInput}
 			/>
 		</div>

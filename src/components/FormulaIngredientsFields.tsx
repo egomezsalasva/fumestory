@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DilutionAutocomplete } from "@/components/DilutionAutocomplete";
 import { NumberInput } from "@/components/NumberInput";
 import {
@@ -10,13 +10,111 @@ import styles from "@/components/Form.module.css";
 type Props = {
 	onIngredientsChange: (ingredients: Ingredient[]) => void;
 	prefillIngredients?: Ingredient[] | null;
+	/** Previous formula to diff against. If omitted, freezes on prefill. */
+	baselineIngredients?: Ingredient[] | null;
 	headerRight?: React.ReactNode;
 	styleHeader?: React.CSSProperties;
 };
 
+type FormulaDiffLine = {
+	key: string;
+	nameLabel: string;
+	weightLabel: string;
+	deltaG: number;
+};
+
+const WEIGHT_EPS = 0.0001;
+
+function formatTrimmed(n: number) {
+	return Number.isInteger(n)
+		? n.toString()
+		: n.toFixed(2).replace(/\.?0+$/, "");
+}
+
+function formatSignedGrams(delta: number) {
+	const sign = delta > 0 ? "+" : "";
+	return `${sign}${formatTrimmed(delta)}g`;
+}
+
+function cloneIngredients(list: Ingredient[]): Ingredient[] {
+	return list.map((ing) => ({ ...ing }));
+}
+
+function buildFormulaDiff(
+	baseline: Ingredient[],
+	current: Ingredient[],
+): FormulaDiffLine[] {
+	const baselineByDilution = new Map<
+		number,
+		{ name: string; weight: number }
+	>();
+	const currentByDilution = new Map<number, { name: string; weight: number }>();
+
+	for (const ing of baseline) {
+		if (ing.dilution_id === null) continue;
+		baselineByDilution.set(ing.dilution_id, {
+			name: ing.displayText || ing.raw_material_name || "Ingredient",
+			weight: parseFloat(ing.weight_grams) || 0,
+		});
+	}
+
+	for (const ing of current) {
+		if (ing.dilution_id === null) continue;
+		currentByDilution.set(ing.dilution_id, {
+			name: ing.displayText || ing.raw_material_name || "Ingredient",
+			weight: parseFloat(ing.weight_grams) || 0,
+		});
+	}
+
+	const ids = new Set([
+		...baselineByDilution.keys(),
+		...currentByDilution.keys(),
+	]);
+	const lines: FormulaDiffLine[] = [];
+
+	for (const id of ids) {
+		const before = baselineByDilution.get(id);
+		const after = currentByDilution.get(id);
+
+		if (before && !after) {
+			lines.push({
+				key: `removed-${id}`,
+				nameLabel: `- ${before.name}`,
+				weightLabel: formatSignedGrams(-before.weight),
+				deltaG: -before.weight,
+			});
+			continue;
+		}
+
+		if (!before && after) {
+			lines.push({
+				key: `added-${id}`,
+				nameLabel: `+ ${after.name}`,
+				weightLabel: formatSignedGrams(after.weight),
+				deltaG: after.weight,
+			});
+			continue;
+		}
+
+		if (before && after) {
+			const delta = after.weight - before.weight;
+			if (Math.abs(delta) <= WEIGHT_EPS) continue;
+			lines.push({
+				key: `changed-${id}`,
+				nameLabel: after.name,
+				weightLabel: formatSignedGrams(delta),
+				deltaG: delta,
+			});
+		}
+	}
+
+	return lines;
+}
+
 export function FormulaIngredientsFields({
 	onIngredientsChange,
 	prefillIngredients,
+	baselineIngredients,
 	headerRight,
 	styleHeader,
 }: Props) {
@@ -28,6 +126,9 @@ export function FormulaIngredientsFields({
 	const [percentDraftById, setPercentDraftById] = useState<
 		Record<string, string>
 	>({});
+	const [frozenPrefillBaseline, setFrozenPrefillBaseline] = useState<
+		Ingredient[] | null
+	>(null);
 	const {
 		ingredients,
 		totalWeight,
@@ -63,10 +164,22 @@ export function FormulaIngredientsFields({
 	useEffect(() => {
 		if (!prefillIngredients || prefillIngredients.length === 0) return;
 		setAllIngredients(prefillIngredients);
-	}, [prefillIngredients, setAllIngredients]);
+		if (!baselineIngredients) {
+			setFrozenPrefillBaseline(cloneIngredients(prefillIngredients));
+		}
+	}, [prefillIngredients, baselineIngredients, setAllIngredients]);
 
-	const formatTrimmed = (n: number) =>
-		Number.isInteger(n) ? n.toString() : n.toFixed(2).replace(/\.?0+$/, "");
+	const baseline = baselineIngredients ?? frozenPrefillBaseline;
+
+	const diffLines = useMemo(() => {
+		if (!baseline || baseline.length === 0) return [];
+		return buildFormulaDiff(baseline, ingredients);
+	}, [baseline, ingredients]);
+
+	const totalDeltaG = useMemo(
+		() => diffLines.reduce((sum, line) => sum + line.deltaG, 0),
+		[diffLines],
+	);
 
 	const handleConfirmRecalculate = () => {
 		recalculatePercentagesFromWeights();
@@ -295,6 +408,33 @@ export function FormulaIngredientsFields({
 				</button>
 			</div>
 
+			{diffLines.length > 0 && (
+				<div className="space-y-1 pb-2 text-sm">
+					{diffLines.map((line) => {
+						const isAdd = line.deltaG > 0;
+						const tone = isAdd ? "text-green-400" : "text-red-400";
+						const isNamedChange =
+							!line.nameLabel.startsWith("+") &&
+							!line.nameLabel.startsWith("-");
+
+						return (
+							<div key={line.key} className="flex gap-3 items-baseline">
+								<span
+									className={`flex-1 min-w-0 ${isNamedChange ? "text-slate-300" : tone}`}
+								>
+									{line.nameLabel}
+								</span>
+								<span className={`w-28 tabular-nums text-center ${tone}`}>
+									{line.weightLabel}
+								</span>
+								<span className="w-24 shrink-0" aria-hidden="true" />
+								<span className="w-10 shrink-0" aria-hidden="true" />
+							</div>
+						);
+					})}
+				</div>
+			)}
+
 			<div className="flex items-end gap-3 pt-3 border-t border-slate-700">
 				<span className="text-md font-medium text-slate-300 pb-2">
 					Total (g)
@@ -309,6 +449,15 @@ export function FormulaIngredientsFields({
 						step={0.01}
 					/>
 				</div>
+				{Math.abs(totalDeltaG) > WEIGHT_EPS && (
+					<span
+						className={`pb-2 text-sm tabular-nums ${
+							totalDeltaG > 0 ? "text-green-400" : "text-red-400"
+						}`}
+					>
+						{formatSignedGrams(totalDeltaG)}
+					</span>
+				)}
 				{needsTotalWeight && (
 					<p className="text-xs text-amber-300">
 						Set total weight to use % mode (e.g. 1g).
