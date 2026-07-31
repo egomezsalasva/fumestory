@@ -98,12 +98,12 @@ function CompositionDetail() {
 					const fill = Math.max(0, Math.min(100, pct));
 
 					return (
-						<div className="flex h-full items-center gap-8">
-							<span className="w-6 shrink-0 tabular-nums text-right">
+						<div className="flex h-full w-full items-center gap-3">
+							<span className="w-9 shrink-0 tabular-nums">
 								{Number.isInteger(pct) ? pct : pct.toFixed(2)}
 							</span>
 							<div
-								className="h-4 w-16 shrink-0 overflow-hidden  border border-slate-500 bg-slate-800"
+								className="h-4 min-w-0 flex-1 overflow-hidden border border-slate-500 bg-slate-800"
 								aria-hidden="true"
 							>
 								<div
