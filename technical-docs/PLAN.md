@@ -92,7 +92,13 @@ Depends on: Composition note pyramid
 
 ## Later / ideas
 
-_(park ideas here)_
+### Formula % bar scale (settings option)
+- [ ] User setting: bar fill mode on composition formula grid
+  - `absolute` — full track = 100% of formula (default)
+  - `relative` — full track = highest % in that mod
+- [ ] Wire into `/composition/:id` Formula % cell renderer
+- [ ] Add control in project/user settings UI (same pattern as column toggles)
+- File: `user-settings.ts` + `_dashboard.composition.$compositionId.tsx`
 
 ## Done (recent)
 

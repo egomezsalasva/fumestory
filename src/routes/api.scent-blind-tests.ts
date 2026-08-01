@@ -18,8 +18,10 @@ export type ScentBlindTestResult = {
 	created_at: string;
 };
 
+/** Aggregated by material name + dilution % (duplicate inventory dilutions merge). */
 export type DilutionBlindTestStats = {
-	dilution_id: number;
+	material_name: string;
+	percentage: number;
 	attempts: number;
 	success_percentage: number;
 };
@@ -39,16 +41,19 @@ export const Route = createFileRoute("/api/scent-blind-tests")({
 
 					const statsSql = `
 						SELECT
-							r.dilution_id,
+							COALESCE(rm.name, 'Unknown') AS material_name,
+							COALESCE(d.percentage, 0)::int AS percentage,
 							COUNT(*)::int AS attempts,
 							ROUND(
 								100.0 * COUNT(*) FILTER (WHERE r.matched) / NULLIF(COUNT(*), 0),
 								1
 							)::float AS success_percentage
 						FROM scent_blind_test_results r
+						LEFT JOIN dilutions d ON d.id = r.dilution_id
+						LEFT JOIN raw_materials rm ON rm.id = d.raw_material_id
 						WHERE r.owner_id = $1
-						GROUP BY r.dilution_id
-						ORDER BY r.dilution_id
+						GROUP BY COALESCE(rm.name, 'Unknown'), COALESCE(d.percentage, 0)
+						ORDER BY success_percentage ASC, material_name ASC, percentage ASC
 					`;
 					const txResults = await client.transaction((txn) => [
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [

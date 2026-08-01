@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
-import type { Dilution } from "./api.dilutions";
 import type { DilutionBlindTestStats } from "./api.scent-blind-tests";
 import { authedFetch } from "@/utils/authed-fetch";
 import { requireNavRoute } from "@/utils/nav-eligibility";
@@ -21,62 +20,22 @@ export const Route = createFileRoute("/_dashboard/scent-knowledge")({
 	component: ScentKnowledge,
 });
 
-type ScentKnowledgeRow = {
-	dilution_id: number;
-	material_name: string;
-	percentage: number;
-	attempts: number;
-	success_percentage: number;
-};
-
-function resolveDilutionMeta(
-	dilutionId: number,
-	dilutions: Dilution[],
-	materials: { id: number; name: string }[],
-): { material_name: string; percentage: number } {
-	const d = dilutions.find((x) => x.id === dilutionId);
-	if (!d) {
-		return { material_name: `Dilution #${dilutionId}`, percentage: 0 };
-	}
-	const material = materials.find((m) => m.id === d.raw_material_id);
-	return {
-		material_name: material?.name ?? "Unknown",
-		percentage: d.percentage,
-	};
-}
+type ScentKnowledgeRow = DilutionBlindTestStats;
 
 function ScentKnowledge() {
 	const [stats, setStats] = useState<DilutionBlindTestStats[]>([]);
-	const [dilutions, setDilutions] = useState<Dilution[]>([]);
-	const [materials, setMaterials] = useState<{ id: number; name: string }[]>(
-		[],
-	);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		let cancelled = false;
 		(async () => {
 			try {
-				const [statsRes, materialsRes, dilutionsRes] = await Promise.all([
-					authedFetch("/api/scent-blind-tests"),
-					authedFetch("/api/raw-materials"),
-					authedFetch("/api/dilutions"),
-				]);
-				const [statsJson, materialsJson, dilutionsJson] = await Promise.all([
-					statsRes.json(),
-					materialsRes.json(),
-					dilutionsRes.json(),
-				]);
+				const statsRes = await authedFetch("/api/scent-blind-tests");
+				const statsJson = await statsRes.json();
 				if (cancelled) return;
 
 				if (statsRes.ok && Array.isArray(statsJson.data)) {
 					setStats(statsJson.data as DilutionBlindTestStats[]);
-				}
-				if (materialsRes.ok && Array.isArray(materialsJson.data)) {
-					setMaterials(materialsJson.data);
-				}
-				if (dilutionsRes.ok && Array.isArray(dilutionsJson.data)) {
-					setDilutions(dilutionsJson.data as Dilution[]);
 				}
 			} catch (err) {
 				console.error("Scent knowledge load error:", err);
@@ -90,30 +49,15 @@ function ScentKnowledge() {
 	}, []);
 
 	const rowData = useMemo((): ScentKnowledgeRow[] => {
-		return stats
-			.map((s) => {
-				const { material_name, percentage } = resolveDilutionMeta(
-					s.dilution_id,
-					dilutions,
-					materials,
-				);
-				return {
-					dilution_id: s.dilution_id,
-					material_name,
-					percentage,
-					attempts: s.attempts,
-					success_percentage: s.success_percentage,
-				};
-			})
-			.sort((a, b) => {
-				if (a.success_percentage !== b.success_percentage) {
-					return a.success_percentage - b.success_percentage;
-				}
-				const nameCmp = a.material_name.localeCompare(b.material_name);
-				if (nameCmp !== 0) return nameCmp;
-				return a.percentage - b.percentage;
-			});
-	}, [stats, dilutions, materials]);
+		return [...stats].sort((a, b) => {
+			if (a.success_percentage !== b.success_percentage) {
+				return a.success_percentage - b.success_percentage;
+			}
+			const nameCmp = a.material_name.localeCompare(b.material_name);
+			if (nameCmp !== 0) return nameCmp;
+			return a.percentage - b.percentage;
+		});
+	}, [stats]);
 
 	const columnDefs: ColDef<ScentKnowledgeRow>[] = [
 		{
@@ -161,6 +105,9 @@ function ScentKnowledge() {
 					<AgGridReact<ScentKnowledgeRow>
 						rowData={rowData}
 						columnDefs={columnDefs}
+						getRowId={(p) =>
+							`${p.data?.material_name ?? ""}-${p.data?.percentage ?? 0}`
+						}
 						defaultColDef={{
 							filter: true,
 							sortable: true,
