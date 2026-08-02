@@ -35,6 +35,8 @@ const NavBodySectionItem: React.FC<{
 	addOnPill?: boolean;
 	disabled?: boolean;
 	disabledTooltip?: string;
+	/** Extra path prefixes that should mark this item active (e.g. detail routes). */
+	activePathPrefixes?: string[];
 }> = ({
 	icon,
 	to,
@@ -43,6 +45,7 @@ const NavBodySectionItem: React.FC<{
 	addOnPill = false,
 	disabled = false,
 	disabledTooltip,
+	activePathPrefixes,
 }) => {
 	const matchRoute = useMatchRoute();
 	const { location } = useRouterState();
@@ -50,7 +53,14 @@ const NavBodySectionItem: React.FC<{
 	const [toPath] = to.split("#");
 	const hashNorm = (h: string | undefined) => (h ?? "").replace(/^#/, "");
 	const targetHashKey = hashNorm(hash);
-	const pathMatches = !!matchRoute({ to, fuzzy: false });
+	const exactMatch = !!matchRoute({ to: toPath, fuzzy: false });
+	const prefixMatch =
+		activePathPrefixes?.some(
+			(prefix) =>
+				location.pathname === prefix ||
+				location.pathname.startsWith(`${prefix}/`),
+		) ?? false;
+	const pathMatches = exactMatch || prefixMatch;
 	const currentHash = hashNorm(location.hash);
 	const active = targetHashKey
 		? pathMatches &&
@@ -194,6 +204,7 @@ const SideNav = () => {
 								icon={<TableIcon />}
 								to="/compositions"
 								title="Compositions"
+								activePathPrefixes={["/composition", "/add-formula"]}
 								disabled={!eligibility?.hasCompositions}
 								disabledTooltip="Add a Composition to view"
 							/>
@@ -213,6 +224,7 @@ const SideNav = () => {
 								icon={<TableIcon />}
 								to="/inventory"
 								title="Raw Materials"
+								activePathPrefixes={["/manage-dilutions"]}
 								disabled={!eligibility?.hasRawMaterials}
 								disabledTooltip="Add a Raw Material to view"
 							/>
