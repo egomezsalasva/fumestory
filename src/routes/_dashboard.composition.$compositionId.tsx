@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
+import {
+	AllCommunityModule,
+	ColDef,
+	ICellRendererParams,
+	ModuleRegistry,
+} from "ag-grid-community";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { NotePyramidIcon } from "@/components/NotePyramidIcon";
@@ -57,6 +62,11 @@ const NOTE_TYPE_SORT_ORDER: Record<string, number> = {
 	Base: 2,
 };
 
+function formatWeightGrams(v: number): string {
+	if (!Number.isFinite(v)) return "";
+	return Number(v.toFixed(4)).toString();
+}
+
 const gridStyles = `
 	.nested-grid .ag-header {
 		background-color: rgb(51, 65, 85) !important;
@@ -77,6 +87,17 @@ const gridStyles = `
 	.nested-grid .ag-root-wrapper {
 		border-bottom: none !important;
 	}
+	.nested-grid .ag-floating-bottom {
+		border-top: 1px solid rgb(71 85 105 / 0.5);
+	}
+	.nested-grid .ag-row-pinned {
+		font-weight: 600;
+		background-color: rgb(30 41 59 / 0.2) !important;
+	}
+	.nested-grid .ag-row-pinned .ag-cell {
+		color: rgb(203 213 225);
+		border-bottom: 1px solid rgb(71 85 105 / 0.5) !important;
+	}
 `;
 
 function CompositionDetail() {
@@ -91,6 +112,7 @@ function CompositionDetail() {
 				headerName: "Material",
 				flex: 1,
 				minWidth: 220,
+				colSpan: (params) => (params.node?.rowPinned ? 4 : 1),
 			},
 			{
 				field: "note_type",
@@ -111,25 +133,31 @@ function CompositionDetail() {
 							: 99;
 					return av - bv;
 				},
-				cellRenderer: (params: { value?: string | null }) => (
-					<div className="flex h-full items-center justify-center">
-						<NotePyramidIcon noteType={params.value} />
-					</div>
-				),
+				cellRenderer: (params: ICellRendererParams<FormulaLine>) => {
+					if (params.node?.rowPinned) return null;
+					return (
+						<div className="flex h-full items-center justify-center">
+							<NotePyramidIcon noteType={params.value} />
+						</div>
+					);
+				},
 			},
 			{
 				field: "category_name",
 				headerName: "Family",
 				width: 80,
-				valueFormatter: (params) =>
-					params.value ? toTitleCaseWords(params.value) : "—",
+				valueFormatter: (params) => {
+					if (params.node?.rowPinned) return "";
+					return params.value ? toTitleCaseWords(params.value) : "—";
+				},
 			},
 			{
 				field: "percentage",
 				headerName: "Formula %",
 				width: 130,
 				sort: "desc",
-				cellRenderer: (params: { value?: number }) => {
+				cellRenderer: (params: ICellRendererParams<FormulaLine>) => {
+					if (params.node?.rowPinned) return null;
 					const pct = typeof params.value === "number" ? params.value : 0;
 					const fill = Math.max(0, Math.min(100, pct));
 
@@ -151,7 +179,16 @@ function CompositionDetail() {
 					);
 				},
 			},
-			{ field: "weight_grams", headerName: "Weight (g)", width: 90 },
+			{
+				field: "weight_grams",
+				headerName: "Weight (g)",
+				width: 90,
+				valueFormatter: (params) => {
+					const v = params.value;
+					if (typeof v !== "number") return "";
+					return formatWeightGrams(v);
+				},
+			},
 		],
 		[],
 	);
@@ -214,6 +251,21 @@ function CompositionDetail() {
 								.sort((a, b) => b.id - a.id)
 								.map((f) => {
 									const lines = f.lines ?? [];
+									const totalWeight = lines.reduce(
+										(sum, l) => sum + (l.weight_grams || 0),
+										0,
+									);
+									const pinnedBottomRowData: FormulaLine[] = [
+										{
+											dilution_id: -1,
+											material_label: null,
+											material_name: "Total",
+											note_type: null,
+											category_name: null,
+											percentage: 0,
+											weight_grams: totalWeight,
+										},
+									];
 									return (
 										<section key={f.id} className="mt-8">
 											<h2 className="text-lg font-semibold text-white mb-3">
@@ -230,9 +282,12 @@ function CompositionDetail() {
 												>
 													<AgGridReact<FormulaLine>
 														rowData={lines}
+														pinnedBottomRowData={pinnedBottomRowData}
 														columnDefs={columnDefs}
 														getRowId={(p) =>
-															`${f.id}-${String(p.data?.dilution_id)}`
+															p.data?.material_name === "Total"
+																? `${f.id}-total`
+																: `${f.id}-${String(p.data?.dilution_id)}`
 														}
 														domLayout="autoHeight"
 														theme="legacy"

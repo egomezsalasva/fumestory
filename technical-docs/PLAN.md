@@ -4,14 +4,16 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Now
 
-### Composition note pyramid
-- [ ] Expose `note_type` on composition formula lines (API)
-- [ ] Aggregate High / Mid(Heart) / Base % per formula
-- [ ] Pyramid UI on `/composition/:id` (fill each band by %)
+### Composition note pyramid (overview)
+- [ ] Aggregate High / Mid(Heart) / Base % per mod (`note_type` already on formula lines)
+- [ ] Per-mod overview pyramid on `/composition/:id` (alongside family pie + notes)
+- [ ] Show % text inside each band (always opaque / high-contrast)
+- [ ] Band fill opacity = (pct / 100) * 0.8 (0% → 0, 100% → 0.8)
 - Open: unknown note types? equal vs taller base bands?
-- Follow-up (after pyramid ships):
+- Reuse / extend: `NotePyramidIcon` (per-row indicator already ships)
+- Follow-up:
   - [ ] Extract a reusable compact pyramid (or shared totals helper)
-  - [ ] Add a pyramid column to the mods table so each mod shows Top/Mid/Base at a glance
+  - [ ] Compact pyramid column on mods table
 
 ## Next
 
@@ -27,16 +29,11 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - [ ] Prefer localStorage (device-local); consider user_settings later if cross-device needed
 - File: `_dashboard.composition.$compositionId.tsx`
 
-  ### Mods table — pyramid column
-Depends on: Composition note pyramid
+### Mods table — pyramid column
+Depends on: Composition note pyramid (overview)
 - [ ] Compact cell renderer (mini bands / fill) using same High / Mid / Base totals
 - [ ] Wire into mods table column defs
 - Confirm which table: composition-detail mods overview vs `/compositions` list (latest mod)
-
-### Formula table: main olfactory family column
-- On composition formula lines: show each material’s primary category (Floral, Musky, Woody, …)
-- Data: already on materials as `category_name` / `category_id` — expose on formula-line API if missing
-- Distinct from pyramid `note_type` (High / Mid / Base)
 
 ### Per-mod notes
 - [ ] Add nullable `mod_notes` (or `formula_notes`) on `formulas`
@@ -46,21 +43,10 @@ Depends on: Composition note pyramid
 - UI label: "Notes" — freeform mod notes, not material olfactory notes
 
 ### Per-mod family pie + notes
-- [ ] Expose `category_name` on formula lines (if not already)
-- [ ] Aggregate formula % by category per mod
+- [ ] Aggregate formula % by category per mod (`category_name` already on formula lines)
 - [ ] Layout under each mod: pie (left) + editable notes (right)
 - [ ] Add nullable `mod_notes` (or `formula_notes`) on `formulas`; API read/write
 - UI label: "Notes" — freeform mod notes, not material olfactory notes
-- Shares category data with: Formula table olfactory family column
-
-### Composition note pyramid
-- [ ] Expose `note_type` on formula lines (API)
-- [ ] Aggregate High / Mid(Heart) / Base % per mod
-- [ ] Per-mod overview pyramid on `/composition/:id` (alongside family pie + notes)
-- [ ] Show % text inside each band (always opaque / high-contrast)
-- [ ] Band fill opacity = (pct / 100) * 0.8 (0% → 0, 100% → 0.8)
-- Open: unknown note types? equal vs taller base bands?
-- Follow-up: compact pyramid column on mods table
 
 ### Compositions list — status tabs
 - [ ] Add status on `compositions`: `wip` | `finished` | `archived` (default `wip`)
@@ -84,11 +70,11 @@ Depends on: Composition note pyramid
 - [ ] Discarding the best mod clears Best (or block discard until reassigned)
 - [ ] Best only allowed on `active` mods (not discarded)
 
-### Collapsible mods (persisted)
-- [ ] Each mod section on `/composition/:id` is collapsible (header stays visible: title, star, maybe pyramid/pie peek or not)
-- [ ] Persist open/closed per composition + formula (mod) id
-- [ ] Prefer localStorage (device-local), same pattern as formula table sort
-- [ ] Sensible default: expanded (or only latest expanded)
+### Collapsible mod overview (persisted)
+- [ ] Overview panel (pyramid + family pie + notes) collapsible under each mod
+- [ ] Ingredients grid stays outside that panel
+- [ ] Persist open/closed per composition + formula id (localStorage)
+- [ ] Default: expanded
 
 ## Later / ideas
 
@@ -103,7 +89,7 @@ Depends on: Composition note pyramid
 ### Codex Security CLI (optional)
 - [ ] Trial local scan: `npx @openai/codex-security scan .`
 - [ ] Review findings (auth, API routes, RLS, env)
-- Later: CI advisory job with `OPENAI_API_KEY` (severity-only first)
+- Later: CI advisory job with `OPENAI_API_KEY` (advisory-only first)
 
 ## Done (recent)
 
