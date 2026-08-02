@@ -6,6 +6,7 @@ import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { NotePyramidIcon } from "@/components/NotePyramidIcon";
 import styles from "@/components/Form.module.css";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,6 +25,7 @@ type FormulaLine = {
 	material_label: string | null;
 	material_name: string;
 	note_type: string | null;
+	category_name: string | null;
 	percentage: number;
 	weight_grams: number;
 };
@@ -93,7 +95,7 @@ function CompositionDetail() {
 			{
 				field: "note_type",
 				headerName: "Note",
-				width: 72,
+				width: 60,
 				sortable: true,
 				comparator: (
 					a: string | null | undefined,
@@ -116,9 +118,16 @@ function CompositionDetail() {
 				),
 			},
 			{
+				field: "category_name",
+				headerName: "Family",
+				width: 80,
+				valueFormatter: (params) =>
+					params.value ? toTitleCaseWords(params.value) : "—",
+			},
+			{
 				field: "percentage",
 				headerName: "Formula %",
-				width: 150,
+				width: 130,
 				sort: "desc",
 				cellRenderer: (params: { value?: number }) => {
 					const pct = typeof params.value === "number" ? params.value : 0;
@@ -142,7 +151,7 @@ function CompositionDetail() {
 					);
 				},
 			},
-			{ field: "weight_grams", headerName: "Weight (g)", width: 130 },
+			{ field: "weight_grams", headerName: "Weight (g)", width: 90 },
 		],
 		[],
 	);

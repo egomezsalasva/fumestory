@@ -12,6 +12,7 @@ type FormulaLineRow = {
 	material_label: string | null;
 	material_name: string;
 	note_type: string | null;
+	category_name: string | null;
 };
 
 export const Route = createFileRoute("/api/compositions/$compositionId")({
@@ -55,11 +56,13 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
                             fd.weight_grams,
                             rm.label AS material_label,
                             (rm.name || ' (' || d.percentage || '%)') AS material_name,
-                            rm.note_type
+                            rm.note_type,
+                            cat.name AS category_name
                         FROM formula_dilutions fd
                         JOIN formulas f ON f.id = fd.formula_id
                         JOIN dilutions d ON d.id = fd.dilution_id
                         JOIN raw_materials rm ON rm.id = d.raw_material_id
+                        LEFT JOIN categories cat ON cat.id = rm.category_id
                         WHERE f.composition_id = $1
                         ORDER BY f.id, fd.id
 					`;
@@ -94,6 +97,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 							material_label: string | null;
 							material_name: string;
 							note_type: string | null;
+							category_name: string | null;
 							percentage: number;
 							weight_grams: number;
 						}[]
@@ -106,6 +110,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 							material_label: row.material_label,
 							material_name: row.material_name,
 							note_type: row.note_type ?? null,
+							category_name: row.category_name ?? null,
 							percentage: Number(row.percentage),
 							weight_grams: Number(row.weight_grams),
 						});
