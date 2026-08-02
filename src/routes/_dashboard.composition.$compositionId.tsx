@@ -10,6 +10,14 @@ import {
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { NotePyramidIcon } from "@/components/NotePyramidIcon";
+import {
+	aggregateNoteTypePercents,
+	NotePyramidOverview,
+} from "@/components/NotePyramidOverview";
+import {
+	aggregateFamilyPercents,
+	FamilyPieOverview,
+} from "@/components/FamilyPieOverview";
 import styles from "@/components/Form.module.css";
 import { toTitleCaseWords } from "@/utils/display-names";
 
@@ -255,6 +263,8 @@ function CompositionDetail() {
 										(sum, l) => sum + (l.weight_grams || 0),
 										0,
 									);
+									const noteTotals = aggregateNoteTypePercents(lines);
+									const familySlices = aggregateFamilyPercents(lines);
 									const pinnedBottomRowData: FormulaLine[] = [
 										{
 											dilution_id: -1,
@@ -276,23 +286,34 @@ function CompositionDetail() {
 													No ingredient lines.
 												</p>
 											) : (
-												<div
-													className="nested-grid ag-theme-quartz-dark"
-													style={{ height: "auto", width: "100%" }}
-												>
-													<AgGridReact<FormulaLine>
-														rowData={lines}
-														pinnedBottomRowData={pinnedBottomRowData}
-														columnDefs={columnDefs}
-														getRowId={(p) =>
-															p.data?.material_name === "Total"
-																? `${f.id}-total`
-																: `${f.id}-${String(p.data?.dilution_id)}`
-														}
-														domLayout="autoHeight"
-														theme="legacy"
-													/>
-												</div>
+												<>
+													<div
+														className="nested-grid ag-theme-quartz-dark"
+														style={{ height: "auto", width: "100%" }}
+													>
+														<AgGridReact<FormulaLine>
+															rowData={lines}
+															pinnedBottomRowData={pinnedBottomRowData}
+															columnDefs={columnDefs}
+															getRowId={(p) =>
+																p.data?.material_name === "Total"
+																	? `${f.id}-total`
+																	: `${f.id}-${String(p.data?.dilution_id)}`
+															}
+															domLayout="autoHeight"
+															theme="legacy"
+														/>
+													</div>
+													<div className="mt-4 rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3">
+														<p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+															Overview
+														</p>
+														<div className="flex flex-wrap items-center justify-center gap-8">
+															<NotePyramidOverview totals={noteTotals} />
+															<FamilyPieOverview slices={familySlices} />
+														</div>
+													</div>
+												</>
 											)}
 										</section>
 									);

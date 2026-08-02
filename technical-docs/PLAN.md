@@ -4,16 +4,14 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Now
 
-### Composition note pyramid (overview)
-- [ ] Aggregate High / Mid(Heart) / Base % per mod (`note_type` already on formula lines)
-- [ ] Per-mod overview pyramid on `/composition/:id` (alongside family pie + notes)
-- [ ] Show % text inside each band (always opaque / high-contrast)
-- [ ] Band fill opacity = (pct / 100) * 0.8 (0% → 0, 100% → 0.8)
-- Open: unknown note types? equal vs taller base bands?
-- Reuse / extend: `NotePyramidIcon` (per-row indicator already ships)
-- Follow-up:
-  - [ ] Extract a reusable compact pyramid (or shared totals helper)
-  - [ ] Compact pyramid column on mods table
+### Overview mix mode (formula % vs material count)
+- [ ] Control next to “Overview” title: Formula | Materials
+- Formula (current): Top/Mid/Base and family pie from formula `%`
+- Materials: share by ingredient count
+  - e.g. 3 of 10 lines are Top → Top = 30%
+  - same for olfactory family (count per category / total lines)
+- [ ] Persist choice (localStorage or user setting)
+- Files: `NotePyramidOverview.tsx`, `FamilyPieOverview.tsx`, `_dashboard.composition.$compositionId.tsx`
 
 ## Next
 
@@ -30,22 +28,15 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - File: `_dashboard.composition.$compositionId.tsx`
 
 ### Mods table — pyramid column
-Depends on: Composition note pyramid (overview)
-- [ ] Compact cell renderer (mini bands / fill) using same High / Mid / Base totals
+- [ ] Compact cell renderer (mini bands / fill) using same High / Mid / Base totals helper
 - [ ] Wire into mods table column defs
 - Confirm which table: composition-detail mods overview vs `/compositions` list (latest mod)
 
 ### Per-mod notes
 - [ ] Add nullable `mod_notes` (or `formula_notes`) on `formulas`
 - [ ] Expose + update via composition/formula APIs
-- [ ] Show editable notes under each mod on `/composition/:id`
+- [ ] Notes card beside Overview on `/composition/:id` (half-width layout)
 - Optional: set notes when creating a formula on add-formula
-- UI label: "Notes" — freeform mod notes, not material olfactory notes
-
-### Per-mod family pie + notes
-- [ ] Aggregate formula % by category per mod (`category_name` already on formula lines)
-- [ ] Layout under each mod: pie (left) + editable notes (right)
-- [ ] Add nullable `mod_notes` (or `formula_notes`) on `formulas`; API read/write
 - UI label: "Notes" — freeform mod notes, not material olfactory notes
 
 ### Compositions list — status tabs
@@ -71,7 +62,7 @@ Depends on: Composition note pyramid (overview)
 - [ ] Best only allowed on `active` mods (not discarded)
 
 ### Collapsible mod overview (persisted)
-- [ ] Overview panel (pyramid + family pie + notes) collapsible under each mod
+- [ ] Overview panel (pyramid + family pie ± notes) collapsible under each mod
 - [ ] Ingredients grid stays outside that panel
 - [ ] Persist open/closed per composition + formula id (localStorage)
 - [ ] Default: expanded
@@ -90,13 +81,6 @@ Depends on: Composition note pyramid (overview)
 - [ ] Trial local scan: `npx @openai/codex-security scan .`
 - [ ] Review findings (auth, API routes, RLS, env)
 - Later: CI advisory job with `OPENAI_API_KEY` (advisory-only first)
-
-## Done (recent)
-
-- Academy rename (routes, settings key `academy_enabled`, migration 014)
-- Formula diff on add-formula (vs baseline / prefill)
-- Formula % bar on composition grid
-- Number input: no value change on scroll-wheel
 
 ## Related docs
 
