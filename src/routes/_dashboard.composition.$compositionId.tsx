@@ -11,10 +11,12 @@ import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { NotePyramidIcon } from "@/components/NotePyramidIcon";
 import {
+	aggregateNoteTypeByCount,
 	aggregateNoteTypePercents,
 	NotePyramidOverview,
 } from "@/components/NotePyramidOverview";
 import {
+	aggregateFamilyByCount,
 	aggregateFamilyPercents,
 	FamilyPieOverview,
 } from "@/components/FamilyPieOverview";
@@ -27,6 +29,10 @@ const COMMENT_MAX_LENGTH = 2000;
 
 const COMMENT_ACTION_BTN =
 	"inline-flex shrink-0 items-center justify-center whitespace-nowrap px-2.5 py-1 rounded-[0.25rem] bg-[#0b172d] text-white font-medium border border-[#d8e3f0] shadow-sm shadow-black/40 hover:bg-[#243044] hover:border-[#f0f4fa] transition-colors text-xs disabled:cursor-not-allowed disabled:opacity-40";
+
+const OVERVIEW_MIX_STORAGE_KEY = "fumestory.overviewMixMode";
+
+type OverviewMixMode = "formula" | "materials";
 
 export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
 	head: () => ({
@@ -84,6 +90,49 @@ function formatWeightGrams(v: number): string {
 function normalizeComment(value: string): string | null {
 	const trimmed = value.trim();
 	return trimmed === "" ? null : trimmed;
+}
+
+function OverviewMixTabs({
+	mode,
+	onChange,
+}: {
+	mode: OverviewMixMode;
+	onChange: (mode: OverviewMixMode) => void;
+}) {
+	const tabClass = (active: boolean) =>
+		[
+			"rounded-[0.2rem] px-2.5 py-1 text-xs font-medium transition-colors",
+			active
+				? "bg-[#243044] text-white border border-[#f0f4fa]/40"
+				: "text-slate-400 hover:text-slate-200 border border-transparent",
+		].join(" ");
+
+	return (
+		<div
+			className="inline-flex items-center gap-0.5 rounded-[0.25rem] border border-[#d8e3f0]/25 bg-[#0b172d] p-0.5"
+			role="tablist"
+			aria-label="Overview mix mode"
+		>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={mode === "formula"}
+				className={tabClass(mode === "formula")}
+				onClick={() => onChange("formula")}
+			>
+				Formula
+			</button>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={mode === "materials"}
+				className={tabClass(mode === "materials")}
+				onClick={() => onChange("materials")}
+			>
+				Materials
+			</button>
+		</div>
+	);
 }
 
 function FormulaCommentCard({
@@ -310,6 +359,21 @@ function CompositionDetail() {
 	const { compositionId } = Route.useParams();
 	const [payload, setPayload] = useState<ApiResponse["data"] | null>(null);
 	const [err, setErr] = useState<string | null>(null);
+	const [overviewMode, setOverviewMode] = useState<OverviewMixMode>("formula");
+	const [overviewModeReady, setOverviewModeReady] = useState(false);
+
+	useEffect(() => {
+		const stored = window.localStorage.getItem(OVERVIEW_MIX_STORAGE_KEY);
+		if (stored === "formula" || stored === "materials") {
+			setOverviewMode(stored);
+		}
+		setOverviewModeReady(true);
+	}, []);
+
+	useEffect(() => {
+		if (!overviewModeReady) return;
+		window.localStorage.setItem(OVERVIEW_MIX_STORAGE_KEY, overviewMode);
+	}, [overviewMode, overviewModeReady]);
 
 	const columnDefs = useMemo<ColDef<FormulaLine>[]>(
 		() => [
@@ -473,8 +537,14 @@ function CompositionDetail() {
 										(sum, l) => sum + (l.weight_grams || 0),
 										0,
 									);
-									const noteTotals = aggregateNoteTypePercents(lines);
-									const familySlices = aggregateFamilyPercents(lines);
+									const noteTotals =
+										overviewMode === "materials"
+											? aggregateNoteTypeByCount(lines)
+											: aggregateNoteTypePercents(lines);
+									const familySlices =
+										overviewMode === "materials"
+											? aggregateFamilyByCount(lines)
+											: aggregateFamilyPercents(lines);
 									const pinnedBottomRowData: FormulaLine[] = [
 										{
 											dilution_id: -1,
@@ -516,9 +586,15 @@ function CompositionDetail() {
 													</div>
 													<div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
 														<div className="flex flex-col rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3 md:col-span-7">
-															<p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
-																Overview
-															</p>
+															<div className="mb-3 flex items-center justify-between gap-2">
+																<p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+																	Overview
+																</p>
+																<OverviewMixTabs
+																	mode={overviewMode}
+																	onChange={setOverviewMode}
+																/>
+															</div>
 															<div className="flex flex-1 flex-wrap items-center justify-center gap-12">
 																<NotePyramidOverview totals={noteTotals} />
 																<FamilyPieOverview slices={familySlices} />

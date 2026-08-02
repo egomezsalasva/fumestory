@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { toTitleCaseWords } from "@/utils/display-names";
 
 export type FamilySlice = {
@@ -31,6 +32,20 @@ export function aggregateFamilyPercents(lines: LineLike[]): FamilySlice[] {
 	return [...byName.entries()]
 		.map(([name, percentage]) => ({ name, percentage }))
 		.filter((s) => s.percentage > 0)
+		.sort((a, b) => b.percentage - a.percentage);
+}
+
+/** Materials mode: share of ingredient lines per family (count / total lines). */
+export function aggregateFamilyByCount(lines: LineLike[]): FamilySlice[] {
+	const n = lines.length;
+	if (n === 0) return [];
+	const byName = new Map<string, number>();
+	for (const line of lines) {
+		const key = line.category_name?.trim() || "Unknown";
+		byName.set(key, (byName.get(key) ?? 0) + 1);
+	}
+	return [...byName.entries()]
+		.map(([name, count]) => ({ name, percentage: (count / n) * 100 }))
 		.sort((a, b) => b.percentage - a.percentage);
 }
 
@@ -76,6 +91,7 @@ export function FamilyPieOverview({ slices, className }: Props) {
 	const cy = 60;
 	const r = 52;
 	let angle = 0;
+	const [hovered, setHovered] = useState<string | null>(null);
 
 	const paths =
 		slices.length === 0
@@ -117,33 +133,50 @@ export function FamilyPieOverview({ slices, className }: Props) {
 						stroke="rgb(71 85 105)"
 					/>
 				) : (
-					paths.map((p) => (
-						<path
-							key={p.name}
-							d={p.d}
-							fill={p.color}
-							stroke="rgb(15 23 42)"
-							strokeWidth="1"
-							opacity={0.5}
-						/>
-					))
+					paths.map((p) => {
+						const opacity =
+							hovered === null ? 0.5 : hovered === p.name ? 1 : 0.5;
+						return (
+							<path
+								key={p.name}
+								d={p.d}
+								fill={p.color}
+								stroke="rgb(15 23 42)"
+								strokeWidth="1"
+								opacity={opacity}
+								className="cursor-pointer"
+								onMouseEnter={() => setHovered(p.name)}
+								onMouseLeave={() => setHovered(null)}
+							/>
+						);
+					})
 				)}
 			</svg>
 			<ul className="space-y-0.5 text-xs leading-tight text-slate-300">
-				{slices.map((s, i) => (
-					<li key={s.name} className="flex items-center gap-1.5">
-						<span
-							className="inline-block h-2 w-2 shrink-0 rounded-sm"
-							style={{
-								backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length],
-							}}
-						/>
-						<span className="min-w-0 truncate">{toTitleCaseWords(s.name)}</span>
-						<span className="tabular-nums text-slate-400">
-							{formatPct(s.percentage)}
-						</span>
-					</li>
-				))}
+				{slices.map((s, i) => {
+					const legendOpacity =
+						hovered === null || hovered === s.name ? 1 : 0.35;
+					return (
+						<li
+							key={s.name}
+							className="flex items-center gap-1.5 transition-opacity"
+							style={{ opacity: legendOpacity }}
+						>
+							<span
+								className="inline-block h-2 w-2 shrink-0 rounded-sm"
+								style={{
+									backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length],
+								}}
+							/>
+							<span className="min-w-0 truncate">
+								{toTitleCaseWords(s.name)}
+							</span>
+							<span className="tabular-nums text-slate-400">
+								{formatPct(s.percentage)}
+							</span>
+						</li>
+					);
+				})}
 			</ul>
 		</div>
 	);
