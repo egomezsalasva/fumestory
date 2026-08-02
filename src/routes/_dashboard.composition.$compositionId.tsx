@@ -4,6 +4,7 @@ import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { NotePyramidIcon } from "@/components/NotePyramidIcon";
 import styles from "@/components/Form.module.css";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -22,6 +23,7 @@ type FormulaLine = {
 	dilution_id: number;
 	material_label: string | null;
 	material_name: string;
+	note_type: string | null;
 	percentage: number;
 	weight_grams: number;
 };
@@ -45,6 +47,12 @@ type ApiResponse = {
 		};
 		formulas: FormulaRow[];
 	};
+};
+
+const NOTE_TYPE_SORT_ORDER: Record<string, number> = {
+	High: 0,
+	"Mid(Heart)": 1,
+	Base: 2,
 };
 
 const gridStyles = `
@@ -76,17 +84,36 @@ function CompositionDetail() {
 
 	const columnDefs = useMemo<ColDef<FormulaLine>[]>(
 		() => [
-			// {
-			// 	field: "material_label",
-			// 	headerName: "Label",
-			// 	width: 110,
-			// 	valueFormatter: (params) => params.value ?? "—",
-			// },
 			{
 				field: "material_name",
 				headerName: "Material",
 				flex: 1,
 				minWidth: 220,
+			},
+			{
+				field: "note_type",
+				headerName: "Note",
+				width: 72,
+				sortable: true,
+				comparator: (
+					a: string | null | undefined,
+					b: string | null | undefined,
+				) => {
+					const av =
+						a != null && a in NOTE_TYPE_SORT_ORDER
+							? NOTE_TYPE_SORT_ORDER[a]
+							: 99;
+					const bv =
+						b != null && b in NOTE_TYPE_SORT_ORDER
+							? NOTE_TYPE_SORT_ORDER[b]
+							: 99;
+					return av - bv;
+				},
+				cellRenderer: (params: { value?: string | null }) => (
+					<div className="flex h-full items-center justify-center">
+						<NotePyramidIcon noteType={params.value} />
+					</div>
+				),
 			},
 			{
 				field: "percentage",
@@ -196,7 +223,7 @@ function CompositionDetail() {
 														rowData={lines}
 														columnDefs={columnDefs}
 														getRowId={(p) =>
-															"${f.id}-${String(p.data?.dilution_id)}"
+															`${f.id}-${String(p.data?.dilution_id)}`
 														}
 														domLayout="autoHeight"
 														theme="legacy"

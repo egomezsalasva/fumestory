@@ -100,6 +100,11 @@ Depends on: Composition note pyramid
 - [ ] Add control in project/user settings UI (same pattern as column toggles)
 - File: `user-settings.ts` + `_dashboard.composition.$compositionId.tsx`
 
+### Codex Security CLI (optional)
+- [ ] Trial local scan: `npx @openai/codex-security scan .`
+- [ ] Review findings (auth, API routes, RLS, env)
+- Later: CI advisory job with `OPENAI_API_KEY` (severity-only first)
+
 ## Done (recent)
 
 - Academy rename (routes, settings key `academy_enabled`, migration 014)
