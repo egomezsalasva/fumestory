@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
 	AllCommunityModule,
@@ -22,6 +22,11 @@ import styles from "@/components/Form.module.css";
 import { toTitleCaseWords } from "@/utils/display-names";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
+
+const COMMENT_MAX_LENGTH = 2000;
+
+const COMMENT_ACTION_BTN =
+	"inline-flex shrink-0 items-center justify-center whitespace-nowrap px-2.5 py-1 rounded-[0.25rem] bg-[#0b172d] text-white font-medium border border-[#d8e3f0] shadow-sm shadow-black/40 hover:bg-[#243044] hover:border-[#f0f4fa] transition-colors text-xs disabled:cursor-not-allowed disabled:opacity-40";
 
 export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
 	head: () => ({
@@ -48,6 +53,7 @@ type FormulaRow = {
 	composition_id: number;
 	mods: string;
 	created_at: string;
+	comment: string | null;
 	lines?: FormulaLine[];
 };
 
@@ -73,6 +79,198 @@ const NOTE_TYPE_SORT_ORDER: Record<string, number> = {
 function formatWeightGrams(v: number): string {
 	if (!Number.isFinite(v)) return "";
 	return Number(v.toFixed(4)).toString();
+}
+
+function normalizeComment(value: string): string | null {
+	const trimmed = value.trim();
+	return trimmed === "" ? null : trimmed;
+}
+
+function FormulaCommentCard({
+	compositionId,
+	formulaId,
+	initialComment,
+	onSaved,
+}: {
+	compositionId: string;
+	formulaId: number;
+	initialComment: string | null;
+	onSaved: (comment: string | null) => void;
+}) {
+	const [value, setValue] = useState(initialComment ?? "");
+	const [editing, setEditing] = useState(false);
+	const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">(
+		"idle",
+	);
+	const [error, setError] = useState<string | null>(null);
+	const lastSavedRef = useRef(normalizeComment(initialComment ?? ""));
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		const next = initialComment ?? "";
+		setValue(next);
+		lastSavedRef.current = normalizeComment(next);
+		setEditing(false);
+		setStatus("idle");
+		setError(null);
+	}, [formulaId, initialComment]);
+
+	useEffect(() => {
+		if (!editing) return;
+		const el = textareaRef.current;
+		if (!el) return;
+		el.focus();
+		const len = el.value.length;
+		el.setSelectionRange(len, len);
+	}, [editing]);
+
+	const save = async () => {
+		const next = normalizeComment(value);
+		if (next === lastSavedRef.current) {
+			setEditing(false);
+			setStatus("idle");
+			return;
+		}
+
+		setStatus("saving");
+		setError(null);
+		try {
+			const res = await authedFetch(`/api/compositions/${compositionId}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ formula_id: formulaId, comment: next }),
+			});
+			const text = await res.text();
+			let json: unknown;
+			try {
+				json = JSON.parse(text) as
+					| { success: true; data: { comment: string | null } }
+					| { error?: string };
+			} catch {
+				throw new Error(
+					res.ok
+						? "Unexpected response from server"
+						: `Save failed (${res.status})`,
+				);
+			}
+			if (!res.ok) {
+				const errMsg =
+					typeof json === "object" &&
+					json &&
+					"error" in json &&
+					typeof (json as { error?: unknown }).error === "string"
+						? (json as { error: string }).error
+						: res.statusText;
+				throw new Error(errMsg);
+			}
+			const saved =
+				typeof json === "object" &&
+				json &&
+				"data" in json &&
+				(json as { data?: { comment?: string | null } }).data
+					? ((json as { data: { comment: string | null } }).data.comment ??
+						next)
+					: next;
+			lastSavedRef.current = saved;
+			setValue(saved ?? "");
+			onSaved(saved);
+			setStatus("saved");
+			setEditing(false);
+		} catch (e: unknown) {
+			setStatus("error");
+			setError(e instanceof Error ? e.message : "Failed to save");
+		}
+	};
+
+	const cancelEdit = () => {
+		setValue(lastSavedRef.current ?? "");
+		setEditing(false);
+		setStatus("idle");
+		setError(null);
+	};
+
+	const hasComment = Boolean(normalizeComment(lastSavedRef.current ?? ""));
+	const dirty = normalizeComment(value) !== lastSavedRef.current;
+
+	return (
+		<div className="flex h-full min-h-[10rem] flex-col rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3 md:col-span-5">
+			<div className="mb-3 flex items-center justify-between gap-2">
+				<p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+					Comment
+				</p>
+				{!editing ? (
+					<button
+						type="button"
+						onClick={() => setEditing(true)}
+						className={COMMENT_ACTION_BTN}
+					>
+						{hasComment ? "Edit" : "Add comment"}
+					</button>
+				) : (
+					<div className="flex items-center gap-2">
+						<span className="text-[11px] tabular-nums text-slate-500">
+							{value.length}/{COMMENT_MAX_LENGTH}
+						</span>
+						<button
+							type="button"
+							onClick={() => {
+								void save();
+							}}
+							disabled={status === "saving" || !dirty}
+							title="Save comment"
+							aria-label="Save comment"
+							className={`${COMMENT_ACTION_BTN} h-[26px] w-[26px] !px-0`}
+						>
+							✓
+						</button>
+						<button
+							type="button"
+							onClick={cancelEdit}
+							disabled={status === "saving"}
+							title="Cancel"
+							aria-label="Cancel"
+							className={`${COMMENT_ACTION_BTN} h-[26px] w-[26px] !px-0`}
+						>
+							×
+						</button>
+					</div>
+				)}
+			</div>
+
+			{editing ? (
+				<textarea
+					ref={textareaRef}
+					value={value}
+					maxLength={COMMENT_MAX_LENGTH}
+					onChange={(e) => {
+						setValue(e.target.value);
+						if (status === "saved" || status === "error") setStatus("idle");
+					}}
+					placeholder="What to change on the next mod…"
+					rows={6}
+					className="min-h-0 w-full flex-1 resize-y rounded-md border border-slate-600 bg-slate-950/50 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:border-slate-400 focus:outline-none"
+				/>
+			) : (
+				<div className="min-h-[8rem] flex-1 text-sm leading-relaxed whitespace-pre-wrap text-slate-300">
+					{hasComment ? (
+						lastSavedRef.current
+					) : (
+						<span className="text-slate-500">
+							What to change on the next mod…
+						</span>
+					)}
+				</div>
+			)}
+
+			<p className="mt-2 min-h-[1rem] text-[11px] text-slate-500">
+				{status === "saving" && "Saving…"}
+				{status === "saved" && "Saved"}
+				{status === "error" && (
+					<span className="text-red-400">{error ?? "Failed to save"}</span>
+				)}
+			</p>
+		</div>
+	);
 }
 
 const gridStyles = `
@@ -223,6 +421,18 @@ function CompositionDetail() {
 		};
 	}, [compositionId]);
 
+	const handleCommentSaved = (formulaId: number, comment: string | null) => {
+		setPayload((prev) => {
+			if (!prev) return prev;
+			return {
+				...prev,
+				formulas: prev.formulas.map((f) =>
+					f.id === formulaId ? { ...f, comment } : f,
+				),
+			};
+		});
+	};
+
 	return (
 		<>
 			<style>{gridStyles}</style>
@@ -233,13 +443,13 @@ function CompositionDetail() {
 				{err && <p className="mt-4 text-red-400">{err}</p>}
 				{!payload && !err && <p className="mt-4 text-slate-400">Loading…</p>}
 				{payload && (
-					<div className="max-w-3xl mx-auto">
+					<div className="mx-auto max-w-5xl">
 						<div className="mt-4 flex items-start justify-between gap-4">
-							<div className="flex-1 min-w-0">
-								<h1 className="text-2xl font-bold break-words">
+							<div className="min-w-0 flex-1">
+								<h1 className="break-words text-2xl font-bold">
 									{payload.composition.name}
 								</h1>
-								<p className="text-slate-400 capitalize">
+								<p className="capitalize text-slate-400">
 									{payload.composition.type}
 								</p>
 							</div>
@@ -278,11 +488,11 @@ function CompositionDetail() {
 									];
 									return (
 										<section key={f.id} className="mt-8">
-											<h2 className="text-lg font-semibold text-white mb-3">
+											<h2 className="mb-3 text-lg font-semibold text-white">
 												Formula (Mod) #{f.mods}
 											</h2>
 											{lines.length === 0 ? (
-												<p className="text-slate-400 text-sm">
+												<p className="text-sm text-slate-400">
 													No ingredient lines.
 												</p>
 											) : (
@@ -304,14 +514,24 @@ function CompositionDetail() {
 															theme="legacy"
 														/>
 													</div>
-													<div className="mt-4 rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3">
-														<p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
-															Overview
-														</p>
-														<div className="flex flex-wrap items-center justify-center gap-8">
-															<NotePyramidOverview totals={noteTotals} />
-															<FamilyPieOverview slices={familySlices} />
+													<div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
+														<div className="flex flex-col rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3 md:col-span-7">
+															<p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+																Overview
+															</p>
+															<div className="flex flex-1 flex-wrap items-center justify-center gap-12">
+																<NotePyramidOverview totals={noteTotals} />
+																<FamilyPieOverview slices={familySlices} />
+															</div>
 														</div>
+														<FormulaCommentCard
+															compositionId={String(compositionId)}
+															formulaId={f.id}
+															initialComment={f.comment}
+															onSaved={(comment) =>
+																handleCommentSaved(f.id, comment)
+															}
+														/>
 													</div>
 												</>
 											)}
