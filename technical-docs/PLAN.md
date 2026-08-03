@@ -4,29 +4,13 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Now
 
-### Olfactory family — curated + optional subcategories
-- Model (done in DB 016/017): same `categories` table
-  - `kind`: `curated` | `other`
-  - `parent_id`: NULL = family; set = subcategory (max 2 levels)
-  - `owner_id`: NULL for curated; set for user other
-- Colors: client defaults + `user_settings` JSONB (no color column)
-- Curated families: Animalic, Musk, Leather, Smoky, Woody, Earthy, Amber,
-  Resinous / Balsamic, Spices, Floral, Green, Herbal, Citrus,
-  Fruity, Aldehydic, Marine / Ozonic, Gourmand, Sulfurous
-- Subs today: resinous / balsamic → balsamic, resinous (later: Spices cool/warm, Earthy mossy)
-- RM: single `category_id` (leaf); pie rolls up via parent — no `subcategory_id`
-- Freeform other stays personal (no auto-merge into curated)
-- [ ] RLS on `categories` (018): SELECT curated OR own other; INSERT/UPDATE/DELETE own other only
-- [ ] Categories API: `set_config` + return curated (+ own other); create only `other` with owner
-- [ ] UI: pick family (curated or other); optional curated sub when family has subs
-
-## Next
-
 ### Formula UI rounding (derived field only)
 - [ ] Weight mode: round derived `%` (near-int snap + max 2 dp; e.g. 2.999→3, 2.998→2.99)
 - [ ] Percent mode: round derived weight to 4 dp (`0.0001g`)
 - [ ] Do not round the field currently being edited
 - Files: `useFormulaIngredients.tsx` (+ optional `formulaRounding.ts`)
+
+## Next
 
 ### Persist per-mod formula table sort
 - [ ] Save AgGrid sort state per composition + formula (mod) id
@@ -84,6 +68,10 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Later / ideas
 
+### Olfactory family — optional follow-ups
+- Optional curated sub picker when family has subs (e.g. balsamic / resinous)
+- Later subs: Spices cool/warm, Earthy mossy
+
 ### Formula % bar scale (settings option)
 - [ ] User setting: bar fill mode on composition formula grid
   - `absolute` — full track = 100% of formula (default)
@@ -96,6 +84,14 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - [ ] Trial local scan: `npx @openai/codex-security scan .`
 - [ ] Review findings (auth, API routes, RLS, env)
 - Later: CI advisory job with `OPENAI_API_KEY` (advisory-only first)
+
+## Done
+
+### Olfactory family — curated + other (016–018)
+- Model: `categories.kind` / `parent_id` / `owner_id`; colors via client defaults + `user_settings.category_colors`
+- Seed: 18 curated families; subs under resinous / balsamic
+- API: curated parents list; create `other` only; `set_config` + RLS (018)
+- UI: inventory/composition family tint + pie rollup; add-material select curated or Other (name + color)
 
 ## Related docs
 
