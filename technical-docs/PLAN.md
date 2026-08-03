@@ -4,14 +4,21 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Now
 
-### Overview mix mode (formula % vs material count)
-- [ ] Control next to “Overview” title: Formula | Materials
-- Formula (current): Top/Mid/Base and family pie from formula `%`
-- Materials: share by ingredient count
-  - e.g. 3 of 10 lines are Top → Top = 30%
-  - same for olfactory family (count per category / total lines)
-- [ ] Persist choice (localStorage or user setting)
-- Files: `NotePyramidOverview.tsx`, `FamilyPieOverview.tsx`, `_dashboard.composition.$compositionId.tsx`
+### Olfactory family — curated + optional subcategories
+- Model (done in DB 016/017): same `categories` table
+  - `kind`: `curated` | `other`
+  - `parent_id`: NULL = family; set = subcategory (max 2 levels)
+  - `owner_id`: NULL for curated; set for user other
+- Colors: client defaults + `user_settings` JSONB (no color column)
+- Curated families: Animalic, Musk, Leather, Smoky, Woody, Earthy, Amber,
+  Resinous / Balsamic, Spices, Floral, Green, Herbal, Citrus,
+  Fruity, Aldehydic, Marine / Ozonic, Gourmand, Sulfurous
+- Subs today: resinous / balsamic → balsamic, resinous (later: Spices cool/warm, Earthy mossy)
+- RM: single `category_id` (leaf); pie rolls up via parent — no `subcategory_id`
+- Freeform other stays personal (no auto-merge into curated)
+- [ ] RLS on `categories` (018): SELECT curated OR own other; INSERT/UPDATE/DELETE own other only
+- [ ] Categories API: `set_config` + return curated (+ own other); create only `other` with owner
+- [ ] UI: pick family (curated or other); optional curated sub when family has subs
 
 ## Next
 
@@ -26,18 +33,6 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - [ ] Restore on grid ready; default = Formula % desc when unset
 - [ ] Prefer localStorage (device-local); consider user_settings later if cross-device needed
 - File: `_dashboard.composition.$compositionId.tsx`
-
-### Mods table — pyramid column
-- [ ] Compact cell renderer (mini bands / fill) using same High / Mid / Base totals helper
-- [ ] Wire into mods table column defs
-- Confirm which table: composition-detail mods overview vs `/compositions` list (latest mod)
-
-### Per-mod notes
-- [ ] Add nullable `mod_notes` (or `formula_notes`) on `formulas`
-- [ ] Expose + update via composition/formula APIs
-- [ ] Notes card beside Overview on `/composition/:id` (half-width layout)
-- Optional: set notes when creating a formula on add-formula
-- UI label: "Notes" — freeform mod notes, not material olfactory notes
 
 ### Compositions list — status tabs
 - [ ] Add status on `compositions`: `wip` | `finished` | `archived` (default `wip`)
@@ -62,10 +57,30 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - [ ] Best only allowed on `active` mods (not discarded)
 
 ### Collapsible mod overview (persisted)
-- [ ] Overview panel (pyramid + family pie ± notes) collapsible under each mod
+- [ ] Overview panel (pyramid + family pie ± comment) collapsible under each mod
 - [ ] Ingredients grid stays outside that panel
 - [ ] Persist open/closed per composition + formula id (localStorage)
 - [ ] Default: expanded
+
+### Olfactory notes — curated vs other
+- Extend `notes` (same table, not two):
+  - `kind`: `curated` | `other`
+  - `color`: required for curated, NULL for other
+  - `owner_id`: NULL for curated; set for user-created other
+- UI: pick from curated list (with color); freeform creates `other` (no color / neutral swatch)
+- Per-user color overrides: JSONB on `user_settings` (e.g. `note_colors: { "<noteId>": "#aabbcc" }`)
+  - Resolve: `override ?? notes.color` — do not mutate shared curated rows
+- Keep one FK for feedback / raw_material notes joins
+- Autocomplete curated first; if the user types a non-curated name, store as `other` (personal choice — do not auto-merge aliases like musky → musk)
+- Curated list stays the maintainable shared vocabulary (colors, cleanup, dedupe)
+
+### Curated raw materials — search modal (then maybe autocomplete)
+- On add raw material: magnifying-glass button next to name opens curated search dialog
+- Selecting a result is one curated pick: fills name + CAS (and related defaults) together
+- Editing name or CAS after clears the curated link (custom / unlinked) — no dual name/CAS curated matching
+- Manual typing stays valid without using Search
+- Three clear entry modes for UX/onboarding: Manual | Search (curated) | Materials agent
+- Later: optional inline autocomplete on top of the same single-pick model
 
 ## Later / ideas
 
