@@ -11,11 +11,17 @@ import { RawMaterial } from "./api.raw-materials";
 import { authedFetch } from "@/utils/authed-fetch";
 import {
 	USER_SETTINGS_UPDATED_EVENT,
+	type CategoryColorsJson,
 	type UserSettingsEffective,
 } from "@/utils/user-settings";
 import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { toTitleCaseWords } from "@/utils/display-names";
+import {
+	hexToRgba,
+	resolveCategoryColor,
+} from "@/utils/curated-category-colors";
+import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -63,6 +69,7 @@ function App() {
 		showInventoryAvailableDilutionsColumn,
 		setShowInventoryAvailableDilutionsColumn,
 	] = useState<boolean | null>(null);
+	const [categoryColors, setCategoryColors] = useState<CategoryColorsJson>({});
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -101,6 +108,7 @@ function App() {
 					setShowInventoryAvailableDilutionsColumn(
 						json.data.inventory_columns.available_dilutions,
 					);
+					setCategoryColors(json.data.category_colors ?? {});
 				} else {
 					setGuestFeedbackEnabled(false);
 					setGuestFeedbackAggregateNote(true);
@@ -112,6 +120,7 @@ function App() {
 					setShowInventoryNoteTypeColumn(true);
 					setShowInventoryNotesDisplayColumn(true);
 					setShowInventoryAvailableDilutionsColumn(true);
+					setCategoryColors({});
 				}
 			})
 			.catch(() => {
@@ -125,6 +134,7 @@ function App() {
 				setShowInventoryNoteTypeColumn(true);
 				setShowInventoryNotesDisplayColumn(true);
 				setShowInventoryAvailableDilutionsColumn(true);
+				setCategoryColors({});
 			});
 	}, []);
 
@@ -185,11 +195,19 @@ function App() {
 		const categoryNameCol: ColDef<RawMaterial> = {
 			field: "category_name",
 			headerName: "Category",
-			width: 100,
+			width: 140,
+			filter: "agTextColumnFilter",
 			valueFormatter: (params: ValueFormatterParams<RawMaterial, string>) =>
-				params.value ? toTitleCaseWords(params.value) : "",
+				params.value ? toTitleCaseWords(params.value) : "—",
+			cellStyle: (params) => {
+				const raw = params.data?.category_name?.trim();
+				if (!raw) return undefined;
+				const color = resolveCategoryColor(raw, categoryColors);
+				return {
+					backgroundColor: hexToRgba(color, 0.2),
+				};
+			},
 		};
-
 		const noteTypeCol: ColDef<RawMaterial> = {
 			field: "note_type",
 			headerName: "Note Type",
@@ -199,9 +217,8 @@ function App() {
 		const nameCol: ColDef<RawMaterial> = {
 			field: "name",
 			headerName: "Name",
-			...(showInventoryNotesDisplayColumn === false
-				? { flex: 1, minWidth: 160 }
-				: { width: 160 }),
+			flex: 1,
+			minWidth: 100,
 		};
 
 		const notesDisplayCol: ColDef<RawMaterial> = {
@@ -210,10 +227,8 @@ function App() {
 			headerName: includeGuestFeedbackInNotes
 				? "Notes (* = from friend feedback only)"
 				: "Notes",
-			flex: 1,
-			wrapText: true,
+			width: 160,
 			autoHeight: true,
-			cellClass: "notes-cell",
 			filter: "agTextColumnFilter",
 			valueGetter: (p: { data?: RawMaterial }) => {
 				if (!includeGuestFeedbackInNotes) {
@@ -233,15 +248,22 @@ function App() {
 					if (list.length === 0)
 						return <span className="text-slate-500">—</span>;
 					return (
-						<div className="flex flex-wrap gap-1 py-1.5">
-							{list.map((note) => (
-								<span
-									key={note}
-									className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[0.7rem] text-white bg-transparent border border-white/40"
-								>
-									{toTitleCaseWords(note)}
-								</span>
-							))}
+						<div className="encyclopedia-list-cell">
+							{list.map((note) => {
+								const dotStyle = getNoteDotStyle(note);
+								return (
+									<div key={note} className="encyclopedia-note-item">
+										{dotStyle ? (
+											<span
+												className="encyclopedia-note-dot"
+												style={{ background: dotStyle }}
+												aria-hidden="true"
+											/>
+										) : null}
+										<span>{toTitleCaseWords(note)}</span>
+									</div>
+								);
+							})}
 						</div>
 					);
 				}
@@ -268,24 +290,30 @@ function App() {
 					!originalNotes?.some((o) => o.toLowerCase() === n.toLowerCase());
 
 				return (
-					<div className="flex flex-wrap gap-2 py-2">
+					<div className="encyclopedia-list-cell">
 						{entries
 							.sort(([, a], [, b]) => b - a)
-							.map(([note, count]) => (
-								<span
-									key={note}
-									className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-xs text-white bg-transparent"
-									style={{
-										borderWidth: "1px",
-										borderStyle: "solid",
-										borderColor: color(count),
-									}}
-								>
-									{toTitleCaseWords(note)}
-									{isFeedbackOnly(note) && "*"}
-									{count > 1 && <span className="font-semibold">×{count}</span>}
-								</span>
-							))}
+							.map(([note, count]) => {
+								const dotStyle = getNoteDotStyle(note);
+								return (
+									<div key={note} className="encyclopedia-note-item">
+										{dotStyle ? (
+											<span
+												className="encyclopedia-note-dot"
+												style={{ background: dotStyle }}
+												aria-hidden="true"
+											/>
+										) : null}
+										<span style={{ color: color(count) }}>
+											{toTitleCaseWords(note)}
+											{isFeedbackOnly(note) ? "*" : ""}
+											{count > 1 ? (
+												<span className="font-semibold"> ×{count}</span>
+											) : null}
+										</span>
+									</div>
+								);
+							})}
 					</div>
 				);
 			},
@@ -325,8 +353,8 @@ function App() {
 		if (showInventoryCasNumberColumn !== false) cols.push(casNumberCol);
 		if (showInventoryMaterialNatureColumn !== false)
 			cols.push(materialNatureCol);
-		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
 		if (showInventoryNoteTypeColumn !== false) cols.push(noteTypeCol);
+		if (showInventoryCategoryNameColumn !== false) cols.push(categoryNameCol);
 		if (showInventoryNotesDisplayColumn !== false) cols.push(notesDisplayCol);
 		if (showInventoryAvailableDilutionsColumn !== false)
 			cols.push(dilutionsCol);
@@ -334,6 +362,7 @@ function App() {
 	}, [
 		includeGuestFeedbackInNotes,
 		guestFeedbackAggregateNote,
+		categoryColors,
 		showInventoryLabelColumn,
 		showInventoryCasNumberColumn,
 		showInventoryMaterialNatureColumn,
@@ -363,7 +392,8 @@ function App() {
 						resizable: true,
 					}}
 					pagination={true}
-					paginationPageSize={20}
+					paginationPageSize={200}
+					paginationPageSizeSelector={[50, 100, 200, 500]}
 					theme="legacy"
 				/>
 			</div>

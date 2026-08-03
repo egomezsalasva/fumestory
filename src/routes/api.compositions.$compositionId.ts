@@ -67,12 +67,13 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
                             rm.label AS material_label,
                             (rm.name || ' (' || d.percentage || '%)') AS material_name,
                             rm.note_type,
-                            cat.name AS category_name
+                            COALESCE(parent.name, cat.name) AS category_name
                         FROM formula_dilutions fd
                         JOIN formulas f ON f.id = fd.formula_id
                         JOIN dilutions d ON d.id = fd.dilution_id
                         JOIN raw_materials rm ON rm.id = d.raw_material_id
                         LEFT JOIN categories cat ON cat.id = rm.category_id
+                        LEFT JOIN categories parent ON parent.id = cat.parent_id
                         WHERE f.composition_id = $1
                         ORDER BY f.id, fd.id
 					`;

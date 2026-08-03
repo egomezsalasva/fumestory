@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { toTitleCaseWords } from "@/utils/display-names";
+import { resolveCategoryColor } from "@/utils/curated-category-colors";
+import type { CategoryColorsJson } from "@/utils/user-settings";
 
 export type FamilySlice = {
 	name: string;
@@ -10,17 +12,6 @@ type LineLike = {
 	category_name: string | null;
 	percentage: number;
 };
-
-const SLICE_COLORS = [
-	"rgb(148 163 184)",
-	"rgb(125 211 252)",
-	"rgb(167 139 250)",
-	"rgb(252 211 77)",
-	"rgb(110 231 183)",
-	"rgb(251 146 60)",
-	"rgb(244 114 182)",
-	"rgb(94 234 212)",
-];
 
 export function aggregateFamilyPercents(lines: LineLike[]): FamilySlice[] {
 	const byName = new Map<string, number>();
@@ -82,11 +73,16 @@ function describeSlice(
 
 type Props = {
 	slices: FamilySlice[];
+	categoryColors?: CategoryColorsJson;
 	className?: string;
 };
 
 /** Pie of formula % by olfactory family (primary category). */
-export function FamilyPieOverview({ slices, className }: Props) {
+export function FamilyPieOverview({
+	slices,
+	categoryColors,
+	className,
+}: Props) {
 	const cx = 60;
 	const cy = 60;
 	const r = 52;
@@ -96,22 +92,23 @@ export function FamilyPieOverview({ slices, className }: Props) {
 	const paths =
 		slices.length === 0
 			? []
-			: slices.map((slice, i) => {
+			: slices.map((slice) => {
 					const sweep = (slice.percentage / 100) * 360;
 					const start = angle;
 					const end = angle + sweep;
 					angle = end;
+					const color = resolveCategoryColor(slice.name, categoryColors);
 					if (slices.length === 1 && slice.percentage >= 99.9) {
 						return {
 							...slice,
 							d: `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - 0.01} ${cy - r} Z`,
-							color: SLICE_COLORS[i % SLICE_COLORS.length],
+							color,
 						};
 					}
 					return {
 						...slice,
 						d: describeSlice(cx, cy, r, start, end),
-						color: SLICE_COLORS[i % SLICE_COLORS.length],
+						color,
 					};
 				});
 
@@ -153,9 +150,10 @@ export function FamilyPieOverview({ slices, className }: Props) {
 				)}
 			</svg>
 			<ul className="space-y-0.5 text-xs leading-tight text-slate-300">
-				{slices.map((s, i) => {
+				{slices.map((s) => {
 					const legendOpacity =
 						hovered === null || hovered === s.name ? 1 : 0.35;
+					const color = resolveCategoryColor(s.name, categoryColors);
 					return (
 						<li
 							key={s.name}
@@ -164,9 +162,7 @@ export function FamilyPieOverview({ slices, className }: Props) {
 						>
 							<span
 								className="inline-block h-2 w-2 shrink-0 rounded-sm"
-								style={{
-									backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length],
-								}}
+								style={{ backgroundColor: color }}
 							/>
 							<span className="min-w-0 truncate">
 								{toTitleCaseWords(s.name)}

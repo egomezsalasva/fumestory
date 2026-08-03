@@ -15,6 +15,7 @@ import styles from "@/components/Form.module.css";
 import SuccessMessage from "@/components/SuccessMessage";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
 import { nameFromAgentProposal, toTitleCaseWords } from "@/utils/display-names";
+import { NEUTRAL_CATEGORY_COLOR } from "@/utils/curated-category-colors";
 import {
 	findMaterialByName,
 	findMaterialByCas,
@@ -57,9 +58,13 @@ function AddRawMaterial() {
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
 	const [casNumber, setCasNumber] = useState("");
-	const [categorySearch, setCategorySearch] = useState("");
 	const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
 		null,
+	);
+	const [categoryIsOther, setCategoryIsOther] = useState(false);
+	const [otherCategoryName, setOtherCategoryName] = useState("");
+	const [otherCategoryColor, setOtherCategoryColor] = useState(
+		NEUTRAL_CATEGORY_COLOR,
 	);
 	const [noteType, setNoteType] = useState("");
 	const [notes, setNotes] = useState<string[]>([]);
@@ -259,8 +264,9 @@ function AddRawMaterial() {
 			const data = await response.json();
 			const suggested = proposal.suggestedCategory.trim().toLowerCase();
 			if (!response.ok || !data.success || !Array.isArray(data.data)) {
-				setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
+				setCategoryIsOther(true);
 				setSelectedCategoryId(null);
+				setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
 				setError(casError);
 				return;
 			}
@@ -273,15 +279,18 @@ function AddRawMaterial() {
 						suggested.includes(c.name.toLowerCase()),
 				);
 			if (match) {
+				setCategoryIsOther(false);
 				setSelectedCategoryId(match.id);
-				setCategorySearch(toTitleCaseWords(match.name));
+				setOtherCategoryName("");
 			} else {
-				setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
+				setCategoryIsOther(true);
 				setSelectedCategoryId(null);
+				setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
 			}
 		} catch {
-			setCategorySearch(toTitleCaseWords(proposal.suggestedCategory));
+			setCategoryIsOther(true);
 			setSelectedCategoryId(null);
+			setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
 		}
 
 		setError(casError);
@@ -309,7 +318,7 @@ function AddRawMaterial() {
 			return;
 		}
 
-		if (!selectedCategoryId) {
+		if (!selectedCategoryId && !(categoryIsOther && otherCategoryName.trim())) {
 			setError("Category is required");
 			return;
 		}
@@ -327,6 +336,33 @@ function AddRawMaterial() {
 		}
 
 		try {
+			let categoryId = selectedCategoryId;
+
+			if (categoryIsOther) {
+				const catResponse = await authedFetch("/api/categories", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ name: otherCategoryName.trim() }),
+				});
+				const catData = await catResponse.json();
+				if (!catResponse.ok || !catData.success) {
+					setError(catData.error || "Failed to create category");
+					return;
+				}
+				categoryId = catData.data.id as number;
+				setSelectedCategoryId(categoryId);
+
+				await authedFetch("/api/user-settings", {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						category_colors: {
+							[otherCategoryName.trim().toLowerCase()]: otherCategoryColor,
+						},
+					}),
+				});
+			}
+
 			const response = await authedFetch("/api/raw-materials", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -334,7 +370,7 @@ function AddRawMaterial() {
 					label: bottleLabelEnabled ? label.trim() || null : null,
 					name,
 					cas_number: normalizedCas,
-					category_id: selectedCategoryId,
+					category_id: categoryId,
 					note_type: noteType,
 					material_nature:
 						materialNatureEnabled && materialNature ? materialNature : null,
@@ -352,8 +388,10 @@ function AddRawMaterial() {
 			setName("");
 			setLabel("");
 			setCasNumber("");
-			setCategorySearch("");
 			setSelectedCategoryId(null);
+			setCategoryIsOther(false);
+			setOtherCategoryName("");
+			setOtherCategoryColor(NEUTRAL_CATEGORY_COLOR);
 			setNoteType("");
 			setMaterialNature("");
 			setNotes([]);
@@ -512,12 +550,29 @@ function AddRawMaterial() {
 
 							<CategoryAutocomplete
 								label="Primary Category"
-								value={categorySearch}
-								onSelect={(id, name) => {
+								categoryId={selectedCategoryId}
+								isOther={categoryIsOther}
+								otherName={otherCategoryName}
+								otherColor={otherCategoryColor}
+								onCuratedChange={(id) => {
+									setCategoryIsOther(false);
 									setSelectedCategoryId(id);
-									setCategorySearch(toTitleCaseWords(name));
+									setOtherCategoryName("");
 									setError("");
 								}}
+								onOtherSelected={() => {
+									setCategoryIsOther(true);
+									setSelectedCategoryId(null);
+									setError("");
+								}}
+								onOtherNameChange={setOtherCategoryName}
+								onOtherColorChange={setOtherCategoryColor}
+								onClear={() => {
+									setCategoryIsOther(false);
+									setSelectedCategoryId(null);
+									setOtherCategoryName("");
+								}}
+								required
 							/>
 
 							<NotesAutocomplete

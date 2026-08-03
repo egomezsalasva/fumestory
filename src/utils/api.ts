@@ -39,6 +39,10 @@ export function getUniqueViolationMessage(error: unknown): string | null {
 			return "Label already exists";
 		case "compositions_owner_name_uidx":
 			return "A composition with this name already exists";
+		case "categories_other_owner_name_uidx":
+			return "You already have a category with this name";
+		case "categories_curated_name_uidx":
+			return "That name is reserved for a curated family";
 		default:
 			return null;
 	}

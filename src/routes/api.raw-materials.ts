@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/raw-materials")({
 							rm.material_nature,
 							rm.category_id,
 							rm.cas_number,
-							c.name as category_name,
+							COALESCE(parent.name, c.name) AS category_name,
 							rm.note_type,
 							rm.created_at,
 							COALESCE(
@@ -90,11 +90,12 @@ export const Route = createFileRoute("/api/raw-materials")({
 							) as aggregated_note_counts
 						FROM raw_materials rm
 						LEFT JOIN categories c ON rm.category_id = c.id
+						LEFT JOIN categories parent ON parent.id = c.parent_id
 						LEFT JOIN raw_material_notes rmn ON rm.id = rmn.raw_material_id
 						LEFT JOIN notes n ON rmn.note_id = n.id
 						LEFT JOIN dilutions d ON rm.id = d.raw_material_id
 						WHERE rm.owner_id = $1
-						GROUP BY rm.id, rm.label, rm.name, rm.category_id, rm.cas_number, c.name, rm.note_type, rm.created_at, rm.material_nature
+						GROUP BY rm.id, rm.label, rm.name, rm.category_id, rm.cas_number, c.name, parent.name, rm.note_type, rm.created_at, rm.material_nature
 						ORDER BY rm.id DESC
 					`;
 					const txResults = await client.transaction((txn) => [

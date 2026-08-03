@@ -22,6 +22,14 @@ import {
 } from "@/components/FamilyPieOverview";
 import styles from "@/components/Form.module.css";
 import { toTitleCaseWords } from "@/utils/display-names";
+import {
+	resolveCategoryColor,
+	hexToRgba,
+} from "@/utils/curated-category-colors";
+import type {
+	CategoryColorsJson,
+	UserSettingsEffective,
+} from "@/utils/user-settings";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -361,6 +369,7 @@ function CompositionDetail() {
 	const [err, setErr] = useState<string | null>(null);
 	const [overviewMode, setOverviewMode] = useState<OverviewMixMode>("formula");
 	const [overviewModeReady, setOverviewModeReady] = useState(false);
+	const [categoryColors, setCategoryColors] = useState<CategoryColorsJson>({});
 
 	useEffect(() => {
 		const stored = window.localStorage.getItem(OVERVIEW_MIX_STORAGE_KEY);
@@ -374,6 +383,17 @@ function CompositionDetail() {
 		if (!overviewModeReady) return;
 		window.localStorage.setItem(OVERVIEW_MIX_STORAGE_KEY, overviewMode);
 	}, [overviewMode, overviewModeReady]);
+
+	useEffect(() => {
+		authedFetch("/api/user-settings")
+			.then((res) => res.json())
+			.then((json: { data?: UserSettingsEffective }) => {
+				setCategoryColors(json.data?.category_colors ?? {});
+			})
+			.catch(() => {
+				setCategoryColors({});
+			});
+	}, []);
 
 	const columnDefs = useMemo<ColDef<FormulaLine>[]>(
 		() => [
@@ -418,7 +438,16 @@ function CompositionDetail() {
 				width: 80,
 				valueFormatter: (params) => {
 					if (params.node?.rowPinned) return "";
-					return params.value ? toTitleCaseWords(params.value) : "—";
+					return params.value ? toTitleCaseWords(String(params.value)) : "—";
+				},
+				cellStyle: (params) => {
+					if (params.node?.rowPinned) return undefined;
+					const raw = params.data?.category_name?.trim();
+					if (!raw) return undefined;
+					const color = resolveCategoryColor(raw, categoryColors);
+					return {
+						backgroundColor: hexToRgba(color, 0.2),
+					};
 				},
 			},
 			{
@@ -460,7 +489,7 @@ function CompositionDetail() {
 				},
 			},
 		],
-		[],
+		[categoryColors],
 	);
 
 	useEffect(() => {
@@ -597,7 +626,10 @@ function CompositionDetail() {
 															</div>
 															<div className="flex flex-1 flex-wrap items-center justify-center gap-12">
 																<NotePyramidOverview totals={noteTotals} />
-																<FamilyPieOverview slices={familySlices} />
+																<FamilyPieOverview
+																	slices={familySlices}
+																	categoryColors={categoryColors}
+																/>
 															</div>
 														</div>
 														<FormulaCommentCard

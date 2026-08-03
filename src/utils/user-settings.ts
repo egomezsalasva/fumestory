@@ -30,11 +30,17 @@ export type CompositionsColumnsEffective = Record<
 	boolean
 >;
 
+/** name → #rrggbb (lowercase names). */
+export type CategoryColorsJson = Record<string, string>;
+
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
+
 export type UserSettingsJson = {
 	guest_feedback_enabled?: boolean;
 	guest_feedback_aggregate_note?: boolean;
 	inventory_columns?: InventoryColumnsJson;
 	compositions_columns?: CompositionsColumnsJson;
+	category_colors?: CategoryColorsJson;
 	bottle_label_enabled?: boolean;
 	composition_bottle_label_enabled?: boolean;
 	cas_number_enabled?: boolean;
@@ -52,6 +58,7 @@ export type UserSettingsEffective = {
 	guest_feedback_aggregate_note: boolean;
 	inventory_columns: InventoryColumnsEffective;
 	compositions_columns: CompositionsColumnsEffective;
+	category_colors: CategoryColorsJson;
 	bottle_label_enabled: boolean;
 	composition_bottle_label_enabled: boolean;
 	cas_number_enabled: boolean;
@@ -173,6 +180,20 @@ function parseCompositionsColumnsJson(
 	return Object.keys(out).length > 0 ? out : undefined;
 }
 
+function parseCategoryColorsJson(raw: unknown): CategoryColorsJson | undefined {
+	if (raw === null || raw === undefined) return undefined;
+	if (typeof raw !== "object" || Array.isArray(raw)) return undefined;
+	const o = raw as Record<string, unknown>;
+	const out: CategoryColorsJson = {};
+	for (const [name, color] of Object.entries(o)) {
+		if (typeof color !== "string" || !HEX_COLOR_RE.test(color)) continue;
+		const key = name.trim().toLowerCase();
+		if (!key) continue;
+		out[key] = color.toLowerCase();
+	}
+	return Object.keys(out).length > 0 ? out : undefined;
+}
+
 export function parseUserSettingsJson(
 	raw: UserSettingsJson | null | undefined,
 ): UserSettingsJson {
@@ -228,6 +249,10 @@ export function parseUserSettingsJson(
 	const compositionsCols = parseCompositionsColumnsJson(o.compositions_columns);
 	if (compositionsCols) {
 		out.compositions_columns = compositionsCols;
+	}
+	const categoryColors = parseCategoryColorsJson(o.category_colors);
+	if (categoryColors) {
+		out.category_colors = categoryColors;
 	}
 	return out;
 }
@@ -305,6 +330,7 @@ export function effectiveUserSettings(
 			guestOn && stored.guest_feedback_aggregate_note !== false,
 		inventory_columns,
 		compositions_columns,
+		category_colors: stored.category_colors ?? {},
 		bottle_label_enabled: bottleLabelOn,
 		composition_bottle_label_enabled: compositionBottleLabelOn,
 		cas_number_enabled: casOn,
@@ -372,6 +398,18 @@ export function mergeUserSettingsJson(
 			merged.compositions_columns = cleaned;
 		} else {
 			delete merged.compositions_columns;
+		}
+	}
+	if (patch.category_colors !== undefined && patch.category_colors !== null) {
+		const combined: CategoryColorsJson = {
+			...stored.category_colors,
+			...patch.category_colors,
+		};
+		const cleaned = parseCategoryColorsJson(combined);
+		if (cleaned) {
+			merged.category_colors = cleaned;
+		} else {
+			delete merged.category_colors;
 		}
 	}
 	if (

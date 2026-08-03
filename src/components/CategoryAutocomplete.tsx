@@ -1,6 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./Form.module.css";
+import { Select } from "@/components/Select";
 import { toTitleCaseWords } from "@/utils/display-names";
+import { authedFetch } from "@/utils/authed-fetch";
+import { NEUTRAL_CATEGORY_COLOR } from "@/utils/curated-category-colors";
+
+const OTHER_VALUE = "__other__";
 
 type Category = {
 	id: number;
@@ -9,23 +14,37 @@ type Category = {
 
 type CategoryAutocompleteProps = {
 	label: string;
-	value: string;
-	onSelect: (categoryId: number, categoryName: string) => void;
+	/** Curated category id, or null when Other / empty */
+	categoryId: number | null;
+	isOther: boolean;
+	otherName: string;
+	otherColor?: string;
+	onCuratedChange: (categoryId: number, categoryName: string) => void;
+	onOtherSelected: () => void;
+	onOtherNameChange: (name: string) => void;
+	onOtherColorChange?: (color: string) => void;
+	onClear?: () => void;
 	required?: boolean;
 };
 
 export function CategoryAutocomplete({
 	label,
-	value,
-	onSelect,
+	categoryId,
+	isOther,
+	otherName,
+	otherColor = NEUTRAL_CATEGORY_COLOR,
+	onCuratedChange,
+	onOtherSelected,
+	onOtherNameChange,
+	onOtherColorChange,
+	onClear,
 	required,
 }: CategoryAutocompleteProps) {
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [search, setSearch] = useState(value);
-	const [showDropdown, setShowDropdown] = useState(false);
+	const colorInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		fetch("/api/categories")
+		authedFetch("/api/categories")
 			.then((res) => res.json())
 			.then((data) => {
 				if (data.success) {
@@ -35,82 +54,74 @@ export function CategoryAutocomplete({
 			.catch((err) => console.error("Error fetching categories:", err));
 	}, []);
 
-	useEffect(() => {
-		setSearch(value);
-	}, [value]);
+	const selectValue = isOther
+		? OTHER_VALUE
+		: categoryId != null
+			? String(categoryId)
+			: "";
 
-	const filteredCategories = categories.filter((cat) =>
-		cat.name.toLowerCase().includes(search.toLowerCase()),
-	);
-
-	const handleCreateCategory = async () => {
-		try {
-			const response = await fetch("/api/categories", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ name: search.trim() }),
-			});
-			const data = await response.json();
-			if (data.success) {
-				setCategories([...categories, data.data]);
-				onSelect(data.data.id, data.data.name);
-				setShowDropdown(false);
-			}
-		} catch (error) {
-			console.error("Error creating category:", error);
-		}
-	};
+	const options = [
+		...categories.map((cat) => ({
+			value: String(cat.id),
+			label: toTitleCaseWords(cat.name),
+		})),
+		{ value: OTHER_VALUE, label: "Other" },
+	];
 
 	return (
-		<div className="relative">
-			<label className={styles.formLabel}>
-				{label} {required && "*"}
-			</label>
-			<input
-				type="text"
-				value={search}
-				onChange={(e) => {
-					setSearch(e.target.value);
-					setShowDropdown(true);
+		<div className="space-y-2">
+			<Select
+				label={label}
+				value={selectValue}
+				onChange={(value) => {
+					if (!value) {
+						onClear?.();
+						return;
+					}
+					if (value === OTHER_VALUE) {
+						onOtherSelected();
+						return;
+					}
+					const id = Number(value);
+					const cat = categories.find((c) => c.id === id);
+					if (cat) onCuratedChange(cat.id, cat.name);
 				}}
-				onFocus={() => setShowDropdown(true)}
-				onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-				className={styles.formInput}
-				placeholder="e.g. Woody"
-				required
+				options={options}
+				placeholder="Select category..."
+				required={required}
 			/>
 
-			{showDropdown && (
-				<div className="absolute z-10 w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg max-h-48 overflow-y-auto">
-					{filteredCategories.length > 0 ? (
-						filteredCategories.map((cat) => (
-							<button
-								key={cat.id}
-								type="button"
-								onClick={() => {
-									onSelect(cat.id, cat.name);
-									setShowDropdown(false);
-								}}
-								className="w-full text-left px-4 py-2 text-white hover:bg-slate-600 transition-colors"
-							>
-								{toTitleCaseWords(cat.name)}
-							</button>
-						))
-					) : search.trim() ? (
-						<button
-							type="button"
-							onClick={handleCreateCategory}
-							className="w-full text-left px-4 py-2 text-green-400 hover:bg-slate-600 transition-colors font-medium"
-						>
-							+ Create "{toTitleCaseWords(search)}"
-						</button>
-					) : (
-						<div className="px-4 py-2 text-gray-400">
-							Start typing to search...
-						</div>
-					)}
+			{isOther ? (
+				<div className="flex items-center gap-2">
+					<input
+						type="text"
+						value={otherName}
+						onChange={(e) => onOtherNameChange(e.target.value)}
+						className={`${styles.formInput} flex-1`}
+						placeholder="Type other primary category e.g. Conifer"
+						required
+					/>
+					<button
+						type="button"
+						title="Pick category color"
+						aria-label="Pick category color"
+						onClick={() => colorInputRef.current?.click()}
+						className="shrink-0 w-10 h-10 rounded-[0.25rem] cursor-pointer"
+						style={{
+							backgroundColor: otherColor,
+							border: "1px solid #464859",
+						}}
+					/>
+					<input
+						ref={colorInputRef}
+						type="color"
+						value={otherColor}
+						onChange={(e) => onOtherColorChange?.(e.target.value)}
+						className="sr-only"
+						tabIndex={-1}
+					/>
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 }
