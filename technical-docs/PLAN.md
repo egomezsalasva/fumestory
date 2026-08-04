@@ -6,24 +6,23 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ### Olfactory notes — curated vs other
 - Same `notes` table: `kind` (`curated` | `other`), `owner_id`, `color` (CSS: `#hex` or `linear-gradient(...)`)
-- Curated: seed from `NOTE_DOT_STYLES`; other: user-created, color optional until painted
-- Overrides: `user_settings.note_colors` — resolve `override ?? notes.color` (do not mutate curated rows)
-- Autocomplete: curated first; freeform → `other` (exact match only in the picker)
+- Curated: seed from `NOTE_DOT_STYLES`; encyclopedia/academy keep reading that client map
+- Inventory: note dots from DB `notes.color` (not `NOTE_DOT_STYLES` at runtime)
+- Materials `other`: color required when creating (picker / agent gradient); feedback `other`: color stays optional (`null`)
+- Autocomplete: curated first; freeform → `other` (exact match only in the picker; no musky→musk there)
 - Agent apply (`/api/agent/resolve-notes`): LLM normalize + catalog match (musky→musk; lightly floral stays); new notes colored via `textToCssGradient`
-- Shared tool: `textToCssGradient` + `POST /api/agent/text-to-gradient` (reuse for add-material color picker later)
+- Shared tool: `textToCssGradient` + `POST /api/agent/text-to-gradient` (wire into add-material color picker next)
 - Agent category: `suggestedCategory` constrained to `CURATED_CATEGORY_NAMES` (TS); apply matches curated parents exact-only
 - Keep one FK for feedback / raw_material notes joins
-- [x] DB: schema (019), seed (020), rempoint + partial uniques (021)
-- [x] Inventory/raw-materials: return note `color` from DB; dots use DB (not local map)
-- [x] Notes API: list curated (+ own other with color); create `other` on material/feedback submit
+- [x] DB: schema (019), seed (020), rempoint + partial uniques (021), RLS (022)
+- [x] Inventory/raw-materials: return note `color` from DB; dots use DB
+- [x] Notes API: list curated (+ own other with color); create `other` on material/feedback submit; `set_config`
 - [x] Agent: resolve-notes + text-to-gradient; curated category enum + prompt; apply waits for resolve + loading UI
-- [ ] Notes RLS (like categories 018)
-- [x] Encyclopedia/academy: keep local `NOTE_DOT_STYLES` for speed (static curated catalog)
+- [x] Encyclopedia/academy: local `NOTE_DOT_STYLES` for speed
 - [ ] Color picker: suggest gradient via `/api/agent/text-to-gradient`
 - [ ] CI: TS ↔ seed sync for curated categories (`CURATED_CATEGORY_NAMES` vs 017) and notes (`NOTE_DOT_STYLES` vs 020); check only, do not write DB
-- Curated color sync: TS map is source of truth → regen seed SQL on edit → apply migration to Neon manually
-- Later: require `color` on `other` once leftovers are painted + UI always picks a color
-- Later: paint/fine-tune remaining `other` rows; retire `NOTE_DOT_STYLES` as runtime source for inventory (keep as seed/encyclopedia input)
+- Curated sync: TS maps are source of truth → regen seed SQL on edit → apply to Neon manually; CI only verifies match
+- Later (optional): `user_settings.note_colors` overrides — resolve `override ?? notes.color` (do not mutate curated rows)
 
 ## Next
 
