@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CURATED_CATEGORY_NAMES } from "@/utils/curated-category-colors";
 
 export const rawMaterialNoteTypeSchema = z.enum(["High", "Mid(Heart)", "Base"]);
 export const rawMaterialNatureSchema = z.enum(["Natural", "Synthetic"]);
@@ -17,9 +18,9 @@ export const rawMaterialProposalSchema = z.object({
 			"Form field CAS Registry Number (e.g. 6790-58-5 for Ambroxan). Use null if unknown, not applicable (common for natural blends/extracts), or uncertain — do not guess or invent a CAS.",
 		),
 	suggestedCategory: z
-		.string()
+		.enum(CURATED_CATEGORY_NAMES)
 		.describe(
-			"Main perfumery category for the form autocomplete, e.g. citrus, floral",
+			"Primary curated olfactory family. MUST be exactly one of the curated parent names.",
 		),
 	noteType: rawMaterialNoteTypeSchema.describe(
 		"Form field note type: High, Mid(Heart), or Base",

@@ -35,6 +35,8 @@ import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as DashboardAcademyRouteImport } from './routes/_dashboard.academy'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
+import { Route as ApiAgentTextToGradientRouteImport } from './routes/api/agent/text-to-gradient'
+import { Route as ApiAgentResolveNotesRouteImport } from './routes/api/agent/resolve-notes'
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
 import { Route as ApiAgentFormulaModChatRouteImport } from './routes/api/agent/formula-mod-chat'
 import { Route as ApiAgentCompositionChatRouteImport } from './routes/api/agent/composition-chat'
@@ -174,6 +176,16 @@ const ApiCompositionsCompositionIdRoute =
     path: '/$compositionId',
     getParentRoute: () => ApiCompositionsRoute,
   } as any)
+const ApiAgentTextToGradientRoute = ApiAgentTextToGradientRouteImport.update({
+  id: '/api/agent/text-to-gradient',
+  path: '/api/agent/text-to-gradient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentResolveNotesRoute = ApiAgentResolveNotesRouteImport.update({
+  id: '/api/agent/resolve-notes',
+  path: '/api/agent/resolve-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAgentRawMaterialChatRoute = ApiAgentRawMaterialChatRouteImport.update({
   id: '/api/agent/raw-material-chat',
   path: '/api/agent/raw-material-chat',
@@ -246,6 +258,8 @@ export interface FileRoutesByFullPath {
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
+  '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesByTo {
@@ -280,6 +294,8 @@ export interface FileRoutesByTo {
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
+  '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRoutesById {
@@ -316,6 +332,8 @@ export interface FileRoutesById {
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
+  '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
+  '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
 }
 export interface FileRouteTypes {
@@ -352,6 +370,8 @@ export interface FileRouteTypes {
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
+    | '/api/agent/resolve-notes'
+    | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -386,6 +406,8 @@ export interface FileRouteTypes {
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
+    | '/api/agent/resolve-notes'
+    | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
   id:
     | '__root__'
@@ -421,6 +443,8 @@ export interface FileRouteTypes {
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
+    | '/api/agent/resolve-notes'
+    | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
   fileRoutesById: FileRoutesById
 }
@@ -442,6 +466,8 @@ export interface RootRouteChildren {
   ApiAgentCompositionChatRoute: typeof ApiAgentCompositionChatRoute
   ApiAgentFormulaModChatRoute: typeof ApiAgentFormulaModChatRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
+  ApiAgentResolveNotesRoute: typeof ApiAgentResolveNotesRoute
+  ApiAgentTextToGradientRoute: typeof ApiAgentTextToGradientRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -628,6 +654,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompositionsCompositionIdRouteImport
       parentRoute: typeof ApiCompositionsRoute
     }
+    '/api/agent/text-to-gradient': {
+      id: '/api/agent/text-to-gradient'
+      path: '/api/agent/text-to-gradient'
+      fullPath: '/api/agent/text-to-gradient'
+      preLoaderRoute: typeof ApiAgentTextToGradientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/resolve-notes': {
+      id: '/api/agent/resolve-notes'
+      path: '/api/agent/resolve-notes'
+      fullPath: '/api/agent/resolve-notes'
+      preLoaderRoute: typeof ApiAgentResolveNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agent/raw-material-chat': {
       id: '/api/agent/raw-material-chat'
       path: '/api/agent/raw-material-chat'
@@ -752,6 +792,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentCompositionChatRoute: ApiAgentCompositionChatRoute,
   ApiAgentFormulaModChatRoute: ApiAgentFormulaModChatRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
+  ApiAgentResolveNotesRoute: ApiAgentResolveNotesRoute,
+  ApiAgentTextToGradientRoute: ApiAgentTextToGradientRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

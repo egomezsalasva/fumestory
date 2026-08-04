@@ -21,7 +21,6 @@ import {
 	hexToRgba,
 	resolveCategoryColor,
 } from "@/utils/curated-category-colors";
-import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -224,9 +223,7 @@ function App() {
 		const notesDisplayCol: ColDef<RawMaterial> = {
 			colId: "notes_display",
 			field: includeGuestFeedbackInNotes ? "aggregated_note_counts" : "notes",
-			headerName: includeGuestFeedbackInNotes
-				? "Notes (* = from friend feedback only)"
-				: "Notes",
+			headerName: "Notes",
 			width: 160,
 			autoHeight: true,
 			filter: "agTextColumnFilter",
@@ -241,6 +238,33 @@ function App() {
 					: "";
 			},
 			cellRenderer: (p: { data?: RawMaterial }) => {
+				const noteColors = p.data?.note_colors ?? {};
+
+				const renderNoteRow = (
+					note: string,
+					count?: number,
+					showDot = true,
+				) => {
+					const dotStyle = showDot ? (noteColors[note] ?? null) : null;
+					return (
+						<div key={note} className="encyclopedia-note-item">
+							{dotStyle ? (
+								<span
+									className="encyclopedia-note-dot"
+									style={{ background: dotStyle }}
+									aria-hidden="true"
+								/>
+							) : null}
+							<span>
+								{toTitleCaseWords(note)}
+								{count != null && count > 1 ? (
+									<span className="font-semibold"> [x{count}]</span>
+								) : null}
+							</span>
+						</div>
+					);
+				};
+
 				if (!includeGuestFeedbackInNotes) {
 					const list = [...(p.data?.notes ?? [])].sort((a, b) =>
 						a.localeCompare(b),
@@ -249,21 +273,7 @@ function App() {
 						return <span className="text-slate-500">—</span>;
 					return (
 						<div className="encyclopedia-list-cell">
-							{list.map((note) => {
-								const dotStyle = getNoteDotStyle(note);
-								return (
-									<div key={note} className="encyclopedia-note-item">
-										{dotStyle ? (
-											<span
-												className="encyclopedia-note-dot"
-												style={{ background: dotStyle }}
-												aria-hidden="true"
-											/>
-										) : null}
-										<span>{toTitleCaseWords(note)}</span>
-									</div>
-								);
-							})}
+							{list.map((note) => renderNoteRow(note))}
 						</div>
 					);
 				}
@@ -272,48 +282,39 @@ function App() {
 					string,
 					number
 				>;
-				const originalNotes = p.data?.notes as string[] | undefined;
-				const entries = Object.entries(noteCounts);
-				if (entries.length === 0)
-					return <span className="text-slate-500">—</span>;
+				const originalNotes = [...(p.data?.notes ?? [])].sort((a, b) => {
+					const ca = Number(noteCounts[a] ?? 1);
+					const cb = Number(noteCounts[b] ?? 1);
+					return cb - ca || a.localeCompare(b);
+				});
+				const originLower = new Set(originalNotes.map((n) => n.toLowerCase()));
 
-				const max = Math.max(...entries.map(([, c]) => c));
-				const color = (c: number) => {
-					if (max === 1) return "rgb(255, 255, 255)";
-					const t = (c - 1) / (max - 1);
-					const r = Math.round(255 - (255 - 34) * t);
-					const g = Math.round(255 - (255 - 197) * t);
-					const b = Math.round(255 - (255 - 94) * t);
-					return `rgb(${r}, ${g}, ${b})`;
-				};
-				const isFeedbackOnly = (n: string) =>
-					!originalNotes?.some((o) => o.toLowerCase() === n.toLowerCase());
+				const guestEntries = Object.entries(noteCounts)
+					.filter(([note]) => !originLower.has(note.toLowerCase()))
+					.sort(
+						([nameA, a], [nameB, b]) =>
+							Number(b) - Number(a) || nameA.localeCompare(nameB),
+					);
+
+				if (originalNotes.length === 0 && guestEntries.length === 0) {
+					return <span className="text-slate-500">—</span>;
+				}
 
 				return (
 					<div className="encyclopedia-list-cell">
-						{entries
-							.sort(([, a], [, b]) => b - a)
-							.map(([note, count]) => {
-								const dotStyle = getNoteDotStyle(note);
-								return (
-									<div key={note} className="encyclopedia-note-item">
-										{dotStyle ? (
-											<span
-												className="encyclopedia-note-dot"
-												style={{ background: dotStyle }}
-												aria-hidden="true"
-											/>
-										) : null}
-										<span style={{ color: color(count) }}>
-											{toTitleCaseWords(note)}
-											{isFeedbackOnly(note) ? "*" : ""}
-											{count > 1 ? (
-												<span className="font-semibold"> ×{count}</span>
-											) : null}
-										</span>
-									</div>
-								);
-							})}
+						{originalNotes.map((note) =>
+							renderNoteRow(note, noteCounts[note] ?? 1),
+						)}
+						{guestEntries.length > 0 ? (
+							<>
+								<div className="mt-1.5 mb-[0.125rem] text-[0.65rem] font-medium uppercase tracking-wide text-slate-400">
+									Guest Feedback
+								</div>
+								{guestEntries.map(([note, count]) =>
+									renderNoteRow(note, count, false),
+								)}
+							</>
+						) : null}
 					</div>
 				);
 			},

@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
-import { NotesAutocomplete } from "@/components/NotesAutocomplete";
+import {
+	NotesAutocomplete,
+	type SelectedNote,
+} from "@/components/NotesAutocomplete";
 import { TextInput } from "@/components/TextInput";
 import { Dilution } from "./api.dilutions";
 import { authedFetch } from "@/utils/authed-fetch";
@@ -31,7 +34,7 @@ function AddFeedback() {
 	);
 	const [personName, setPersonName] = useState<Feedback["person_name"]>("");
 	const [rating, setRating] = useState<Feedback["rating"]>(null);
-	const [notes, setNotes] = useState<string[]>([]);
+	const [notes, setNotes] = useState<SelectedNote[]>([]);
 	const [availableDilutions, setAvailableDilutions] = useState<Dilution[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -87,7 +90,7 @@ function AddFeedback() {
 				body: JSON.stringify({
 					dilution_id: dilutionId,
 					person_name: personName.trim(),
-					notes,
+					notes: notes.map((n) => n.name),
 					rating,
 				}),
 			});
@@ -191,6 +194,7 @@ function AddFeedback() {
 							label=""
 							selectedNotes={notes}
 							onNotesChange={setNotes}
+							requireColorForCustom={false}
 						/>
 					</div>
 

@@ -94,5 +94,8 @@ Example:
   - notes should be concise tags for the form.
   - additionalInformation is chat-only context, not a form field.
   - casNumber: include when the material has a well-known single CAS (especially synthetics / aroma chemicals). Format: 2–7 digits, hyphen, 2 digits, hyphen, 1 digit (e.g. 6790-58-5). Use null for naturals/blends, obscure materials, or when unsure — never fabricate.
-  - Do not put CAS in additionalInformation; use casNumber only. 
+  - Do not put CAS in additionalInformation; use casNumber only.
+  - suggestedCategory MUST be exactly one curated parent (copy spelling exactly). Allowed values:
+    animalic, musk, leather, smoky, woody, earthy, amber, resinous / balsamic, spices, floral, green, herbal, citrus, fruity, aldehydic, marine / ozonic, gourmand, sulfurous
+  - Prefer the closest curated family. Do NOT invent categories. Do NOT use Other.
 `;

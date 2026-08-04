@@ -19,6 +19,14 @@ export const CURATED_CATEGORY_COLORS: Record<string, string> = {
 	sulfurous: "#a3a34a",
 };
 
+/** Curated parent family names — agent + CI sync vs seed 017. */
+export const CURATED_CATEGORY_NAMES = Object.keys(CURATED_CATEGORY_COLORS) as [
+	string,
+	...string[],
+];
+
+export type CuratedCategoryName = (typeof CURATED_CATEGORY_NAMES)[number];
+
 export const NEUTRAL_CATEGORY_COLOR = "#94a3b8";
 
 export function resolveCategoryColor(

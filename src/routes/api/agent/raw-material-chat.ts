@@ -11,6 +11,7 @@ import {
 import { proposalToMarkdown } from "@/agent/utils/proposalToMarkdown";
 import { searchUserInventory } from "@/agent/tools/searchUserInventory";
 import { normalizeCasNumber, isValidCasNumber } from "@/utils/cas-numbers";
+import { CURATED_CATEGORY_NAMES } from "@/utils/curated-category-colors";
 
 const DUPLICATE_CHOICE_INTERACTION = {
 	kind: "choice" as const,
@@ -42,7 +43,9 @@ async function generateStructuredProposal(
 		model: openai("gpt-4o-mini"),
 		output: Output.object({ schema: rawMaterialAgentResultSchema }),
 		system: RAW_MATERIAL_ENTRY_OBJECT_SYSTEM_PROMPT,
-		prompt: userMessage,
+		prompt: `${userMessage.trim()}
+
+suggestedCategory must be exactly one of: ${CURATED_CATEGORY_NAMES.join(", ")}`,
 	});
 	return result.output ?? null;
 }

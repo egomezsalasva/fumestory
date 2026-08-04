@@ -12,6 +12,7 @@ import {
 	parseBottleLabelInput,
 	validateBottleLabelFormat,
 } from "@/utils/bottle-labels";
+import { NEUTRAL_CATEGORY_COLOR } from "@/utils/curated-category-colors";
 
 export type RawMaterial = {
 	id: number;
@@ -23,6 +24,8 @@ export type RawMaterial = {
 	category_name: string;
 	note_type: string;
 	notes: string[];
+	/** CSS color/gradient from `notes.color`, keyed by note name */
+	note_colors: Record<string, string | null>;
 	available_dilutions: number[];
 	aggregated_note_counts: Record<string, number>;
 	created_at: string;
@@ -30,10 +33,52 @@ export type RawMaterial = {
 
 type RawMaterialFromDB = Omit<
 	RawMaterial,
-	"notes" | "category_name" | "available_dilutions" | "aggregated_note_counts"
+	| "notes"
+	| "note_colors"
+	| "category_name"
+	| "available_dilutions"
+	| "aggregated_note_counts"
 >;
 
+type NoteInput = {
+	name: string;
+	color: string | null;
+};
+
 const MAX_NOTES_PER_RAW_MATERIAL = 25;
+
+function parseNoteInputs(notes: unknown): NoteInput[] | { error: string } {
+	if (!notes || !Array.isArray(notes) || notes.length === 0) {
+		return [];
+	}
+
+	const out: NoteInput[] = [];
+	for (const item of notes) {
+		if (typeof item === "string" && item.trim()) {
+			out.push({ name: item.trim().toLowerCase(), color: null });
+			continue;
+		}
+		if (
+			item &&
+			typeof item === "object" &&
+			"name" in item &&
+			typeof (item as { name: unknown }).name === "string"
+		) {
+			const name = (item as { name: string }).name.trim().toLowerCase();
+			if (!name) continue;
+			const colorRaw = (item as { color?: unknown }).color;
+			const color =
+				typeof colorRaw === "string" && colorRaw.trim()
+					? colorRaw.trim()
+					: null;
+			out.push({ name, color });
+			continue;
+		}
+		return { error: "Invalid notes payload" };
+	}
+
+	return out;
+}
 
 export const Route = createFileRoute("/api/raw-materials")({
 	server: {
@@ -60,13 +105,37 @@ export const Route = createFileRoute("/api/raw-materials")({
 								json_agg(DISTINCT n.name ORDER BY n.name) FILTER (WHERE n.name IS NOT NULL), '[]'
 							) as notes,
 							COALESCE(
+								(
+									SELECT json_object_agg(note_name, note_color)
+									FROM (
+										SELECT DISTINCT ON (n_all.name)
+											n_all.name AS note_name,
+											n_all.color AS note_color
+										FROM (
+											SELECT rmn2.note_id
+											FROM raw_material_notes rmn2
+											WHERE rmn2.raw_material_id = rm.id
+											UNION
+											SELECT fn.note_id
+											FROM dilutions d2
+											JOIN feedback f ON f.dilution_id = d2.id
+											JOIN feedback_notes fn ON fn.feedback_id = f.id
+											WHERE d2.raw_material_id = rm.id
+										) ids
+										JOIN notes n_all ON n_all.id = ids.note_id
+										ORDER BY n_all.name
+									) note_color_rows
+								),
+								'{}'::json
+							) as note_colors,
+							COALESCE(
 								json_agg(DISTINCT d.percentage ORDER BY d.percentage) FILTER (WHERE d.percentage IS NOT NULL AND d.available = TRUE), '[]'
 							) as available_dilutions,
 							COALESCE(
 								(
 									SELECT json_object_agg(note_name, note_count)
 									FROM (
-										SELECT 
+										SELECT
 											note_name,
 											SUM(note_count) as note_count
 										FROM (
@@ -197,15 +266,11 @@ export const Route = createFileRoute("/api/raw-materials")({
 						materialNature = material_nature;
 					}
 
-					const validNotes: string[] = [];
-					if (notes && Array.isArray(notes) && notes.length > 0) {
-						for (const noteName of notes) {
-							if (noteName && typeof noteName === "string" && noteName.trim()) {
-								validNotes.push(noteName.trim().toLowerCase());
-							}
-						}
+					const parsedNotes = parseNoteInputs(notes);
+					if ("error" in parsedNotes) {
+						return jsonResponse({ error: parsedNotes.error }, 400);
 					}
-					if (validNotes.length > MAX_NOTES_PER_RAW_MATERIAL) {
+					if (parsedNotes.length > MAX_NOTES_PER_RAW_MATERIAL) {
 						return jsonResponse(
 							{
 								error: `Too many notes (max ${MAX_NOTES_PER_RAW_MATERIAL})`,
@@ -243,30 +308,89 @@ export const Route = createFileRoute("/api/raw-materials")({
 					}
 
 					const noteNames: string[] = [];
-					if (validNotes.length > 0) {
+					const noteColors: Record<string, string | null> = {};
+
+					for (const note of parsedNotes) {
+						const findTx = await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
+							txn.query(
+								`
+								SELECT id, color
+								FROM notes
+								WHERE name = $1
+								  AND (
+								    kind = 'curated'
+								    OR (kind = 'other' AND owner_id = $2)
+								  )
+								ORDER BY CASE WHEN kind = 'curated' THEN 0 ELSE 1 END
+								LIMIT 1
+								`,
+								[note.name, currentUserId],
+							),
+						]);
+						const existing = (
+							findTx[1] as { id: number; color: string | null }[]
+						)[0];
+
+						let noteId: number;
+						let noteColor: string | null;
+
+						if (existing) {
+							noteId = existing.id;
+							noteColor = existing.color;
+						} else {
+							const color = note.color?.trim() || NEUTRAL_CATEGORY_COLOR;
+							const createTx = await client.transaction((txn) => [
+								txn.query(
+									`SELECT set_config('app.current_user_id', $1, true)`,
+									[currentUserId],
+								),
+								txn.query(
+									`
+									INSERT INTO notes (name, kind, owner_id, color)
+									VALUES ($1, 'other', $2, $3)
+									RETURNING id, color
+									`,
+									[note.name, currentUserId, color],
+								),
+							]);
+							const created = (
+								createTx[1] as { id: number; color: string | null }[]
+							)[0];
+							if (!created) {
+								return jsonResponse(
+									{ error: `Failed to create note "${note.name}"` },
+									500,
+								);
+							}
+							noteId = created.id;
+							noteColor = created.color;
+						}
+
 						await client.transaction((txn) => [
 							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
 								currentUserId,
 							]),
-							...validNotes.flatMap((trimmedNote) => [
-								txn.query(
-									`INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
-									[trimmedNote],
-								),
-								txn.query(
-									`INSERT INTO raw_material_notes (raw_material_id, note_id)
-									SELECT $1, id FROM notes WHERE name = $2
-									ON CONFLICT (raw_material_id, note_id) DO NOTHING
-									`,
-									[rawMaterial.id, trimmedNote],
-								),
-							]),
+							txn.query(
+								`
+								INSERT INTO raw_material_notes (raw_material_id, note_id)
+								VALUES ($1, $2)
+								ON CONFLICT (raw_material_id, note_id) DO NOTHING
+								`,
+								[rawMaterial.id, noteId],
+							),
 						]);
-						noteNames.push(...validNotes);
+
+						noteNames.push(note.name);
+						noteColors[note.name] = noteColor;
 					}
+
 					const result = {
 						...rawMaterial,
 						notes: noteNames,
+						note_colors: noteColors,
 						category_name: null,
 						available_dilutions: [],
 						aggregated_note_counts: {},

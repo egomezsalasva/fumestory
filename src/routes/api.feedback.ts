@@ -191,26 +191,70 @@ export const Route = createFileRoute("/api/feedback")({
 						return jsonResponse({ error: "Failed to create feedback" }, 500);
 					}
 
-					await client.transaction((txn) => [
-						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
-							currentUserId,
-						]),
-						...validNotes.flatMap((trimmedNote) => [
+					for (const trimmedNote of validNotes) {
+						const findTx = await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
 							txn.query(
 								`
-                                INSERT INTO notes (name) VALUES ($1) ON CONFLICT (name) DO NOTHING
-                            `,
-								[trimmedNote],
+								SELECT id
+								FROM notes
+								WHERE name = $1
+								  AND (
+								    kind = 'curated'
+								    OR (kind = 'other' AND owner_id = $2)
+								  )
+								ORDER BY CASE WHEN kind = 'curated' THEN 0 ELSE 1 END
+								LIMIT 1
+								`,
+								[trimmedNote, currentUserId],
 							),
+						]);
+						const existing = (findTx[1] as { id: number }[])[0];
+
+						let noteId: number;
+						if (existing) {
+							noteId = existing.id;
+						} else {
+							const createTx = await client.transaction((txn) => [
+								txn.query(
+									`SELECT set_config('app.current_user_id', $1, true)`,
+									[currentUserId],
+								),
+								txn.query(
+									`
+									INSERT INTO notes (name, kind, owner_id, color)
+									VALUES ($1, 'other', $2, NULL)
+									RETURNING id
+									`,
+									[trimmedNote, currentUserId],
+								),
+							]);
+							const created = (createTx[1] as { id: number }[])[0];
+							if (!created) {
+								return jsonResponse(
+									{ error: `Failed to create note "${trimmedNote}"` },
+									500,
+								);
+							}
+							noteId = created.id;
+						}
+
+						await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
 							txn.query(
 								`
-                                INSERT INTO feedback_notes (feedback_id, note_id)
-                                SELECT $1, id FROM notes WHERE name = $2    
-                            `,
-								[feedback.id, trimmedNote],
+								INSERT INTO feedback_notes (feedback_id, note_id)
+								VALUES ($1, $2)
+								ON CONFLICT DO NOTHING
+								`,
+								[feedback.id, noteId],
 							),
-						]),
-					]);
+						]);
+					}
 
 					const result: FeedbackWithNotes = {
 						...feedback,

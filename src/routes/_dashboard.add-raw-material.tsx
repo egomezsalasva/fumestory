@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { TextInput } from "@/components/TextInput";
 import { CategoryAutocomplete } from "@/components/CategoryAutocomplete";
 import { Select } from "@/components/Select";
-import { NotesAutocomplete } from "@/components/NotesAutocomplete";
+import {
+	NotesAutocomplete,
+	type SelectedNote,
+} from "@/components/NotesAutocomplete";
 import { LabelInput } from "@/components/LabelInput";
 import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
 import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
@@ -67,12 +70,13 @@ function AddRawMaterial() {
 		NEUTRAL_CATEGORY_COLOR,
 	);
 	const [noteType, setNoteType] = useState("");
-	const [notes, setNotes] = useState<string[]>([]);
+	const [notes, setNotes] = useState<SelectedNote[]>([]);
 	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [selectedIfraStatus, setSelectedIfraStatus] =
 		useState<IfraStatus | null>(null);
+	const [isApplyingProposal, setIsApplyingProposal] = useState(false);
 
 	// null = loading settings, true/false = resolved preference
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
@@ -232,68 +236,87 @@ function AddRawMaterial() {
 	};
 
 	const handleApplyProposal = async (proposal: RawMaterialProposal) => {
-		if (bottleLabelEnabled) {
-			setLabel(proposal.suggestedLabel);
-		} else {
-			setLabel("");
-		}
-		setName(nameFromAgentProposal(proposal.nameAsEntered));
-		if (materialNatureEnabled) {
-			setMaterialNature(proposal.materialNature);
-		} else {
-			setMaterialNature("");
-		}
-		setNoteType(proposal.noteType);
-		setNotes(proposal.notes.map((n) => n.trim().toLowerCase()).filter(Boolean));
-
-		let casError = "";
-		if (casNumberEnabled) {
-			const normalizedCas = normalizeCasNumber(proposal.casNumber);
-			if (!isValidCasNumber(normalizedCas)) {
-				casError = "CAS number must look like 6790-58-5";
-				setCasNumber("");
-			} else {
-				setCasNumber(normalizedCas ?? "");
-			}
-		} else {
-			setCasNumber("");
-		}
+		setIsApplyingProposal(true);
+		setError("");
 
 		try {
-			const response = await authedFetch("/api/categories");
-			const data = await response.json();
-			const suggested = proposal.suggestedCategory.trim().toLowerCase();
-			if (!response.ok || !data.success || !Array.isArray(data.data)) {
-				setCategoryIsOther(true);
-				setSelectedCategoryId(null);
-				setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
-				setError(casError);
-				return;
-			}
-			const categories = data.data as { id: number; name: string }[];
-			const match =
-				categories.find((c) => c.name.toLowerCase() === suggested) ??
-				categories.find(
-					(c) =>
-						c.name.toLowerCase().includes(suggested) ||
-						suggested.includes(c.name.toLowerCase()),
-				);
-			if (match) {
-				setCategoryIsOther(false);
-				setSelectedCategoryId(match.id);
-				setOtherCategoryName("");
-			} else {
-				setCategoryIsOther(true);
-				setSelectedCategoryId(null);
-				setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
-			}
-		} catch {
-			setCategoryIsOther(true);
-			setSelectedCategoryId(null);
-			setOtherCategoryName(toTitleCaseWords(proposal.suggestedCategory));
-		}
+			const [notesRes, categoriesRes] = await Promise.all([
+				authedFetch("/api/agent/resolve-notes", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ names: proposal.notes }),
+				}),
+				authedFetch("/api/categories"),
+			]);
 
-		setError(casError);
+			const notesData = await notesRes.json();
+			const categoriesData = await categoriesRes.json();
+
+			if (
+				!notesRes.ok ||
+				!notesData.success ||
+				!Array.isArray(notesData.data)
+			) {
+				throw new Error(notesData.error || "Failed to resolve notes");
+			}
+
+			let casError = "";
+			let nextCas = "";
+			if (casNumberEnabled) {
+				const normalizedCas = normalizeCasNumber(proposal.casNumber);
+				if (!isValidCasNumber(normalizedCas)) {
+					casError = "CAS number must look like 6790-58-5";
+				} else {
+					nextCas = normalizedCas ?? "";
+				}
+			}
+
+			const suggested = proposal.suggestedCategory.trim().toLowerCase();
+			let nextCategoryIsOther = true;
+			let nextCategoryId: number | null = null;
+			let nextOtherCategoryName = toTitleCaseWords(proposal.suggestedCategory);
+
+			if (
+				categoriesRes.ok &&
+				categoriesData.success &&
+				Array.isArray(categoriesData.data)
+			) {
+				const categories = categoriesData.data as {
+					id: number;
+					name: string;
+				}[];
+				const match = categories.find(
+					(c) => c.name.toLowerCase() === suggested,
+				);
+				if (match) {
+					nextCategoryIsOther = false;
+					nextCategoryId = match.id;
+					nextOtherCategoryName = "";
+				}
+			}
+
+			if (bottleLabelEnabled) {
+				setLabel(proposal.suggestedLabel);
+			} else {
+				setLabel("");
+			}
+			setName(nameFromAgentProposal(proposal.nameAsEntered));
+			setMaterialNature(materialNatureEnabled ? proposal.materialNature : "");
+			setNoteType(proposal.noteType);
+			setNotes(notesData.data as SelectedNote[]);
+			setCasNumber(nextCas);
+			setCategoryIsOther(nextCategoryIsOther);
+			setSelectedCategoryId(nextCategoryId);
+			setOtherCategoryName(nextOtherCategoryName);
+			setError(casError);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Failed to apply agent proposal",
+			);
+			throw err;
+		} finally {
+			setIsApplyingProposal(false);
+		}
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -328,6 +351,11 @@ function AddRawMaterial() {
 		}
 		if (notes.length === 0) {
 			setError("At least one note is required");
+			return;
+		}
+		const missingColor = notes.find((n) => n.isNew && !n.color);
+		if (missingColor) {
+			setError(`Pick a color for note "${missingColor.name}"`);
 			return;
 		}
 		if (error) {
@@ -374,7 +402,11 @@ function AddRawMaterial() {
 					note_type: noteType,
 					material_nature:
 						materialNatureEnabled && materialNature ? materialNature : null,
-					notes,
+					notes: notes.map((n) => ({
+						name: n.name,
+						color: n.color,
+						isNew: n.isNew === true,
+					})),
 				}),
 			});
 
@@ -441,10 +473,19 @@ function AddRawMaterial() {
 			<div
 				className={`dashboardSplitLayout ${isSidebarCollapsed ? "isSidebarCollapsed" : ""}`}
 			>
-				<div className="w-full px-20">
+				<div className="w-full px-20 relative">
+					{isApplyingProposal && (
+						<div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-slate-950/60 backdrop-blur-[1px]">
+							<p className="text-sm text-slate-200">
+								Resolving notes and filling the form…
+							</p>
+						</div>
+					)}
 					<form
 						onSubmit={handleSubmit}
-						className={`${styles.formContainer} space-y-6 bg-[#10151C] py-8 px-6 rounded-lg border border-[#464859]`}
+						className={`${styles.formContainer} space-y-6 bg-[#10151C] py-8 px-6 rounded-lg border border-[#464859] ${
+							isApplyingProposal ? "pointer-events-none opacity-60" : ""
+						}`}
 					>
 						<div className="space-y-4">
 							<div>
@@ -585,7 +626,11 @@ function AddRawMaterial() {
 							/>
 
 							<div className={styles.formSubmitButtonContainer}>
-								<button type="submit" className={styles.formSubmitButton}>
+								<button
+									type="submit"
+									className={styles.formSubmitButton}
+									disabled={isApplyingProposal}
+								>
 									+ Add Raw Material
 								</button>
 							</div>

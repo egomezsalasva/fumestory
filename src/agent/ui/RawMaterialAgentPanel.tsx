@@ -8,7 +8,7 @@ import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import { authedFetch } from "@/utils/authed-fetch";
 
 type RawMaterialAgentPanelProps = {
-	onApplyProposal?: (proposal: RawMaterialProposal) => void;
+	onApplyProposal?: (proposal: RawMaterialProposal) => void | Promise<void>;
 	onAddNewMaterialClick: () => void;
 	hidePanel: () => void;
 };
@@ -142,10 +142,23 @@ export function RawMaterialAgentPanel({
 				choiceOptions?.find((o) => o.id === choiceId)?.label ?? "Add to form";
 			setChoiceOptions(null);
 			setMessages((prev) => [...prev, { role: "user", content: label }]);
-			onApplyProposal(pendingProposal);
-			setPendingProposal(null);
-			setPendingMaterialQuery(null);
-			setShowAddNewMaterialAction(true);
+			setIsLoading(true);
+			try {
+				await onApplyProposal(pendingProposal);
+				setShowAddNewMaterialAction(true);
+			} catch {
+				setMessages((prev) => [
+					...prev,
+					{
+						role: "assistant",
+						content: "Failed to apply to the form. Please try again.",
+					},
+				]);
+			} finally {
+				setIsLoading(false);
+				setPendingProposal(null);
+				setPendingMaterialQuery(null);
+			}
 			return;
 		}
 

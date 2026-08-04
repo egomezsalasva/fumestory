@@ -4,13 +4,34 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 
 ## Now
 
+### Olfactory notes — curated vs other
+- Same `notes` table: `kind` (`curated` | `other`), `owner_id`, `color` (CSS: `#hex` or `linear-gradient(...)`)
+- Curated: seed from `NOTE_DOT_STYLES`; other: user-created, color optional until painted
+- Overrides: `user_settings.note_colors` — resolve `override ?? notes.color` (do not mutate curated rows)
+- Autocomplete: curated first; freeform → `other` (exact match only in the picker)
+- Agent apply (`/api/agent/resolve-notes`): LLM normalize + catalog match (musky→musk; lightly floral stays); new notes colored via `textToCssGradient`
+- Shared tool: `textToCssGradient` + `POST /api/agent/text-to-gradient` (reuse for add-material color picker later)
+- Agent category: `suggestedCategory` constrained to `CURATED_CATEGORY_NAMES` (TS); apply matches curated parents exact-only
+- Keep one FK for feedback / raw_material notes joins
+- [x] DB: schema (019), seed (020), rempoint + partial uniques (021)
+- [x] Inventory/raw-materials: return note `color` from DB; dots use DB (not local map)
+- [x] Notes API: list curated (+ own other with color); create `other` on material/feedback submit
+- [x] Agent: resolve-notes + text-to-gradient; curated category enum + prompt; apply waits for resolve + loading UI
+- [ ] Notes RLS (like categories 018)
+- [x] Encyclopedia/academy: keep local `NOTE_DOT_STYLES` for speed (static curated catalog)
+- [ ] Color picker: suggest gradient via `/api/agent/text-to-gradient`
+- [ ] CI: TS ↔ seed sync for curated categories (`CURATED_CATEGORY_NAMES` vs 017) and notes (`NOTE_DOT_STYLES` vs 020); check only, do not write DB
+- Curated color sync: TS map is source of truth → regen seed SQL on edit → apply migration to Neon manually
+- Later: require `color` on `other` once leftovers are painted + UI always picks a color
+- Later: paint/fine-tune remaining `other` rows; retire `NOTE_DOT_STYLES` as runtime source for inventory (keep as seed/encyclopedia input)
+
+## Next
+
 ### Formula UI rounding (derived field only)
 - [ ] Weight mode: round derived `%` (near-int snap + max 2 dp; e.g. 2.999→3, 2.998→2.99)
 - [ ] Percent mode: round derived weight to 4 dp (`0.0001g`)
 - [ ] Do not round the field currently being edited
 - Files: `useFormulaIngredients.tsx` (+ optional `formulaRounding.ts`)
-
-## Next
 
 ### Persist per-mod formula table sort
 - [ ] Save AgGrid sort state per composition + formula (mod) id
@@ -45,18 +66,6 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - [ ] Ingredients grid stays outside that panel
 - [ ] Persist open/closed per composition + formula id (localStorage)
 - [ ] Default: expanded
-
-### Olfactory notes — curated vs other
-- Extend `notes` (same table, not two):
-  - `kind`: `curated` | `other`
-  - `color`: required for curated, NULL for other
-  - `owner_id`: NULL for curated; set for user-created other
-- UI: pick from curated list (with color); freeform creates `other` (no color / neutral swatch)
-- Per-user color overrides: JSONB on `user_settings` (e.g. `note_colors: { "<noteId>": "#aabbcc" }`)
-  - Resolve: `override ?? notes.color` — do not mutate shared curated rows
-- Keep one FK for feedback / raw_material notes joins
-- Autocomplete curated first; if the user types a non-curated name, store as `other` (personal choice — do not auto-merge aliases like musky → musk)
-- Curated list stays the maintainable shared vocabulary (colors, cleanup, dedupe)
 
 ### Curated raw materials — search modal (then maybe autocomplete)
 - On add raw material: magnifying-glass button next to name opens curated search dialog
