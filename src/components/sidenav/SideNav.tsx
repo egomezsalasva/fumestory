@@ -224,7 +224,7 @@ const SideNav = () => {
 								icon={<TableIcon />}
 								to="/inventory"
 								title="Raw Materials"
-								activePathPrefixes={["/manage-dilutions"]}
+								activePathPrefixes={["/raw-material-details"]}
 								disabled={!eligibility?.hasRawMaterials}
 								disabledTooltip="Add a Raw Material to view"
 							/>

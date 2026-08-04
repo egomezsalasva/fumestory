@@ -257,7 +257,7 @@ function AddFeedback() {
 							message={successMessage}
 							link={{
 								text: "Go to Raw Material",
-								to: `/manage-dilutions/${submittedMaterialId}`,
+								to: `/raw-material-details/${submittedMaterialId}`,
 							}}
 							onClose={() => {
 								setSuccessMessage("");

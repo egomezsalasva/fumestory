@@ -12,20 +12,20 @@ function formatBatchGrams(grams: number): string {
 }
 
 export const Route = createFileRoute(
-	"/_dashboard/manage-dilutions/$materialId",
+	"/_dashboard/raw-material-details/$materialId",
 )({
 	head: () => ({
 		meta: [
-			{ title: "Fumestory | Manage Dilutions" },
+			{ title: "Fumestory | Raw Material Details" },
 			{ name: "robots", content: "noindex" },
 		],
 	}),
-	component: ManageDilutions,
+	component: RawMaterialDetails,
 });
 
-function ManageDilutions() {
+function RawMaterialDetails() {
 	const { materialId } = useParams({
-		from: "/_dashboard/manage-dilutions/$materialId",
+		from: "/_dashboard/raw-material-details/$materialId",
 	});
 	const [dilutions, setDilutions] = useState<Dilution[]>([]);
 	const [materialName, setMaterialName] = useState("");
@@ -160,7 +160,7 @@ function ManageDilutions() {
 
 	return (
 		<DashboardLayout
-			title="Raw Materials Inventory / Manage Dilutions"
+			title="Raw Materials Inventory / Raw Material Details"
 			backButton={{ to: "/inventory" }}
 		>
 			<div className="space-y-3 max-w-200 mx-auto">
@@ -248,7 +248,7 @@ function ManageDilutions() {
 															{typeof fb.rating === "number" && (
 																<span
 																	className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5"
-																	title={`Guest rating: ${fb.rating} out of 5`}
+																	title={"Guest rating: ${fb.rating} out of 5"}
 																>
 																	<span
 																		className="flex items-center gap-px leading-none"

@@ -624,7 +624,7 @@ function CompositionDetail() {
 																	onChange={setOverviewMode}
 																/>
 															</div>
-															<div className="flex flex-1 flex-wrap items-center justify-center gap-12">
+															<div className="flex flex-1 flex-wrap items-center justify-center gap-10">
 																<NotePyramidOverview totals={noteTotals} />
 																<FamilyPieOverview
 																	slices={familySlices}

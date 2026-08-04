@@ -323,25 +323,31 @@ function App() {
 		const dilutionsCol: ColDef<RawMaterial> = {
 			field: "available_dilutions",
 			headerName: "Available Dilutions (%)",
-			width: 176,
-			cellRenderer: (params: { value?: number[]; data?: RawMaterial }) => {
-				const percentages = params.value;
-				const hasPercentages = percentages && percentages.length > 0;
-				const material = params.data as RawMaterial;
+			width: 170,
+			valueFormatter: (params) => {
+				const percentages = params.value as number[] | undefined;
+				if (!percentages || percentages.length === 0) return "—";
+				return percentages.map((v) => `${v}%`).join(", ");
+			},
+		};
 
+		const detailsCol: ColDef<RawMaterial> = {
+			headerName: "",
+			colId: "details",
+			width: 100,
+			sortable: false,
+			filter: false,
+			cellRenderer: (params: { data?: RawMaterial }) => {
+				const material = params.data;
+				if (!material) return null;
 				return (
-					<div className="flex items-center justify-between h-full gap-2 pr-2">
-						<span className="flex-1">
-							{hasPercentages
-								? percentages.map((v: number) => `${v}%`).join(", ")
-								: "—"}
-						</span>
+					<div className="flex items-center h-full w-full justify-center">
 						<Link
-							to="/manage-dilutions/$materialId"
+							to="/raw-material-details/$materialId"
 							params={{ materialId: String(material.id) }}
 							className="inline-flex shrink-0 items-center justify-center whitespace-nowrap px-2.5 py-1 rounded-[0.25rem] bg-[#0b172d] text-white font-medium border border-[#d8e3f0] shadow-sm shadow-black/40 hover:bg-[#243044] hover:border-[#f0f4fa] transition-colors text-xs"
 						>
-							View
+							Details
 						</Link>
 					</div>
 				);
@@ -359,6 +365,7 @@ function App() {
 		if (showInventoryNotesDisplayColumn !== false) cols.push(notesDisplayCol);
 		if (showInventoryAvailableDilutionsColumn !== false)
 			cols.push(dilutionsCol);
+		cols.push(detailsCol);
 		return cols as ColDef<RawMaterial>[];
 	}, [
 		includeGuestFeedbackInNotes,

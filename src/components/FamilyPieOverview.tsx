@@ -149,7 +149,7 @@ export function FamilyPieOverview({
 					})
 				)}
 			</svg>
-			<ul className="space-y-0.5 text-xs leading-tight text-slate-300">
+			<ul className="max-w-[10rem] space-y-0.5 text-xs leading-tight text-slate-300">
 				{slices.map((s) => {
 					const legendOpacity =
 						hovered === null || hovered === s.name ? 1 : 0.35;

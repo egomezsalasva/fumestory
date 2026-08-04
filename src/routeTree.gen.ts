@@ -40,7 +40,7 @@ import { Route as ApiAgentResolveNotesRouteImport } from './routes/api/agent/res
 import { Route as ApiAgentRawMaterialChatRouteImport } from './routes/api/agent/raw-material-chat'
 import { Route as ApiAgentFormulaModChatRouteImport } from './routes/api/agent/formula-mod-chat'
 import { Route as ApiAgentCompositionChatRouteImport } from './routes/api/agent/composition-chat'
-import { Route as DashboardManageDilutionsMaterialIdRouteImport } from './routes/_dashboard.manage-dilutions.$materialId'
+import { Route as DashboardRawMaterialDetailsMaterialIdRouteImport } from './routes/_dashboard.raw-material-details.$materialId'
 import { Route as DashboardCompositionCompositionIdRouteImport } from './routes/_dashboard.composition.$compositionId'
 import { Route as DashboardAddFormulaCompositionIdRouteImport } from './routes/_dashboard.add-formula.$compositionId'
 import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboard.account.$pathname'
@@ -201,10 +201,10 @@ const ApiAgentCompositionChatRoute = ApiAgentCompositionChatRouteImport.update({
   path: '/api/agent/composition-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardManageDilutionsMaterialIdRoute =
-  DashboardManageDilutionsMaterialIdRouteImport.update({
-    id: '/manage-dilutions/$materialId',
-    path: '/manage-dilutions/$materialId',
+const DashboardRawMaterialDetailsMaterialIdRoute =
+  DashboardRawMaterialDetailsMaterialIdRouteImport.update({
+    id: '/raw-material-details/$materialId',
+    path: '/raw-material-details/$materialId',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardCompositionCompositionIdRoute =
@@ -254,7 +254,7 @@ export interface FileRoutesByFullPath {
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
-  '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
+  '/raw-material-details/$materialId': typeof DashboardRawMaterialDetailsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
@@ -290,7 +290,7 @@ export interface FileRoutesByTo {
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
-  '/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
+  '/raw-material-details/$materialId': typeof DashboardRawMaterialDetailsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
@@ -328,7 +328,7 @@ export interface FileRoutesById {
   '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
   '/_dashboard/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/_dashboard/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
-  '/_dashboard/manage-dilutions/$materialId': typeof DashboardManageDilutionsMaterialIdRoute
+  '/_dashboard/raw-material-details/$materialId': typeof DashboardRawMaterialDetailsMaterialIdRoute
   '/api/agent/composition-chat': typeof ApiAgentCompositionChatRoute
   '/api/agent/formula-mod-chat': typeof ApiAgentFormulaModChatRoute
   '/api/agent/raw-material-chat': typeof ApiAgentRawMaterialChatRoute
@@ -366,7 +366,7 @@ export interface FileRouteTypes {
     | '/account/$pathname'
     | '/add-formula/$compositionId'
     | '/composition/$compositionId'
-    | '/manage-dilutions/$materialId'
+    | '/raw-material-details/$materialId'
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
@@ -402,7 +402,7 @@ export interface FileRouteTypes {
     | '/account/$pathname'
     | '/add-formula/$compositionId'
     | '/composition/$compositionId'
-    | '/manage-dilutions/$materialId'
+    | '/raw-material-details/$materialId'
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
@@ -439,7 +439,7 @@ export interface FileRouteTypes {
     | '/_dashboard/account/$pathname'
     | '/_dashboard/add-formula/$compositionId'
     | '/_dashboard/composition/$compositionId'
-    | '/_dashboard/manage-dilutions/$materialId'
+    | '/_dashboard/raw-material-details/$materialId'
     | '/api/agent/composition-chat'
     | '/api/agent/formula-mod-chat'
     | '/api/agent/raw-material-chat'
@@ -689,11 +689,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentCompositionChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_dashboard/manage-dilutions/$materialId': {
-      id: '/_dashboard/manage-dilutions/$materialId'
-      path: '/manage-dilutions/$materialId'
-      fullPath: '/manage-dilutions/$materialId'
-      preLoaderRoute: typeof DashboardManageDilutionsMaterialIdRouteImport
+    '/_dashboard/raw-material-details/$materialId': {
+      id: '/_dashboard/raw-material-details/$materialId'
+      path: '/raw-material-details/$materialId'
+      fullPath: '/raw-material-details/$materialId'
+      preLoaderRoute: typeof DashboardRawMaterialDetailsMaterialIdRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/composition/$compositionId': {
@@ -735,7 +735,7 @@ interface DashboardRouteChildren {
   DashboardAccountPathnameRoute: typeof DashboardAccountPathnameRoute
   DashboardAddFormulaCompositionIdRoute: typeof DashboardAddFormulaCompositionIdRoute
   DashboardCompositionCompositionIdRoute: typeof DashboardCompositionCompositionIdRoute
-  DashboardManageDilutionsMaterialIdRoute: typeof DashboardManageDilutionsMaterialIdRoute
+  DashboardRawMaterialDetailsMaterialIdRoute: typeof DashboardRawMaterialDetailsMaterialIdRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -754,8 +754,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAddFormulaCompositionIdRoute: DashboardAddFormulaCompositionIdRoute,
   DashboardCompositionCompositionIdRoute:
     DashboardCompositionCompositionIdRoute,
-  DashboardManageDilutionsMaterialIdRoute:
-    DashboardManageDilutionsMaterialIdRoute,
+  DashboardRawMaterialDetailsMaterialIdRoute:
+    DashboardRawMaterialDetailsMaterialIdRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
