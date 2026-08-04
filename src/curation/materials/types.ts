@@ -1,8 +1,13 @@
 // src/curation/materials/types.ts
 
+import type { CuratedCategoryName } from "@/utils/curated-category-colors";
+
 export type distributorId = "olfatorium" | "fraterworks";
 
 export type NoteType = "base" | "mid(heart)" | "high";
+
+/** L1 = curated parent; L2+ optional. At least one entry. */
+export type OlfactiveFamilyPath = [CuratedCategoryName, ...string[]];
 
 export type SourceName =
 	| "Google AI"
@@ -80,10 +85,12 @@ type SourceDataByName = {
 	Firmenich: CommonSourceData & {
 		url: string;
 		nameUsed: string;
+		olfactiveFamily: string;
 	};
 	IFF: CommonSourceData & {
 		url: string;
 		nameUsed: string;
+		olfactiveFamily: string;
 	};
 	Fraterworks: CommonSourceData & {
 		url: string;
@@ -119,6 +126,8 @@ export type MaterialRecord = {
 	cas?: string[];
 	otherNames?: string[];
 	noteType: NoteType;
+	/** e.g. ["woody"] or ["resinous / balsamic", "balsamic"] */
+	olfactiveFamily?: OlfactiveFamilyPath;
 	sources: SourceEntry[];
 	regulatory?: {
 		ifra?: IfraEntry;

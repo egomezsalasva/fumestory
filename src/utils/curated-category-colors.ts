@@ -1,4 +1,4 @@
-export const CURATED_CATEGORY_COLORS: Record<string, string> = {
+export const CURATED_CATEGORY_COLORS = {
 	animalic: "#8b4513",
 	musk: "#a78b9a",
 	leather: "#6b3a2a",
@@ -17,15 +17,15 @@ export const CURATED_CATEGORY_COLORS: Record<string, string> = {
 	"marine / ozonic": "#4a90a4",
 	gourmand: "#c47a5a",
 	sulfurous: "#a3a34a",
-};
+} as const;
+
+export type CuratedCategoryName = keyof typeof CURATED_CATEGORY_COLORS;
 
 /** Curated parent family names — agent + CI sync vs seed 017. */
 export const CURATED_CATEGORY_NAMES = Object.keys(CURATED_CATEGORY_COLORS) as [
-	string,
-	...string[],
+	CuratedCategoryName,
+	...CuratedCategoryName[],
 ];
-
-export type CuratedCategoryName = (typeof CURATED_CATEGORY_NAMES)[number];
 
 export const NEUTRAL_CATEGORY_COLOR = "#94a3b8";
 
@@ -35,7 +35,11 @@ export function resolveCategoryColor(
 ): string {
 	const key = name.trim().toLowerCase();
 	return (
-		overrides?.[key] ?? CURATED_CATEGORY_COLORS[key] ?? NEUTRAL_CATEGORY_COLOR
+		overrides?.[key] ??
+		(key in CURATED_CATEGORY_COLORS
+			? CURATED_CATEGORY_COLORS[key as CuratedCategoryName]
+			: undefined) ??
+		NEUTRAL_CATEGORY_COLOR
 	);
 }
 

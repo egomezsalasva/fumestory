@@ -4,7 +4,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 	meta: {
 		version: "2026-06-20",
 		createdAt: "2026-06-20T16:00:00+00:00",
-		updatedAt: "2026-07-04T08:46:54.880Z",
+		updatedAt: "2026-08-04T12:57:37.708Z",
 	},
 	materials: [
 		{
@@ -96,6 +96,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Acetate PA",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -223,6 +224,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"p-Methoxybenzyl alcohol",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -380,6 +382,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"2-Propenoic acid, 3-phenyl-phenylmethyl ester",
 			],
 			noteType: "base",
+			olfactiveFamily: ["resinous / balsamic", "balsamic"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -533,6 +536,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Liliphenal",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -634,12 +638,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Carvone L",
 			],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Symrise",
 					data: {
 						pdfUrl:
-							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_PC_Datenblaetter/SYM_PC-Carvone.pdf",
+							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_FC-reduziert-Einzelseiten/SYM_F-Carvone-L.pdf",
 						nameUsed: "Carvone L",
 						notes: ["mint", "spices", "herbs"],
 					},
@@ -674,6 +679,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Styryl carbinol",
 			],
 			noteType: "base",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -712,6 +718,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cassia aldehyde",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -830,6 +837,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Citral FF",
 			],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -891,6 +899,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Citronellol AJ",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -975,6 +984,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cuminic Aldehyde",
 			],
 			noteType: "high",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -1021,6 +1031,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclosal",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -1076,6 +1087,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Macrolide Supra",
 			],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1155,12 +1167,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cashmeran",
 			],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/cashmeran",
 						nameUsed: "Cashmeran",
+						olfactiveFamily: "Amber",
 						notes: [
 							"diffusive",
 							"spicy",
@@ -1273,6 +1287,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclal C",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1333,12 +1348,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Galbascone 95",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/galbascone-95/",
 						nameUsed: "Galbascone 95",
+						olfactiveFamily: "Green",
 						notes: [
 							"hyacinth",
 							"green",
@@ -1379,6 +1396,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Muguetol B",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1432,6 +1450,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Ultravanil 80%/DPG",
 			],
 			noteType: "base",
+			olfactiveFamily: ["gourmand"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -1548,6 +1567,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Farnesol Special",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1598,6 +1618,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Geraniol Prime",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1796,6 +1817,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Hexyl o-hydroxybenzoate",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -1888,12 +1910,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclohexal",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/lyral",
 						nameUsed: "Lyral",
+						olfactiveFamily: "Floral",
 						notes: [
 							"soft",
 							"delicate",
@@ -1936,6 +1960,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Suzaral",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Google AI",
@@ -2036,12 +2061,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"2,4,6-Trimethyl-3-cyclohexene-1-methanol",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/iso-cyclo-geraniol/",
 						nameUsed: "Iso Cyclo Geraniol",
+						olfactiveFamily: "Spicy",
 						notes: ["spicy", "green", "floral", "carnation"],
 					},
 				},
@@ -2117,12 +2144,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Jasmine Absolute Egypt",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/jasmin-absolute-egypt/",
 						nameUsed: "Jasmine Absolute Egypt",
+						olfactiveFamily: "Floral",
 						notes: [
 							"floral",
 							"fruit",
@@ -2160,6 +2189,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Jasmine Sambac Absolute India",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -2193,6 +2223,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/jasmin-absolute-sambac/",
 						nameUsed: "Jasmine Absolute Sambac",
+						olfactiveFamily: "Floral",
 						notes: [
 							"fruity",
 							"green",
@@ -2235,12 +2266,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Melissa Oil Balkan Org For Life",
 			],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/melissa-oil-balkan-org-for-life/",
 						nameUsed: "Melissa Oil Balkan Org For Life",
+						olfactiveFamily: "Herbal",
 						notes: ["citrus", "lemon", "rose petal", "fresh", "herbal"],
 					},
 				},
@@ -2419,11 +2452,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Scentenal",
 			],
 			noteType: "high",
+			olfactiveFamily: ["marine / ozonic"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/scentenalr-pe-981810",
+						olfactiveFamily: "Watery",
 						nameUsed: "Scentenal",
 						notes: [
 							"water",
@@ -2477,12 +2512,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Foliaver",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/canthoxal/",
 						nameUsed: "Canthoxal",
+						olfactiveFamily: "Herbal",
 						notes: ["licorice", "basil", "fennel", "anise", "fruit", "water"],
 					},
 				},
@@ -2522,6 +2559,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Methyl Guaiacol-4",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -2579,12 +2617,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Tropional",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/helional/",
 						nameUsed: "Helional",
+						olfactiveFamily: "Floral",
 						notes: ["green", "floral", "ozonic", "new mown hay"],
 					},
 				},
@@ -2693,6 +2733,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Folione",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -2741,7 +2782,40 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"1335-94-0",
 				"15789-90-9",
 			],
+			otherNames: [
+				"Methyl ionone, mixture of isomers",
+				"Methyl-α-ionone",
+				"α-Cetone",
+				"α-Cyclocitrylidenebutanone",
+				"α-Cyclocitrylidenemethyl ethyl ketone",
+				"α-Methylionone",
+				"1-Penten-3-one, 1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-, [R-(E)]-",
+				"(R-(E))-1-(2,6,6-Trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one",
+				"Methyl-beta-ionone",
+				"Methyl-β-ionone",
+				"β-Methylionone",
+				"β-Cetone",
+				"β-Cyclocitrylidenebutanone",
+				"β-Iraldeine",
+				"1-Penten-3-one, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-",
+				"5-(2,6,6-Trimethyl-1-cyclohexen-1-yl)-4-penten-3-one",
+				"1-(2,6,6-Trimethyl-1-cyclohexen-1-yl)pent-1-en-3-one",
+				"α-Isomethylionone",
+				"3-Buten-2-one, 3-methyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-",
+				"3-Methyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-3-buten-2-one",
+				"α-Isomethyl ionone",
+				"Iraldeine gamma",
+				"Isoraldeine 95",
+				"1-(2,6,6-Trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one",
+				"1-Penten-3-one, 1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-",
+				"iso-Methyl-β-ionone",
+				"3-Buten-2-one, 3-methyl-4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-",
+				"3-Methyl-4-(2,6,6-trimethylcyclohex-1-en-1-yl)but-3-en-2-one",
+				"δ-Iraldeine",
+				"Irone",
+			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -2778,38 +2852,6 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					},
 				},
 			],
-			otherNames: [
-				"Methyl ionone, mixture of isomers",
-				"Methyl-α-ionone",
-				"α-Cetone",
-				"α-Cyclocitrylidenebutanone",
-				"α-Cyclocitrylidenemethyl ethyl ketone",
-				"α-Methylionone",
-				"1-Penten-3-one, 1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-, [R-(E)]-",
-				"(R-(E))-1-(2,6,6-Trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one",
-				"Methyl-beta-ionone",
-				"Methyl-β-ionone",
-				"β-Methylionone",
-				"β-Cetone",
-				"β-Cyclocitrylidenebutanone",
-				"β-Iraldeine",
-				"1-Penten-3-one, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-",
-				"5-(2,6,6-Trimethyl-1-cyclohexen-1-yl)-4-penten-3-one",
-				"1-(2,6,6-Trimethyl-1-cyclohexen-1-yl)pent-1-en-3-one",
-				"α-Isomethylionone",
-				"3-Buten-2-one, 3-methyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-",
-				"3-Methyl-4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-3-buten-2-one",
-				"α-Isomethyl ionone",
-				"Iraldeine gamma",
-				"Isoraldeine 95",
-				"1-(2,6,6-Trimethyl-2-cyclohexen-1-yl)pent-1-en-3-one",
-				"1-Penten-3-one, 1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-",
-				"iso-Methyl-β-ionone",
-				"3-Buten-2-one, 3-methyl-4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-",
-				"3-Methyl-4-(2,6,6-trimethylcyclohex-1-en-1-yl)but-3-en-2-one",
-				"δ-Iraldeine",
-				"Irone",
-			],
 			regulatory: {
 				ifra: {
 					pdfUrl:
@@ -2841,6 +2883,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"MOC",
 			],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -2955,12 +2998,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Moss Oak Absolute IFRA 43",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/moss-oak-absolute-ifra-43/",
 						nameUsed: "Moss Oak Absolute IFRA 43",
+						olfactiveFamily: "Woody",
 						notes: [
 							"wood",
 							"moss",
@@ -3035,6 +3080,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Iso E Super",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -3057,6 +3103,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/iso-e-super/",
 						nameUsed: "Iso E Super",
+						olfactiveFamily: "Woody",
 						notes: ["smooth", "wood", "amber", "velvet", "floral"],
 					},
 				},
@@ -3124,11 +3171,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Opoponax RDE Super",
 			],
 			noteType: "base",
+			olfactiveFamily: ["resinous / balsamic", "balsamic"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/opoponax-rde-super-pe-968239",
+						olfactiveFamily: "Balsamic",
 						nameUsed: "Opoponax RDE Super",
 						notes: [
 							"sweet",
@@ -3179,12 +3228,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Peru Balsam Res",
 			],
 			noteType: "base",
+			olfactiveFamily: ["resinous / balsamic", "balsamic"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/peru-balsam-oil-md-fair-wild/",
 						nameUsed: "Peru Balsam Oil MD Fair Wild",
+						olfactiveFamily: "Balsamic",
 						notes: [
 							"balsamic",
 							"vanilla",
@@ -3200,6 +3251,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/peru-balsam-res-pe-971716",
+						olfactiveFamily: "Balsamic",
 						nameUsed: "Peru Balsam Res",
 						notes: ["balsamic", "resinous", "rich", "sweet", "amber"],
 					},
@@ -3288,6 +3340,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Phenyl Acetaldehyde 85%/PEA",
 			],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -3337,11 +3390,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Trifernal",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/trifernalr-pe-989007",
+						olfactiveFamily: "Green",
 						nameUsed: "Trifernal",
 						notes: [
 							"green",
@@ -3596,12 +3651,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Benzoin Powder Resinoid Laos",
 			],
 			noteType: "base",
+			olfactiveFamily: ["resinous / balsamic", "balsamic"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/styrax-honduras-res-pe-983834",
 						nameUsed: "Styrax Honduras Res",
+						olfactiveFamily: "Balsamic",
 						notes: [
 							"botanical",
 							"balsam",
@@ -3619,6 +3676,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/styrax-resinoid-low-styrene/",
 						nameUsed: "Styrax Resinoid Low Styrene",
+						olfactiveFamily: "Balsamic",
 						notes: [
 							"balsam",
 							"leather",
@@ -3808,6 +3866,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Safranal",
 			],
 			noteType: "high",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -3905,12 +3964,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Ylang ylang oil complete madag org",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/ylang-ylang-oil-complete-madag-org/",
 						nameUsed: "Ylang ylang oil complete madag org",
+						olfactiveFamily: "Floral",
 						notes: [
 							"floral",
 							"solar",
@@ -3987,6 +4048,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Angelica Root Oil Belgium",
 			],
 			noteType: "base",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -4022,6 +4084,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Bergamot oil expressed",
 			cas: ["8007-75-8", "89957-91-5"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -4076,6 +4139,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Daidai peel oil (Citrus aurantium L.)",
 			],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -4191,6 +4255,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["8016-20-4", "90045-43-5"],
 			otherNames: ["Grapefruit Oil USA"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -4269,12 +4334,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Lime oil expressed",
 			cas: ["8008-26-2", "90063-52-8"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/lmr-compendium/lime-oil-cp-persian-mex-fcr-lmr/",
 						nameUsed: "Lime Oil CP Persian Mex FCR LMR",
+						olfactiveFamily: "Citrus",
 						notes: [
 							"fresh",
 							"citrus",
@@ -4315,6 +4382,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Methyl o-methylaminobenzoate",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -4364,6 +4432,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Methyl Naphthyl Ketone Beta Cryst.",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -4451,11 +4520,13 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Tagete EO",
 			],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/tagete-eo-pe-984594",
+						olfactiveFamily: "Aromatic",
 						nameUsed: "Tagete EO",
 						notes: [
 							"fresh",
@@ -4871,6 +4942,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Allyl Isothiocyanate 98 Toco",
 			],
 			noteType: "high",
+			olfactiveFamily: ["sulfurous"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -7693,12 +7765,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"2(3H)-Naphthalenone, 4,4a,5,6,7,8-hexahydro-4,4a-dimethyl-6-(1-methylethenyl)-, (4R,4aS,6R)-",
 			],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/nootkatone-crystals/",
 						nameUsed: "Nootkatone Crystals",
+						olfactiveFamily: "Citrus",
 						notes: ["citrus", "powerful", "grapefruit", "wood"],
 					},
 				},
@@ -7731,6 +7805,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Dipentene",
 			],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -7787,12 +7862,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"1,6-Octadien-3-ol, 3,7-dimethyl-, (R)-",
 			],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://www.dsm-firmenich.com/es-mx/businesses/perfumery-beauty/beauty-care/products/linalool.html",
 						nameUsed: "Linalool",
+						olfactiveFamily: "Floral",
 						notes: ["floral", "lavender", "sweet", "intense"],
 					},
 				},
@@ -8061,12 +8138,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cuminyl alcohol",
 			],
 			noteType: "base",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/cuminyl-alcohol/",
 						nameUsed: "Cuminyl Alcohol",
+						olfactiveFamily: "Spicy",
 						notes: ["spicy", "warm", "herbal", "caraway"],
 					},
 				},
@@ -8244,12 +8323,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Pineapple compound",
 			],
 			noteType: "base",
+			olfactiveFamily: ["gourmand"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/furaneolr-pe-943881",
 						nameUsed: "Furaneol",
+						olfactiveFamily: "Gourmand",
 						notes: [
 							"gourmand",
 							"caramel",
@@ -8475,12 +8556,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Floral Super",
 			],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/floral-super/",
 						nameUsed: "Floral Super",
+						olfactiveFamily: "Floral",
 						notes: ["fresh", "cyclamen", "floral", "intense"],
 					},
 				},
@@ -8520,12 +8603,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Meijiff",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/mayolr-pe-957230",
 						nameUsed: "Mayol®",
+						olfactiveFamily: "Floral",
 						notes: [
 							"muguet",
 							"water",
@@ -8633,12 +8718,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Polysantol",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/polysantolr-pe-974656",
 						nameUsed: "Polysantol®",
+						olfactiveFamily: "Woody",
 						notes: ["botanical", "sandalwood", "cream"],
 					},
 				},
@@ -8647,6 +8734,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/mysantol/",
 						nameUsed: "Mysantol",
+						olfactiveFamily: "Woody",
 						notes: ["diffusive", "sandalwood", "cream"],
 					},
 				},
@@ -8678,6 +8766,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Sandalore™",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -8704,6 +8793,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/dersantoltm-pe-981200",
 						nameUsed: "Sandalore",
+						olfactiveFamily: "Woody",
 						notes: [
 							"botanical",
 							"sandalwood",
@@ -8973,6 +9063,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Herbanate",
 			],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -9066,12 +9157,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Karmawood",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Firmenich",
 					data: {
 						url: "https://studio.dsm-firmenich.com/product/norlimbanolr-pe-967412",
 						nameUsed: "Norlimbanol®",
+						olfactiveFamily: "Woody",
 						notes: ["dry", "wood", "amber", "powerful"],
 					},
 				},
@@ -9080,6 +9173,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/karmawood/",
 						nameUsed: "Karmawood",
+						olfactiveFamily: "Woody",
 						notes: ["wood", "powder", "amber", "cream", "sandalwood", "strong"],
 					},
 				},
@@ -9200,6 +9294,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["74338-72-0"],
 			otherNames: ["Claritone"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -9477,12 +9572,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Ethyl hydroxyheptyl ketone",
 			],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/methyl-lavender-ketone/",
 						nameUsed: "Methyl Lavender Ketone",
+						olfactiveFamily: "Floral",
 						notes: ["sweet", "herbal", "metallic", "lavender"],
 					},
 				},
@@ -9519,12 +9616,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Koavone®",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/koavone/",
 						nameUsed: "Koavone®",
+						olfactiveFamily: "Woody",
 						notes: [
 							"wood",
 							"balsamic",
@@ -9564,6 +9663,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Citronitrile",
 			],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -9655,6 +9755,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["2550-11-0"],
 			otherNames: ["4,7-Dimethyloct-6-en-3-one", "6-Octen-3-one, 4,7-dimethyl"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -9699,12 +9800,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Orivone",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/orivone/",
 						nameUsed: "Orivone",
+						olfactiveFamily: "Woody",
 						notes: ["powerful", "orris", "camphor", "earth"],
 					},
 				},
@@ -9736,12 +9839,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Tris amber super",
 			],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/trisamber/",
 						nameUsed: "Trisamber",
+						olfactiveFamily: "Amber",
 						notes: [
 							"strong",
 							"wood",
@@ -9785,6 +9890,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cyclohexylpropionic acid allyl ester",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -9916,6 +10022,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Sensinile",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -10037,6 +10144,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"CarvyL Acetate Cis L",
 			],
 			noteType: "high",
+			olfactiveFamily: ["sulfurous"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10045,6 +10153,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 							"https://www.symrise.com/fileadmin/symrise/Marketing/Scent_and_care/Aroma_molecules/Ingredient_finder/SYM_FC_Einzel-PDF/SYM_FC-Carvyl_Acetate_Cis_L.pdf",
 						nameUsed: "CarvyL Acetate Cis L",
 						notes: [
+							"sulfurous",
+							"garlic",
+							"grapefruit",
 							"mint",
 							"spice",
 							"herb",
@@ -10163,12 +10274,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Vertelione",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/liffarome/",
 						nameUsed: "Liffarome™",
+						olfactiveFamily: "Green",
 						notes: ["violet", "green", "pear", "grass"],
 					},
 				},
@@ -10250,12 +10363,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"L-Citronellyl acetate",
 			],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/citronellyl-acetate/",
 						nameUsed: "Citronellyl Acetate",
+						olfactiveFamily: "Fruity",
 						notes: ["rose", "citrus", "fresh", "fruit"],
 					},
 				},
@@ -10280,6 +10395,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["2550-52-9"],
 			otherNames: ["Homoexaltone", "Isomuscone"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10347,6 +10463,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Aurelione",
 			],
 			noteType: "base",
+			olfactiveFamily: ["resinous / balsamic", "balsamic"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10392,6 +10509,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Madranol",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10440,6 +10558,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Boisambrene forte",
 			],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10471,6 +10590,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["62439-42-3"],
 			otherNames: ["Heptanal, 6-hydroxy-2,6-dimethyl"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["marine / ozonic"],
 			sources: [
 				{
 					sourceName: "Bedoukian",
@@ -10604,6 +10724,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Poivrol",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -10688,6 +10809,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"4(or 3)-(4-Methyl-3-pentenyl)-3-cyclohexenylmethyl acetate & isomers",
 			],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -10728,7 +10850,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName:
 				"Octahydro-dimethylnaphthalene-2-carbaldehyde (mixed isomers)",
-			cas: ["68991-96-8", "68991-97-9", "68738-96-5", "68738-94-3"],
+			cas: ["68991-96-8", "68738-96-5", "68738-94-3"],
 			otherNames: [
 				"2-Naphthalenecarboxaldehyde, octahydro-8,8-dimethyl",
 				"Dimethyloctahydro-2-naphthaldehyde",
@@ -10739,30 +10861,54 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"1,2,3,4,5,6,7,8-Octahydro-5,5-dimethylnaphthalene-2-carbaldehyde",
 				"2-Naphthalenecarboxaldehyde, 1,2,3,4,5,6,7,8-octahydro-5,5-dimethyl",
 				"5,5-Dimethyl-1,2,3,4,5,6,7,8-octahydro-2-naphthalenecarboxaldehyde",
-				"1,2,3,4,5,6,7,8-Octahydro-8,8-dimethyl-2-naphthaldehyde",
 				"2-Naphthalenecarboxaldehyde, 1,2,3,4,5,6,7,8-octahydro-8,8-dimethyl",
 				"8,8-Dimethyl-1,2,3,4,5,6,7,8-octahydro-2-naphthalenecarboxaldehyde",
 				"Melafleur",
-				"Cyclemone A",
 				"Cyclomeral",
 				"Cyclomyral",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
+			sources: [
+				{
+					sourceName: "IFF",
+					data: {
+						url: "https://www.iff.com/scent/ingredients-compendium/melafleur/",
+						nameUsed: "Melafleur",
+						olfactiveFamily: "Floral",
+						notes: ["floral", "muguet", "fresh", "green", "melon"],
+					},
+				},
+			],
+			regulatory: {
+				ifra: {
+					pdfUrl:
+						"https://d3t14p1xronwr0.cloudfront.net/docs/standards/IFRA_STD_259.pdf",
+					rules: [
+						{
+							status: "restriction",
+							categoryLimits: {
+								"4": 2.1,
+							},
+						},
+					],
+				},
+			},
+		},
+		{
+			canonicalName: "Cyclemone A",
+			cas: ["68991-97-9"],
+			otherNames: ["1,2,3,4,5,6,7,8-Octahydro-8,8-dimethyl-2-naphthaldehyde"],
+			noteType: "mid(heart)",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/cyclemone-a/",
 						nameUsed: "Cyclemone A",
+						olfactiveFamily: "Fruity",
 						notes: ["fresh", "clean", "ozonic", "marine", "herbal"],
-					},
-				},
-				{
-					sourceName: "IFF",
-					data: {
-						url: "https://www.iff.com/scent/ingredients-compendium/melafleur/",
-						nameUsed: "Melafleur",
-						notes: ["floral", "muguet", "fresh", "green", "melon"],
 					},
 				},
 			],
@@ -10836,12 +10982,14 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Cortex Aldehyde 50% TEC",
 			],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "IFF",
 					data: {
 						url: "https://www.iff.com/scent/ingredients-compendium/cortex-aldehyde-50-tec/",
 						nameUsed: "Cortex Aldehyde 50% TEC",
+						olfactiveFamily: "Green",
 						notes: ["green", "floral", "fresh"],
 					},
 				},
@@ -10982,6 +11130,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Palisandin",
 			],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Symrise",
@@ -11107,6 +11256,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Acetal CD",
 			cas: ["29895-73-6"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11126,6 +11276,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Acetate C9 Nonylic",
 			cas: ["143-13-5"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11145,6 +11296,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Adoxal",
 			cas: ["141-13-9"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["marine / ozonic"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11171,6 +11323,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Aldehyde C11 Undecylenic",
 			cas: ["112-45-8"],
 			noteType: "base",
+			olfactiveFamily: ["aldehydic"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11199,6 +11352,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Aldehyde Iso C11",
 			cas: ["1337-83-3"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["aldehydic"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11218,6 +11372,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Alicate",
 			cas: ["10250-45-0"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11238,6 +11393,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["110-27-0", "57345-19-4"],
 			otherNames: ["Amberketal"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11258,6 +11414,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["110-27-0", "3407-42-9"],
 			otherNames: ["Sandela™", "Sandela"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11278,6 +11435,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["110-27-0", "109-29-5", "502-72-7"],
 			otherNames: ["Silvanone™", "Silvanone"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11298,6 +11456,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["929625-08-1", "1001252-30-7", "77-93-0"],
 			otherNames: ["Ambermax™ 10%/TEC", "Ambermax 10%"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11318,6 +11477,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["929625-08-1", "1001252-30-7", "25498-49-1"],
 			otherNames: ["Ambermax™ 50%", "Ambermax 50%", "Dowanol TPM", "Dowanol"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11338,6 +11498,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["675-09-2", "77-93-0"],
 			otherNames: ["Levistamel 25%"],
 			noteType: "base",
+			olfactiveFamily: ["gourmand"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11358,6 +11519,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["77-93-0", "94201-19-1", "81783-01-9"],
 			otherNames: ["Methyl Laitone 10%"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11378,6 +11540,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["929625-08-1", "1001252-30-7", "77-93-0"],
 			otherNames: ["Undecatriene 10%"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11397,6 +11560,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Labienoxime 10%/IPM-TEC",
 			cas: ["77-93-0", "110-27-0", "81783-01-9"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11416,6 +11580,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ambrettolide",
 			cas: ["28645-51-4"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11435,6 +11600,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ambrofix™",
 			cas: ["6790-58-5", "3738-00-9"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11454,6 +11620,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Amyl Salicylate",
 			cas: ["2050-08-0", "51115-63-0"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11473,6 +11640,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Amyl Vinyl Carbinol",
 			cas: ["3391-86-4"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11492,6 +11660,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Anisyl Acetate",
 			cas: ["104-21-2"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11511,6 +11680,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Anther",
 			cas: ["56011-02-0"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11530,6 +11700,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Aurantiol™ Pure",
 			cas: ["89-43-0"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11556,6 +11727,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Azarbre",
 			cas: ["68845-36-3"],
 			noteType: "high",
+			olfactiveFamily: ["gourmand"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11582,6 +11754,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Benzyl Propionate",
 			cas: ["122-63-4"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11601,6 +11774,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Berryflor™",
 			cas: ["104986-28-9"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11628,6 +11802,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Bisabolene",
 			cas: ["17627-44-0", "502-61-4", "18794-84-8", "495-62-5"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11656,6 +11831,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["68845-00-1"],
 			otherNames: ["Boisiris"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11675,6 +11851,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Butyl Quinoline Secondary",
 			cas: ["65442-31-1", "67634-06-4"],
 			noteType: "base",
+			olfactiveFamily: ["leather"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11694,6 +11871,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Pyralone",
 			cas: ["65442-31-1"],
 			noteType: "base",
+			olfactiveFamily: ["leather"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11713,6 +11891,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Celery Ketone",
 			cas: ["3720-16-9"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11732,6 +11911,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Cervolide",
 			cas: ["6707-60-4"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11752,6 +11932,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["65405-84-7"],
 			otherNames: ["Cetonal"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11771,6 +11952,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Cetone V",
 			cas: ["79-78-7"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11798,6 +11980,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 				"Citrathal Tech",
 			],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11841,6 +12024,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Cumin Nitrile",
 			cas: ["13816-33-6"],
 			noteType: "high",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11860,6 +12044,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Cyclohexyl Salicylate",
 			cas: ["25485-88-5"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11879,6 +12064,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Decatone",
 			cas: ["34131-98-1"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11906,6 +12092,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Decenal-4-Trans",
 			cas: ["65405-70-1", "30390-50-2"],
 			noteType: "high",
+			olfactiveFamily: ["aldehydic"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11934,6 +12121,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Dihydro Ambrate",
 			cas: ["37172-02-4"],
 			noteType: "high",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11953,6 +12141,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Dihydro Ionone Beta",
 			cas: ["17283-81-7"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11972,6 +12161,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Dupical",
 			cas: ["30168-23-1"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -11992,6 +12182,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["67801-20-1"],
 			otherNames: ["Ebanol"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12011,6 +12202,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Elintaal",
 			cas: ["40910-49-4"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12030,6 +12222,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ethyl Linalool",
 			cas: ["10339-55-6"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12049,6 +12242,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ethyl Linalyl Acetate",
 			cas: ["61931-80-4"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12078,6 +12272,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ethyl Methyl-2-Butyrate",
 			cas: ["7452-79-1"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12097,6 +12292,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Ethyl Safranate",
 			cas: ["35044-59-8", "35044-57-6", "35044-58-7"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12117,6 +12313,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["125109-85-5"],
 			otherNames: ["Florhydral"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12144,6 +12341,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Florocyclene",
 			cas: ["68912-13-0", "17511-60-3"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12171,6 +12369,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Florosa",
 			cas: ["63500-71-0"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12190,6 +12389,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Freskomenthe™",
 			cas: ["14765-30-1"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12209,6 +12409,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Frutonile",
 			cas: ["69300-15-8"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12228,6 +12429,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Gardamide",
 			cas: ["84434-18-4"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12254,6 +12456,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Gardocyclene",
 			cas: ["67634-20-2"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12273,6 +12476,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Geranodyle",
 			cas: ["42822-86-6", "50373-36-9"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12300,6 +12504,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["57934-97-1", "77851-07-1"],
 			otherNames: ["Givescone"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12319,6 +12524,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Glycolierral",
 			cas: ["68901-32-6", "94087-23-7"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12338,6 +12544,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Gyrane",
 			cas: ["24237-00-1", "24237-01-2", "24237-02-3"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12357,6 +12564,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Herboxane",
 			cas: ["54546-26-8"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12383,6 +12591,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Hexyl Acetate",
 			cas: ["142-92-7"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12402,6 +12611,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Indolene 50%/CSO",
 			cas: ["68908-82-7", "8001-79-4"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12421,6 +12631,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Irisone™ Alpha",
 			cas: ["127-41-3", "8013-90-9"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12448,6 +12659,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Irisone™ Pure",
 			cas: ["127-41-3", "8013-90-9", "14901-07-6"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12475,6 +12687,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Irone Alpha",
 			cas: ["79-69-6"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12494,6 +12707,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isobutavan",
 			cas: ["20665-85-4"],
 			noteType: "base",
+			olfactiveFamily: ["gourmand"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12523,6 +12737,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isobutyl Quinoline-2",
 			cas: ["93-19-6"],
 			noteType: "base",
+			olfactiveFamily: ["leather"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12542,6 +12757,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isojasmone B 11",
 			cas: ["95-41-0"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12561,6 +12777,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isolongifolanone",
 			cas: ["23787-90-8"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12580,6 +12797,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isomenthone DL",
 			cas: ["491-07-6", "89-80-5"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12606,6 +12824,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isopropyl Methyl-2-Butyrate",
 			cas: ["66576-71-4"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12632,6 +12851,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Isopropyl Quinoline",
 			cas: ["135-79-5", "6457-30-3"],
 			noteType: "base",
+			olfactiveFamily: ["leather"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12651,6 +12871,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmacyclene",
 			cas: ["54830-99-8", "2500-83-6", "5413-60-5"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12670,6 +12891,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmatone",
 			cas: ["13074-65-2"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12689,6 +12911,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmone Cis",
 			cas: ["488-10-8"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12708,6 +12931,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmonyl™ LG",
 			cas: ["18871-14-2", "38285-49-3"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12727,6 +12951,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmonyl™",
 			cas: ["18871-14-2", "63270-14-4"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12746,6 +12971,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmopyrane Forte",
 			cas: ["18871-14-2"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12773,6 +12999,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Jasmopyrane",
 			cas: ["18871-14-2"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12800,6 +13027,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Javanol™ Super",
 			cas: ["198404-98-7"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12838,6 +13066,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Kephalis",
 			cas: ["36306-87-3"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12857,6 +13086,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Lemonile™",
 			cas: ["61792-11-8"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12876,6 +13106,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Lime Oxide",
 			cas: ["73018-51-6"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12895,6 +13126,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Limetol",
 			cas: ["7392-19-0"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12914,6 +13146,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalool Oxide",
 			cas: ["1365-19-1", "60047-17-8"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12933,6 +13166,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalyl Benzoate",
 			cas: ["126-64-7"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12952,6 +13186,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalyl Cinnamate",
 			cas: ["78-37-5"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12971,6 +13206,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalyl Formate",
 			cas: ["115-99-1"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -12990,6 +13226,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalyl Isobutyrate",
 			cas: ["78-35-3"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13009,6 +13246,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Linalyl Propionate",
 			cas: ["144-39-8"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13035,6 +13273,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Maceal",
 			cas: ["68259-31-4"],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13061,8 +13300,9 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 		{
 			canonicalName: "Madrox™",
 			cas: ["37514-30-0"],
-			noteType: "mid(heart)",
 			otherNames: ["Madrox"],
+			noteType: "mid(heart)",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13082,6 +13322,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Manzanate",
 			cas: ["39255-32-8"],
 			noteType: "high",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13101,6 +13342,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Mefranal",
 			cas: ["55066-49-4"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13127,6 +13369,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Anthranilate Extra",
 			cas: ["134-20-3"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13146,6 +13389,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Diantilis™",
 			cas: ["5595-79-9"],
 			noteType: "base",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13165,6 +13409,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Heptenone Pure",
 			cas: ["110-93-0"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13184,6 +13429,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Laitone 10%/DPG",
 			cas: ["94201-19-1", "91069-37-3", "25265-71-8"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13203,6 +13449,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Pharaone™ 10%/DPG",
 			cas: ["25265-71-8", "313973-37-4"],
 			noteType: "base",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13230,6 +13477,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Sclarene 80%/DPG",
 			cas: ["94201-19-1", "91069-37-3", "25265-71-8"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13257,6 +13505,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Pamplemousse",
 			cas: ["67674-46-8"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13276,6 +13525,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Methyl Tuberate Pure",
 			cas: ["33673-62-0", "35205-76-6"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13295,6 +13545,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Musk R1",
 			cas: ["3391-83-1"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13314,6 +13565,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Nectaryl",
 			cas: ["95962-14-4"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13333,6 +13585,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Orcinyl 3",
 			cas: ["3209-13-0"],
 			noteType: "base",
+			olfactiveFamily: ["leather"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13352,6 +13605,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Oxyoctaline Formate",
 			cas: ["65405-72-3"],
 			noteType: "base",
+			olfactiveFamily: ["woody"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13371,6 +13625,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Paradisamide™",
 			cas: ["406488-30-0"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13396,6 +13651,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Pelargene",
 			cas: ["30310-41-9", "68039-41-8", "68039-40-7"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13415,6 +13671,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Petiole",
 			cas: ["68039-47-4"],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13441,6 +13698,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Pivacyclene",
 			cas: ["68039-44-1"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13460,6 +13718,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Pivarose",
 			cas: ["67662-96-8"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13487,6 +13746,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Rhubafuran",
 			cas: ["82461-14-1", "99343-91-6", "99343-90-5"],
 			noteType: "high",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13514,6 +13774,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Rosyrane Super",
 			cas: ["60335-74-2", "60335-71-9"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13541,6 +13802,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Safraleine™",
 			cas: ["54440-17-4"],
 			noteType: "base",
+			olfactiveFamily: ["spices"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13568,6 +13830,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Spirambrene",
 			cas: ["121251-68-1", "121251-67-0"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13588,6 +13851,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["224031-70-3", "224031-71-4"],
 			otherNames: ["Spirogalbanone Pure"],
 			noteType: "base",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13608,6 +13872,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["22457-23-4"],
 			otherNames: ["Stemone"],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13627,6 +13892,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Strawberry Pure",
 			cas: ["77-83-8"],
 			noteType: "base",
+			olfactiveFamily: ["fruity"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13646,6 +13912,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Syringa Aldehyde 50%",
 			cas: ["104-09-6", "699-02-5", "60-12-8"],
 			noteType: "high",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13665,6 +13932,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Tangerinol",
 			cas: ["3239-35-8", "3239-37-0", "91482-37-0"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13684,6 +13952,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Tetrahydro Citral",
 			cas: ["5988-91-0"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13704,6 +13973,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["16510-27-3"],
 			otherNames: ["Toscanol"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13735,6 +14005,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Tridecene-2-Nitrile",
 			cas: ["22629-49-8"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13754,6 +14025,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Undecavertol",
 			cas: ["81782-77-6"],
 			noteType: "mid(heart)",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13781,6 +14053,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["37609-25-9"],
 			otherNames: ["Velvione"],
 			noteType: "base",
+			olfactiveFamily: ["musk"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13800,6 +14073,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Verdantiol",
 			cas: ["91-51-0"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13819,6 +14093,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Verdoracine",
 			cas: ["14374-92-6"],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13839,6 +14114,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["66327-54-6", "693252-50-5"],
 			otherNames: ["Vernaldehyde"],
 			noteType: "high",
+			olfactiveFamily: ["herbal"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13865,6 +14141,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			canonicalName: "Neobergamate Forte",
 			cas: ["69103-01-1"],
 			noteType: "base",
+			olfactiveFamily: ["citrus"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13892,6 +14169,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["111-79-5", "14952-06-8"],
 			otherNames: ["NeoFolione"],
 			noteType: "high",
+			olfactiveFamily: ["green"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13912,6 +14190,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["1637294-12-2"],
 			otherNames: ["Nympheal"],
 			noteType: "base",
+			olfactiveFamily: ["floral"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13942,6 +14221,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["131812-67-4", "131812-52-7", "131812-51-6"],
 			otherNames: ["Okoumal"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
@@ -13970,6 +14250,7 @@ export const curatedMaterialsData: CuratedMaterialsDataset = {
 			cas: ["9000-72-0"],
 			otherNames: ["Benzoin Powder Resinoid Laos"],
 			noteType: "base",
+			olfactiveFamily: ["amber"],
 			sources: [
 				{
 					sourceName: "Givaudan",
