@@ -1,5 +1,6 @@
 import formStyles from "@/components/Form.module.css";
-import academyStyles from "./Academy.module.css";
+import styles from "./LessonComplete.module.css";
+import shared from "./shared.module.css";
 
 type LessonStartOverCardProps = {
 	lessonStreak: number;
@@ -13,29 +14,29 @@ export default function LessonStartOverCard({
 	onStartOver,
 }: LessonStartOverCardProps) {
 	return (
-		<div className={academyStyles.lessonCompleteCard}>
-			<h2 className={academyStyles.lessonStartOverTitle}>Out of lives</h2>
-			<p className={academyStyles.lessonStreakAchieved}>
+		<div className={styles.lessonCompleteCard}>
+			<h2 className={styles.lessonStartOverTitle}>Out of lives</h2>
+			<p className={styles.lessonStreakAchieved}>
 				Lesson streak achieved: {lessonStreak}
 			</p>
-			<p className={academyStyles.lessonStartOverMessage}>
+			<p className={styles.lessonStartOverMessage}>
 				{lessonStreak > 0
 					? "Your streak has ended. Start over to try again."
 					: "Start over to begin a new run."}
 			</p>
 			<div
-				className={academyStyles.lives}
+				className={shared.lives}
 				aria-label={`0 of ${maxLives} lives remaining`}
 			>
 				{Array.from({ length: maxLives }, (_, index) => (
 					<span
 						key={index}
-						className={`${academyStyles.life} ${academyStyles.lifeLost}`}
+						className={`${shared.life} ${shared.lifeLost}`}
 						aria-hidden="true"
 					/>
 				))}
 			</div>
-			<div className={academyStyles.gameActions}>
+			<div className={shared.gameActions}>
 				<button
 					type="button"
 					className={formStyles.formSubmitButton}

@@ -1,0 +1,176 @@
+.pickBackdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 30;
+	border: none;
+	padding: 0;
+	margin: 0;
+	background: rgb(0 0 0 / 0.55);
+	cursor: pointer;
+}
+
+.pickGrid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.75rem;
+	width: 100%;
+	max-width: 24rem;
+	margin: 0 auto 1.25rem;
+}
+
+.pickSlot {
+	aspect-ratio: 5 / 6;
+	position: relative;
+	min-width: 0;
+}
+
+.pickSlot[data-expanded="true"]::before {
+	content: "";
+	display: block;
+	padding-top: calc(100% * 6 / 5);
+}
+
+.pickCard {
+	position: absolute;
+	inset: 0;
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	border: none;
+	background: transparent;
+	color: #f5f7fa;
+	font: inherit;
+	cursor: pointer;
+	transform-style: preserve-3d;
+	transform: rotateY(0deg);
+	z-index: 1;
+}
+
+.pickCard[data-floating="true"] {
+	position: fixed;
+	inset: auto;
+	z-index: 40;
+}
+
+.pickCard[data-animate="true"] {
+	transition:
+		top 0.55s ease,
+		left 0.55s ease,
+		width 0.55s ease,
+		height 0.55s ease,
+		transform 0.55s ease;
+}
+
+.pickCard[data-flipped="true"] {
+	transform: rotateY(180deg);
+}
+
+.pickCard[data-locked="true"],
+.pickCard:disabled {
+	cursor: not-allowed;
+}
+
+.pickCard[data-locked="true"] .pickFaceFront {
+	opacity: 0.35;
+	filter: grayscale(1);
+	background: #121a2a;
+	border-color: rgb(216 227 240 / 0.12);
+}
+
+.pickFaceFront,
+.pickFaceBack {
+	position: absolute;
+	inset: 0;
+	box-sizing: border-box;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(216 227 240 / 0.2);
+	background: #0b172d;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	overflow: hidden;
+}
+
+.pickFaceFront {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	transform: rotateY(0deg);
+}
+
+.pickFaceBack {
+	display: flex;
+	flex-direction: column;
+	padding: 1.25rem;
+	transform: rotateY(180deg);
+}
+
+.pickBackScroll {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.pickMaterialName {
+	font-size: 1.75rem;
+	margin-top: 1.5rem;
+}
+
+.pickRevealCards {
+	margin-top: 1rem;
+	width: 100%;
+}
+
+.pickRevealCard {
+	background: rgb(11 23 45 / 0.6);
+}
+
+.pickBackPrompt {
+	flex-shrink: 0;
+	font-size: 1rem;
+	color: rgb(255 255 255 / 0.75);
+	margin: 0.75rem 0 0;
+	text-align: center;
+}
+
+.pickBackHint {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	flex-shrink: 0;
+	font-size: 0.8rem;
+	color: rgb(255 255 255 / 0.5);
+	margin: 0.25rem 0 0;
+	text-align: center;
+}
+
+.pickBackHint svg {
+	width: 0.9rem;
+	height: auto;
+	flex-shrink: 0;
+}
+
+.pickFamily {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 0.95rem;
+	line-height: 1.2;
+	text-align: center;
+	overflow-wrap: anywhere;
+}
+
+.pickStatus {
+	font-size: 1.25rem;
+	line-height: 1;
+	color: rgb(255 255 255 / 0.75);
+}
+
+.pickCard[data-picked="true"] .pickStatus {
+	color: rgb(187 247 208);
+}

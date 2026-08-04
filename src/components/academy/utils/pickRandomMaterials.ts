@@ -2,6 +2,7 @@ import type { MaterialRecord } from "@/curation/materials/types";
 import { getMaterialProducerSources } from "./materialSources";
 
 export const LESSON_SIZE = 3;
+export const POOL_SIZE = 9;
 
 /** Max producer sources per material in a lesson. Set to 2+ later for harder UI. */
 export const LESSON_MAX_PRODUCER_SOURCES = 1;

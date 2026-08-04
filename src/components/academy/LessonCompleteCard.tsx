@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
-import academyStyles from "./Academy.module.css";
+import styles from "./LessonComplete.module.css";
+import shared from "./shared.module.css";
 import {
 	getMaterialDisplayNames,
 	getMasteryValue,
@@ -10,9 +11,25 @@ import {
 	type LessonQuizEvent,
 	type MaterialMasteryMap,
 } from "@/components/academy/utils";
-import { capitalizeWordStartsIfLower } from "@/utils/display-names";
+import {
+	capitalizeWordStartsIfLower,
+	toTitleCaseWords,
+} from "@/utils/display-names";
+import {
+	hexToRgba,
+	NEUTRAL_CATEGORY_COLOR,
+	resolveCategoryColor,
+} from "@/utils/curated-category-colors";
 
 type CompleteStep = "lesson" | "materials";
+
+type CategoryProgress = {
+	family: string;
+	label: string;
+	known: number;
+	total: number;
+	color: string;
+};
 
 type LessonCompleteCardProps = {
 	level: number;
@@ -21,6 +38,9 @@ type LessonCompleteCardProps = {
 	previousKnownCount: number;
 	knownMaterialsCount: number;
 	allReliableMaterialsCount: number;
+	materials: MaterialRecord[];
+	learnedMaterialKeys: ReadonlySet<string>;
+	previousLearnedKeys: ReadonlySet<string>;
 	lessonMaterials: MaterialRecord[];
 	lessonStartMastery: MaterialMasteryMap;
 	materialMastery: MaterialMasteryMap;
@@ -38,49 +58,94 @@ const MASTERY_ROW_PAUSE_MS = 100;
 const MASTERY_ROW_CYCLE_MS = MASTERY_BAR_ANIMATION_MS + MASTERY_ROW_PAUSE_MS;
 const LESSON_SEGMENT_FILL_MS = 1200;
 
+function getCategoryProgress(
+	materials: MaterialRecord[],
+	learnedKeys: ReadonlySet<string>,
+): CategoryProgress[] {
+	const map = new Map<string, { known: number; total: number }>();
+
+	for (const material of materials) {
+		const family = material.olfactiveFamily?.[0]?.trim().toLowerCase();
+		if (!family) continue;
+
+		const entry = map.get(family) ?? { known: 0, total: 0 };
+		entry.total += 1;
+		if (learnedKeys.has(normalizeMaterialKey(material))) {
+			entry.known += 1;
+		}
+		map.set(family, entry);
+	}
+
+	return [...map.entries()]
+		.map(([family, { known, total }]) => ({
+			family,
+			label: toTitleCaseWords(family),
+			known,
+			total,
+			color: resolveCategoryColor(family),
+		}))
+		.sort((a, b) => a.family.localeCompare(b.family));
+}
+
 function AnimatedNumber({
 	from,
 	to,
 	duration = KNOWN_COUNT_ANIMATION_MS,
+	delayMs = 0,
 	className,
 }: {
 	from: number;
 	to: number;
 	duration?: number;
+	delayMs?: number;
 	className?: string;
 }) {
 	const [value, setValue] = useState(from);
 
 	useEffect(() => {
 		setValue(from);
-		const start = performance.now();
 		let rafId = 0;
 
-		const tick = (now: number) => {
-			const progress = Math.min(1, (now - start) / duration);
-			setValue(Math.round(from + (to - from) * progress));
+		const delayTimer = window.setTimeout(() => {
+			const start = performance.now();
 
-			if (progress < 1) {
-				rafId = requestAnimationFrame(tick);
-			}
+			const tick = (now: number) => {
+				const progress = Math.min(1, (now - start) / duration);
+				setValue(Math.round(from + (to - from) * progress));
+
+				if (progress < 1) {
+					rafId = requestAnimationFrame(tick);
+				}
+			};
+
+			rafId = requestAnimationFrame(tick);
+		}, delayMs);
+
+		return () => {
+			window.clearTimeout(delayTimer);
+			cancelAnimationFrame(rafId);
 		};
-
-		rafId = requestAnimationFrame(tick);
-		return () => cancelAnimationFrame(rafId);
-	}, [from, to, duration]);
+	}, [from, to, duration, delayMs]);
 
 	return <span className={className}>{value}</span>;
 }
 
-function MaterialMasteryRow({
-	label,
+function MaterialMasteryCard({
+	material,
 	targetValue,
 	animationDelayMs = 0,
 }: {
-	label: string;
+	material: MaterialRecord;
 	targetValue: number;
 	animationDelayMs?: number;
 }) {
+	const familyParent = material.olfactiveFamily?.[0];
+	const color = familyParent
+		? resolveCategoryColor(familyParent)
+		: NEUTRAL_CATEGORY_COLOR;
+	const displayName =
+		getMaterialDisplayNames(material)[0] ?? material.canonicalName;
+	const label = capitalizeWordStartsIfLower(displayName);
 	const targetScale = targetValue / MASTERY_TARGET;
 	const [fillScale, setFillScale] = useState(0);
 
@@ -99,24 +164,26 @@ function MaterialMasteryRow({
 
 	return (
 		<div
-			className={`${academyStyles.materialMasteryRow} ${
-				isComplete ? academyStyles.materialMasteryComplete : ""
+			className={`${styles.materialMasteryCard} ${
+				isComplete ? styles.materialMasteryComplete : ""
 			}`}
+			style={{
+				background: `linear-gradient(${hexToRgba(color, 0.4)}, ${hexToRgba(color, 0.4)}), #0b172d`,
+				borderColor: hexToRgba(color, 0.55),
+			}}
 		>
-			<p className={academyStyles.materialMasteryLabel}>{label}</p>
-			<div className={academyStyles.materialMasteryTrack}>
-				<div className={academyStyles.materialMasteryTrackInner}>
+			<p className={styles.materialMasteryLabel}>{label}</p>
+			<div className={styles.materialMasteryTrack}>
+				<div className={styles.materialMasteryTrackInner}>
 					{Array.from({ length: MASTERY_TARGET }, (_, index) => (
-						<span
-							key={index}
-							className={academyStyles.materialMasterySegment}
-						/>
+						<span key={index} className={styles.materialMasterySegment} />
 					))}
 					<span
-						className={academyStyles.materialMasteryFill}
+						className={styles.materialMasteryFill}
 						style={{
 							transform: `scaleX(${fillScale})`,
 							transitionDuration: `${MASTERY_BAR_ANIMATION_MS}ms`,
+							background: hexToRgba(color, 0.85),
 						}}
 					/>
 				</div>
@@ -141,14 +208,14 @@ function LessonCompleteSummary({
 	promotedToLevel: number | null;
 }) {
 	return (
-		<div className={academyStyles.lessonCompleteCard}>
-			<p className={academyStyles.lessonCompleteLevel}>Level {level}</p>
-			<p className={academyStyles.lessonCompleteStreak}>
+		<div className={styles.lessonCompleteCard}>
+			<p className={styles.lessonCompleteLevel}>Level {level}</p>
+			<p className={styles.lessonCompleteStreak}>
 				Lesson {lessonInLevel}/{lessonsPerLevel}
 			</p>
 
 			<div
-				className={academyStyles.lessonProgressTrack}
+				className={styles.lessonProgressTrack}
 				aria-label={`Lesson ${lessonInLevel} of ${lessonsPerLevel} complete`}
 			>
 				{Array.from({ length: lessonsPerLevel }, (_, index) => {
@@ -156,12 +223,12 @@ function LessonCompleteSummary({
 					const isPreviouslyCompleted = index < lessonInLevel - 1;
 
 					return (
-						<span key={index} className={academyStyles.lessonProgressSegment}>
+						<span key={index} className={styles.lessonProgressSegment}>
 							{isCompleted ? (
 								<span
-									className={`${academyStyles.lessonProgressSegmentFill}${
+									className={`${styles.lessonProgressSegmentFill}${
 										isPreviouslyCompleted
-											? ` ${academyStyles.lessonProgressSegmentFillStatic}`
+											? ` ${styles.lessonProgressSegmentFillStatic}`
 											: ""
 									}`}
 									style={
@@ -177,20 +244,20 @@ function LessonCompleteSummary({
 			</div>
 
 			{promotedToLevel ? (
-				<p className={academyStyles.lessonCompleteStreak}>
+				<p className={styles.lessonCompleteStreak}>
 					Congrats! You moved up to level {promotedToLevel}!
 				</p>
 			) : null}
 
 			<div
-				className={academyStyles.lives}
+				className={shared.lives}
 				aria-label={`${lives} of ${maxLives} lives remaining`}
 			>
 				{Array.from({ length: maxLives }, (_, index) => (
 					<span
 						key={index}
-						className={`${academyStyles.life} ${
-							index < lives ? academyStyles.lifeActive : academyStyles.lifeLost
+						className={`${shared.life} ${
+							index < lives ? shared.lifeActive : shared.lifeLost
 						}`}
 						aria-hidden="true"
 					/>
@@ -204,6 +271,9 @@ function LessonCompleteMaterials({
 	previousKnownCount,
 	knownMaterialsCount,
 	allReliableMaterialsCount,
+	materials,
+	learnedMaterialKeys,
+	previousLearnedKeys,
 	lessonMaterials,
 	materialMastery,
 	onNextLesson,
@@ -211,51 +281,112 @@ function LessonCompleteMaterials({
 	previousKnownCount: number;
 	knownMaterialsCount: number;
 	allReliableMaterialsCount: number;
+	materials: MaterialRecord[];
+	learnedMaterialKeys: ReadonlySet<string>;
+	previousLearnedKeys: ReadonlySet<string>;
 	lessonMaterials: MaterialRecord[];
 	materialMastery: MaterialMasteryMap;
 	onNextLesson: () => void;
 }) {
+	const categories = getCategoryProgress(materials, learnedMaterialKeys);
+	const previousByFamily = new Map(
+		getCategoryProgress(materials, previousLearnedKeys).map((cat) => [
+			cat.family,
+			cat.known,
+		]),
+	);
+
+	const updatedFamilies = categories
+		.filter((cat) => cat.known > (previousByFamily.get(cat.family) ?? 0))
+		.map((cat) => cat.family);
+
+	const categoryAnimStartMs = KNOWN_COUNT_ANIMATION_MS;
+	const masteryAnimStartMs =
+		KNOWN_COUNT_ANIMATION_MS +
+		updatedFamilies.length * KNOWN_COUNT_ANIMATION_MS;
+
 	return (
-		<div className={academyStyles.lessonCompleteCard}>
-			<div className={academyStyles.lessonCompleteKnownCountContainer}>
-				<p className={academyStyles.lessonCompleteKnownLabel}>You now know</p>
-				<p className={academyStyles.lessonCompleteKnownCount}>
+		<div className={styles.lessonCompleteCard}>
+			<div className={styles.lessonCompleteKnownCountContainer}>
+				<p className={styles.lessonCompleteKnownLabel}>You now know</p>
+				<p className={styles.lessonCompleteKnownCount}>
 					<AnimatedNumber
 						from={previousKnownCount}
 						to={knownMaterialsCount}
 						duration={KNOWN_COUNT_ANIMATION_MS}
-						className={academyStyles.lessonStreakAchieved}
+						className={styles.lessonStreakAchieved}
 					/>
 					/{allReliableMaterialsCount}
 				</p>
-				<p className={academyStyles.lessonCompleteKnownSubLabel}>materials</p>
+				<p className={styles.lessonCompleteKnownSubLabel}>materials</p>
 			</div>
 
-			<div className={academyStyles.lessonCompleteMaterialsList}>
+			<div className={styles.categoryProgressGrid}>
+				{categories.map((cat) => {
+					const previousKnown = previousByFamily.get(cat.family) ?? 0;
+					const updated = cat.known > previousKnown;
+					const updatedIndex = updatedFamilies.indexOf(cat.family);
+
+					return (
+						<div
+							key={cat.family}
+							className={styles.categoryProgressCard}
+							data-updated={updated}
+							style={{
+								background: `linear-gradient(${hexToRgba(cat.color, 0.4)}, ${hexToRgba(cat.color, 0.4)}), #0b172d`,
+								borderColor: hexToRgba(cat.color, 0.55),
+							}}
+							title={cat.label}
+							aria-label={`${cat.label}: ${cat.known} of ${cat.total}`}
+						>
+							<span className={styles.categoryProgressCount}>
+								{updated ? (
+									<AnimatedNumber
+										from={previousKnown}
+										to={cat.known}
+										duration={KNOWN_COUNT_ANIMATION_MS}
+										delayMs={
+											categoryAnimStartMs +
+											updatedIndex * KNOWN_COUNT_ANIMATION_MS
+										}
+									/>
+								) : (
+									cat.known
+								)}
+								/{cat.total}
+							</span>
+							<span className={styles.categoryProgressLabel}>{cat.label}</span>
+						</div>
+					);
+				})}
+			</div>
+
+			<p className={styles.lessonCompleteMaterialsHeading}>
+				Materials You Studied
+			</p>
+			<div className={styles.lessonCompleteMaterialsList}>
 				{lessonMaterials.map((material, index) => {
 					const materialKey = normalizeMaterialKey(material);
-					const displayName =
-						getMaterialDisplayNames(material)[0] ?? material.canonicalName;
 					const targetValue = getMasteryValue(materialMastery, materialKey);
 
 					return (
-						<MaterialMasteryRow
+						<MaterialMasteryCard
 							key={materialKey}
-							label={capitalizeWordStartsIfLower(displayName)}
+							material={material}
 							targetValue={targetValue}
 							animationDelayMs={
-								KNOWN_COUNT_ANIMATION_MS + index * MASTERY_ROW_CYCLE_MS
+								masteryAnimStartMs + index * MASTERY_ROW_CYCLE_MS
 							}
 						/>
 					);
 				})}
 			</div>
 
-			<p className={academyStyles.lessonStartOverMessage}>
+			<p className={styles.lessonStartOverMessage}>
 				Great job, let's keep learning.
 			</p>
 
-			<div className={academyStyles.gameActions}>
+			<div className={shared.gameActions}>
 				<button
 					type="button"
 					className={formStyles.formSubmitButton}
@@ -275,6 +406,9 @@ export default function LessonCompleteCard({
 	previousKnownCount,
 	knownMaterialsCount,
 	allReliableMaterialsCount,
+	materials,
+	learnedMaterialKeys,
+	previousLearnedKeys,
 	lessonMaterials,
 	materialMastery,
 	lives,
@@ -310,6 +444,9 @@ export default function LessonCompleteCard({
 			previousKnownCount={previousKnownCount}
 			knownMaterialsCount={knownMaterialsCount}
 			allReliableMaterialsCount={allReliableMaterialsCount}
+			materials={materials}
+			learnedMaterialKeys={learnedMaterialKeys}
+			previousLearnedKeys={previousLearnedKeys}
 			lessonMaterials={lessonMaterials}
 			materialMastery={materialMastery}
 			onNextLesson={onNextLesson}

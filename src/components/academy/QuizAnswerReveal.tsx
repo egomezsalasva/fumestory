@@ -1,5 +1,5 @@
 import type { MaterialRecord } from "@/curation/materials/types";
-import academyStyles from "./Academy.module.css";
+import shared from "./shared.module.css";
 import {
 	getMaterialProducerSources,
 	getSourceCardKey,
@@ -26,19 +26,16 @@ export default function QuizAnswerReveal({
 	const sources = getMaterialProducerSources(material);
 
 	return (
-		<div className={academyStyles.revealCards}>
+		<div className={shared.revealCards}>
 			{sources.map((source) => {
 				const href = getSourceLink(source.data);
 				const notes = source.data.notes ?? [];
 				const nameUsed = getSourceNameUsed(source.data);
 
 				return (
-					<div
-						key={getSourceCardKey(source)}
-						className={academyStyles.revealCard}
-					>
-						<p className={academyStyles.revealLabel}>Notes</p>
-						<ul className={academyStyles.revealNotes}>
+					<div key={getSourceCardKey(source)} className={shared.revealCard}>
+						<p className={shared.revealLabel}>Notes</p>
+						<ul className={shared.revealNotes}>
 							{notes.map((note) => {
 								const isCorrect =
 									note.toLowerCase() === correctNote.toLowerCase();
@@ -49,13 +46,13 @@ export default function QuizAnswerReveal({
 										key={note}
 										className={
 											isCorrect
-												? `${academyStyles.revealNoteChip} ${academyStyles.revealNoteChipCorrect}`
-												: academyStyles.revealNoteChip
+												? `${shared.revealNoteChip} ${shared.revealNoteChipCorrect}`
+												: shared.revealNoteChip
 										}
 									>
 										{dotStyle ? (
 											<span
-												className={academyStyles.revealNoteDot}
+												className={shared.revealNoteDot}
 												style={{ background: dotStyle }}
 												aria-hidden="true"
 											/>
@@ -66,27 +63,27 @@ export default function QuizAnswerReveal({
 							})}
 						</ul>
 
-						<p className={academyStyles.revealLabel}>
+						<p className={shared.revealLabel}>
 							Source
 							{isManufacturerSource(source) ? " / Manufacturer" : ""}
 						</p>
 
-						<div className={academyStyles.revealSource}>
+						<div className={shared.revealSource}>
 							{href && (
 								<a
 									href={href}
 									target="_blank"
 									rel="noopener noreferrer"
-									className={academyStyles.revealSourceLink}
+									className={shared.revealSourceLink}
 								>
 									<div
-										className={`${academyStyles.producerLogos} ${academyStyles.producerLogosReveal}`}
+										className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
 									>
 										<ProducerLogo sourceName={source.sourceName} />
 									</div>
 
 									{nameUsed && (
-										<p className={academyStyles.revealTradeName}>
+										<p className={shared.revealTradeName}>
 											{capitalizeWordStartsIfLower(nameUsed)}
 										</p>
 									)}

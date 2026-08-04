@@ -1,13 +1,16 @@
 import { useState } from "react";
 import type { MaterialRecord, SourceName } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
-import academyStyles from "./Academy.module.css";
+import styles from "./Academy.module.css";
+import shared from "./shared.module.css";
 import {
 	LESSON_SIZE,
+	POOL_SIZE,
 	applyMasteryDelta,
 	generateQuestionForMaterial,
 	getMasteryValue,
 	getProducerMaterials,
+	pickRandomMaterials,
 	shuffleMaterials,
 	type LessonQuizEvent,
 	type MaterialMasteryMap,
@@ -16,7 +19,7 @@ import {
 } from "@/components/academy/utils";
 import { toTitleCaseWords } from "@/utils/display-names";
 import LessonCompleteCard from "./LessonCompleteCard";
-import LessonLearnCard from "./LessonLearnCard";
+import LessonPickGrid from "./LessonPickGrid";
 import LessonStartOverCard from "./LessonStartOverCard";
 import QuizAnswerReveal from "./QuizAnswerReveal";
 
@@ -37,13 +40,14 @@ type LessonPhase = "learn" | "quiz" | "complete" | "gameOver";
 type Level = 1 | 2 | 3;
 
 type LessonState = {
-	lessonSet: MaterialRecord[];
-	learnSequence: MaterialRecord[];
+	pool: MaterialRecord[];
+	pickedKeys: string[];
 };
 
 type CompleteSnapshot = {
 	previousKnownCount: number;
 	newKnownCount: number;
+	previousLearnedKeys: string[];
 	lessonMaterials: MaterialRecord[];
 	lessonStartMastery: MaterialMasteryMap;
 };
@@ -82,38 +86,23 @@ function isMaterialInLevel(material: MaterialRecord, level: Level): boolean {
 	return noteCount >= 10;
 }
 
-function pickLessonMaterials(
-	pool: MaterialRecord[],
-	count: number = LESSON_SIZE,
-): MaterialRecord[] {
-	if (pool.length < count) {
-		throw new Error(
-			`Need ${count} lesson materials but only ${pool.length} available`,
-		);
-	}
-
-	const copy = [...pool];
-	const picked: MaterialRecord[] = [];
-
-	for (let i = 0; i < count; i++) {
-		const index = Math.floor(Math.random() * copy.length);
-		picked.push(copy[index]);
-		copy.splice(index, 1);
-	}
-
-	return picked;
-}
-
 function createLesson(level: Level): LessonState {
 	const levelMaterials = materials.filter((m) => isMaterialInLevel(m, level));
-	const pool =
-		levelMaterials.length >= LESSON_SIZE ? levelMaterials : materials;
-	const lessonSet = pickLessonMaterials(pool);
+	const source =
+		levelMaterials.length >= POOL_SIZE ? levelMaterials : materials;
 
 	return {
-		lessonSet,
-		learnSequence: shuffleMaterials(lessonSet),
+		pool: pickRandomMaterials(source, POOL_SIZE),
+		pickedKeys: [],
 	};
+}
+
+function getPickedMaterials(lesson: LessonState): MaterialRecord[] {
+	return lesson.pickedKeys
+		.map((key) =>
+			lesson.pool.find((material) => normalizeMaterialKey(material) === key),
+		)
+		.filter((material): material is MaterialRecord => material != null);
 }
 
 function optionClass(
@@ -121,7 +110,7 @@ function optionClass(
 	selected: string | null,
 	correctNote: string,
 ): string {
-	const base = `${formStyles.feedbackNoRatingButton} ${academyStyles.optionButton}`;
+	const base = `${formStyles.feedbackNoRatingButton} ${styles.optionButton}`;
 
 	if (!selected) {
 		return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
@@ -132,11 +121,11 @@ function optionClass(
 		option === selected && selected.toLowerCase() !== correctNote.toLowerCase();
 
 	if (isCorrectOption) {
-		return `${base} ${academyStyles.optionCorrect}`;
+		return `${base} ${styles.optionCorrect}`;
 	}
 
 	if (isSelectedWrong) {
-		return `${base} ${academyStyles.optionWrong}`;
+		return `${base} ${styles.optionWrong}`;
 	}
 
 	return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
@@ -145,8 +134,8 @@ function optionClass(
 export default function Academy() {
 	const [phase, setPhase] = useState<LessonPhase>("learn");
 	const [lesson, setLesson] = useState<LessonState>(() => createLesson(1));
+	const [expandedKey, setExpandedKey] = useState<string | null>(null);
 	const [quizSequence, setQuizSequence] = useState<MaterialRecord[]>([]);
-	const [learnIndex, setLearnIndex] = useState(0);
 	const [quizIndex, setQuizIndex] = useState(0);
 	const [question, setQuestion] = useState<QuizQuestion | null>(null);
 	const [selected, setSelected] = useState<string | null>(null);
@@ -175,6 +164,7 @@ export default function Academy() {
 	const currentLevelBaseLessons = (currentLevel - 1) * LESSONS_PER_LEVEL;
 
 	const allReliableMaterialsCount = materials.length;
+	const picksReady = lesson.pickedKeys.length >= LESSON_SIZE;
 
 	const isCorrect =
 		question !== null &&
@@ -185,8 +175,8 @@ export default function Academy() {
 
 	function startNewLesson(level: Level = currentLevel) {
 		setLesson(createLesson(level));
+		setExpandedKey(null);
 		setQuizSequence([]);
-		setLearnIndex(0);
 		setQuizIndex(0);
 		setPhase("learn");
 		setQuestion(null);
@@ -197,17 +187,19 @@ export default function Academy() {
 	}
 
 	function completeLesson() {
+		const quizMaterials = getPickedMaterials(lesson);
 		const previousKnownCount = learnedMaterialKeys.size;
 		const nextLearnedKeys = new Set(learnedMaterialKeys);
 
-		for (const material of lesson.lessonSet) {
+		for (const material of quizMaterials) {
 			nextLearnedKeys.add(normalizeMaterialKey(material));
 		}
 
 		setCompleteSnapshot({
 			previousKnownCount,
 			newKnownCount: nextLearnedKeys.size,
-			lessonMaterials: lesson.lessonSet,
+			previousLearnedKeys: [...learnedMaterialKeys],
+			lessonMaterials: quizMaterials,
 			lessonStartMastery,
 		});
 
@@ -231,25 +223,41 @@ export default function Academy() {
 		setSelected(null);
 	}
 
-	function handleLearnBack() {
-		if (learnIndex > 0) {
-			setLearnIndex((current) => current - 1);
-		}
-	}
+	function handleToggleMaterial(material: MaterialRecord) {
+		const key = normalizeMaterialKey(material);
+		const alreadyPicked = lesson.pickedKeys.includes(key);
+		const picksFull = lesson.pickedKeys.length >= LESSON_SIZE;
 
-	function handleLearnNext() {
-		if (learnIndex < lesson.learnSequence.length - 1) {
-			setLearnIndex((current) => current + 1);
+		if (expandedKey === key) {
+			setExpandedKey(null);
 			return;
 		}
 
+		if (picksFull && !alreadyPicked) return;
+
+		setLesson((current) => {
+			if (current.pickedKeys.includes(key)) return current;
+			if (current.pickedKeys.length >= LESSON_SIZE) return current;
+			return {
+				...current,
+				pickedKeys: [...current.pickedKeys, key],
+			};
+		});
+		setExpandedKey(key);
+	}
+
+	function handleStartQuiz() {
+		const quizMaterials = getPickedMaterials(lesson);
+		if (quizMaterials.length < LESSON_SIZE) return;
+
 		const startMastery: MaterialMasteryMap = {};
-		for (const material of lesson.lessonSet) {
+		for (const material of quizMaterials) {
 			const key = normalizeMaterialKey(material);
 			startMastery[key] = getMasteryValue(materialMastery, key);
 		}
 
-		const sequence = shuffleMaterials(lesson.lessonSet);
+		const sequence = shuffleMaterials(quizMaterials);
+		setExpandedKey(null);
 		setQuizSequence(sequence);
 		setQuizIndex(0);
 		setLessonStartMastery(startMastery);
@@ -338,41 +346,32 @@ export default function Academy() {
 		completedLevel < MAX_LEVEL;
 
 	const promotedToLevel = hasLeveledUp ? completedLevel + 1 : null;
-	const currentLearnMaterial = lesson.learnSequence[learnIndex];
 
 	return (
-		<section className={academyStyles.quizSection}>
-			<div
-				className={`${formStyles.formContainer} ${academyStyles.quizContainer}`}
-			>
+		<section className={styles.quizSection}>
+			<div className={`${formStyles.formContainer} ${styles.quizContainer}`}>
 				{phase === "learn" ? (
 					<>
-						<LessonLearnCard
-							key={normalizeMaterialKey(currentLearnMaterial)}
-							material={currentLearnMaterial}
-							cardIndex={learnIndex}
-							totalCards={lesson.learnSequence.length}
+						<h2 className={styles.learnProgress}>
+							Pick 3 Material Cards to Study
+						</h2>
+						<LessonPickGrid
+							materials={lesson.pool}
+							pickedKeys={lesson.pickedKeys}
+							expandedKey={expandedKey}
+							onToggle={handleToggleMaterial}
 						/>
-						<div className={academyStyles.gameActions}>
-							{learnIndex > 0 && (
+						{picksReady && !expandedKey ? (
+							<div className={shared.gameActions}>
 								<button
 									type="button"
 									className={formStyles.formSubmitButton}
-									onClick={handleLearnBack}
+									onClick={handleStartQuiz}
 								>
-									Back
+									Start quiz
 								</button>
-							)}
-							<button
-								type="button"
-								className={formStyles.formSubmitButton}
-								onClick={handleLearnNext}
-							>
-								{learnIndex < lesson.learnSequence.length - 1
-									? "Next"
-									: "Start quiz"}
-							</button>
-						</div>
+							</div>
+						) : null}
 					</>
 				) : phase === "complete" && completeSnapshot ? (
 					<LessonCompleteCard
@@ -382,6 +381,9 @@ export default function Academy() {
 						previousKnownCount={completeSnapshot.previousKnownCount}
 						knownMaterialsCount={completeSnapshot.newKnownCount}
 						allReliableMaterialsCount={allReliableMaterialsCount}
+						materials={materials}
+						learnedMaterialKeys={learnedMaterialKeys}
+						previousLearnedKeys={new Set(completeSnapshot.previousLearnedKeys)}
 						lessonMaterials={completeSnapshot.lessonMaterials}
 						lessonStartMastery={completeSnapshot.lessonStartMastery}
 						materialMastery={materialMastery}
@@ -400,58 +402,60 @@ export default function Academy() {
 				) : (
 					question && (
 						<>
-							<div className={academyStyles.gameStatus}>
+							<div className={styles.gameStatus}>
 								<div
-									className={academyStyles.lives}
+									className={shared.lives}
 									aria-label={`${lives} of ${MAX_LIVES} lives remaining`}
 								>
 									{Array.from({ length: MAX_LIVES }, (_, index) => (
 										<span
 											key={index}
-											className={`${academyStyles.life} ${
-												index < lives
-													? academyStyles.lifeActive
-													: academyStyles.lifeLost
+											className={`${shared.life} ${
+												index < lives ? shared.lifeActive : shared.lifeLost
 											}`}
 											aria-hidden="true"
 										/>
 									))}
 								</div>
-								<span
-									className={academyStyles.gameStatusDivider}
-									aria-hidden="true"
-								/>
-								<p className={academyStyles.streak}>
+								<span className={styles.gameStatusDivider} aria-hidden="true" />
+								<p className={styles.streak}>
 									{currentLevel === 3
 										? `Lesson streak: ${lessonStreak}`
 										: `Lesson ${currentLevel} - ${currentLessonInLevel}/${LESSONS_PER_LEVEL}`}
 								</p>
 							</div>
 
-							<div className={academyStyles.quizMaterialSection}>
+							<div className={styles.quizMaterialSection}>
 								<p
 									className={formStyles.formLabel}
 									style={{ textAlign: "center" }}
 								>
 									Raw material
 								</p>
-								<div className={academyStyles.materialNames}>
+								<div className={shared.materialNames}>
 									{question.displayNames.map((name) => (
-										<h2 key={name} className={academyStyles.materialName}>
+										<h2 key={name} className={shared.materialName}>
 											{toTitleCaseWords(name)}
 										</h2>
 									))}
 								</div>
-								<p className={academyStyles.materialCas}>
+								<p className={shared.materialCas}>
 									CAS: {question.material.cas?.join(", ") ?? "—"}
 								</p>
+								{question.material.olfactiveFamily ? (
+									<p className={shared.materialFamily}>
+										{question.material.olfactiveFamily
+											.map(toTitleCaseWords)
+											.join(" · ")}
+									</p>
+								) : null}
 							</div>
 
-							<div className={academyStyles.quizOptionsSection}>
-								<p className={academyStyles.prompt}>
+							<div className={styles.quizOptionsSection}>
+								<p className={styles.prompt}>
 									Which note belongs to this material?
 								</p>
-								<ul className={academyStyles.options}>
+								<ul className={styles.options}>
 									{question.options.map((option, index) => (
 										<li key={option}>
 											<button
@@ -464,7 +468,7 @@ export default function Academy() {
 												disabled={selected !== null}
 												onClick={() => handleSelect(option)}
 											>
-												<span className={academyStyles.optionLetter}>
+												<span className={styles.optionLetter}>
 													{getOptionLetter(index)})
 												</span>
 												{toTitleCaseWords(option)}
@@ -482,7 +486,7 @@ export default function Academy() {
 							)}
 
 							{selected && isCorrect && (
-								<div className={academyStyles.gameActions}>
+								<div className={shared.gameActions}>
 									<button
 										type="button"
 										className={formStyles.formSubmitButton}
@@ -494,7 +498,7 @@ export default function Academy() {
 							)}
 
 							{selected && !isCorrect && lives > 0 && (
-								<div className={academyStyles.gameActions}>
+								<div className={shared.gameActions}>
 									<button
 										type="button"
 										className={formStyles.formSubmitButton}
