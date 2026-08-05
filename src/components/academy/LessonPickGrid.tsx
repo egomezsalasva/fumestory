@@ -199,7 +199,6 @@ function PickCard({
 				data-picked={picked}
 				data-locked={lockedOut}
 				data-floating={floating}
-				data-flipped={flipped}
 				data-animate={animate}
 				disabled={lockedOut}
 				style={floatStyle}
@@ -213,103 +212,107 @@ function PickCard({
 							: `${familyLabel}, unknown. Expand`
 				}
 			>
-				<div
-					className={styles.pickFaceFront}
-					style={lockedOut ? undefined : faceStyle}
-				>
-					<span className={styles.pickFamily}>
-						{picked && !floating
-							? capitalizeWordStartsIfLower(displayNames[0] ?? familyLabel)
-							: familyLabel}
-					</span>
-					<span className={styles.pickStatus} aria-hidden="true">
-						{picked ? "✓" : "?"}
-					</span>
-				</div>
-				<div className={styles.pickFaceBack} style={faceStyle}>
-					<div className={styles.pickBackScroll}>
-						<div className={shared.materialNameLine}>
-							{displayNames.map((name) => (
-								<h2
-									key={name}
-									className={`${shared.materialName} ${styles.pickMaterialName}`}
-								>
-									{capitalizeWordStartsIfLower(name)}
-								</h2>
-							))}
-						</div>
-						<p className={shared.materialCas}>
-							CAS: {material.cas?.join(" ∙ ") ?? "—"}
-						</p>
-						{familyPathLabel ? (
-							<p className={shared.materialFamily}>{familyPathLabel}</p>
-						) : null}
-
-						<div className={`${shared.revealCards} ${styles.pickRevealCards}`}>
-							{sources.map((source) => {
-								const href = getSourceLink(source.data);
-								const notes = source.data.notes ?? [];
-								const nameUsed = getSourceNameUsed(source.data);
-
-								return (
-									<div
-										key={getSourceCardKey(source)}
-										className={`${shared.revealCard} ${styles.pickRevealCard}`}
-									>
-										<p className={shared.revealLabel}>Notes</p>
-										<ul className={shared.revealNotes}>
-											{notes.map((note) => {
-												const dotStyle = getNoteDotStyle(note);
-												return (
-													<li key={note} className={shared.revealNoteChip}>
-														{dotStyle ? (
-															<span
-																className={shared.revealNoteDot}
-																style={{ background: dotStyle }}
-																aria-hidden="true"
-															/>
-														) : null}
-														<span>{toTitleCaseWords(note)}</span>
-													</li>
-												);
-											})}
-										</ul>
-										<p className={shared.revealLabel}>
-											Source
-											{isManufacturerSource(source) ? " / Manufacturer" : ""}
-										</p>
-										<div className={shared.revealSource}>
-											{href ? (
-												<a
-													href={href}
-													target="_blank"
-													rel="noopener noreferrer"
-													className={shared.revealSourceLink}
-													onClick={(event) => event.stopPropagation()}
-												>
-													<div
-														className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
-													>
-														<ProducerLogo sourceName={source.sourceName} />
-													</div>
-													{nameUsed ? (
-														<p className={shared.revealTradeName}>
-															{capitalizeWordStartsIfLower(nameUsed)}
-														</p>
-													) : null}
-												</a>
-											) : null}
-										</div>
-									</div>
-								);
-							})}
-						</div>
+				<div className={styles.pickFlipInner} data-flipped={flipped}>
+					<div
+						className={styles.pickFaceFront}
+						style={lockedOut ? undefined : faceStyle}
+					>
+						<span className={styles.pickFamily}>
+							{picked && !floating
+								? capitalizeWordStartsIfLower(displayNames[0] ?? familyLabel)
+								: familyLabel}
+						</span>
+						<span className={styles.pickStatus} aria-hidden="true">
+							{picked ? "✓" : "?"}
+						</span>
 					</div>
-					<p className={styles.pickBackPrompt}>Remember The Notes</p>
-					<p className={styles.pickBackHint}>
-						<FlipIcon />
-						<span>Click to Shrink Back</span>
-					</p>
+					<div className={styles.pickFaceBack} style={faceStyle}>
+						<div className={styles.pickBackScroll}>
+							<div className={shared.materialNameLine}>
+								{displayNames.map((name) => (
+									<h2
+										key={name}
+										className={`${shared.materialName} ${styles.pickMaterialName}`}
+									>
+										{capitalizeWordStartsIfLower(name)}
+									</h2>
+								))}
+							</div>
+							<p className={shared.materialCas}>
+								CAS: {material.cas?.join(" ∙ ") ?? "—"}
+							</p>
+							{familyPathLabel ? (
+								<p className={shared.materialFamily}>{familyPathLabel}</p>
+							) : null}
+
+							<div
+								className={`${shared.revealCards} ${styles.pickRevealCards}`}
+							>
+								{sources.map((source) => {
+									const href = getSourceLink(source.data);
+									const notes = source.data.notes ?? [];
+									const nameUsed = getSourceNameUsed(source.data);
+
+									return (
+										<div
+											key={getSourceCardKey(source)}
+											className={`${shared.revealCard} ${styles.pickRevealCard}`}
+										>
+											<p className={shared.revealLabel}>Notes</p>
+											<ul className={shared.revealNotes}>
+												{notes.map((note) => {
+													const dotStyle = getNoteDotStyle(note);
+													return (
+														<li key={note} className={shared.revealNoteChip}>
+															{dotStyle ? (
+																<span
+																	className={shared.revealNoteDot}
+																	style={{ background: dotStyle }}
+																	aria-hidden="true"
+																/>
+															) : null}
+															<span>{toTitleCaseWords(note)}</span>
+														</li>
+													);
+												})}
+											</ul>
+											<p className={shared.revealLabel}>
+												Source
+												{isManufacturerSource(source) ? " / Manufacturer" : ""}
+											</p>
+											<div className={shared.revealSource}>
+												{href ? (
+													<a
+														href={href}
+														target="_blank"
+														rel="noopener noreferrer"
+														className={shared.revealSourceLink}
+														onClick={(event) => event.stopPropagation()}
+													>
+														<div
+															className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
+														>
+															<ProducerLogo sourceName={source.sourceName} />
+														</div>
+														{nameUsed ? (
+															<p className={shared.revealTradeName}>
+																{capitalizeWordStartsIfLower(nameUsed)}
+															</p>
+														) : null}
+													</a>
+												) : null}
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+						<p className={styles.pickBackPrompt}>Remember The Notes</p>
+						<p className={styles.pickBackHint}>
+							<FlipIcon />
+							<span>Click to Shrink Back</span>
+						</p>
+					</div>
 				</div>
 			</button>
 		</div>
