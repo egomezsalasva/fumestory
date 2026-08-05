@@ -3,16 +3,9 @@ import shared from "./shared.module.css";
 import {
 	getMaterialProducerSources,
 	getSourceCardKey,
-	getSourceLink,
-	getSourceNameUsed,
-	isManufacturerSource,
 } from "@/components/academy/utils";
 import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
-import {
-	capitalizeWordStartsIfLower,
-	toTitleCaseWords,
-} from "@/utils/display-names";
-import ProducerLogo from "@/components/svgs/ProducerLogo";
+import { toTitleCaseWords } from "@/utils/display-names";
 
 type QuizAnswerRevealProps = {
 	material: MaterialRecord;
@@ -28,14 +21,15 @@ export default function QuizAnswerReveal({
 	return (
 		<div className={shared.revealCards}>
 			{sources.map((source) => {
-				const href = getSourceLink(source.data);
 				const notes = source.data.notes ?? [];
-				const nameUsed = getSourceNameUsed(source.data);
 
 				return (
 					<div key={getSourceCardKey(source)} className={shared.revealCard}>
-						<p className={shared.revealLabel}>Notes</p>
-						<ul className={shared.revealNotes}>
+						<p className={shared.revealLabel}>Correct Notes</p>
+						<ul
+							className={shared.revealNotes}
+							style={{ marginBottom: "0.5rem" }}
+						>
 							{notes.map((note) => {
 								const isCorrect =
 									note.toLowerCase() === correctNote.toLowerCase();
@@ -62,34 +56,6 @@ export default function QuizAnswerReveal({
 								);
 							})}
 						</ul>
-
-						<p className={shared.revealLabel}>
-							Source
-							{isManufacturerSource(source) ? " / Manufacturer" : ""}
-						</p>
-
-						<div className={shared.revealSource}>
-							{href && (
-								<a
-									href={href}
-									target="_blank"
-									rel="noopener noreferrer"
-									className={shared.revealSourceLink}
-								>
-									<div
-										className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
-									>
-										<ProducerLogo sourceName={source.sourceName} />
-									</div>
-
-									{nameUsed && (
-										<p className={shared.revealTradeName}>
-											{capitalizeWordStartsIfLower(nameUsed)}
-										</p>
-									)}
-								</a>
-							)}
-						</div>
 					</div>
 				);
 			})}

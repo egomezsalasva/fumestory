@@ -9,7 +9,9 @@ import {
 	applyMasteryDelta,
 	generateQuestionForMaterial,
 	getMasteryValue,
+	getMaterialProducerSources,
 	getProducerMaterials,
+	getSourceCardKey,
 	pickRandomMaterials,
 	shuffleMaterials,
 	type LessonQuizEvent,
@@ -18,6 +20,7 @@ import {
 	type QuizQuestion,
 } from "@/components/academy/utils";
 import { toTitleCaseWords } from "@/utils/display-names";
+import ProducerLogo from "@/components/svgs/ProducerLogo";
 import LessonCompleteCard from "./LessonCompleteCard";
 import LessonPickGrid from "./LessonPickGrid";
 import LessonStartOverCard from "./LessonStartOverCard";
@@ -426,12 +429,6 @@ export default function Academy() {
 							</div>
 
 							<div className={styles.quizMaterialSection}>
-								<p
-									className={formStyles.formLabel}
-									style={{ textAlign: "center" }}
-								>
-									Raw material
-								</p>
 								<div className={shared.materialNames}>
 									{question.displayNames.map((name) => (
 										<h2 key={name} className={shared.materialName}>
@@ -439,16 +436,19 @@ export default function Academy() {
 										</h2>
 									))}
 								</div>
-								<p className={shared.materialCas}>
-									CAS: {question.material.cas?.join(", ") ?? "—"}
-								</p>
-								{question.material.olfactiveFamily ? (
-									<p className={shared.materialFamily}>
-										{question.material.olfactiveFamily
-											.map(toTitleCaseWords)
-											.join(" · ")}
-									</p>
-								) : null}
+								<div
+									className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
+									aria-hidden="true"
+								>
+									{getMaterialProducerSources(question.material).map(
+										(source) => (
+											<ProducerLogo
+												key={getSourceCardKey(source)}
+												sourceName={source.sourceName}
+											/>
+										),
+									)}
+								</div>
 							</div>
 
 							<div className={styles.quizOptionsSection}>
@@ -478,7 +478,7 @@ export default function Academy() {
 								</ul>
 							</div>
 
-							{selected && (
+							{selected && !isCorrect && (
 								<QuizAnswerReveal
 									material={question.material}
 									correctNote={question.correctNote}

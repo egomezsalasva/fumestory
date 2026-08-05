@@ -129,6 +129,24 @@
 	transform: rotateY(180deg) translateZ(0.01px);
 }
 
+/* Fade face content during flip; card color/border stays visible */
+.pickFaceFront > *,
+.pickFaceBack > * {
+	opacity: 1;
+	transition: opacity 0.15s ease;
+}
+
+.pickCard[data-floating="true"][data-flipping="true"] .pickFaceFront > *,
+.pickCard[data-floating="true"][data-flipping="true"] .pickFaceBack > * {
+	opacity: 0;
+	transition: opacity 0.12s ease;
+}
+
+.pickCard[data-floating="true"]:not([data-flipping="true"]) .pickFaceFront > *,
+.pickCard[data-floating="true"]:not([data-flipping="true"]) .pickFaceBack > * {
+	transition: opacity 0.2s ease;
+}
+
 .pickBackScroll {
 	flex: 1;
 	min-height: 0;
@@ -195,4 +213,20 @@
 
 .pickCard[data-picked="true"] .pickStatus {
 	color: rgb(187 247 208);
+}
+
+@media (max-width: 768px) {
+	.pickCard:not([data-floating="true"]) .pickFaceFront {
+		padding: 0.5rem;
+		gap: 0.35rem;
+	}
+
+	.pickCard:not([data-floating="true"]) .pickFamily {
+		font-size: 0.7rem;
+		line-height: 1.15;
+	}
+
+	.pickCard:not([data-floating="true"]) .pickStatus {
+		font-size: 1rem;
+	}
 }

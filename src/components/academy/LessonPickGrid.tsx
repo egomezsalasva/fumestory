@@ -24,6 +24,8 @@ import {
 } from "@/utils/curated-category-colors";
 import ProducerLogo from "@/components/svgs/ProducerLogo";
 
+const FLIP_MS = 550;
+
 type LessonPickGridProps = {
 	materials: MaterialRecord[];
 	pickedKeys: string[];
@@ -103,6 +105,7 @@ function PickCard({
 	const collapsingRef = useRef(false);
 	const [floating, setFloating] = useState(false);
 	const [flipped, setFlipped] = useState(false);
+	const [flipping, setFlipping] = useState(false);
 	const [animate, setAnimate] = useState(false);
 	const [rect, setRect] = useState<FloatRect | null>(null);
 
@@ -137,15 +140,26 @@ function PickCard({
 			setFloating(true);
 			setFlipped(false);
 			setAnimate(false);
+			setFlipping(false);
+
+			let flipTimeout: number | undefined;
 
 			requestAnimationFrame(() => {
 				requestAnimationFrame(() => {
 					setRect(getExpandedTarget(getExpandBounds(el)));
 					setFlipped(true);
 					setAnimate(true);
+					setFlipping(true);
+					flipTimeout = window.setTimeout(
+						() => setFlipping(false),
+						FLIP_MS - 80,
+					);
 				});
 			});
-			return;
+
+			return () => {
+				if (flipTimeout !== undefined) window.clearTimeout(flipTimeout);
+			};
 		}
 
 		if (!expanded && floating && !collapsingRef.current) {
@@ -154,6 +168,7 @@ function PickCard({
 			if (!slot) {
 				setFloating(false);
 				setFlipped(false);
+				setFlipping(false);
 				setAnimate(false);
 				setRect(null);
 				collapsingRef.current = false;
@@ -162,6 +177,7 @@ function PickCard({
 
 			setAnimate(true);
 			setFlipped(false);
+			setFlipping(true);
 			setRect({
 				top: slot.top,
 				left: slot.left,
@@ -172,9 +188,10 @@ function PickCard({
 			const timeout = window.setTimeout(() => {
 				setFloating(false);
 				setAnimate(false);
+				setFlipping(false);
 				setRect(null);
 				collapsingRef.current = false;
-			}, 550);
+			}, FLIP_MS);
 
 			return () => window.clearTimeout(timeout);
 		}
@@ -200,6 +217,7 @@ function PickCard({
 				data-locked={lockedOut}
 				data-floating={floating}
 				data-animate={animate}
+				data-flipping={flipping}
 				disabled={lockedOut}
 				style={floatStyle}
 				onClick={onToggle}
