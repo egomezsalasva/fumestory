@@ -8,8 +8,6 @@ import {
 	getMaterialProducerSources,
 	getSourceCardKey,
 	getSourceLink,
-	getSourceNameUsed,
-	isManufacturerSource,
 	normalizeMaterialKey,
 } from "@/components/academy/utils";
 import { getNoteDotStyle } from "@/components/academy/utils/note-dot-styles";
@@ -259,24 +257,34 @@ function PickCard({
 							<p className={shared.materialCas}>
 								CAS: {material.cas?.join(" ∙ ") ?? "—"}
 							</p>
-							{familyPathLabel ? (
-								<p className={shared.materialFamily}>{familyPathLabel}</p>
-							) : null}
 
 							<div
 								className={`${shared.revealCards} ${styles.pickRevealCards}`}
 							>
 								{sources.map((source) => {
-									const href = getSourceLink(source.data);
 									const notes = source.data.notes ?? [];
-									const nameUsed = getSourceNameUsed(source.data);
 
 									return (
 										<div
 											key={getSourceCardKey(source)}
 											className={`${shared.revealCard} ${styles.pickRevealCard}`}
 										>
-											<p className={shared.revealLabel}>Notes</p>
+											{familyPathLabel ? (
+												<p
+													className={styles.pickFamilyPill}
+													style={{
+														background: hexToRgba(color, 0.25),
+														borderColor: hexToRgba(color, 0.55),
+													}}
+												>
+													{familyPathLabel}
+												</p>
+											) : null}
+											<p
+												className={`${shared.revealLabel} ${styles.pickRememberLabel}`}
+											>
+												Remember The Notes
+											</p>
 											<ul className={shared.revealNotes}>
 												{notes.map((note) => {
 													const dotStyle = getNoteDotStyle(note);
@@ -294,38 +302,44 @@ function PickCard({
 													);
 												})}
 											</ul>
-											<p className={shared.revealLabel}>
-												Source
-												{isManufacturerSource(source) ? " / Manufacturer" : ""}
-											</p>
-											<div className={shared.revealSource}>
-												{href ? (
-													<a
-														href={href}
-														target="_blank"
-														rel="noopener noreferrer"
-														className={shared.revealSourceLink}
-														onClick={(event) => event.stopPropagation()}
-													>
-														<div
-															className={`${shared.producerLogos} ${shared.producerLogosReveal}`}
-														>
-															<ProducerLogo sourceName={source.sourceName} />
-														</div>
-														{nameUsed ? (
-															<p className={shared.revealTradeName}>
-																{capitalizeWordStartsIfLower(nameUsed)}
-															</p>
-														) : null}
-													</a>
-												) : null}
-											</div>
 										</div>
 									);
 								})}
 							</div>
+
+							{sources.length > 0 ? (
+								<div className={styles.pickFamilyRow}>
+									<div className={styles.pickFamilyLogos}>
+										{sources.map((source) => {
+											const href = getSourceLink(source.data);
+											if (!href) return null;
+											return (
+												<div
+													key={getSourceCardKey(source)}
+													className={styles.pickFamilySourceItem}
+												>
+													<span className={styles.pickFamilySourceLabel}>
+														Manufacturer:
+													</span>
+													<a
+														href={href}
+														target="_blank"
+														rel="noopener noreferrer"
+														className={styles.pickFamilyLogoLink}
+														onClick={(event) => event.stopPropagation()}
+														aria-label={source.sourceName}
+													>
+														<span className={shared.producerLogos}>
+															<ProducerLogo sourceName={source.sourceName} />
+														</span>
+													</a>
+												</div>
+											);
+										})}
+									</div>
+								</div>
+							) : null}
 						</div>
-						<p className={styles.pickBackPrompt}>Remember The Notes</p>
 						<p className={styles.pickBackHint}>
 							<FlipIcon />
 							<span>Click to Shrink Back</span>

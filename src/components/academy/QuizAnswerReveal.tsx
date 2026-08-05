@@ -26,10 +26,7 @@ export default function QuizAnswerReveal({
 				return (
 					<div key={getSourceCardKey(source)} className={shared.revealCard}>
 						<p className={shared.revealLabel}>Correct Notes</p>
-						<ul
-							className={shared.revealNotes}
-							style={{ marginBottom: "0.5rem" }}
-						>
+						<ul className={shared.revealNotes}>
 							{notes.map((note) => {
 								const isCorrect =
 									note.toLowerCase() === correctNote.toLowerCase();
