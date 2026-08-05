@@ -7,6 +7,11 @@ export const POOL_SIZE = 9;
 /** Max producer sources per material in a lesson. Set to 2+ later for harder UI. */
 export const LESSON_MAX_PRODUCER_SOURCES = 1;
 
+/** Lesson 1→3, 2→4, 3→5, 4→6 */
+export function lessonSizeForIndex(lessonIndex: number): number {
+	return Math.min(6, Math.max(3, 2 + lessonIndex));
+}
+
 export function filterLessonMaterials(
 	materials: MaterialRecord[],
 ): MaterialRecord[] {

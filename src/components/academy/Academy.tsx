@@ -7,11 +7,13 @@ import {
 	LESSON_SIZE,
 	POOL_SIZE,
 	applyMasteryDelta,
+	filterLessonMaterials,
 	generateQuestionForMaterial,
 	getMasteryValue,
 	getMaterialProducerSources,
 	getProducerMaterials,
 	getSourceCardKey,
+	lessonSizeForIndex,
 	pickRandomMaterials,
 	shuffleMaterials,
 	type LessonQuizEvent,
@@ -21,13 +23,21 @@ import {
 } from "@/components/academy/utils";
 import { toTitleCaseWords } from "@/utils/display-names";
 import ProducerLogo from "@/components/svgs/ProducerLogo";
+import {
+	applyLessonPass,
+	buildCurriculum,
+	findLesson,
+	findSection,
+} from "./curriculum";
+import { AcademyHome, AcademySectionView } from "./AcademyMap";
 import LessonCompleteCard from "./LessonCompleteCard";
 import LessonPickGrid from "./LessonPickGrid";
 import LessonStartOverCard from "./LessonStartOverCard";
+import MaterialsOverview from "./MaterialsOverview";
 import QuizAnswerReveal from "./QuizAnswerReveal";
 
 const materials = getProducerMaterials();
-const MAX_LIVES = 3;
+const MAX_LIVES = 5;
 const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
 const LESSONS_PER_LEVEL = 5;
 const MAX_LEVEL = 3;
@@ -39,6 +49,7 @@ const RELIABLE_SOURCES = new Set<SourceName>([
 	"Symrise",
 ]);
 
+type AcademyScreen = "home" | "section" | "overview" | "play";
 type LessonPhase = "learn" | "quiz" | "complete" | "gameOver";
 type Level = 1 | 2 | 3;
 
@@ -76,6 +87,19 @@ function countReliableNotes(material: MaterialRecord): number {
 	return notes.size;
 }
 
+function getMaterialFamily(material: MaterialRecord): string | null {
+	const family = material.olfactiveFamily?.[0]?.trim().toLowerCase();
+	return family || null;
+}
+
+function materialInFamilies(
+	material: MaterialRecord,
+	families: string[],
+): boolean {
+	const family = getMaterialFamily(material);
+	return family != null && families.includes(family);
+}
+
 function levelForCompletedLessons(completedLessons: number): Level {
 	const computed = Math.floor(completedLessons / LESSONS_PER_LEVEL) + 1;
 	return Math.min(MAX_LEVEL, Math.max(1, computed)) as Level;
@@ -84,18 +108,58 @@ function levelForCompletedLessons(completedLessons: number): Level {
 function isMaterialInLevel(material: MaterialRecord, level: Level): boolean {
 	const noteCount = countReliableNotes(material);
 
-	if (level === 1) return noteCount < 5;
-	if (level === 2) return noteCount >= 5 && noteCount < 10;
+	if (level === 1) return noteCount <= 5;
+	if (level === 2) return noteCount > 5 && noteCount < 10;
 	return noteCount >= 10;
 }
 
-function createLesson(level: Level): LessonState {
-	const levelMaterials = materials.filter((m) => isMaterialInLevel(m, level));
-	const source =
-		levelMaterials.length >= POOL_SIZE ? levelMaterials : materials;
+function pickUpTo(pool: MaterialRecord[], count: number): MaterialRecord[] {
+	if (count <= 0 || pool.length === 0) return [];
+	return pickRandomMaterials(pool, Math.min(count, pool.length));
+}
+
+/** 6 from focus (or as many as exist); fill rest randomly from leftover focus + earlier families. */
+function createLesson(
+	level: Level,
+	families: string[],
+	focusFamily: string,
+	lessonSize: number,
+): LessonState {
+	const eligible = filterLessonMaterials(
+		materials.filter(
+			(material) =>
+				isMaterialInLevel(material, level) &&
+				materialInFamilies(material, families),
+		),
+	);
+
+	if (eligible.length < lessonSize) {
+		return { pool: [], pickedKeys: [] };
+	}
+
+	const poolSize = Math.min(POOL_SIZE, eligible.length);
+	const focusPool = eligible.filter(
+		(material) => getMaterialFamily(material) === focusFamily,
+	);
+	const priorPool = eligible.filter(
+		(material) => getMaterialFamily(material) !== focusFamily,
+	);
+
+	const focusCount = Math.min(6, focusPool.length, poolSize);
+	const focusPicked = pickUpTo(focusPool, focusCount);
+	const focusKeys = new Set(focusPicked.map(normalizeMaterialKey));
+
+	const fillPool = [
+		...focusPool.filter(
+			(material) => !focusKeys.has(normalizeMaterialKey(material)),
+		),
+		...priorPool,
+	];
+	const need = Math.max(0, poolSize - focusPicked.length);
+	const rest = pickUpTo(fillPool, need);
 
 	return {
-		pool: pickRandomMaterials(source, POOL_SIZE),
+		pool: shuffleMaterials([...focusPicked, ...rest]),
 		pickedKeys: [],
 	};
 }
@@ -135,8 +199,18 @@ function optionClass(
 }
 
 export default function Academy() {
+	const [screen, setScreen] = useState<AcademyScreen>("home");
+	const [curriculum, setCurriculum] = useState(() => buildCurriculum());
+	const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+	const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+	const [lessonFamilies, setLessonFamilies] = useState<string[]>(["floral"]);
+	const [lessonFocusFamily, setLessonFocusFamily] = useState("floral");
+	const [lessonSize, setLessonSize] = useState(LESSON_SIZE);
+
 	const [phase, setPhase] = useState<LessonPhase>("learn");
-	const [lesson, setLesson] = useState<LessonState>(() => createLesson(1));
+	const [lesson, setLesson] = useState<LessonState>(() =>
+		createLesson(1, ["floral"], "floral", LESSON_SIZE),
+	);
 	const [expandedKey, setExpandedKey] = useState<string | null>(null);
 	const [quizSequence, setQuizSequence] = useState<MaterialRecord[]>([]);
 	const [quizIndex, setQuizIndex] = useState(0);
@@ -151,6 +225,9 @@ export default function Academy() {
 	const [learnedMaterialKeys, setLearnedMaterialKeys] = useState<Set<string>>(
 		() => new Set(),
 	);
+	const [seenMaterialKeys, setSeenMaterialKeys] = useState<Set<string>>(
+		() => new Set(),
+	);
 	const [materialMastery, setMaterialMastery] = useState<MaterialMasteryMap>(
 		{},
 	);
@@ -162,12 +239,15 @@ export default function Academy() {
 	const [completeSnapshot, setCompleteSnapshot] =
 		useState<CompleteSnapshot | null>(null);
 
+	const activeSection = activeSectionId
+		? findSection(curriculum, activeSectionId)
+		: null;
+
 	const currentLevel = levelForCompletedLessons(progressLessons);
-	const currentLessonInLevel = (progressLessons % LESSONS_PER_LEVEL) + 1;
 	const currentLevelBaseLessons = (currentLevel - 1) * LESSONS_PER_LEVEL;
 
 	const allReliableMaterialsCount = materials.length;
-	const picksReady = lesson.pickedKeys.length >= LESSON_SIZE;
+	const picksReady = lesson.pickedKeys.length >= lessonSize;
 
 	const isCorrect =
 		question !== null &&
@@ -176,8 +256,16 @@ export default function Academy() {
 
 	const isLastQuizQuestion = quizIndex >= quizSequence.length - 1;
 
-	function startNewLesson(level: Level = currentLevel) {
-		setLesson(createLesson(level));
+	function startNewLesson(
+		level: Level,
+		families: string[],
+		focusFamily: string,
+		size: number,
+	) {
+		setLessonFamilies(families);
+		setLessonFocusFamily(focusFamily);
+		setLessonSize(size);
+		setLesson(createLesson(level, families, focusFamily, size));
 		setExpandedKey(null);
 		setQuizSequence([]);
 		setQuizIndex(0);
@@ -195,7 +283,16 @@ export default function Academy() {
 		const nextLearnedKeys = new Set(learnedMaterialKeys);
 
 		for (const material of quizMaterials) {
-			nextLearnedKeys.add(normalizeMaterialKey(material));
+			const key = normalizeMaterialKey(material);
+			if (getMasteryValue(materialMastery, key) > 0) {
+				nextLearnedKeys.add(key);
+			} else {
+				nextLearnedKeys.delete(key);
+			}
+		}
+
+		if (activeLessonId) {
+			setCurriculum((current) => applyLessonPass(current, activeLessonId));
 		}
 
 		setCompleteSnapshot({
@@ -229,7 +326,7 @@ export default function Academy() {
 	function handleToggleMaterial(material: MaterialRecord) {
 		const key = normalizeMaterialKey(material);
 		const alreadyPicked = lesson.pickedKeys.includes(key);
-		const picksFull = lesson.pickedKeys.length >= LESSON_SIZE;
+		const picksFull = lesson.pickedKeys.length >= lessonSize;
 
 		if (expandedKey === key) {
 			setExpandedKey(null);
@@ -240,7 +337,7 @@ export default function Academy() {
 
 		setLesson((current) => {
 			if (current.pickedKeys.includes(key)) return current;
-			if (current.pickedKeys.length >= LESSON_SIZE) return current;
+			if (current.pickedKeys.length >= lessonSize) return current;
 			return {
 				...current,
 				pickedKeys: [...current.pickedKeys, key],
@@ -251,7 +348,15 @@ export default function Academy() {
 
 	function handleStartQuiz() {
 		const quizMaterials = getPickedMaterials(lesson);
-		if (quizMaterials.length < LESSON_SIZE) return;
+		if (quizMaterials.length < lessonSize) return;
+
+		setSeenMaterialKeys((current) => {
+			const next = new Set(current);
+			for (const material of quizMaterials) {
+				next.add(normalizeMaterialKey(material));
+			}
+			return next;
+		});
 
 		const startMastery: MaterialMasteryMap = {};
 		for (const material of quizMaterials) {
@@ -319,9 +424,18 @@ export default function Academy() {
 		setSelected(null);
 	}
 
-	function handleNextLesson() {
-		const nextLevel = levelForCompletedLessons(progressLessons);
-		startNewLesson(nextLevel);
+	function handleReturnToSection() {
+		setActiveLessonId(null);
+		setExpandedKey(null);
+		setQuizSequence([]);
+		setQuizIndex(0);
+		setPhase("learn");
+		setQuestion(null);
+		setSelected(null);
+		setLessonStartMastery({});
+		setLessonQuizEvents([]);
+		setCompleteSnapshot(null);
+		setScreen("section");
 	}
 
 	function handleStartOver() {
@@ -329,39 +443,91 @@ export default function Academy() {
 		setLives(MAX_LIVES);
 		setLessonStreak(0);
 		setProgressLessons(currentLevelBaseLessons);
-		startNewLesson(currentLevel);
+		startNewLesson(currentLevel, lessonFamilies, lessonFocusFamily, lessonSize);
 	}
 
-	const completedLevel =
-		progressLessons > 0
-			? (Math.min(
-					MAX_LEVEL,
-					Math.floor((progressLessons - 1) / LESSONS_PER_LEVEL) + 1,
-				) as Level)
-			: 1;
+	function handleOpenSection(sectionId: string) {
+		setActiveSectionId(sectionId);
+		setScreen("section");
+	}
 
-	const completedLessonInLevel =
-		progressLessons > 0 ? ((progressLessons - 1) % LESSONS_PER_LEVEL) + 1 : 1;
+	function handleOpenLesson(lessonId: string) {
+		const found = findLesson(curriculum, lessonId);
+		if (!found) return;
 
-	const hasLeveledUp =
-		progressLessons > 0 &&
-		progressLessons % LESSONS_PER_LEVEL === 0 &&
-		completedLevel < MAX_LEVEL;
+		setActiveLessonId(lessonId);
+		const level = Math.min(
+			MAX_LEVEL,
+			Math.max(1, found.section.sectionIndex),
+		) as Level;
+		const size = lessonSizeForIndex(found.lesson.lessonIndex);
+		startNewLesson(level, found.unit.families, found.unit.focusFamily, size);
+		setScreen("play");
+	}
 
-	const promotedToLevel = hasLeveledUp ? completedLevel + 1 : null;
+	if (screen === "home") {
+		return (
+			<section className={styles.quizSection}>
+				<AcademyHome sections={curriculum} onOpenSection={handleOpenSection} />
+			</section>
+		);
+	}
+
+	if (screen === "overview") {
+		return (
+			<section className={styles.quizSection}>
+				<div className={`${formStyles.formContainer} ${styles.quizContainer}`}>
+					<MaterialsOverview
+						materials={materials}
+						learnedMaterialKeys={learnedMaterialKeys}
+						seenMaterialKeys={seenMaterialKeys}
+						materialMastery={materialMastery}
+						onBack={() => setScreen("section")}
+					/>
+				</div>
+			</section>
+		);
+	}
+
+	if (screen === "section" && activeSection) {
+		return (
+			<section className={styles.quizSection}>
+				<AcademySectionView
+					section={activeSection}
+					sections={curriculum}
+					onBack={() => {
+						setActiveSectionId(null);
+						setScreen("home");
+					}}
+					onOpenOverview={() => setScreen("overview")}
+					onOpenLesson={handleOpenLesson}
+				/>
+			</section>
+		);
+	}
 
 	return (
 		<section className={styles.quizSection}>
 			<div className={`${formStyles.formContainer} ${styles.quizContainer}`}>
+				<button
+					type="button"
+					className={styles.exitLesson}
+					aria-label="Back to section map"
+					onClick={handleReturnToSection}
+				>
+					×
+				</button>
+
 				{phase === "learn" ? (
 					<>
 						<h2 className={styles.learnProgress}>
-							Pick 3 Material Cards to Study
+							Pick {lessonSize} Material Cards to Study
 						</h2>
 						<LessonPickGrid
 							materials={lesson.pool}
 							pickedKeys={lesson.pickedKeys}
 							expandedKey={expandedKey}
+							lessonSize={lessonSize}
 							onToggle={handleToggleMaterial}
 						/>
 						{picksReady && !expandedKey ? (
@@ -378,9 +544,6 @@ export default function Academy() {
 					</>
 				) : phase === "complete" && completeSnapshot ? (
 					<LessonCompleteCard
-						level={completedLevel}
-						lessonInLevel={completedLessonInLevel}
-						lessonsPerLevel={LESSONS_PER_LEVEL}
 						previousKnownCount={completeSnapshot.previousKnownCount}
 						knownMaterialsCount={completeSnapshot.newKnownCount}
 						allReliableMaterialsCount={allReliableMaterialsCount}
@@ -388,13 +551,8 @@ export default function Academy() {
 						learnedMaterialKeys={learnedMaterialKeys}
 						previousLearnedKeys={new Set(completeSnapshot.previousLearnedKeys)}
 						lessonMaterials={completeSnapshot.lessonMaterials}
-						lessonStartMastery={completeSnapshot.lessonStartMastery}
 						materialMastery={materialMastery}
-						lessonQuizEvents={lessonQuizEvents}
-						lives={lives}
-						maxLives={MAX_LIVES}
-						onNextLesson={handleNextLesson}
-						promotedToLevel={promotedToLevel}
+						onNextLesson={handleReturnToSection}
 					/>
 				) : phase === "gameOver" ? (
 					<LessonStartOverCard
@@ -421,11 +579,7 @@ export default function Academy() {
 									))}
 								</div>
 								<span className={styles.gameStatusDivider} aria-hidden="true" />
-								<p className={styles.streak}>
-									{currentLevel === 3
-										? `Lesson streak: ${lessonStreak}`
-										: `Lesson ${currentLevel} - ${currentLessonInLevel}/${LESSONS_PER_LEVEL}`}
-								</p>
+								<p className={styles.streak}>Lesson streak: {lessonStreak}</p>
 							</div>
 
 							<div className={styles.quizMaterialSection}>

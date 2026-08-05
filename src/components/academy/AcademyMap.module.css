@@ -1,0 +1,372 @@
+.map {
+	max-width: 28rem;
+	margin: 0 auto;
+	padding: 1.5rem 1rem 3rem;
+}
+
+.title {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1.5rem;
+	line-height: 1.2;
+	color: #f5f7fa;
+	margin: 0 0 0.35rem;
+	text-align: center;
+}
+
+.subtitle {
+	font-size: 0.875rem;
+	color: rgb(255 255 255 / 0.55);
+	margin: 0 0 1.5rem;
+	text-align: center;
+}
+
+.sectionList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+	position: sticky;
+	top: calc(var(--top-offset, 2rem) + var(--header-height, 3rem) + 0.75rem);
+	z-index: 10;
+	margin-bottom: 1.5rem;
+	padding-bottom: 0.25rem;
+	background: #070707;
+}
+
+.sectionCard {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	width: 100%;
+	padding: 1.25rem 1rem;
+	text-align: left;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(216 227 240 / 0.2);
+	background: #0b172d;
+	color: #f5f7fa;
+	font: inherit;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.sectionCard[data-has-overview="true"] {
+	flex-direction: row;
+	align-items: center;
+	gap: 0.75rem;
+	cursor: default;
+}
+
+.sectionCard:hover {
+	border-color: rgb(216 227 240 / 0.4);
+	background: #101c2e;
+}
+
+.sectionCard[data-has-overview="true"]:hover {
+	border-color: rgb(216 227 240 / 0.2);
+	background: #0b172d;
+}
+
+.sectionCard:disabled {
+	cursor: default;
+	background: #090e19;
+	border-color: #1b212a;
+	opacity: 1;
+}
+
+.sectionCard:disabled:hover {
+	background: #090e19;
+	border-color: #1b212a;
+}
+
+.sectionCard:disabled .sectionTitle,
+.sectionCard:disabled .sectionMeta,
+.sectionCard:disabled .sectionLock {
+	opacity: 0.45;
+}
+
+.sectionCard[data-unit-locked="true"] {
+	opacity: 1;
+	background: #090e19;
+	border-color: #1b212a;
+}
+
+.sectionCard[data-unit-locked="true"]:hover {
+	background: #090e19;
+	border-color: #1b212a;
+}
+
+.sectionCard[data-unit-locked="true"] .sectionTitle,
+.sectionCard[data-unit-locked="true"] .sectionMeta {
+	opacity: 0.45;
+}
+
+.sectionCard[data-unit-locked="true"] .sectionTitleLocked {
+	opacity: 1;
+	color: inherit;
+}
+
+.sectionCardMain {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.sectionTitle {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1.125rem;
+}
+
+.sectionTitleLocked {
+	font-weight: 400;
+	color: rgb(255 255 255 / 0.55);
+}
+
+.sectionMeta {
+	font-size: 0.8rem;
+	color: rgb(255 255 255 / 0.5);
+}
+
+.sectionLock {
+	font-size: 0.7rem;
+	color: rgb(255 255 255 / 0.45);
+}
+
+.sectionProgress {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	margin-top: 0.35rem;
+}
+
+.sectionProgressInner {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	width: 100%;
+	border: 1px solid rgb(216 227 240 / 0.2);
+	border-radius: 9999px;
+	overflow: hidden;
+	line-height: 0;
+	font-size: 0;
+}
+
+.sectionProgressSegment {
+	flex: 1;
+	height: 0.65rem;
+	min-width: 0;
+	background: rgb(255 255 255 / 0.12);
+}
+
+.sectionProgressFill {
+	position: absolute;
+	inset: 0;
+	background: rgb(34 197 94 / 0.55);
+	transform-origin: left center;
+	transform: scaleX(0);
+	pointer-events: none;
+}
+
+.unitBlock {
+	margin-bottom: 2rem;
+}
+
+.unitTitle {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	margin: 0 0 1.5rem;
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 1rem;
+	color: rgb(255 255 255 / 0.75);
+	text-align: center;
+}
+
+.unitTitleLine {
+	flex: 1;
+	height: 1px;
+	min-width: 0;
+	background: rgb(216 227 240 / 0.25);
+}
+
+.unitTitleText {
+	flex-shrink: 0;
+	white-space: nowrap;
+}
+
+.lessonPath {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.lessonPathItem {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.lessonConnector {
+	display: block;
+	width: 2px;
+	height: 1.25rem;
+	background: rgb(216 227 240 / 0.25);
+}
+
+.lessonNode {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	min-width: 11rem;
+	min-height: 4.25rem;
+	padding: 0.85rem 1rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(216 227 240 / 0.2);
+	background: #0b172d;
+	color: #f5f7fa;
+	font: inherit;
+	cursor: pointer;
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.lessonNode:hover:not(:disabled) {
+	border-color: rgb(216 227 240 / 0.4);
+	background: #101c2e;
+}
+
+.lessonNode[data-status="locked"] {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.lessonNode[data-status="available"] {
+	border-color: rgb(34 197 94 / 0.45);
+}
+
+.lessonNode[data-status="completed"] {
+	border-color: rgb(34 197 94 / 0.55);
+	background: rgb(34 197 94 / 0.08);
+}
+
+.lessonNodeTitle {
+	font-family: "Aspekta";
+	font-weight: 500;
+	font-size: 0.95rem;
+	text-align: center;
+}
+
+.lessonStatus {
+	display: block;
+	width: 100%;
+	font-size: 0.7rem;
+	line-height: 1rem;
+	min-height: 1rem;
+	text-align: center;
+	color: rgb(255 255 255 / 0.45);
+}
+
+.lessonProgress {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.lessonProgressInner {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	width: 100%;
+	border: 1px solid rgb(216 227 240 / 0.2);
+	border-radius: 9999px;
+	overflow: hidden;
+	line-height: 0;
+	font-size: 0;
+}
+
+.lessonProgressSegment {
+	flex: 1;
+	height: 0.65rem;
+	min-width: 0;
+	background: rgb(255 255 255 / 0.12);
+}
+
+.lessonProgressFill {
+	position: absolute;
+	inset: 0;
+	background: rgb(34 197 94 / 0.55);
+	transform-origin: left center;
+	transform: scaleX(0);
+	pointer-events: none;
+}
+
+.lessonNode[data-status="completed"] .lessonProgressFill {
+	background: rgb(187 247 208 / 0.75);
+}
+
+.nextSection {
+	margin-top: 2rem;
+}
+
+.overviewButton {
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0.35rem;
+	background: transparent;
+	color: #f5f7fa;
+	cursor: pointer;
+}
+
+.overviewButton:hover {
+	background: rgb(255 255 255 / 0.06);
+}
+
+.overviewCardIcon {
+	display: grid;
+	place-items: center;
+	width: 1.4rem;
+	aspect-ratio: 5 / 6;
+	border-radius: 0.2rem;
+	border: 1px solid rgb(216 227 240 / 0.35);
+	background:
+		linear-gradient(rgb(148 163 184 / 0.25), rgb(148 163 184 / 0.25)), #0b172d;
+	color: #f5f7fa;
+}
+
+.overviewCardIcon svg {
+	width: 0.7rem;
+	height: 0.7rem;
+	display: block;
+}

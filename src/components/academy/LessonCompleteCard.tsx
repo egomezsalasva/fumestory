@@ -8,7 +8,6 @@ import {
 	getMasteryValue,
 	MASTERY_TARGET,
 	normalizeMaterialKey,
-	type LessonQuizEvent,
 	type MaterialMasteryMap,
 } from "@/components/academy/utils";
 import {
@@ -21,8 +20,6 @@ import {
 	resolveCategoryColor,
 } from "@/utils/curated-category-colors";
 
-type CompleteStep = "lesson" | "materials";
-
 type CategoryProgress = {
 	family: string;
 	label: string;
@@ -32,9 +29,6 @@ type CategoryProgress = {
 };
 
 type LessonCompleteCardProps = {
-	level: number;
-	lessonInLevel: number;
-	lessonsPerLevel: number;
 	previousKnownCount: number;
 	knownMaterialsCount: number;
 	allReliableMaterialsCount: number;
@@ -42,21 +36,14 @@ type LessonCompleteCardProps = {
 	learnedMaterialKeys: ReadonlySet<string>;
 	previousLearnedKeys: ReadonlySet<string>;
 	lessonMaterials: MaterialRecord[];
-	lessonStartMastery: MaterialMasteryMap;
 	materialMastery: MaterialMasteryMap;
-	lessonQuizEvents: LessonQuizEvent[];
-	lives: number;
-	maxLives: number;
 	onNextLesson: () => void;
-	promotedToLevel: number | null;
 };
 
-const LESSON_SCREEN_DURATION_MS = 1500;
 const KNOWN_COUNT_ANIMATION_MS = 1200;
 const MASTERY_BAR_ANIMATION_MS = 600;
 const MASTERY_ROW_PAUSE_MS = 100;
 const MASTERY_ROW_CYCLE_MS = MASTERY_BAR_ANIMATION_MS + MASTERY_ROW_PAUSE_MS;
-const LESSON_SEGMENT_FILL_MS = 1200;
 
 function getCategoryProgress(
 	materials: MaterialRecord[],
@@ -133,46 +120,48 @@ function AnimatedNumber({
 function MaterialMasteryCard({
 	material,
 	targetValue,
-	animationDelayMs = 0,
+	animationDelayMs,
 }: {
 	material: MaterialRecord;
 	targetValue: number;
-	animationDelayMs?: number;
+	animationDelayMs: number;
 }) {
+	const [fillScale, setFillScale] = useState(0);
+	const displayNames = getMaterialDisplayNames(material);
 	const familyParent = material.olfactiveFamily?.[0];
 	const color = familyParent
 		? resolveCategoryColor(familyParent)
 		: NEUTRAL_CATEGORY_COLOR;
-	const displayName =
-		getMaterialDisplayNames(material)[0] ?? material.canonicalName;
-	const label = capitalizeWordStartsIfLower(displayName);
-	const targetScale = targetValue / MASTERY_TARGET;
-	const [fillScale, setFillScale] = useState(0);
+	const progress = Math.min(1, targetValue / MASTERY_TARGET);
 
 	useEffect(() => {
 		setFillScale(0);
-		if (targetValue === 0) return;
-
-		const timer = setTimeout(() => {
-			setFillScale(targetScale);
+		const timer = window.setTimeout(() => {
+			setFillScale(progress);
 		}, animationDelayMs);
 
-		return () => clearTimeout(timer);
-	}, [targetValue, targetScale, animationDelayMs]);
-
-	const isComplete = targetValue >= MASTERY_TARGET && fillScale >= targetScale;
+		return () => window.clearTimeout(timer);
+	}, [animationDelayMs, progress]);
 
 	return (
 		<div
-			className={`${styles.materialMasteryCard} ${
-				isComplete ? styles.materialMasteryComplete : ""
+			className={`${styles.materialMasteryCard}${
+				targetValue >= MASTERY_TARGET
+					? ` ${styles.materialMasteryComplete}`
+					: ""
 			}`}
 			style={{
 				background: `linear-gradient(${hexToRgba(color, 0.4)}, ${hexToRgba(color, 0.4)}), #0b172d`,
 				borderColor: hexToRgba(color, 0.55),
 			}}
 		>
-			<p className={styles.materialMasteryLabel}>{label}</p>
+			<div className={styles.materialMasteryHeader}>
+				<span className={styles.materialMasteryLabel}>
+					{capitalizeWordStartsIfLower(
+						displayNames[0] ?? material.canonicalName,
+					)}
+				</span>
+			</div>
 			<div className={styles.materialMasteryTrack}>
 				<div className={styles.materialMasteryTrackInner}>
 					{Array.from({ length: MASTERY_TARGET }, (_, index) => (
@@ -192,82 +181,7 @@ function MaterialMasteryCard({
 	);
 }
 
-function LessonCompleteSummary({
-	level,
-	lessonInLevel,
-	lessonsPerLevel,
-	lives,
-	maxLives,
-	promotedToLevel,
-}: {
-	level: number;
-	lessonInLevel: number;
-	lessonsPerLevel: number;
-	lives: number;
-	maxLives: number;
-	promotedToLevel: number | null;
-}) {
-	return (
-		<div className={styles.lessonCompleteCard}>
-			<p className={styles.lessonCompleteLevel}>Level {level}</p>
-			<p className={styles.lessonCompleteStreak}>
-				Lesson {lessonInLevel}/{lessonsPerLevel}
-			</p>
-
-			<div
-				className={styles.lessonProgressTrack}
-				aria-label={`Lesson ${lessonInLevel} of ${lessonsPerLevel} complete`}
-			>
-				{Array.from({ length: lessonsPerLevel }, (_, index) => {
-					const isCompleted = index < lessonInLevel;
-					const isPreviouslyCompleted = index < lessonInLevel - 1;
-
-					return (
-						<span key={index} className={styles.lessonProgressSegment}>
-							{isCompleted ? (
-								<span
-									className={`${styles.lessonProgressSegmentFill}${
-										isPreviouslyCompleted
-											? ` ${styles.lessonProgressSegmentFillStatic}`
-											: ""
-									}`}
-									style={
-										!isPreviouslyCompleted
-											? { animationDuration: `${LESSON_SEGMENT_FILL_MS}ms` }
-											: undefined
-									}
-								/>
-							) : null}
-						</span>
-					);
-				})}
-			</div>
-
-			{promotedToLevel ? (
-				<p className={styles.lessonCompleteStreak}>
-					Congrats! You moved up to level {promotedToLevel}!
-				</p>
-			) : null}
-
-			<div
-				className={shared.lives}
-				aria-label={`${lives} of ${maxLives} lives remaining`}
-			>
-				{Array.from({ length: maxLives }, (_, index) => (
-					<span
-						key={index}
-						className={`${shared.life} ${
-							index < lives ? shared.lifeActive : shared.lifeLost
-						}`}
-						aria-hidden="true"
-					/>
-				))}
-			</div>
-		</div>
-	);
-}
-
-function LessonCompleteMaterials({
+export default function LessonCompleteCard({
 	previousKnownCount,
 	knownMaterialsCount,
 	allReliableMaterialsCount,
@@ -277,17 +191,7 @@ function LessonCompleteMaterials({
 	lessonMaterials,
 	materialMastery,
 	onNextLesson,
-}: {
-	previousKnownCount: number;
-	knownMaterialsCount: number;
-	allReliableMaterialsCount: number;
-	materials: MaterialRecord[];
-	learnedMaterialKeys: ReadonlySet<string>;
-	previousLearnedKeys: ReadonlySet<string>;
-	lessonMaterials: MaterialRecord[];
-	materialMastery: MaterialMasteryMap;
-	onNextLesson: () => void;
-}) {
+}: LessonCompleteCardProps) {
 	const categories = getCategoryProgress(materials, learnedMaterialKeys);
 	const previousByFamily = new Map(
 		getCategoryProgress(materials, previousLearnedKeys).map((cat) => [
@@ -364,7 +268,10 @@ function LessonCompleteMaterials({
 			<p className={styles.lessonCompleteMaterialsHeading}>
 				Materials You Studied
 			</p>
-			<div className={styles.lessonCompleteMaterialsList}>
+			<div
+				className={styles.lessonCompleteMaterialsList}
+				data-count={lessonMaterials.length}
+			>
 				{lessonMaterials.map((material, index) => {
 					const materialKey = normalizeMaterialKey(material);
 					const targetValue = getMasteryValue(materialMastery, materialKey);
@@ -396,60 +303,5 @@ function LessonCompleteMaterials({
 				</button>
 			</div>
 		</div>
-	);
-}
-
-export default function LessonCompleteCard({
-	level,
-	lessonInLevel,
-	lessonsPerLevel,
-	previousKnownCount,
-	knownMaterialsCount,
-	allReliableMaterialsCount,
-	materials,
-	learnedMaterialKeys,
-	previousLearnedKeys,
-	lessonMaterials,
-	materialMastery,
-	lives,
-	maxLives,
-	onNextLesson,
-	promotedToLevel,
-}: LessonCompleteCardProps) {
-	const [step, setStep] = useState<CompleteStep>("lesson");
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setStep("materials");
-		}, LESSON_SCREEN_DURATION_MS);
-
-		return () => clearTimeout(timer);
-	}, []);
-
-	if (step === "lesson") {
-		return (
-			<LessonCompleteSummary
-				level={level}
-				lessonInLevel={lessonInLevel}
-				lessonsPerLevel={lessonsPerLevel}
-				lives={lives}
-				maxLives={maxLives}
-				promotedToLevel={promotedToLevel}
-			/>
-		);
-	}
-
-	return (
-		<LessonCompleteMaterials
-			previousKnownCount={previousKnownCount}
-			knownMaterialsCount={knownMaterialsCount}
-			allReliableMaterialsCount={allReliableMaterialsCount}
-			materials={materials}
-			learnedMaterialKeys={learnedMaterialKeys}
-			previousLearnedKeys={previousLearnedKeys}
-			lessonMaterials={lessonMaterials}
-			materialMastery={materialMastery}
-			onNextLesson={onNextLesson}
-		/>
 	);
 }

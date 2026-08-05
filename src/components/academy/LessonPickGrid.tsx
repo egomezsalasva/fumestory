@@ -28,6 +28,7 @@ type LessonPickGridProps = {
 	materials: MaterialRecord[];
 	pickedKeys: string[];
 	expandedKey: string | null;
+	lessonSize: number;
 	onToggle: (material: MaterialRecord) => void;
 };
 
@@ -109,9 +110,6 @@ function PickCard({
 
 	const familyParent = material.olfactiveFamily?.[0];
 	const familyLabel = familyParent ? toTitleCaseWords(familyParent) : "—";
-	const familyPathLabel = material.olfactiveFamily
-		?.map(toTitleCaseWords)
-		.join(" · ");
 	const color = familyParent
 		? resolveCategoryColor(familyParent)
 		: NEUTRAL_CATEGORY_COLOR;
@@ -243,6 +241,18 @@ function PickCard({
 						</span>
 					</div>
 					<div className={styles.pickFaceBack} style={faceStyle}>
+						{familyLabel !== "—" ? (
+							<p
+								className={styles.pickFamilyPill}
+								style={{
+									background: hexToRgba(color, 0.25),
+									borderColor: hexToRgba(color, 0.55),
+								}}
+							>
+								{familyLabel}
+							</p>
+						) : null}
+
 						<div className={styles.pickBackScroll}>
 							<div className={shared.materialNameLine}>
 								{displayNames.map((name) => (
@@ -269,17 +279,6 @@ function PickCard({
 											key={getSourceCardKey(source)}
 											className={`${shared.revealCard} ${styles.pickRevealCard}`}
 										>
-											{familyPathLabel ? (
-												<p
-													className={styles.pickFamilyPill}
-													style={{
-														background: hexToRgba(color, 0.25),
-														borderColor: hexToRgba(color, 0.55),
-													}}
-												>
-													{familyPathLabel}
-												</p>
-											) : null}
 											<p
 												className={`${shared.revealLabel} ${styles.pickRememberLabel}`}
 											>
@@ -340,6 +339,7 @@ function PickCard({
 								</div>
 							) : null}
 						</div>
+
 						<p className={styles.pickBackHint}>
 							<FlipIcon />
 							<span>Click to Shrink Back</span>
@@ -355,9 +355,10 @@ export default function LessonPickGrid({
 	materials,
 	pickedKeys,
 	expandedKey,
+	lessonSize,
 	onToggle,
 }: LessonPickGridProps) {
-	const picksFull = pickedKeys.length >= 3;
+	const picksFull = pickedKeys.length >= lessonSize;
 	const pickedSet = new Set(pickedKeys);
 
 	return (
