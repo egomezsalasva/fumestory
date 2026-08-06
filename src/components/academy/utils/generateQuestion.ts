@@ -2,12 +2,18 @@ import type { MaterialRecord } from "@/curation/materials/types";
 import { getMaterialDisplayNames } from "./materialSources";
 import { getMaterialProducerNotes, getProducerNotesPool } from "./notesPool";
 import { pickRandomMaterial } from "./pickRandomMaterial";
+import { pickFormatForMaterial, type QuizFormat } from "./lessonDifficulty";
+import type { MaterialMasteryMap } from "./materialMastery";
 
 export type QuizQuestion = {
 	material: MaterialRecord;
 	displayNames: string[];
+	/** All notes the user must select. */
+	correctNotes: string[];
+	/** @deprecated Prefer correctNotes — kept as correctNotes[0] for older UI. */
 	correctNote: string;
 	options: string[];
+	format: QuizFormat;
 };
 
 function pickRandomItem<T>(items: T[]): T {
@@ -15,6 +21,7 @@ function pickRandomItem<T>(items: T[]): T {
 }
 
 function pickRandomItems<T>(items: T[], count: number): T[] {
+	if (count <= 0) return [];
 	if (items.length < count) {
 		throw new Error(`Need ${count} items but only ${items.length} available`);
 	}
@@ -42,9 +49,24 @@ function shuffle<T>(items: T[]): T[] {
 	return copy;
 }
 
-export function generateQuestion(materials: MaterialRecord[]): QuizQuestion {
-	const material = pickRandomMaterial(materials);
-	const materialNotes = getMaterialProducerNotes(material);
+function uniqueNotes(notes: string[]): string[] {
+	const seen = new Set<string>();
+	const out: string[] = [];
+	for (const note of notes) {
+		const key = note.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+		out.push(note);
+	}
+	return out;
+}
+
+function buildQuestion(
+	material: MaterialRecord,
+	allMaterials: MaterialRecord[],
+	format: QuizFormat,
+): QuizQuestion {
+	const materialNotes = uniqueNotes(getMaterialProducerNotes(material));
 
 	if (materialNotes.length === 0) {
 		throw new Error(
@@ -52,55 +74,48 @@ export function generateQuestion(materials: MaterialRecord[]): QuizQuestion {
 		);
 	}
 
-	const correctNote = pickRandomItem(materialNotes);
+	const correctCount = Math.min(format.correct, materialNotes.length);
+	const optionCount = Math.max(format.options, correctCount);
+	const correctNotes = pickRandomItems(materialNotes, correctCount);
 
-	const pool = getProducerNotesPool(materials);
-	const materialNoteKeys = new Set(
-		materialNotes.map((note) => note.toLowerCase()),
-	);
-
+	const correctKeys = new Set(correctNotes.map((note) => note.toLowerCase()));
+	const pool = getProducerNotesPool(allMaterials);
 	const distractorPool = pool.filter(
-		(note) => !materialNoteKeys.has(note.toLowerCase()),
+		(note) => !correctKeys.has(note.toLowerCase()),
 	);
 
-	const distractors = pickRandomItems(distractorPool, 3);
-	const options = shuffle([correctNote, ...distractors]);
+	const distractorNeed = optionCount - correctCount;
+	const distractors =
+		distractorPool.length >= distractorNeed
+			? pickRandomItems(distractorPool, distractorNeed)
+			: distractorPool;
+
+	const options = shuffle([...correctNotes, ...distractors]);
 
 	return {
 		material,
 		displayNames: getMaterialDisplayNames(material),
-		correctNote,
+		correctNotes,
+		correctNote: correctNotes[0] ?? "",
 		options,
+		format: { correct: correctCount, options: options.length },
 	};
+}
+
+export function generateQuestion(
+	materials: MaterialRecord[],
+	mastery: MaterialMasteryMap = {},
+): QuizQuestion {
+	const material = pickRandomMaterial(materials);
+	const format = pickFormatForMaterial(material, mastery);
+	return buildQuestion(material, materials, format);
 }
 
 export function generateQuestionForMaterial(
 	material: MaterialRecord,
 	allMaterials: MaterialRecord[],
+	mastery: MaterialMasteryMap = {},
 ): QuizQuestion {
-	const materialNotes = getMaterialProducerNotes(material);
-
-	if (materialNotes.length === 0) {
-		throw new Error(
-			`Material "${material.canonicalName}" has no producer notes`,
-		);
-	}
-
-	const correctNote = pickRandomItem(materialNotes);
-	const pool = getProducerNotesPool(allMaterials);
-	const materialNoteKeys = new Set(
-		materialNotes.map((note) => note.toLowerCase()),
-	);
-	const distractorPool = pool.filter(
-		(note) => !materialNoteKeys.has(note.toLowerCase()),
-	);
-	const distractors = pickRandomItems(distractorPool, 3);
-	const options = shuffle([correctNote, ...distractors]);
-
-	return {
-		material,
-		displayNames: getMaterialDisplayNames(material),
-		correctNote,
-		options,
-	};
+	const format = pickFormatForMaterial(material, mastery);
+	return buildQuestion(material, allMaterials, format);
 }

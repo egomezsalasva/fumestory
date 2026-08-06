@@ -9,14 +9,15 @@ import { toTitleCaseWords } from "@/utils/display-names";
 
 type QuizAnswerRevealProps = {
 	material: MaterialRecord;
-	correctNote: string;
+	correctNotes: string[];
 };
 
 export default function QuizAnswerReveal({
 	material,
-	correctNote,
+	correctNotes,
 }: QuizAnswerRevealProps) {
 	const sources = getMaterialProducerSources(material);
+	const correctKeys = new Set(correctNotes.map((note) => note.toLowerCase()));
 
 	return (
 		<div className={shared.revealCards}>
@@ -28,8 +29,7 @@ export default function QuizAnswerReveal({
 						<p className={shared.revealLabel}>Correct Notes</p>
 						<ul className={shared.revealNotes}>
 							{notes.map((note) => {
-								const isCorrect =
-									note.toLowerCase() === correctNote.toLowerCase();
+								const isCorrect = correctKeys.has(note.toLowerCase());
 								const dotStyle = getNoteDotStyle(note);
 
 								return (

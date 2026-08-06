@@ -13,7 +13,7 @@ import {
 	getMaterialProducerSources,
 	getProducerMaterials,
 	getSourceCardKey,
-	lessonSizeForIndex,
+	lessonFormatForIndex,
 	pickRandomMaterials,
 	shuffleMaterials,
 	type LessonQuizEvent,
@@ -38,7 +38,7 @@ import QuizAnswerReveal from "./QuizAnswerReveal";
 
 const materials = getProducerMaterials();
 const MAX_LIVES = 5;
-const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
+const OPTION_LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const LESSONS_PER_LEVEL = 5;
 const MAX_LEVEL = 3;
 
@@ -72,6 +72,10 @@ function getOptionLetter(index: number): string {
 
 function normalizeNote(note: string): string {
 	return note.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function noteKey(note: string): string {
+	return note.toLowerCase();
 }
 
 function countReliableNotes(material: MaterialRecord): number {
@@ -172,26 +176,39 @@ function getPickedMaterials(lesson: LessonState): MaterialRecord[] {
 		.filter((material): material is MaterialRecord => material != null);
 }
 
+function isSelectionCorrect(
+	selected: string[],
+	correctNotes: string[],
+): boolean {
+	if (selected.length !== correctNotes.length) return false;
+	const correctKeys = new Set(correctNotes.map(noteKey));
+	return selected.every((note) => correctKeys.has(noteKey(note)));
+}
+
 function optionClass(
 	option: string,
-	selected: string | null,
-	correctNote: string,
+	selected: string[],
+	correctNotes: string[],
+	locked: boolean,
 ): string {
 	const base = `${formStyles.feedbackNoRatingButton} ${styles.optionButton}`;
+	const isPicked = selected.some((note) => noteKey(note) === noteKey(option));
+	const isCorrectOption = correctNotes.some(
+		(note) => noteKey(note) === noteKey(option),
+	);
 
-	if (!selected) {
+	if (!locked) {
+		if (isPicked) {
+			return `${base} ${formStyles.feedbackNoRatingButtonActive}`;
+		}
 		return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
 	}
-
-	const isCorrectOption = option.toLowerCase() === correctNote.toLowerCase();
-	const isSelectedWrong =
-		option === selected && selected.toLowerCase() !== correctNote.toLowerCase();
 
 	if (isCorrectOption) {
 		return `${base} ${styles.optionCorrect}`;
 	}
 
-	if (isSelectedWrong) {
+	if (isPicked && !isCorrectOption) {
 		return `${base} ${styles.optionWrong}`;
 	}
 
@@ -215,7 +232,8 @@ export default function Academy() {
 	const [quizSequence, setQuizSequence] = useState<MaterialRecord[]>([]);
 	const [quizIndex, setQuizIndex] = useState(0);
 	const [question, setQuestion] = useState<QuizQuestion | null>(null);
-	const [selected, setSelected] = useState<string | null>(null);
+	const [selected, setSelected] = useState<string[]>([]);
+	const [locked, setLocked] = useState(false);
 
 	const [progressLessons, setProgressLessons] = useState(0);
 	const [lessonStreak, setLessonStreak] = useState(0);
@@ -251,10 +269,11 @@ export default function Academy() {
 
 	const isCorrect =
 		question !== null &&
-		selected !== null &&
-		selected.toLowerCase() === question.correctNote.toLowerCase();
+		locked &&
+		isSelectionCorrect(selected, question.correctNotes);
 
 	const isLastQuizQuestion = quizIndex >= quizSequence.length - 1;
+	const requiredCount = question?.format.correct ?? 1;
 
 	function startNewLesson(
 		level: Level,
@@ -271,7 +290,8 @@ export default function Academy() {
 		setQuizIndex(0);
 		setPhase("learn");
 		setQuestion(null);
-		setSelected(null);
+		setSelected([]);
+		setLocked(false);
 		setLessonStartMastery({});
 		setLessonQuizEvents([]);
 		setCompleteSnapshot(null);
@@ -320,7 +340,8 @@ export default function Academy() {
 		setLessonStreak((current) => current + 1);
 		setPhase("complete");
 		setQuestion(null);
-		setSelected(null);
+		setSelected([]);
+		setLocked(false);
 	}
 
 	function handleToggleMaterial(material: MaterialRecord) {
@@ -371,26 +392,29 @@ export default function Academy() {
 		setLessonStartMastery(startMastery);
 		setLessonQuizEvents([]);
 		setPhase("quiz");
-		setQuestion(generateQuestionForMaterial(sequence[0], materials));
-		setSelected(null);
+		setQuestion(
+			generateQuestionForMaterial(sequence[0], materials, materialMastery),
+		);
+		setSelected([]);
+		setLocked(false);
 	}
 
-	function handleSelect(option: string) {
-		if (selected !== null || question === null) return;
+	function submitAnswer(nextSelected: string[], current: QuizQuestion) {
+		setLocked(true);
 
-		setSelected(option);
-
-		const isAnswerCorrect =
-			option.toLowerCase() === question.correctNote.toLowerCase();
-		const materialKey = normalizeMaterialKey(question.material);
-		const delta: 1 | -1 = isAnswerCorrect ? 1 : -1;
-
-		setMaterialMastery((current) =>
-			applyMasteryDelta(current, materialKey, delta),
+		const answerCorrect = isSelectionCorrect(
+			nextSelected,
+			current.correctNotes,
 		);
-		setLessonQuizEvents((current) => [...current, { materialKey, delta }]);
+		const materialKey = normalizeMaterialKey(current.material);
+		const delta: 1 | -1 = answerCorrect ? 1 : -1;
 
-		if (!isAnswerCorrect) {
+		setMaterialMastery((mastery) =>
+			applyMasteryDelta(mastery, materialKey, delta),
+		);
+		setLessonQuizEvents((events) => [...events, { materialKey, delta }]);
+
+		if (!answerCorrect) {
 			const nextLives = lives - 1;
 			setLives(nextLives);
 
@@ -400,8 +424,33 @@ export default function Academy() {
 				setProgressLessons(currentLevelBaseLessons);
 				setPhase("gameOver");
 				setQuestion(null);
-				setSelected(null);
+				setSelected([]);
+				setLocked(false);
 			}
+		}
+	}
+
+	function handleToggleOption(option: string) {
+		if (locked || question === null) return;
+
+		const already = selected.some((note) => noteKey(note) === noteKey(option));
+		let nextSelected: string[];
+
+		if (already) {
+			nextSelected = selected.filter(
+				(note) => noteKey(note) !== noteKey(option),
+			);
+			setSelected(nextSelected);
+			return;
+		}
+
+		if (selected.length >= question.format.correct) return;
+
+		nextSelected = [...selected, option];
+		setSelected(nextSelected);
+
+		if (nextSelected.length === question.format.correct) {
+			submitAnswer(nextSelected, question);
 		}
 	}
 
@@ -419,9 +468,14 @@ export default function Academy() {
 
 		setQuizIndex(nextIndex);
 		setQuestion(
-			generateQuestionForMaterial(quizSequence[nextIndex], materials),
+			generateQuestionForMaterial(
+				quizSequence[nextIndex],
+				materials,
+				materialMastery,
+			),
 		);
-		setSelected(null);
+		setSelected([]);
+		setLocked(false);
 	}
 
 	function handleReturnToSection() {
@@ -431,7 +485,8 @@ export default function Academy() {
 		setQuizIndex(0);
 		setPhase("learn");
 		setQuestion(null);
-		setSelected(null);
+		setSelected([]);
+		setLocked(false);
 		setLessonStartMastery({});
 		setLessonQuizEvents([]);
 		setCompleteSnapshot(null);
@@ -460,7 +515,7 @@ export default function Academy() {
 			MAX_LEVEL,
 			Math.max(1, found.section.sectionIndex),
 		) as Level;
-		const size = lessonSizeForIndex(found.lesson.lessonIndex);
+		const size = lessonFormatForIndex(found.lesson.lessonIndex).picks;
 		startNewLesson(level, found.unit.families, found.unit.focusFamily, size);
 		setScreen("play");
 	}
@@ -607,7 +662,9 @@ export default function Academy() {
 
 							<div className={styles.quizOptionsSection}>
 								<p className={styles.prompt}>
-									Which note belongs to this material?
+									{requiredCount === 1
+										? "Which note belongs to this material?"
+										: `Select ${requiredCount} notes that belong to this material (${selected.length}/${requiredCount})`}
 								</p>
 								<ul className={styles.options}>
 									{question.options.map((option, index) => (
@@ -617,10 +674,11 @@ export default function Academy() {
 												className={optionClass(
 													option,
 													selected,
-													question.correctNote,
+													question.correctNotes,
+													locked,
 												)}
-												disabled={selected !== null}
-												onClick={() => handleSelect(option)}
+												disabled={locked}
+												onClick={() => handleToggleOption(option)}
 											>
 												<span className={styles.optionLetter}>
 													{getOptionLetter(index)})
@@ -632,14 +690,14 @@ export default function Academy() {
 								</ul>
 							</div>
 
-							{selected && !isCorrect && (
+							{locked && !isCorrect && (
 								<QuizAnswerReveal
 									material={question.material}
-									correctNote={question.correctNote}
+									correctNotes={question.correctNotes}
 								/>
 							)}
 
-							{selected && isCorrect && (
+							{locked && isCorrect && (
 								<div className={shared.gameActions}>
 									<button
 										type="button"
@@ -651,7 +709,7 @@ export default function Academy() {
 								</div>
 							)}
 
-							{selected && !isCorrect && lives > 0 && (
+							{locked && !isCorrect && lives > 0 && (
 								<div className={shared.gameActions}>
 									<button
 										type="button"

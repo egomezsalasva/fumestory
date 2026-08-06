@@ -5,3 +5,4 @@ export * from "./generateQuestion";
 export * from "./materialSources";
 export * from "./pickRandomMaterials";
 export * from "./materialMastery";
+export * from "./lessonDifficulty";
