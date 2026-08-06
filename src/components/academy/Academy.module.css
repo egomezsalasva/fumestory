@@ -1,7 +1,7 @@
 .quizSection {
 	margin: 0 5.25rem 4rem;
 	@media (max-width: 768px) {
-		margin: 0 var(--mobile-side);
+		margin: 0 var(--mobile-side) 2rem;
 	}
 }
 
@@ -134,6 +134,12 @@
 	font-size: 1.125rem;
 }
 
+@media (hover: none), (pointer: coarse) {
+	.optionButton:hover {
+		border-color: rgb(71 85 105);
+	}
+}
+
 .optionLetter {
 	color: rgb(255 255 255 / 0.25);
 	margin-right: 0.5rem;
@@ -149,4 +155,14 @@
 	background: rgb(239 68 68 / 0.15);
 	border: 1px solid rgb(239 68 68 / 0.55);
 	color: rgb(254 202 202);
+}
+
+.optionDimmed {
+	opacity: 0.4;
+	cursor: default;
+	pointer-events: none;
+}
+
+.optionDimmed:hover {
+	border-color: rgb(71 85 105);
 }

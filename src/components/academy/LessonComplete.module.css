@@ -220,31 +220,14 @@
 }
 
 .lessonCompleteMaterialsList {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.75rem;
-	width: 100%;
-	max-width: 36rem;
-	justify-content: center;
-	box-sizing: border-box;
-	@media (max-width: 768px) {
-		gap: 0.4rem;
-		max-width: 100%;
-	}
-}
-
-.lessonCompleteMaterialsList[data-count="4"] {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.lessonCompleteMaterialsList[data-count="5"],
-.lessonCompleteMaterialsList[data-count="6"] {
 	--mastery-card-w: calc((100% - 1.5rem) / 3);
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	gap: 0.75rem;
+	width: 100%;
 	max-width: 36rem;
+	box-sizing: border-box;
 	@media (max-width: 768px) {
 		--mastery-card-w: calc((100% - 0.8rem) / 3);
 		gap: 0.4rem;
@@ -252,10 +235,17 @@
 	}
 }
 
-.lessonCompleteMaterialsList[data-count="5"] .materialMasteryCard,
-.lessonCompleteMaterialsList[data-count="6"] .materialMasteryCard {
+.lessonCompleteMaterialsList .materialMasteryCard {
 	width: var(--mastery-card-w);
 	flex: 0 0 var(--mastery-card-w);
+	min-width: 0;
+}
+
+.lessonCompleteMaterialsList[data-count="4"] {
+	--mastery-card-w: calc((100% - 2.25rem) / 4);
+	@media (max-width: 768px) {
+		--mastery-card-w: calc((100% - 1.2rem) / 4);
+	}
 }
 
 .lessonCompleteMaterialsList[data-count="4"] .materialMasteryCard,

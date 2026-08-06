@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type {
 	CurriculumLesson,
 	CurriculumSection,
@@ -102,38 +102,56 @@ export function AcademySectionView({
 				/>
 			</div>
 
-			{section.units.map((unit) => (
-				<section
-					key={unit.id}
-					className={styles.unitBlock}
-					data-unit-id={unit.id}
-					ref={(node) => {
-						if (node) unitRefs.current.set(unit.id, node);
-						else unitRefs.current.delete(unit.id);
-					}}
-				>
-					<h2 className={styles.unitTitle}>
-						<span className={styles.unitTitleLine} aria-hidden="true" />
-						<span className={styles.unitTitleText}>{unit.description}</span>
-						<span className={styles.unitTitleLine} aria-hidden="true" />
-					</h2>
-					<ol className={styles.lessonPath}>
-						{unit.lessons.map((lesson, index) => (
-							<li key={lesson.id} className={styles.lessonPathItem}>
-								{index > 0 ? (
-									<span className={styles.lessonConnector} aria-hidden="true" />
-								) : null}
-								<LessonNode
-									lesson={lesson}
-									colors={unit.colors}
-									unitLocked={unit.status === "locked"}
-									onOpenLesson={onOpenLesson}
-								/>
-							</li>
-						))}
-					</ol>
-				</section>
-			))}
+			{section.units.map((unit) => {
+				const priorAllMastered = unit.lessons
+					.slice(0, -1)
+					.every((lesson) => lesson.repeats >= REPEATS_TO_MASTER);
+
+				return (
+					<section
+						key={unit.id}
+						className={styles.unitBlock}
+						data-unit-id={unit.id}
+						ref={(node) => {
+							if (node) unitRefs.current.set(unit.id, node);
+							else unitRefs.current.delete(unit.id);
+						}}
+					>
+						<h2 className={styles.unitTitle}>
+							<span className={styles.unitTitleLine} aria-hidden="true" />
+							<span className={styles.unitTitleText}>{unit.description}</span>
+							<span className={styles.unitTitleLine} aria-hidden="true" />
+						</h2>
+						<ol className={styles.lessonPath}>
+							{unit.lessons.map((lesson, index) => {
+								const isLastInUnit = index === unit.lessons.length - 1;
+								const canReplay =
+									isLastInUnit &&
+									lesson.repeats >= REPEATS_TO_MASTER &&
+									priorAllMastered;
+
+								return (
+									<li key={lesson.id} className={styles.lessonPathItem}>
+										{index > 0 ? (
+											<span
+												className={styles.lessonConnector}
+												aria-hidden="true"
+											/>
+										) : null}
+										<LessonNode
+											lesson={lesson}
+											colors={unit.colors}
+											unitLocked={unit.status === "locked"}
+											canReplay={canReplay}
+											onOpenLesson={onOpenLesson}
+										/>
+									</li>
+								);
+							})}
+						</ol>
+					</section>
+				);
+			})}
 
 			{nextSection ? (
 				<div className={styles.nextSection}>
@@ -259,38 +277,57 @@ function LessonNode({
 	lesson,
 	colors,
 	unitLocked,
+	canReplay,
 	onOpenLesson,
 }: {
 	lesson: CurriculumLesson;
 	colors: UnitColors | null;
 	unitLocked: boolean;
+	canReplay: boolean;
 	onOpenLesson: (lessonId: string) => void;
 }) {
 	const locked = lesson.status === "locked";
+	const mastered = lesson.repeats >= REPEATS_TO_MASTER;
+	const lockedOut = locked || (mastered && !canReplay);
 	const repeats = Math.min(lesson.repeats, REPEATS_TO_MASTER);
-	// Tint all lessons in an unlocked unit (e.g. all of Unit 1 pink)
-	const activeColors = colors && !unitLocked ? colors : null;
-	const faceStyle = activeColors
-		? {
-				background: activeColors.face,
-				borderColor: hexToRgba(activeColors.accent, 0.55),
-			}
-		: undefined;
+
+	let faceStyle: CSSProperties | undefined;
+	if (colors && !unitLocked) {
+		if (mastered) {
+			faceStyle = {
+				["--lesson-metal" as string]: colors.accent,
+				borderColor: hexToRgba(colors.accent, 0.75),
+			};
+		} else {
+			faceStyle = {
+				background: colors.face,
+				borderColor: hexToRgba(colors.accent, 0.55),
+			};
+		}
+	}
 
 	return (
 		<button
 			type="button"
 			className={styles.lessonNode}
 			data-status={lesson.status}
-			disabled={locked}
+			data-mastered={mastered ? "true" : "false"}
+			data-replayable={canReplay ? "true" : "false"}
+			disabled={lockedOut}
 			style={faceStyle}
 			onClick={() => {
-				if (!locked) onOpenLesson(lesson.id);
+				if (!lockedOut) onOpenLesson(lesson.id);
 			}}
 		>
 			<span className={styles.lessonNodeTitle}>{lesson.title}</span>
 			{locked ? (
 				<span className={styles.lessonStatus}>Locked</span>
+			) : canReplay ? (
+				<span className={styles.lessonReplay} aria-label="Replay lesson">
+					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
+					</svg>
+				</span>
 			) : (
 				<span
 					className={styles.lessonProgress}

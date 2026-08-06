@@ -13,8 +13,10 @@ import {
 	getMaterialProducerSources,
 	getProducerMaterials,
 	getSourceCardKey,
-	lessonFormatForIndex,
+	lessonFormatForLesson,
+	materialMeetsMinNotes,
 	pickRandomMaterials,
+	quizFormatForLesson,
 	shuffleMaterials,
 	type LessonQuizEvent,
 	type MaterialMasteryMap,
@@ -41,6 +43,13 @@ const MAX_LIVES = 5;
 const OPTION_LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const LESSONS_PER_LEVEL = 5;
 const MAX_LEVEL = 3;
+
+const INITIAL_UNIT = "Florals";
+const INITIAL_LESSON_INDEX = 1;
+const INITIAL_FORMAT = lessonFormatForLesson(
+	INITIAL_UNIT,
+	INITIAL_LESSON_INDEX,
+);
 
 const RELIABLE_SOURCES = new Set<SourceName>([
 	"Givaudan",
@@ -122,18 +131,23 @@ function pickUpTo(pool: MaterialRecord[], count: number): MaterialRecord[] {
 	return pickRandomMaterials(pool, Math.min(count, pool.length));
 }
 
-/** 6 from focus (or as many as exist); fill rest randomly from leftover focus + earlier families. */
+/**
+ * Up to 6 from focus; fill to POOL_SIZE (9) from leftover focus + earlier families
+ * (so ~3 can be prior categories). Filtered by level + minNotes for this rung.
+ */
 function createLesson(
 	level: Level,
 	families: string[],
 	focusFamily: string,
 	lessonSize: number,
+	minNotes: number,
 ): LessonState {
 	const eligible = filterLessonMaterials(
 		materials.filter(
 			(material) =>
 				isMaterialInLevel(material, level) &&
-				materialInFamilies(material, families),
+				materialInFamilies(material, families) &&
+				materialMeetsMinNotes(material, minNotes),
 		),
 	);
 
@@ -212,7 +226,7 @@ function optionClass(
 		return `${base} ${styles.optionWrong}`;
 	}
 
-	return `${base} ${formStyles.feedbackNoRatingButtonInactive}`;
+	return `${base} ${formStyles.feedbackNoRatingButtonInactive} ${styles.optionDimmed}`;
 }
 
 export default function Academy() {
@@ -220,13 +234,24 @@ export default function Academy() {
 	const [curriculum, setCurriculum] = useState(() => buildCurriculum());
 	const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
 	const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+	const [activeLessonIndex, setActiveLessonIndex] =
+		useState(INITIAL_LESSON_INDEX);
+	const [activeUnitDescription, setActiveUnitDescription] =
+		useState(INITIAL_UNIT);
 	const [lessonFamilies, setLessonFamilies] = useState<string[]>(["floral"]);
 	const [lessonFocusFamily, setLessonFocusFamily] = useState("floral");
-	const [lessonSize, setLessonSize] = useState(LESSON_SIZE);
+	const [lessonSize, setLessonSize] = useState(INITIAL_FORMAT.picks);
+	const [lessonMinNotes, setLessonMinNotes] = useState(INITIAL_FORMAT.minNotes);
 
 	const [phase, setPhase] = useState<LessonPhase>("learn");
 	const [lesson, setLesson] = useState<LessonState>(() =>
-		createLesson(1, ["floral"], "floral", LESSON_SIZE),
+		createLesson(
+			1,
+			["floral"],
+			"floral",
+			INITIAL_FORMAT.picks,
+			INITIAL_FORMAT.minNotes,
+		),
 	);
 	const [expandedKey, setExpandedKey] = useState<string | null>(null);
 	const [quizSequence, setQuizSequence] = useState<MaterialRecord[]>([]);
@@ -274,17 +299,23 @@ export default function Academy() {
 
 	const isLastQuizQuestion = quizIndex >= quizSequence.length - 1;
 	const requiredCount = question?.format.correct ?? 1;
+	const lessonQuizFormat = quizFormatForLesson(
+		activeUnitDescription,
+		activeLessonIndex,
+	);
 
 	function startNewLesson(
 		level: Level,
 		families: string[],
 		focusFamily: string,
 		size: number,
+		minNotes: number,
 	) {
 		setLessonFamilies(families);
 		setLessonFocusFamily(focusFamily);
 		setLessonSize(size);
-		setLesson(createLesson(level, families, focusFamily, size));
+		setLessonMinNotes(minNotes);
+		setLesson(createLesson(level, families, focusFamily, size, minNotes));
 		setExpandedKey(null);
 		setQuizSequence([]);
 		setQuizIndex(0);
@@ -393,7 +424,12 @@ export default function Academy() {
 		setLessonQuizEvents([]);
 		setPhase("quiz");
 		setQuestion(
-			generateQuestionForMaterial(sequence[0], materials, materialMastery),
+			generateQuestionForMaterial(
+				sequence[0],
+				materials,
+				materialMastery,
+				lessonQuizFormat,
+			),
 		);
 		setSelected([]);
 		setLocked(false);
@@ -472,6 +508,7 @@ export default function Academy() {
 				quizSequence[nextIndex],
 				materials,
 				materialMastery,
+				lessonQuizFormat,
 			),
 		);
 		setSelected([]);
@@ -498,7 +535,13 @@ export default function Academy() {
 		setLives(MAX_LIVES);
 		setLessonStreak(0);
 		setProgressLessons(currentLevelBaseLessons);
-		startNewLesson(currentLevel, lessonFamilies, lessonFocusFamily, lessonSize);
+		startNewLesson(
+			currentLevel,
+			lessonFamilies,
+			lessonFocusFamily,
+			lessonSize,
+			lessonMinNotes,
+		);
 	}
 
 	function handleOpenSection(sectionId: string) {
@@ -510,13 +553,24 @@ export default function Academy() {
 		const found = findLesson(curriculum, lessonId);
 		if (!found) return;
 
+		const unitDescription = found.unit.description;
+		const lessonIndex = found.lesson.lessonIndex;
+		const format = lessonFormatForLesson(unitDescription, lessonIndex);
+
 		setActiveLessonId(lessonId);
+		setActiveLessonIndex(lessonIndex);
+		setActiveUnitDescription(unitDescription);
 		const level = Math.min(
 			MAX_LEVEL,
 			Math.max(1, found.section.sectionIndex),
 		) as Level;
-		const size = lessonFormatForIndex(found.lesson.lessonIndex).picks;
-		startNewLesson(level, found.unit.families, found.unit.focusFamily, size);
+		startNewLesson(
+			level,
+			found.unit.families,
+			found.unit.focusFamily,
+			format.picks,
+			format.minNotes,
+		);
 		setScreen("play");
 	}
 
@@ -576,7 +630,7 @@ export default function Academy() {
 				{phase === "learn" ? (
 					<>
 						<h2 className={styles.learnProgress}>
-							Pick {lessonSize} Material Cards
+							Pick {lessonSize} Material Card{lessonSize === 1 ? "" : "s"}
 						</h2>
 						<LessonPickGrid
 							materials={lesson.pool}

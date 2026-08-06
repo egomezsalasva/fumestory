@@ -273,6 +273,61 @@
 	background: rgb(34 197 94 / 0.08);
 }
 
+.lessonNode[data-mastered="true"] {
+	--lesson-metal: #d4849a;
+	cursor: default;
+	border-color: color-mix(in srgb, var(--lesson-metal) 70%, white);
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--lesson-metal) 80%, white) 0%,
+			color-mix(in srgb, var(--lesson-metal) 85%, black) 22%,
+			color-mix(in srgb, var(--lesson-metal) 75%, white) 45%,
+			color-mix(in srgb, var(--lesson-metal) 85%, black) 68%,
+			color-mix(in srgb, var(--lesson-metal) 80%, white) 100%
+		), #1a1218;
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--lesson-metal) 30%, white),
+		inset 0 -1px 0 rgb(0 0 0 / 0.28),
+		0 0 0 1px color-mix(in srgb, var(--lesson-metal) 20%, transparent);
+	color: #fff5f8;
+}
+
+.lessonNode[data-mastered="true"]:not([data-replayable="true"]) {
+	pointer-events: none;
+}
+
+.lessonNode[data-mastered="true"][data-replayable="true"] {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.lessonNode[data-mastered="true"]:hover {
+	border-color: color-mix(in srgb, var(--lesson-metal) 70%, white);
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--lesson-metal) 80%, white) 0%,
+			color-mix(in srgb, var(--lesson-metal) 85%, black) 22%,
+			color-mix(in srgb, var(--lesson-metal) 75%, white) 45%,
+			color-mix(in srgb, var(--lesson-metal) 85%, black) 68%,
+			color-mix(in srgb, var(--lesson-metal) 80%, white) 100%
+		), #1a1218;
+}
+
+.lessonNode[data-mastered="true"] .lessonNodeTitle {
+	color: #fff8fb;
+	text-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
+}
+
+.lessonNode[data-mastered="true"] .lessonProgressInner {
+	border-color: color-mix(in srgb, var(--lesson-metal) 45%, white);
+}
+
+.lessonNode[data-mastered="true"] .lessonProgressSegment {
+	background: rgb(0 0 0 / 0.18);
+}
+
 .lessonNodeTitle {
 	font-family: "Aspekta";
 	font-weight: 500;
@@ -328,6 +383,25 @@
 
 .lessonNode[data-status="completed"] .lessonProgressFill {
 	background: rgb(187 247 208 / 0.75);
+}
+
+.lessonNode[data-mastered="true"] .lessonProgressFill {
+	background: color-mix(in srgb, var(--lesson-metal) 85%, white);
+}
+
+.lessonReplay {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: 1rem;
+	color: color-mix(in srgb, var(--lesson-metal, #d4849a) 70%, white);
+}
+
+.lessonReplay svg {
+	width: 1.1rem;
+	height: 1.1rem;
+	display: block;
 }
 
 .nextSection {

@@ -105,9 +105,10 @@ function buildQuestion(
 export function generateQuestion(
 	materials: MaterialRecord[],
 	mastery: MaterialMasteryMap = {},
+	lessonFormat?: QuizFormat,
 ): QuizQuestion {
 	const material = pickRandomMaterial(materials);
-	const format = pickFormatForMaterial(material, mastery);
+	const format = lessonFormat ?? pickFormatForMaterial(material, mastery);
 	return buildQuestion(material, materials, format);
 }
 
@@ -115,7 +116,8 @@ export function generateQuestionForMaterial(
 	material: MaterialRecord,
 	allMaterials: MaterialRecord[],
 	mastery: MaterialMasteryMap = {},
+	lessonFormat?: QuizFormat,
 ): QuizQuestion {
-	const format = pickFormatForMaterial(material, mastery);
+	const format = lessonFormat ?? pickFormatForMaterial(material, mastery);
 	return buildQuestion(material, allMaterials, format);
 }
