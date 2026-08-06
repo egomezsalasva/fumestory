@@ -576,7 +576,7 @@ export default function Academy() {
 				{phase === "learn" ? (
 					<>
 						<h2 className={styles.learnProgress}>
-							Pick {lessonSize} Material Cards to Study
+							Pick {lessonSize} Material Cards
 						</h2>
 						<LessonPickGrid
 							materials={lesson.pool}
@@ -633,8 +633,6 @@ export default function Academy() {
 										/>
 									))}
 								</div>
-								<span className={styles.gameStatusDivider} aria-hidden="true" />
-								<p className={styles.streak}>Lesson streak: {lessonStreak}</p>
 							</div>
 
 							<div className={styles.quizMaterialSection}>

@@ -75,6 +75,23 @@ function getExpandBounds(from: HTMLElement): DOMRect {
 
 function getExpandedTarget(bounds: DOMRect): FloatRect {
 	const pad = 16;
+	const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+	if (isMobile) {
+		const top = 96;
+		const width = Math.min(21 * 16, Math.max(0, window.innerWidth - pad * 2));
+		const height = Math.min(
+			32 * 16,
+			Math.max(0, window.innerHeight - top - pad),
+		);
+		return {
+			width,
+			height,
+			left: (window.innerWidth - width) / 2,
+			top,
+		};
+	}
+
 	const width = Math.min(40 * 16, Math.max(0, bounds.width - pad * 2));
 	const height = Math.min(32 * 16, Math.max(0, bounds.height - pad * 2));
 	return {

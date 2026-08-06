@@ -27,8 +27,8 @@
 	width: 2rem;
 	height: 2rem;
 	padding: 0;
-	border: none;
-	border-radius: 0.35rem;
+	border: 1px solid rgb(255 255 255 / 0.25);
+	border-radius: 50%;
 	background: transparent;
 	color: rgb(255 255 255 / 0.45);
 	font-size: 1.5rem;
@@ -38,6 +38,7 @@
 
 .exitLesson:hover {
 	color: #f5f7fa;
+	border-color: rgb(255 255 255 / 0.45);
 	background: rgb(255 255 255 / 0.08);
 }
 
@@ -48,6 +49,9 @@
 	justify-content: center;
 	gap: 1.25rem;
 	margin: 0 0 1.25rem;
+	@media (max-width: 768px) {
+		margin-top: 0.5rem;
+	}
 }
 
 .gameStatusDivider {
@@ -75,6 +79,7 @@
 	margin: 0 0 1.5rem;
 	@media (max-width: 768px) {
 		font-size: 1rem;
+		margin-top: 0.5rem;
 		margin-bottom: 1.25rem;
 	}
 }
