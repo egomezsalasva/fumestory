@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
-import formStyles from "@/components/Form.module.css";
+import academyStyles from "./Academy.module.css";
 import styles from "./LessonComplete.module.css";
 import pickStyles from "./LessonPickGrid.module.css";
 import shared from "./shared.module.css";
@@ -43,6 +43,26 @@ type FloatRect = {
 	width: number;
 	height: number;
 };
+
+function BackArrowIcon() {
+	return (
+		<svg
+			width="14"
+			height="14"
+			viewBox="0 0 16 16"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path
+				d="M10.5 3.5 5.5 8l5 4.5"
+				stroke="currentColor"
+				strokeWidth="1.75"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+		</svg>
+	);
+}
 
 function FlipIcon() {
 	return (
@@ -364,6 +384,7 @@ function SeenMasteryCard({
 										>
 											<p
 												className={`${shared.revealLabel} ${pickStyles.pickRememberLabel}`}
+												style={{ animation: "none" }}
 											>
 												Notes
 											</p>
@@ -453,6 +474,18 @@ export default function MaterialsOverview({
 
 		return (
 			<div className={styles.lessonCompleteCard}>
+				<button
+					type="button"
+					className={academyStyles.exitLesson}
+					aria-label="Back to families"
+					onClick={() => {
+						setExpandedKey(null);
+						setSelectedFamily(null);
+					}}
+				>
+					<BackArrowIcon />
+				</button>
+
 				<p className={styles.overviewFamilyTitle}>{label}</p>
 				<p className={styles.lessonCompleteKnownSubLabel}>
 					{
@@ -499,25 +532,21 @@ export default function MaterialsOverview({
 						);
 					})}
 				</div>
-
-				<div className={shared.gameActions}>
-					<button
-						type="button"
-						className={formStyles.formSubmitButton}
-						onClick={() => {
-							setExpandedKey(null);
-							setSelectedFamily(null);
-						}}
-					>
-						Back
-					</button>
-				</div>
 			</div>
 		);
 	}
 
 	return (
 		<div className={styles.lessonCompleteCard}>
+			<button
+				type="button"
+				className={academyStyles.exitLesson}
+				aria-label="Back to section map"
+				onClick={onBack}
+			>
+				<BackArrowIcon />
+			</button>
+
 			<div className={styles.lessonCompleteKnownCountContainer}>
 				<p className={styles.lessonCompleteKnownLabel}>You know</p>
 				<p className={styles.lessonCompleteKnownCount}>
@@ -555,16 +584,6 @@ export default function MaterialsOverview({
 						</button>
 					);
 				})}
-			</div>
-
-			<div className={shared.gameActions}>
-				<button
-					type="button"
-					className={formStyles.formSubmitButton}
-					onClick={onBack}
-				>
-					Back
-				</button>
 			</div>
 		</div>
 	);

@@ -38,6 +38,7 @@ type LessonCompleteCardProps = {
 	lessonMaterials: MaterialRecord[];
 	materialMastery: MaterialMasteryMap;
 	onNextLesson: () => void;
+	onOpenOverview: () => void;
 };
 
 const KNOWN_COUNT_ANIMATION_MS = 1200;
@@ -191,6 +192,7 @@ export default function LessonCompleteCard({
 	lessonMaterials,
 	materialMastery,
 	onNextLesson,
+	onOpenOverview,
 }: LessonCompleteCardProps) {
 	const categories = getCategoryProgress(materials, learnedMaterialKeys);
 	const previousByFamily = new Map(
@@ -198,6 +200,12 @@ export default function LessonCompleteCard({
 			cat.family,
 			cat.known,
 		]),
+	);
+
+	const lessonFamilies = new Set(
+		lessonMaterials
+			.map((m) => m.olfactiveFamily?.[0]?.trim().toLowerCase())
+			.filter((family): family is string => Boolean(family)),
 	);
 
 	const updatedFamilies = categories
@@ -236,6 +244,7 @@ export default function LessonCompleteCard({
 							key={cat.family}
 							className={styles.categoryProgressCard}
 							data-updated={updated}
+							data-in-lesson={lessonFamilies.has(cat.family)}
 							style={{
 								background: `linear-gradient(${hexToRgba(cat.color, 0.4)}, ${hexToRgba(cat.color, 0.4)}), #0b172d`,
 								borderColor: hexToRgba(cat.color, 0.55),
@@ -263,6 +272,17 @@ export default function LessonCompleteCard({
 						</div>
 					);
 				})}
+
+				<button
+					type="button"
+					className={styles.overviewShortcutCard}
+					aria-label="Materials overview"
+					onClick={onOpenOverview}
+				>
+					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" />
+					</svg>
+				</button>
 			</div>
 
 			<p className={styles.lessonCompleteMaterialsHeading}>
@@ -299,7 +319,7 @@ export default function LessonCompleteCard({
 					className={formStyles.formSubmitButton}
 					onClick={onNextLesson}
 				>
-					Next lesson
+					Continue
 				</button>
 			</div>
 		</div>

@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MaterialRecord, SourceName } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
 import styles from "./Academy.module.css";
 import shared from "./shared.module.css";
 import {
-	LESSON_SIZE,
 	POOL_SIZE,
 	applyMasteryDelta,
 	filterLessonMaterials,
@@ -28,6 +27,7 @@ import ProducerLogo from "@/components/svgs/ProducerLogo";
 import {
 	applyLessonPass,
 	buildCurriculum,
+	findLatestUnlockedLessonId,
 	findLesson,
 	findSection,
 } from "./curriculum";
@@ -282,6 +282,59 @@ export default function Academy() {
 	const [completeSnapshot, setCompleteSnapshot] =
 		useState<CompleteSnapshot | null>(null);
 
+	const sectionScrollY = useRef(0);
+	const scrollToLessonId = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (screen !== "section") return;
+
+		const lessonId = scrollToLessonId.current;
+		if (lessonId) {
+			scrollToLessonId.current = null;
+			const frame = requestAnimationFrame(() => {
+				document.getElementById(lessonId)?.scrollIntoView({
+					block: "center",
+					behavior: "auto",
+				});
+			});
+			return () => cancelAnimationFrame(frame);
+		}
+
+		const y = sectionScrollY.current;
+		const frame = requestAnimationFrame(() => {
+			window.scrollTo({ top: y, left: 0, behavior: "auto" });
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [screen, curriculum]);
+
+	// Enter learn / quiz / complete (and each new quiz question) → top
+	useEffect(() => {
+		if (screen !== "play") return;
+		if (phase !== "learn" && phase !== "quiz" && phase !== "complete") return;
+
+		const frame = requestAnimationFrame(() => {
+			window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [screen, phase, quizIndex]);
+
+	// After options selected / answer locked → bottom (Next / reveal)
+	useEffect(() => {
+		if (screen !== "play" || phase !== "quiz") return;
+		if (selected.length === 0 && !locked) return;
+
+		const frame = requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				window.scrollTo({
+					top: document.documentElement.scrollHeight,
+					left: 0,
+					behavior: "smooth",
+				});
+			});
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [screen, phase, selected.length, locked]);
+
 	const activeSection = activeSectionId
 		? findSection(curriculum, activeSectionId)
 		: null;
@@ -515,7 +568,16 @@ export default function Academy() {
 		setLocked(false);
 	}
 
-	function handleReturnToSection() {
+	function handleReturnToSection(options?: { toLatestUnlocked?: boolean }) {
+		if (options?.toLatestUnlocked) {
+			const section = activeSectionId
+				? findSection(curriculum, activeSectionId)
+				: null;
+			if (section) {
+				scrollToLessonId.current = findLatestUnlockedLessonId(section);
+			}
+		}
+
 		setActiveLessonId(null);
 		setExpandedKey(null);
 		setQuizSequence([]);
@@ -528,6 +590,23 @@ export default function Academy() {
 		setLessonQuizEvents([]);
 		setCompleteSnapshot(null);
 		setScreen("section");
+	}
+
+	function handleOpenOverviewFromComplete() {
+		setActiveLessonId(null);
+		setExpandedKey(null);
+		setQuizSequence([]);
+		setQuizIndex(0);
+		setPhase("learn");
+		setQuestion(null);
+		setSelected([]);
+		setLocked(false);
+		setLessonStartMastery({});
+		setLessonQuizEvents([]);
+		setCompleteSnapshot(null);
+		sectionScrollY.current = window.scrollY;
+		scrollToLessonId.current = null;
+		setScreen("overview");
 	}
 
 	function handleStartOver() {
@@ -545,6 +624,8 @@ export default function Academy() {
 	}
 
 	function handleOpenSection(sectionId: string) {
+		sectionScrollY.current = 0;
+		scrollToLessonId.current = null;
 		setActiveSectionId(sectionId);
 		setScreen("section");
 	}
@@ -552,6 +633,9 @@ export default function Academy() {
 	function handleOpenLesson(lessonId: string) {
 		const found = findLesson(curriculum, lessonId);
 		if (!found) return;
+
+		sectionScrollY.current = window.scrollY;
+		scrollToLessonId.current = null;
 
 		const unitDescription = found.unit.description;
 		const lessonIndex = found.lesson.lessonIndex;
@@ -608,7 +692,11 @@ export default function Academy() {
 						setActiveSectionId(null);
 						setScreen("home");
 					}}
-					onOpenOverview={() => setScreen("overview")}
+					onOpenOverview={() => {
+						sectionScrollY.current = window.scrollY;
+						scrollToLessonId.current = null;
+						setScreen("overview");
+					}}
 					onOpenLesson={handleOpenLesson}
 				/>
 			</section>
@@ -618,14 +706,16 @@ export default function Academy() {
 	return (
 		<section className={styles.quizSection}>
 			<div className={`${formStyles.formContainer} ${styles.quizContainer}`}>
-				<button
-					type="button"
-					className={styles.exitLesson}
-					aria-label="Back to section map"
-					onClick={handleReturnToSection}
-				>
-					×
-				</button>
+				{phase !== "complete" ? (
+					<button
+						type="button"
+						className={styles.exitLesson}
+						aria-label="Back to section map"
+						onClick={() => handleReturnToSection()}
+					>
+						×
+					</button>
+				) : null}
 
 				{phase === "learn" ? (
 					<>
@@ -661,7 +751,10 @@ export default function Academy() {
 						previousLearnedKeys={new Set(completeSnapshot.previousLearnedKeys)}
 						lessonMaterials={completeSnapshot.lessonMaterials}
 						materialMastery={materialMastery}
-						onNextLesson={handleReturnToSection}
+						onNextLesson={() =>
+							handleReturnToSection({ toLatestUnlocked: true })
+						}
+						onOpenOverview={handleOpenOverviewFromComplete}
 					/>
 				) : phase === "gameOver" ? (
 					<LessonStartOverCard
@@ -713,7 +806,13 @@ export default function Academy() {
 							</div>
 
 							<div className={styles.quizOptionsSection}>
-								<p className={styles.prompt}>
+								<p
+									key={quizIndex}
+									className={styles.prompt}
+									data-settled={
+										selected.length > 0 || locked ? "true" : "false"
+									}
+								>
 									{requiredCount === 1
 										? "Which note belongs to this material?"
 										: `Select ${requiredCount} notes that belong to this material (${selected.length}/${requiredCount})`}

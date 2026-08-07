@@ -17,7 +17,6 @@ export function AcademyHome({ sections, onOpenSection }: AcademyHomeProps) {
 	return (
 		<div className={styles.map}>
 			<h1 className={styles.title}>Academy</h1>
-			<p className={styles.subtitle}>Choose a section to begin</p>
 			<div className={styles.sectionList}>
 				{sections.map((section) => (
 					<SectionCard
@@ -309,6 +308,7 @@ function LessonNode({
 	return (
 		<button
 			type="button"
+			id={lesson.id}
 			className={styles.lessonNode}
 			data-status={lesson.status}
 			data-mastered={mastered ? "true" : "false"}

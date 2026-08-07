@@ -216,6 +216,7 @@
 
 .pickRevealCards {
 	margin-top: 1rem;
+	margin-bottom: 0;
 	width: 100%;
 }
 
@@ -228,6 +229,31 @@
 	font-size: 0.9rem;
 	color: rgb(255 255 255 / 0.75);
 	margin-bottom: 0.25rem;
+	animation: pickRememberGlow 2s ease-out 0.75s 1;
+}
+
+.pickFlipInner:not([data-flipped="true"]) .pickRememberLabel {
+	animation: none;
+}
+
+@keyframes pickRememberGlow {
+	0%,
+	100% {
+		color: rgb(255 255 255 / 0.75);
+		text-shadow: none;
+		filter: brightness(1);
+	}
+	40% {
+		color: rgb(255 255 255);
+		text-shadow: 0 0 12px rgb(255 255 255 / 0.5);
+		filter: brightness(1.5);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pickRememberLabel {
+		animation: none;
+	}
 }
 
 .pickBackHint {

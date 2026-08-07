@@ -78,7 +78,7 @@ function getExpandedTarget(bounds: DOMRect): FloatRect {
 	const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 	if (isMobile) {
-		const top = 96;
+		const top = 92;
 		const width = Math.min(21 * 16, Math.max(0, window.innerWidth - pad * 2));
 		const height = Math.min(
 			32 * 16,

@@ -68,7 +68,7 @@ const CURRICULUM: {
 }[] = [
 	{
 		title: "Section 1",
-		subtitle: "Easy Raw Materials - 5 notes or less each",
+		subtitle: "Raw Materials - 5 notes or less each",
 		status: "available",
 		units: [
 			{
@@ -183,7 +183,7 @@ const CURRICULUM: {
 	},
 	{
 		title: "Section 2",
-		subtitle: "Medium Raw Materials - Between 5 to 10 notes each",
+		subtitle: "Raw Materials - Between 5 to 10 notes each",
 		status: "locked",
 		units: [
 			{
@@ -274,7 +274,7 @@ const CURRICULUM: {
 	},
 	{
 		title: "Section 3",
-		subtitle: "Hard Raw Materials - 10 or more notes each",
+		subtitle: "Raw Materials - 10 or more notes each",
 		status: "locked",
 		units: [
 			{
@@ -445,6 +445,21 @@ export function findLesson(
 		}
 	}
 	return null;
+}
+
+/** Furthest non-locked lesson in section order. */
+export function findLatestUnlockedLessonId(
+	section: CurriculumSection,
+): string | null {
+	let latest: string | null = null;
+	for (const unit of section.units) {
+		if (unit.status === "locked") break;
+		for (const lesson of unit.lessons) {
+			if (lesson.status === "locked") break;
+			latest = lesson.id;
+		}
+	}
+	return latest;
 }
 
 /** After a successful lesson: +1 repeat (max 5), unlock next lesson; finish unit → unlock next unit. */
