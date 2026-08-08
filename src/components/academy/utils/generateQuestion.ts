@@ -78,10 +78,12 @@ function buildQuestion(
 	const optionCount = Math.max(format.options, correctCount);
 	const correctNotes = pickRandomItems(materialNotes, correctCount);
 
-	const correctKeys = new Set(correctNotes.map((note) => note.toLowerCase()));
+	const materialNoteKeys = new Set(
+		materialNotes.map((note) => note.toLowerCase()),
+	);
 	const pool = getProducerNotesPool(allMaterials);
 	const distractorPool = pool.filter(
-		(note) => !correctKeys.has(note.toLowerCase()),
+		(note) => !materialNoteKeys.has(note.toLowerCase()),
 	);
 
 	const distractorNeed = optionCount - correctCount;
