@@ -1,5 +1,5 @@
 import type { MaterialRecord } from "@/curation/materials/types";
-import shared from "./shared.module.css";
+import shared from "../../shared.module.css";
 import {
 	getMaterialProducerSources,
 	getSourceCardKey,

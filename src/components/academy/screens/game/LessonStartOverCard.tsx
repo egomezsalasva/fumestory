@@ -1,6 +1,6 @@
 import formStyles from "@/components/Form.module.css";
 import styles from "./LessonComplete.module.css";
-import shared from "./shared.module.css";
+import shared from "../../shared.module.css";
 
 type LessonStartOverCardProps = {
 	lessonStreak: number;

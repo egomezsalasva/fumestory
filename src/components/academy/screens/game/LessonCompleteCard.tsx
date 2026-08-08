@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
 import formStyles from "@/components/Form.module.css";
 import styles from "./LessonComplete.module.css";
-import shared from "./shared.module.css";
+import shared from "../../shared.module.css";
 import {
 	getMaterialDisplayNames,
 	getMasteryValue,
@@ -29,6 +29,7 @@ type CategoryProgress = {
 };
 
 type LessonCompleteCardProps = {
+	outcome: "success" | "retry";
 	previousKnownCount: number;
 	knownMaterialsCount: number;
 	allReliableMaterialsCount: number;
@@ -37,6 +38,9 @@ type LessonCompleteCardProps = {
 	previousLearnedKeys: ReadonlySet<string>;
 	lessonMaterials: MaterialRecord[];
 	materialMastery: MaterialMasteryMap;
+	lives: number;
+	maxLives: number;
+	onTryAgain: () => void;
 	onNextLesson: () => void;
 	onOpenOverview: () => void;
 };
@@ -183,6 +187,7 @@ function MaterialMasteryCard({
 }
 
 export default function LessonCompleteCard({
+	outcome,
 	previousKnownCount,
 	knownMaterialsCount,
 	allReliableMaterialsCount,
@@ -191,9 +196,47 @@ export default function LessonCompleteCard({
 	previousLearnedKeys,
 	lessonMaterials,
 	materialMastery,
+	lives,
+	maxLives,
+	onTryAgain,
 	onNextLesson,
 	onOpenOverview,
 }: LessonCompleteCardProps) {
+	if (outcome === "retry") {
+		return (
+			<div className={styles.lessonCompleteCard}>
+				<h2 className={styles.lessonStartOverTitle}>Not this time</h2>
+				<p className={styles.lessonStartOverMessage}>
+					None of those stuck yet — review the cards and try the quiz again.
+					You’ve still got lives left.
+				</p>
+				<div
+					className={shared.lives}
+					aria-label={`${lives} of ${maxLives} lives remaining`}
+				>
+					{Array.from({ length: maxLives }, (_, index) => (
+						<span
+							key={index}
+							className={`${shared.life} ${
+								index < lives ? shared.lifeActive : shared.lifeLost
+							}`}
+							aria-hidden="true"
+						/>
+					))}
+				</div>
+				<div className={shared.gameActions}>
+					<button
+						type="button"
+						className={formStyles.formSubmitButton}
+						onClick={onTryAgain}
+					>
+						Try again
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 	const categories = getCategoryProgress(materials, learnedMaterialKeys);
 	const previousByFamily = new Map(
 		getCategoryProgress(materials, previousLearnedKeys).map((cat) => [

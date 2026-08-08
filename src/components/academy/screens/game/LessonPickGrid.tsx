@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
 import styles from "./LessonPickGrid.module.css";
-import shared from "./shared.module.css";
+import shared from "../../shared.module.css";
 import {
 	getMaterialDisplayNames,
 	getMaterialProducerSources,

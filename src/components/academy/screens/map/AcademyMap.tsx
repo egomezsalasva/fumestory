@@ -3,8 +3,8 @@ import type {
 	CurriculumLesson,
 	CurriculumSection,
 	UnitColors,
-} from "./curriculum";
-import { REPEATS_TO_MASTER, getSectionLessonProgress } from "./curriculum";
+} from "../../curriculum";
+import { REPEATS_TO_MASTER, getSectionLessonProgress } from "../../curriculum";
 import { hexToRgba } from "@/utils/curated-category-colors";
 import styles from "./AcademyMap.module.css";
 

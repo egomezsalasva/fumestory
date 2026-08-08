@@ -1,0 +1,80 @@
+import { useReducer, useRef } from "react";
+import type { MaterialRecord } from "@/curation/materials/types";
+import { getProducerMaterials } from "@/components/academy/utils";
+import { MAX_LIVES } from "../constants";
+import type { AcademyScreen } from "../types";
+import { useAcademyPlayScroll } from "../useAcademyPlayScroll";
+import { gameReducer } from "./reducer";
+import { initialGameState } from "./state";
+import type { OpenLessonPayload } from "./types";
+
+const materials = getProducerMaterials();
+
+type UseGameSessionOptions = {
+	screen: AcademyScreen;
+	onLessonPassed: (lessonId: string) => void;
+};
+
+export function useGameSession({
+	screen,
+	onLessonPassed,
+}: UseGameSessionOptions) {
+	const [state, dispatch] = useReducer(gameReducer, initialGameState);
+	const prevPhaseRef = useRef(state.phase);
+
+	useAcademyPlayScroll({
+		screen,
+		phase: state.phase,
+		quizIndex: state.quizIndex,
+		selectedCount: state.selected.length,
+		locked: state.locked,
+	});
+
+	// Fire curriculum pass once when entering success complete
+	if (
+		prevPhaseRef.current !== "complete" &&
+		state.phase === "complete" &&
+		state.completeSnapshot?.outcome === "success" &&
+		state.activeLessonId
+	) {
+		onLessonPassed(state.activeLessonId);
+	}
+	prevPhaseRef.current = state.phase;
+
+	const picksReady = state.lesson.pickedKeys.length >= state.lessonSize;
+	const isLastQuizQuestion = state.quizIndex >= state.quizSequence.length - 1;
+
+	return {
+		materials,
+		phase: state.phase,
+		lesson: state.lesson,
+		expandedKey: state.expandedKey,
+		lessonSize: state.lessonSize,
+		picksReady,
+		question: state.question,
+		quizIndex: state.quizIndex,
+		selected: state.selected,
+		locked: state.locked,
+		lives: state.lives,
+		maxLives: MAX_LIVES,
+		isLastQuizQuestion,
+		completeSnapshot: state.completeSnapshot,
+		learnedMaterialKeys: new Set(state.learnedMaterialKeys),
+		seenMaterialKeys: new Set(state.seenMaterialKeys),
+		materialMastery: state.materialMastery,
+		allReliableMaterialsCount: materials.length,
+		gameOverStreak: state.gameOverStreak,
+
+		openLesson: (payload: OpenLessonPayload) =>
+			dispatch({ type: "OPEN_LESSON", payload }),
+		resetPlaySession: () => dispatch({ type: "RESET_SESSION" }),
+		handleToggleMaterial: (material: MaterialRecord) =>
+			dispatch({ type: "TOGGLE_MATERIAL", payload: { material } }),
+		handleStartQuiz: () => dispatch({ type: "START_QUIZ" }),
+		handleToggleOption: (option: string) =>
+			dispatch({ type: "TOGGLE_OPTION", payload: { option } }),
+		handleNext: () => dispatch({ type: "NEXT" }),
+		handleTryAgain: () => dispatch({ type: "TRY_AGAIN" }),
+		handleStartOver: () => dispatch({ type: "START_OVER" }),
+	};
+}

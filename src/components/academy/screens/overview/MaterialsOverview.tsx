@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { MaterialRecord } from "@/curation/materials/types";
-import academyStyles from "./Academy.module.css";
-import styles from "./LessonComplete.module.css";
-import pickStyles from "./LessonPickGrid.module.css";
-import shared from "./shared.module.css";
+import academyStyles from "../../Academy.module.css";
+import styles from "../game/LessonComplete.module.css";
+import pickStyles from "../game/LessonPickGrid.module.css";
+import shared from "../../shared.module.css";
 import {
 	getMaterialDisplayNames,
 	getMaterialProducerSources,
