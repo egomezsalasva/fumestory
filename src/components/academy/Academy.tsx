@@ -1,10 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { authClient } from "auth";
 import { applyLessonPass, buildCurriculum } from "./curriculum";
 import {
 	loadAcademyProgressLocal,
 	saveAcademyProgressLocal,
 } from "./progress/academyProgressLocal";
-import { hydrateAcademyFromProgress } from "./progress/hydrateAcademyProgress";
+import {
+	putAcademyProgressRemote,
+	resolveAcademyProgressForSignedIn,
+} from "./progress/academyProgressApi";
+import {
+	hydrateAcademyFromProgress,
+	type HydratedAcademy,
+} from "./progress/hydrateAcademyProgress";
 import { snapshotAcademyProgress } from "./progress/snapshotAcademyProgress";
 import GameScreen from "./screens/game/GameScreen";
 import LandingScreen from "./screens/map/LandingScreen";
@@ -15,26 +23,104 @@ import { useGameSession } from "./session/game/useGameSession";
 import type { AcademyScreen } from "./session/types";
 
 export default function Academy() {
-	const [screen, setScreen] = useState<AcademyScreen>("home");
+	const { data, isPending } = authClient.useSession();
+	const isLoggedIn = !!data?.session;
+	const [boot, setBoot] = useState<HydratedAcademy | null>(null);
 
-	const hydratedRef = useRef(
-		hydrateAcademyFromProgress(loadAcademyProgressLocal()),
+	useEffect(() => {
+		if (isPending) return;
+
+		let cancelled = false;
+
+		async function load() {
+			if (!isLoggedIn) {
+				const hydrated = hydrateAcademyFromProgress(loadAcademyProgressLocal());
+				if (!cancelled) setBoot(hydrated);
+				return;
+			}
+
+			try {
+				const resolved = await resolveAcademyProgressForSignedIn();
+				if (!cancelled) {
+					setBoot(hydrateAcademyFromProgress(resolved));
+				}
+			} catch {
+				// Network/API failure: fall back to local for this session
+				if (!cancelled) {
+					setBoot(hydrateAcademyFromProgress(loadAcademyProgressLocal()));
+				}
+			}
+		}
+
+		void load();
+		return () => {
+			cancelled = true;
+		};
+	}, [isPending, isLoggedIn]);
+
+	if (isPending || !boot) {
+		return (
+			<div
+				style={{
+					minHeight: "40vh",
+					display: "grid",
+					placeItems: "center",
+					color: "rgba(245,247,250,0.85)",
+				}}
+			>
+				Loading...
+			</div>
+		);
+	}
+
+	return (
+		<AcademyLoaded
+			key={isLoggedIn ? "in" : "out"}
+			boot={boot}
+			isLoggedIn={isLoggedIn}
+		/>
 	);
+}
+
+type AcademyLoadedProps = {
+	boot: HydratedAcademy;
+	isLoggedIn: boolean;
+};
+
+function AcademyLoaded({ boot, isLoggedIn }: AcademyLoadedProps) {
+	const [screen, setScreen] = useState<AcademyScreen>("home");
+	const bootRef = useRef(boot);
 	const [curriculum, setCurriculum] = useState(
-		() => hydratedRef.current.curriculum,
+		() => bootRef.current.curriculum,
 	);
+	const skipFirstSaveRef = useRef(true);
 
 	const game = useGameSession({
 		screen,
-		initialState: hydratedRef.current.game,
+		initialState: bootRef.current.game,
 		onLessonPassed: (lessonId) => {
 			setCurriculum((current) => applyLessonPass(current, lessonId));
 		},
 	});
 
 	useEffect(() => {
-		saveAcademyProgressLocal(snapshotAcademyProgress(curriculum, game.durable));
+		if (skipFirstSaveRef.current) {
+			skipFirstSaveRef.current = false;
+			return;
+		}
+
+		const snapshot = snapshotAcademyProgress(curriculum, game.durable);
+
+		if (!isLoggedIn) {
+			saveAcademyProgressLocal(snapshot);
+			return;
+		}
+
+		void putAcademyProgressRemote(snapshot).catch(() => {
+			// Keep playing; next durable change will retry
+		});
 	}, [
+		isLoggedIn,
 		curriculum,
 		game.durable.lives,
 		game.durable.lessonStreak,

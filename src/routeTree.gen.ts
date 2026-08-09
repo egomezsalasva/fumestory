@@ -23,6 +23,7 @@ import { Route as ApiFeedbackRouteImport } from './routes/api.feedback'
 import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCompositionsRouteImport } from './routes/api.compositions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
+import { Route as ApiAcademyProgressRouteImport } from './routes/api.academy-progress'
 import { Route as DashboardScentKnowledgeRouteImport } from './routes/_dashboard.scent-knowledge'
 import { Route as DashboardScentBlindTestRouteImport } from './routes/_dashboard.scent-blind-test'
 import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
@@ -112,6 +113,11 @@ const ApiCompositionsRoute = ApiCompositionsRouteImport.update({
 const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   id: '/api/categories',
   path: '/api/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAcademyProgressRoute = ApiAcademyProgressRouteImport.update({
+  id: '/api/academy-progress',
+  path: '/api/academy-progress',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardScentKnowledgeRoute = DashboardScentKnowledgeRouteImport.update({
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
   '/_dashboard/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/_dashboard/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
   '/api/dilutions': typeof ApiDilutionsRoute
@@ -353,6 +362,7 @@ export interface FileRouteTypes {
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
+    | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
+    | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/_dashboard/project-settings'
     | '/_dashboard/scent-blind-test'
     | '/_dashboard/scent-knowledge'
+    | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
     | '/api/dilutions'
@@ -453,6 +465,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   FeaturesRoute: typeof FeaturesRoute
   TryAcademyRoute: typeof TryAcademyRoute
+  ApiAcademyProgressRoute: typeof ApiAcademyProgressRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiCompositionsRoute: typeof ApiCompositionsRouteWithChildren
   ApiDilutionsRoute: typeof ApiDilutionsRoute
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/api/categories'
       fullPath: '/api/categories'
       preLoaderRoute: typeof ApiCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/academy-progress': {
+      id: '/api/academy-progress'
+      path: '/api/academy-progress'
+      fullPath: '/api/academy-progress'
+      preLoaderRoute: typeof ApiAcademyProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_dashboard/scent-knowledge': {
@@ -779,6 +799,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   FeaturesRoute: FeaturesRoute,
   TryAcademyRoute: TryAcademyRoute,
+  ApiAcademyProgressRoute: ApiAcademyProgressRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,
   ApiCompositionsRoute: ApiCompositionsRouteWithChildren,
   ApiDilutionsRoute: ApiDilutionsRoute,
