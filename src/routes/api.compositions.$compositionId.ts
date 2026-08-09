@@ -1,6 +1,6 @@
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
-import type { Composition } from "@/routes/api.compositions";
+import type { Composition, CompositionStatus } from "@/routes/api.compositions";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
@@ -25,6 +25,10 @@ type FormulaHeaderRow = {
 	comment: string | null;
 };
 
+function isCompositionStatus(value: unknown): value is CompositionStatus {
+	return value === "active" || value === "archived";
+}
+
 export const Route = createFileRoute("/api/compositions/$compositionId")({
 	server: {
 		handlers: {
@@ -46,7 +50,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 					}
 
 					const compositionSql = `
-						SELECT c.id, c.name, c.label, c.type, c.created_at
+						SELECT c.id, c.name, c.label, c.type, c.status, c.created_at
 						FROM compositions c
 						WHERE c.id = $1
 					`;
@@ -319,7 +323,41 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 						return jsonResponse({ error: "Invalid composition id" }, 400);
 					}
 
-					const body = await request.json();
+					const body = (await request.json()) as Record<string, unknown>;
+
+					// Archive / restore (and later finished)
+					if ("status" in body) {
+						if (!isCompositionStatus(body.status)) {
+							return jsonResponse(
+								{ error: "Invalid status. Use active or archived." },
+								400,
+							);
+						}
+
+						const statusTx = await client.transaction((txn) => [
+							txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
+								currentUserId,
+							]),
+							txn.query(
+								`
+								UPDATE compositions
+								SET status = $2
+								WHERE id = $1 AND owner_id = $3
+								RETURNING id, name, label, type, status, created_at
+								`,
+								[compositionId, body.status, currentUserId],
+							),
+						]);
+
+						const composition = (statusTx[1] as Composition[])[0];
+						if (!composition) {
+							return jsonResponse({ error: "Composition not found" }, 404);
+						}
+
+						return jsonResponse({ success: true, data: composition }, 200);
+					}
+
+					// Formula comment update
 					const { formula_id: formulaId, comment } = body as {
 						formula_id?: unknown;
 						comment?: unknown;
@@ -341,7 +379,10 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 					}
 
 					const normalizedComment =
-						comment === null || comment.trim() === "" ? null : comment.trim();
+						comment === null ||
+						(typeof comment === "string" && comment.trim() === "")
+							? null
+							: (comment as string).trim();
 
 					if (
 						normalizedComment !== null &&
@@ -388,7 +429,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 				} catch (error) {
 					return jsonResponse(
 						{
-							error: "Failed to update formula comment",
+							error: "Failed to update composition",
 							details: getErrorDetails(error),
 						},
 						500,

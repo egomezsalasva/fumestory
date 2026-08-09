@@ -12,11 +12,14 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
 
+export type CompositionStatus = "active" | "archived";
+
 export type Composition = {
 	id: number;
 	name: string;
 	label: string | null;
 	type: "trial" | "accord" | "perfume";
+	status: CompositionStatus;
 	created_at: string;
 };
 
@@ -39,15 +42,26 @@ export const Route = createFileRoute("/api/compositions")({
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
 
+					const url = new URL(request.url);
+					const statusParam = url.searchParams.get("status") ?? "active";
+					if (statusParam !== "active" && statusParam !== "archived") {
+						return jsonResponse(
+							{ error: "Invalid status. Use active or archived." },
+							400,
+						);
+					}
+
 					const selectSql = `
 					SELECT
 						c.id,
 						c.name,
 						c.label,
 						c.type,
+						c.status,
 						c.created_at
 					FROM compositions c
 					WHERE c.owner_id = $1
+					  AND c.status = $2
 					ORDER BY c.created_at DESC
 					`;
 
@@ -55,7 +69,7 @@ export const Route = createFileRoute("/api/compositions")({
 						txn.query(`SELECT set_config('app.current_user_id', $1, true)`, [
 							currentUserId,
 						]),
-						txn.query(selectSql, [currentUserId]),
+						txn.query(selectSql, [currentUserId, statusParam]),
 					]);
 
 					const compositions = txResults[1];
@@ -194,7 +208,7 @@ export const Route = createFileRoute("/api/compositions")({
 							`
 						INSERT INTO compositions (owner_id, name, type, label)
 						VALUES ($1, $2, $3, $4)
-						RETURNING id, name, type, label, created_at
+						RETURNING id, name, type, label, status, created_at
 						`,
 							[currentUserId, name.trim(), type, normalizedLabel],
 						),

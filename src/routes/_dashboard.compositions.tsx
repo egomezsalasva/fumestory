@@ -7,7 +7,7 @@ import {
 	ICellRendererParams,
 	ModuleRegistry,
 } from "ag-grid-community";
-import type { Composition } from "@/routes/api.compositions";
+import type { Composition, CompositionStatus } from "@/routes/api.compositions";
 import { authedFetch } from "@/utils/authed-fetch";
 import {
 	USER_SETTINGS_UPDATED_EVENT,
@@ -51,7 +51,13 @@ const gridStyles = `
 	}
 `;
 
+const statusTabClass = (active: boolean) =>
+	active
+		? "text-white font-medium"
+		: "text-white/45 hover:text-white/75 transition-colors";
+
 function Compositions() {
+	const [status, setStatus] = useState<CompositionStatus>("active");
 	const [compositions, setCompositions] = useState<Composition[]>([]);
 	const [showCompositionsLabelColumn, setShowCompositionsLabelColumn] =
 		useState<boolean | null>(null);
@@ -71,6 +77,15 @@ function Compositions() {
 			});
 	}, []);
 
+	const loadCompositions = useCallback((nextStatus: CompositionStatus) => {
+		authedFetch(`/api/compositions?status=${nextStatus}`)
+			.then((res) => res.json())
+			.then((data) => {
+				setCompositions((data.data as Composition[]) ?? []);
+			})
+			.catch((err) => console.error("Compositions error:", err));
+	}, []);
+
 	useEffect(() => {
 		loadUserSettings();
 		window.addEventListener(USER_SETTINGS_UPDATED_EVENT, loadUserSettings);
@@ -80,13 +95,8 @@ function Compositions() {
 	}, [loadUserSettings]);
 
 	useEffect(() => {
-		authedFetch("/api/compositions")
-			.then((res) => res.json())
-			.then((data) => {
-				setCompositions(data.data as Composition[]);
-			})
-			.catch((err) => console.error("Compositions error:", err));
-	}, []);
+		loadCompositions(status);
+	}, [status, loadCompositions]);
 
 	const columnDefs = useMemo(() => {
 		const labelCol: ColDef<Composition> = {
@@ -143,11 +153,35 @@ function Compositions() {
 		return cols;
 	}, [showCompositionsLabelColumn]);
 
+	const title = (
+		<span className="inline-flex items-center gap-1.5">
+			<span>Compositions</span>
+			<span className="text-white/45">/</span>
+			<button
+				type="button"
+				className={`${statusTabClass(status === "active")} cursor-pointer bg-transparent border-0 p-0 font-[inherit] text-[inherit] leading-[inherit]`}
+				onClick={() => setStatus("active")}
+			>
+				Active
+			</button>
+			<span className="text-white/45" aria-hidden="true">
+				·
+			</span>
+			<button
+				type="button"
+				className={`${statusTabClass(status === "archived")} cursor-pointer bg-transparent border-0 p-0 font-[inherit] text-[inherit] leading-[inherit]`}
+				onClick={() => setStatus("archived")}
+			>
+				Archived
+			</button>
+		</span>
+	);
+
 	return (
 		<>
 			<style>{gridStyles}</style>
 			<DashboardLayout
-				title="Compositions"
+				title={title}
 				plusButton={{ to: "/add-composition" }}
 				showCogButton={true}
 				cogButtonHash="compositions-settings"

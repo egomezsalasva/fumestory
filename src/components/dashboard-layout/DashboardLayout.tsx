@@ -1,10 +1,11 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import styles from "./DashboardLayout.module.css";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import BackArrowIcon from "./svgs/BackArrowIcon";
 import PlusIcon from "./svgs/PlusIcon";
 import CogIcon from "../svgs/CogIcon";
 import AgentIcon from "./svgs/AgentIcon";
+import WhiteSpinner from "@/components/WhiteSpinner";
 import { HeaderHints } from "./HeaderHints";
 import type { HeaderHintId } from "@/utils/toast-settings";
 
@@ -14,7 +15,7 @@ type BackButtonConfig = {
 };
 
 type DashboardLayoutProps = {
-	title: string;
+	title: React.ReactNode;
 	children: React.ReactNode;
 	showTourButton?: boolean;
 	plusButton?: BackButtonConfig;
@@ -27,13 +28,23 @@ type DashboardLayoutProps = {
 };
 
 const BackButton = ({ backButton }: { backButton: BackButtonConfig }) => {
+	const [pending, setPending] = useState(false);
+	const isLoading = useRouterState({ select: (s) => s.isLoading });
+
+	useEffect(() => {
+		if (!isLoading) setPending(false);
+	}, [isLoading]);
+
 	return (
 		<Link
 			to={backButton?.to}
 			params={backButton?.params ?? {}}
 			className={styles.backButton}
+			aria-busy={pending}
+			aria-label={pending ? "Loading" : "Back"}
+			onClick={() => setPending(true)}
 		>
-			<BackArrowIcon />
+			{pending ? <WhiteSpinner size={12} /> : <BackArrowIcon />}
 		</Link>
 	);
 };

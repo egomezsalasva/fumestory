@@ -41,6 +41,7 @@ const COMMENT_ACTION_BTN =
 const OVERVIEW_MIX_STORAGE_KEY = "fumestory.overviewMixMode";
 
 type OverviewMixMode = "formula" | "materials";
+type CompositionStatus = "active" | "archived";
 
 export const Route = createFileRoute("/_dashboard/composition/$compositionId")({
 	head: () => ({
@@ -78,6 +79,7 @@ type ApiResponse = {
 			id: number;
 			name: string;
 			type: string;
+			status: CompositionStatus;
 			created_at: string;
 		};
 		formulas: FormulaRow[];
@@ -138,6 +140,49 @@ function OverviewMixTabs({
 				onClick={() => onChange("materials")}
 			>
 				Materials
+			</button>
+		</div>
+	);
+}
+
+function CompositionStatusTabs({
+	status,
+	onChange,
+}: {
+	status: CompositionStatus;
+	onChange: (status: CompositionStatus) => void;
+}) {
+	const tabClass = (active: boolean) =>
+		[
+			"rounded-[0.2rem] px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+			active
+				? "bg-[#243044] text-white border border-[#f0f4fa]/40"
+				: "text-slate-400 hover:text-slate-200 border border-transparent",
+		].join(" ");
+
+	return (
+		<div
+			className="mt-3 inline-flex items-center gap-0.5 rounded-[0.25rem] border border-[#d8e3f0]/25 bg-[#0b172d] p-0.5"
+			role="tablist"
+			aria-label="Composition status"
+		>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={status === "active"}
+				className={tabClass(status === "active")}
+				onClick={() => onChange("active")}
+			>
+				Active
+			</button>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={status === "archived"}
+				className={tabClass(status === "archived")}
+				onClick={() => onChange("archived")}
+			>
+				Archive
 			</button>
 		</div>
 	);
@@ -370,6 +415,7 @@ function CompositionDetail() {
 	const [overviewMode, setOverviewMode] = useState<OverviewMixMode>("formula");
 	const [overviewModeReady, setOverviewModeReady] = useState(false);
 	const [categoryColors, setCategoryColors] = useState<CategoryColorsJson>({});
+	const [statusSaving, setStatusSaving] = useState(false);
 
 	useEffect(() => {
 		const stored = window.localStorage.getItem(OVERVIEW_MIX_STORAGE_KEY);
@@ -526,6 +572,37 @@ function CompositionDetail() {
 		});
 	};
 
+	const handleStatusChange = async (nextStatus: CompositionStatus) => {
+		if (!payload || payload.composition.status === nextStatus || statusSaving) {
+			return;
+		}
+		setStatusSaving(true);
+		try {
+			const res = await authedFetch(`/api/compositions/${compositionId}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ status: nextStatus }),
+			});
+			if (!res.ok) throw new Error("Failed to update status");
+			const json = (await res.json()) as {
+				data?: { status: CompositionStatus };
+			};
+			const saved = json.data?.status ?? nextStatus;
+			setPayload((prev) =>
+				prev
+					? {
+							...prev,
+							composition: { ...prev.composition, status: saved },
+						}
+					: prev,
+			);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			setStatusSaving(false);
+		}
+	};
+
 	return (
 		<>
 			<style>{gridStyles}</style>
@@ -545,6 +622,12 @@ function CompositionDetail() {
 								<p className="capitalize text-slate-400">
 									{payload.composition.type}
 								</p>
+								<CompositionStatusTabs
+									status={payload.composition.status ?? "active"}
+									onChange={(next) => {
+										void handleStatusChange(next);
+									}}
+								/>
 							</div>
 							<Link
 								to="/add-formula/$compositionId"
