@@ -21,6 +21,7 @@ type DashboardLayoutProps = {
 	plusButton?: BackButtonConfig;
 	showCogButton?: boolean;
 	cogButtonHash?: string;
+	headerActions?: React.ReactNode;
 	headerHints?: HeaderHintId[];
 	backButton?: BackButtonConfig;
 	agentToggle?: boolean;
@@ -56,6 +57,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 	plusButton,
 	showCogButton = false,
 	cogButtonHash,
+	headerActions,
 	headerHints,
 	backButton,
 	agentToggle = false,
@@ -73,6 +75,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
 						{headerHints && headerHints.length > 0 && (
 							<HeaderHints hintIds={headerHints} />
 						)}
+						{headerActions}
 						{showCogButton && (
 							<Link
 								to="/project-settings"

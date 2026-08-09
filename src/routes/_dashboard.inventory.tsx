@@ -16,11 +16,14 @@ import {
 } from "@/utils/user-settings";
 import { requireNavRoute } from "@/utils/nav-eligibility";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import CopyIcon from "@/components/dashboard-layout/svgs/CopyIcon";
+import CheckIcon from "@/components/svgs/CheckIcon";
 import { toTitleCaseWords } from "@/utils/display-names";
 import {
 	hexToRgba,
 	resolveCategoryColor,
 } from "@/utils/curated-category-colors";
+import { buildInventoryMarkdown } from "@/utils/inventory-markdown";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -69,6 +72,7 @@ function App() {
 		setShowInventoryAvailableDilutionsColumn,
 	] = useState<boolean | null>(null);
 	const [categoryColors, setCategoryColors] = useState<CategoryColorsJson>({});
+	const [copied, setCopied] = useState(false);
 
 	const notesDisplay: InventoryNotesDisplay =
 		guestFeedbackEnabled === true
@@ -162,6 +166,33 @@ function App() {
 				m.available_dilutions.length > 0,
 		);
 	}, [rawMaterials, hideRawMaterialsWithoutAvailableDilutions]);
+
+	const handleCopyMarkdown = useCallback(async () => {
+		const md = buildInventoryMarkdown(inventoryRowData, {
+			showCas: showInventoryCasNumberColumn !== false,
+			showMaterialNature: showInventoryMaterialNatureColumn !== false,
+			showNoteType: showInventoryNoteTypeColumn !== false,
+			showCategory: showInventoryCategoryNameColumn !== false,
+			showNotes: showInventoryNotesDisplayColumn !== false,
+			showDilutions: showInventoryAvailableDilutionsColumn !== false,
+			includeGuestFeedbackInNotes,
+		});
+		try {
+			await navigator.clipboard.writeText(md);
+			setCopied(true);
+		} catch (err) {
+			console.error("Copy failed:", err);
+		}
+	}, [
+		inventoryRowData,
+		showInventoryCasNumberColumn,
+		showInventoryMaterialNatureColumn,
+		showInventoryNoteTypeColumn,
+		showInventoryCategoryNameColumn,
+		showInventoryNotesDisplayColumn,
+		showInventoryAvailableDilutionsColumn,
+		includeGuestFeedbackInNotes,
+	]);
 
 	const columnDefs = useMemo(() => {
 		const labelCol: ColDef<RawMaterial> = {
@@ -386,6 +417,19 @@ function App() {
 			plusButton={{ to: "/add-raw-material" }}
 			showCogButton={true}
 			cogButtonHash="raw-materials-settings"
+			headerActions={
+				<button
+					type="button"
+					className="cursor-pointer"
+					title={copied ? "Copied" : "Copy table as Markdown"}
+					aria-label={copied ? "Copied" : "Copy table as Markdown"}
+					onClick={() => {
+						void handleCopyMarkdown();
+					}}
+				>
+					{copied ? <CheckIcon /> : <CopyIcon />}
+				</button>
+			}
 		>
 			<div
 				className="ag-theme-quartz-dark"
