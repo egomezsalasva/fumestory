@@ -18,6 +18,7 @@ export function openLesson(
 		activeLessonId: payload.lessonId,
 		activeLessonIndex: payload.lessonIndex,
 		activeUnitDescription: payload.unitDescription,
+		unitLessonCount: payload.unitLessonCount,
 		lessonFamilies: payload.families,
 		lessonFocusFamily: payload.focusFamily,
 		lessonSize: format.picks,

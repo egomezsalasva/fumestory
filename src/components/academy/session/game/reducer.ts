@@ -1,12 +1,11 @@
-import { completeLesson } from "./handlers/completeLesson";
 import { nextQuestion } from "./handlers/nextQuestion";
 import { openLesson } from "./handlers/openLesson";
 import { resetSession } from "./handlers/resetSession";
 import { selectOption } from "./handlers/selectOption";
+import { showUnitComplete } from "./handlers/showUnitComplete";
 import { startOver } from "./handlers/startOver";
 import { startQuiz } from "./handlers/startQuiz";
 import { toggleMaterial } from "./handlers/toggleMaterial";
-import { tryAgain } from "./handlers/tryAgain";
 import type { GameAction, GameState } from "./types";
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -21,8 +20,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 			return selectOption(state, action.payload.option);
 		case "NEXT":
 			return nextQuestion(state);
-		case "TRY_AGAIN":
-			return tryAgain(state);
+		case "SHOW_UNIT_COMPLETE":
+			return showUnitComplete(state);
 		case "START_OVER":
 			return startOver(state);
 		case "RESET_SESSION":

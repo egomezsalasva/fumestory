@@ -10,6 +10,7 @@ import CardPickPhase from "./game-phases/CardPickPhase";
 import GameOverPhase from "./game-phases/GameOverPhase";
 import QuizPhase from "./game-phases/QuizPhase";
 import ResultPhase from "./game-phases/ResultPhase";
+import UnitCompletePhase from "./game-phases/UnitCompletePhase";
 
 type GameScreenProps = {
 	phase: LessonPhase;
@@ -30,7 +31,7 @@ type GameScreenProps = {
 	learnedMaterialKeys: ReadonlySet<string>;
 	materialMastery: MaterialMasteryMap;
 	allReliableMaterialsCount: number;
-	gameOverStreak: number;
+	unitName: string;
 	onExit: () => void;
 	onToggleMaterial: (material: MaterialRecord) => void;
 	onStartQuiz: () => void;
@@ -40,6 +41,7 @@ type GameScreenProps = {
 	onNextLesson: () => void;
 	onOpenOverview: () => void;
 	onStartOver: () => void;
+	onContinueFromUnitComplete: () => void;
 };
 
 export default function GameScreen({
@@ -61,7 +63,7 @@ export default function GameScreen({
 	learnedMaterialKeys,
 	materialMastery,
 	allReliableMaterialsCount,
-	gameOverStreak,
+	unitName,
 	onExit,
 	onToggleMaterial,
 	onStartQuiz,
@@ -71,11 +73,14 @@ export default function GameScreen({
 	onNextLesson,
 	onOpenOverview,
 	onStartOver,
+	onContinueFromUnitComplete,
 }: GameScreenProps) {
+	const hideExit = phase === "complete" || phase === "unitComplete";
+
 	return (
 		<section className={styles.quizSection}>
 			<div className={`${formStyles.formContainer} ${styles.quizContainer}`}>
-				{phase !== "complete" ? (
+				{!hideExit ? (
 					<button
 						type="button"
 						className={styles.exitLesson}
@@ -113,12 +118,15 @@ export default function GameScreen({
 					/>
 				) : null}
 
-				{phase === "gameOver" ? (
-					<GameOverPhase
-						lessonStreak={gameOverStreak}
-						maxLives={maxLives}
-						onStartOver={onStartOver}
+				{phase === "unitComplete" ? (
+					<UnitCompletePhase
+						unitName={unitName}
+						onContinue={onContinueFromUnitComplete}
 					/>
+				) : null}
+
+				{phase === "gameOver" ? (
+					<GameOverPhase maxLives={maxLives} onStartOver={onStartOver} />
 				) : null}
 
 				{phase === "quiz" && question ? (

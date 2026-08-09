@@ -77,6 +77,7 @@ export function useAcademyMap({
 			sectionIndex: found.section.sectionIndex,
 			unitDescription: found.unit.description,
 			lessonIndex: found.lesson.lessonIndex,
+			unitLessonCount: found.unit.lessons.length,
 			families: found.unit.families,
 			focusFamily: found.unit.focusFamily,
 		});

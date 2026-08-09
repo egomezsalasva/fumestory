@@ -12,7 +12,13 @@ export function useAcademyPlayScroll(options: {
 
 	useEffect(() => {
 		if (screen !== "play") return;
-		if (phase !== "learn" && phase !== "quiz" && phase !== "complete") return;
+		if (
+			phase !== "learn" &&
+			phase !== "quiz" &&
+			phase !== "complete" &&
+			phase !== "unitComplete"
+		)
+			return;
 
 		const frame = requestAnimationFrame(() => {
 			window.scrollTo({ top: 0, left: 0, behavior: "auto" });

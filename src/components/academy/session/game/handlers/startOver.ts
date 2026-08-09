@@ -1,12 +1,7 @@
-import { MAX_LIVES } from "../../constants";
 import type { GameState } from "../types";
-import { tryAgain } from "./tryAgain";
+import { initialGameState } from "../state";
 
-export function startOver(state: GameState): GameState {
-	return tryAgain({
-		...state,
-		gameOverStreak: 0,
-		lives: MAX_LIVES,
-		lessonStreak: 0,
-	});
+/** Wipe all game progress and return to a fresh session. */
+export function startOver(_state: GameState): GameState {
+	return { ...initialGameState };
 }

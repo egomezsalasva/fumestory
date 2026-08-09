@@ -30,7 +30,6 @@ export function useGameSession({
 		locked: state.locked,
 	});
 
-	// Fire curriculum pass once when entering success complete
 	if (
 		prevPhaseRef.current !== "complete" &&
 		state.phase === "complete" &&
@@ -43,6 +42,9 @@ export function useGameSession({
 
 	const picksReady = state.lesson.pickedKeys.length >= state.lessonSize;
 	const isLastQuizQuestion = state.quizIndex >= state.quizSequence.length - 1;
+	const isUnitFinishingLesson =
+		state.completeSnapshot?.outcome === "success" &&
+		state.activeLessonIndex === state.unitLessonCount;
 
 	return {
 		materials,
@@ -63,18 +65,19 @@ export function useGameSession({
 		seenMaterialKeys: new Set(state.seenMaterialKeys),
 		materialMastery: state.materialMastery,
 		allReliableMaterialsCount: materials.length,
-		gameOverStreak: state.gameOverStreak,
+		unitName: state.activeUnitDescription,
+		isUnitFinishingLesson,
 
 		openLesson: (payload: OpenLessonPayload) =>
 			dispatch({ type: "OPEN_LESSON", payload }),
 		resetPlaySession: () => dispatch({ type: "RESET_SESSION" }),
+		showUnitComplete: () => dispatch({ type: "SHOW_UNIT_COMPLETE" }),
 		handleToggleMaterial: (material: MaterialRecord) =>
 			dispatch({ type: "TOGGLE_MATERIAL", payload: { material } }),
 		handleStartQuiz: () => dispatch({ type: "START_QUIZ" }),
 		handleToggleOption: (option: string) =>
 			dispatch({ type: "TOGGLE_OPTION", payload: { option } }),
 		handleNext: () => dispatch({ type: "NEXT" }),
-		handleTryAgain: () => dispatch({ type: "TRY_AGAIN" }),
 		handleStartOver: () => dispatch({ type: "START_OVER" }),
 	};
 }

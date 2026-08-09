@@ -79,16 +79,29 @@ export default function Academy() {
 			learnedMaterialKeys={game.learnedMaterialKeys}
 			materialMastery={game.materialMastery}
 			allReliableMaterialsCount={game.allReliableMaterialsCount}
-			gameOverStreak={game.gameOverStreak}
+			unitName={game.unitName}
 			onExit={() => map.handleReturnToSection()}
 			onToggleMaterial={game.handleToggleMaterial}
 			onStartQuiz={game.handleStartQuiz}
 			onToggleOption={game.handleToggleOption}
 			onNext={game.handleNext}
-			onTryAgain={game.handleTryAgain}
-			onNextLesson={() => map.handleReturnToSection({ toLatestUnlocked: true })}
+			onTryAgain={() => map.handleReturnToSection()}
+			onNextLesson={() => {
+				if (game.isUnitFinishingLesson) {
+					game.showUnitComplete();
+					return;
+				}
+				map.handleReturnToSection({ toLatestUnlocked: true });
+			}}
 			onOpenOverview={map.handleOpenOverviewFromComplete}
-			onStartOver={game.handleStartOver}
+			onStartOver={() => {
+				game.handleStartOver();
+				setCurriculum(buildCurriculum());
+				map.handleBackToHome();
+			}}
+			onContinueFromUnitComplete={() =>
+				map.handleReturnToSection({ toLatestUnlocked: true })
+			}
 		/>
 	);
 }

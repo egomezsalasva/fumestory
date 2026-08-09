@@ -15,6 +15,7 @@ export type GameState = {
 	activeLessonId: string | null;
 	activeLessonIndex: number;
 	activeUnitDescription: string;
+	unitLessonCount: number;
 	lessonFamilies: string[];
 	lessonFocusFamily: string;
 	lessonSize: number;
@@ -47,6 +48,7 @@ export type OpenLessonPayload = {
 	sectionIndex: number;
 	unitDescription: string;
 	lessonIndex: number;
+	unitLessonCount: number;
 	families: string[];
 	focusFamily: string;
 };
@@ -57,7 +59,7 @@ export type GameAction =
 	| { type: "START_QUIZ" }
 	| { type: "TOGGLE_OPTION"; payload: { option: string } }
 	| { type: "NEXT" }
-	| { type: "TRY_AGAIN" }
+	| { type: "SHOW_UNIT_COMPLETE" }
 	| { type: "START_OVER" }
 	| { type: "RESET_SESSION" }
 	| { type: "LESSON_PASSED" };

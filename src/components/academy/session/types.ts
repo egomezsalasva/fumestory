@@ -2,7 +2,12 @@ import type { MaterialRecord } from "@/curation/materials/types";
 import type { MaterialMasteryMap } from "@/components/academy/utils";
 
 export type AcademyScreen = "home" | "section" | "overview" | "play";
-export type LessonPhase = "learn" | "quiz" | "complete" | "gameOver";
+export type LessonPhase =
+	| "learn"
+	| "quiz"
+	| "complete"
+	| "gameOver"
+	| "unitComplete";
 export type Level = 1 | 2 | 3;
 
 export type LessonState = {

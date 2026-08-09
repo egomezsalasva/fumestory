@@ -11,6 +11,7 @@ export const initialGameState: GameState = {
 	activeLessonId: null,
 	activeLessonIndex: INITIAL_LESSON_INDEX,
 	activeUnitDescription: INITIAL_UNIT,
+	unitLessonCount: 1,
 	lessonFamilies: ["floral"],
 	lessonFocusFamily: "floral",
 	lessonSize: INITIAL_FORMAT.picks,
