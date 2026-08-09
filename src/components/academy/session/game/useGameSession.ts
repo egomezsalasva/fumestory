@@ -6,20 +6,23 @@ import type { AcademyScreen } from "../types";
 import { useAcademyPlayScroll } from "../useAcademyPlayScroll";
 import { gameReducer } from "./reducer";
 import { initialGameState } from "./state";
-import type { OpenLessonPayload } from "./types";
+import type { GameState, OpenLessonPayload } from "./types";
 
 const materials = getProducerMaterials();
 
 type UseGameSessionOptions = {
 	screen: AcademyScreen;
 	onLessonPassed: (lessonId: string) => void;
+	/** Hydrated durable state; defaults to a fresh session. */
+	initialState?: GameState;
 };
 
 export function useGameSession({
 	screen,
 	onLessonPassed,
+	initialState = initialGameState,
 }: UseGameSessionOptions) {
-	const [state, dispatch] = useReducer(gameReducer, initialGameState);
+	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const prevPhaseRef = useRef(state.phase);
 
 	useAcademyPlayScroll({
@@ -67,6 +70,15 @@ export function useGameSession({
 		allReliableMaterialsCount: materials.length,
 		unitName: state.activeUnitDescription,
 		isUnitFinishingLesson,
+
+		/** Fields written to localStorage / later DB. */
+		durable: {
+			lives: state.lives,
+			lessonStreak: state.lessonStreak,
+			materialMastery: state.materialMastery,
+			learnedMaterialKeys: state.learnedMaterialKeys,
+			seenMaterialKeys: state.seenMaterialKeys,
+		},
 
 		openLesson: (payload: OpenLessonPayload) =>
 			dispatch({ type: "OPEN_LESSON", payload }),

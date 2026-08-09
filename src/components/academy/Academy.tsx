@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { applyLessonPass, buildCurriculum } from "./curriculum";
+import {
+	loadAcademyProgressLocal,
+	saveAcademyProgressLocal,
+} from "./progress/academyProgressLocal";
+import { hydrateAcademyFromProgress } from "./progress/hydrateAcademyProgress";
+import { snapshotAcademyProgress } from "./progress/snapshotAcademyProgress";
 import GameScreen from "./screens/game/GameScreen";
 import LandingScreen from "./screens/map/LandingScreen";
 import MapScreen from "./screens/map/MapScreen";
@@ -10,14 +16,32 @@ import type { AcademyScreen } from "./session/types";
 
 export default function Academy() {
 	const [screen, setScreen] = useState<AcademyScreen>("home");
-	const [curriculum, setCurriculum] = useState(() => buildCurriculum());
+
+	const hydratedRef = useRef(
+		hydrateAcademyFromProgress(loadAcademyProgressLocal()),
+	);
+	const [curriculum, setCurriculum] = useState(
+		() => hydratedRef.current.curriculum,
+	);
 
 	const game = useGameSession({
 		screen,
+		initialState: hydratedRef.current.game,
 		onLessonPassed: (lessonId) => {
 			setCurriculum((current) => applyLessonPass(current, lessonId));
 		},
 	});
+
+	useEffect(() => {
+		saveAcademyProgressLocal(snapshotAcademyProgress(curriculum, game.durable));
+	}, [
+		curriculum,
+		game.durable.lives,
+		game.durable.lessonStreak,
+		game.durable.materialMastery,
+		game.durable.learnedMaterialKeys,
+		game.durable.seenMaterialKeys,
+	]);
 
 	const map = useAcademyMap({
 		screen,
