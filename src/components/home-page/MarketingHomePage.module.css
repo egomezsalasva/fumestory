@@ -1,4 +1,9 @@
 .container {
+	--academy-sticky-top: calc(
+		var(--top-offset) +
+		var(--header-height) +
+		0.75rem
+	);
 	--top-offset: 2rem;
 	--header-height: 3rem;
 	background-color: #03070d;

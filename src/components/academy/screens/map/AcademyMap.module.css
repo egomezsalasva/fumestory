@@ -30,7 +30,7 @@
 
 .sectionHeader {
 	position: sticky;
-	top: calc(var(--top-offset, 2rem) + var(--header-height, 3rem) + 0.75rem);
+	top: var(--academy-sticky-top, 0);
 	z-index: 10;
 	margin-bottom: 1.5rem;
 	padding-bottom: 0.25rem;
