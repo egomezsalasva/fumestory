@@ -8,6 +8,7 @@ import { TextInput } from "@/components/TextInput";
 import { Select } from "@/components/Select";
 import { LabelInput } from "@/components/LabelInput";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
+import { MarkdownBriefInput } from "@/components/MarkdownBriefInput";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
@@ -52,6 +53,7 @@ function AddComposition() {
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
 	const [type, setType] = useState<"trial" | "accord" | "perfume">("trial");
+	const [brief, setBrief] = useState("");
 	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 	const [prefillIngredients, setPrefillIngredients] = useState<
 		Ingredient[] | null
@@ -184,6 +186,7 @@ function AddComposition() {
 			name,
 			type,
 			label: compositionBottleLabelEnabled ? label.trim() || null : null,
+			brief: brief.trim() || null,
 			ingredients: ingredients
 				.filter((ing) => ing.dilution_id !== null)
 				.map((ing) => ({
@@ -211,6 +214,7 @@ function AddComposition() {
 			setName("");
 			setLabel("");
 			setType("trial");
+			setBrief("");
 			setIngredients([]);
 			setPrefillIngredients(null);
 			setFormResetKey((k) => k + 1);
@@ -282,6 +286,8 @@ function AddComposition() {
 							]}
 							required
 						/>
+
+						<MarkdownBriefInput value={brief} onChange={setBrief} />
 
 						<FormulaIngredientsFields
 							key={formResetKey}

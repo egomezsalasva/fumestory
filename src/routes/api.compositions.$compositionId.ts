@@ -50,7 +50,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 					}
 
 					const compositionSql = `
-						SELECT c.id, c.name, c.label, c.type, c.status, c.created_at
+						SELECT c.id, c.name, c.label, c.type, c.status, c.brief, c.created_at
 						FROM compositions c
 						WHERE c.id = $1
 					`;
@@ -343,7 +343,7 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 								UPDATE compositions
 								SET status = $2
 								WHERE id = $1 AND owner_id = $3
-								RETURNING id, name, label, type, status, created_at
+								RETURNING id, name, label, type, status, brief, created_at
 								`,
 								[compositionId, body.status, currentUserId],
 							),

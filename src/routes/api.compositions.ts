@@ -14,12 +14,15 @@ import { requireCurrentUserId } from "@/utils/current-user";
 
 export type CompositionStatus = "active" | "archived";
 
+export const BRIEF_MAX_LENGTH = 8000;
+
 export type Composition = {
 	id: number;
 	name: string;
 	label: string | null;
 	type: "trial" | "accord" | "perfume";
 	status: CompositionStatus;
+	brief: string | null;
 	created_at: string;
 };
 
@@ -29,6 +32,21 @@ export type Formula = {
 	mods: string;
 	created_at: string;
 };
+
+function normalizeBrief(value: unknown): string | null | { error: string } {
+	if (value === undefined || value === null) return null;
+	if (typeof value !== "string") {
+		return { error: "brief must be a string or null" };
+	}
+	const trimmed = value.trim();
+	if (trimmed === "") return null;
+	if (trimmed.length > BRIEF_MAX_LENGTH) {
+		return {
+			error: `brief must be at most ${BRIEF_MAX_LENGTH} characters`,
+		};
+	}
+	return trimmed;
+}
 
 export const Route = createFileRoute("/api/compositions")({
 	server: {
@@ -58,6 +76,7 @@ export const Route = createFileRoute("/api/compositions")({
 						c.label,
 						c.type,
 						c.status,
+						c.brief,
 						c.created_at
 					FROM compositions c
 					WHERE c.owner_id = $1
@@ -99,12 +118,14 @@ export const Route = createFileRoute("/api/compositions")({
 						name,
 						type,
 						label,
+						brief,
 						mods = "1",
 						ingredients,
 					} = body as {
 						name: Composition["name"];
 						label: Composition["label"];
 						type: Composition["type"];
+						brief?: unknown;
 						mods: Formula["mods"];
 						ingredients: {
 							dilution_id: number;
@@ -112,6 +133,15 @@ export const Route = createFileRoute("/api/compositions")({
 							formula_percentage: number;
 						}[];
 					};
+
+					const normalizedBrief = normalizeBrief(brief);
+					if (
+						normalizedBrief !== null &&
+						typeof normalizedBrief === "object" &&
+						"error" in normalizedBrief
+					) {
+						return jsonResponse({ error: normalizedBrief.error }, 400);
+					}
 
 					const normalizedLabel = parseBottleLabelInput(label);
 					if (normalizedLabel !== null) {
@@ -206,11 +236,17 @@ export const Route = createFileRoute("/api/compositions")({
 						]),
 						txn.query(
 							`
-						INSERT INTO compositions (owner_id, name, type, label)
-						VALUES ($1, $2, $3, $4)
-						RETURNING id, name, type, label, status, created_at
+						INSERT INTO compositions (owner_id, name, type, label, brief)
+						VALUES ($1, $2, $3, $4, $5)
+						RETURNING id, name, type, label, status, brief, created_at
 						`,
-							[currentUserId, name.trim(), type, normalizedLabel],
+							[
+								currentUserId,
+								name.trim(),
+								type,
+								normalizedLabel,
+								normalizedBrief,
+							],
 						),
 					]);
 

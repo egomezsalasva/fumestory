@@ -20,6 +20,7 @@ import {
 	aggregateFamilyPercents,
 	FamilyPieOverview,
 } from "@/components/FamilyPieOverview";
+import { markdownToHtml } from "@/components/MarkdownBriefInput";
 import styles from "@/components/Form.module.css";
 import { toTitleCaseWords } from "@/utils/display-names";
 import {
@@ -80,6 +81,7 @@ type ApiResponse = {
 			name: string;
 			type: string;
 			status: CompositionStatus;
+			brief: string | null;
 			created_at: string;
 		};
 		formulas: FormulaRow[];
@@ -185,6 +187,22 @@ function CompositionStatusTabs({
 				Archive
 			</button>
 		</div>
+	);
+}
+
+function CompositionBriefDisplay({ brief }: { brief: string | null }) {
+	if (!brief?.trim()) return null;
+
+	return (
+		<section className="mt-6 rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3">
+			<p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+				Brief
+			</p>
+			<div
+				className="text-sm leading-relaxed text-slate-200 [&_h1]:mb-2 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-slate-50 [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-slate-100 [&_h3]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_p]:last:mb-0 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5"
+				dangerouslySetInnerHTML={{ __html: markdownToHtml(brief) }}
+			/>
+		</section>
 	);
 }
 
@@ -637,6 +655,8 @@ function CompositionDetail() {
 								Add Formula
 							</Link>
 						</div>
+
+						<CompositionBriefDisplay brief={payload.composition.brief} />
 
 						{payload.formulas.length === 0 ? (
 							<p className="mt-6 text-slate-400">No formulas yet.</p>
