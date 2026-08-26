@@ -19,7 +19,7 @@ pub use compositions::{
 pub use dilutions::{db_create_dilution, db_list_dilutions, db_patch_dilution};
 pub use limits::db_get_usage;
 pub use materials::{db_create_raw_material, db_list_raw_materials};
-pub use settings::{db_get_user_settings, db_set_user_settings};
+pub use settings::{db_get_install_id, db_get_user_settings, db_set_user_settings};
 
 pub(crate) use limits::{
 	ensure_can_create_composition, ensure_can_create_dilution, ensure_can_create_material,

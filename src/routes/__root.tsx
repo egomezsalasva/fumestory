@@ -5,6 +5,7 @@ import {
 } from "@neondatabase/neon-js/auth/react/ui";
 import { PostHogProvider } from "posthog-js/react";
 import type { QueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
 	HeadContent,
 	Scripts,
@@ -12,6 +13,7 @@ import {
 	useRouterState,
 } from "@tanstack/react-router";
 import { authClient } from "../../auth";
+import { getOfflineInstallId } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import appCss from "../styles.css?url";
 
@@ -91,6 +93,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const { location } = useRouterState();
 	const path = location.pathname;
 	const offline = isOffline();
+
+	useEffect(() => {
+		if (!offline) return;
+		void getOfflineInstallId().catch(() => {
+			// install id is best-effort until redeem/analytics need it
+		});
+	}, [offline]);
 
 	// Public pages: login/index and all /auth/* routes
 	const isPublic =

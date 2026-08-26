@@ -146,6 +146,7 @@ CREATE TABLE app_settings (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   settings TEXT NOT NULL DEFAULT '{}',
   dismissed_ui TEXT NOT NULL DEFAULT '{}',
+  offline_install_id TEXT,
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

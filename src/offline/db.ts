@@ -112,6 +112,10 @@ export type OfflineUsage = {
 	mods: OfflineUsageBucket;
 };
 
+export type OfflineInstallId = {
+	offline_install_id: string;
+};
+
 export function listOfflineCategories(): Promise<Category[]> {
 	return invoke<Category[]>("db_list_categories");
 }
@@ -186,6 +190,10 @@ export function patchOfflineComposition(
 
 export function getOfflineUsage(): Promise<OfflineUsage> {
 	return invoke<OfflineUsage>("db_get_usage");
+}
+
+export function getOfflineInstallId(): Promise<OfflineInstallId> {
+	return invoke<OfflineInstallId>("db_get_install_id");
 }
 
 export function getOfflineUserSettings(): Promise<OfflineAppSettingsRow> {
