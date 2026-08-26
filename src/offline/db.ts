@@ -8,6 +8,8 @@ import type {
 import type { Dilution } from "@/routes/api.dilutions";
 import type { Note } from "@/routes/api.notes";
 import type { RawMaterial } from "@/routes/api.raw-materials";
+import type { DismissedUiJson } from "@/utils/toast-settings";
+import type { UserSettingsJson } from "@/utils/user-settings";
 
 export type CreateOfflineRawMaterialInput = {
 	label?: string | null;
@@ -87,6 +89,16 @@ export type GetOfflineCompositionResult = {
 	formulas: OfflineFormulaWithLines[];
 };
 
+export type OfflineAppSettingsRow = {
+	settings: UserSettingsJson;
+	dismissed_ui: DismissedUiJson;
+};
+
+export type SetOfflineUserSettingsInput = {
+	settings: UserSettingsJson;
+	dismissed_ui: DismissedUiJson;
+};
+
 export function listOfflineCategories(): Promise<Category[]> {
 	return invoke<Category[]>("db_list_categories");
 }
@@ -157,4 +169,14 @@ export function patchOfflineComposition(
 	input: PatchOfflineCompositionInput,
 ): Promise<Composition | (Formula & { comment: string | null })> {
 	return invoke("db_patch_composition", { input });
+}
+
+export function getOfflineUserSettings(): Promise<OfflineAppSettingsRow> {
+	return invoke<OfflineAppSettingsRow>("db_get_user_settings");
+}
+
+export function setOfflineUserSettings(
+	input: SetOfflineUserSettingsInput,
+): Promise<OfflineAppSettingsRow> {
+	return invoke<OfflineAppSettingsRow>("db_set_user_settings", { input });
 }

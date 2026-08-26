@@ -2,6 +2,7 @@ mod catalog;
 mod compositions;
 mod dilutions;
 mod materials;
+mod settings;
 
 use std::fs;
 use std::path::PathBuf;
@@ -16,6 +17,7 @@ pub use compositions::{
 };
 pub use dilutions::{db_create_dilution, db_list_dilutions, db_patch_dilution};
 pub use materials::{db_create_raw_material, db_list_raw_materials};
+pub use settings::{db_get_user_settings, db_set_user_settings};
 
 pub(crate) fn open_db(app: &AppHandle) -> Result<Connection, String> {
 	let path = ensure_db(app)?;

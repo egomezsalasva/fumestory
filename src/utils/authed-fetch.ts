@@ -6,6 +6,7 @@ import {
 	createOfflineFormula,
 	createOfflineRawMaterial,
 	getOfflineComposition,
+	getOfflineUserSettings,
 	listOfflineCategories,
 	listOfflineCompositions,
 	listOfflineDilutions,
@@ -13,15 +14,28 @@ import {
 	listOfflineRawMaterials,
 	patchOfflineComposition,
 	patchOfflineDilution,
+	setOfflineUserSettings,
 	type CreateOfflineCompositionInput,
 	type CreateOfflineDilutionInput,
 	type CreateOfflineRawMaterialInput,
+	type OfflineAppSettingsRow,
 	type OfflineFormulaIngredient,
 	type PatchOfflineDilutionInput,
 } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import type { CompositionStatus } from "@/routes/api.compositions";
-import { effectiveUserSettings } from "@/utils/user-settings";
+import {
+	effectiveDismissedUi,
+	mergeDismissedUiJson,
+	parseDismissedUiJson,
+	patchDismissedUiSchema,
+} from "@/utils/toast-settings";
+import {
+	effectiveUserSettings,
+	mergeUserSettingsJson,
+	parseUserSettingsJson,
+	patchUserSettingsSchema,
+} from "@/utils/user-settings";
 
 function requestUrl(input: RequestInfo | URL): URL {
 	if (typeof input === "string") {
@@ -62,6 +76,74 @@ function parseCompositionId(path: string): number | null {
 	return Number.isFinite(id) && id > 0 ? id : null;
 }
 
+function buildOfflineUserSettingsResponse(row: OfflineAppSettingsRow) {
+	const stored = parseUserSettingsJson(row.settings);
+	const dismissed = parseDismissedUiJson(row.dismissed_ui);
+	return {
+		...effectiveUserSettings(stored),
+		dismissed_ui: effectiveDismissedUi(dismissed),
+	};
+}
+
+async function offlineGetUserSettings(): Promise<Response> {
+	const row = await getOfflineUserSettings();
+	return jsonOk(buildOfflineUserSettingsResponse(row));
+}
+
+async function offlinePatchUserSettings(init: RequestInit): Promise<Response> {
+	const body = (parseJsonBody(init) ?? {}) as Record<string, unknown>;
+	const { dismissed_ui: dismissedUiBody, ...settingsBody } = body;
+
+	const hasDismissedUiPatch = dismissedUiBody !== undefined;
+	const hasSettingsPatch = Object.keys(settingsBody).length > 0;
+
+	if (!hasDismissedUiPatch && !hasSettingsPatch) {
+		return jsonError(
+			"Provide feature settings and/or dismissed_ui.header_hints",
+		);
+	}
+
+	let mergedDismissedPatch: ReturnType<
+		typeof patchDismissedUiSchema.parse
+	> | null = null;
+	if (hasDismissedUiPatch) {
+		const dismissedParsed = patchDismissedUiSchema.safeParse(dismissedUiBody);
+		if (!dismissedParsed.success) {
+			return jsonError("Invalid dismissed_ui patch");
+		}
+		mergedDismissedPatch = dismissedParsed.data;
+	}
+
+	let mergedSettingsPatch: ReturnType<
+		typeof patchUserSettingsSchema.parse
+	> | null = null;
+	if (hasSettingsPatch) {
+		const settingsParsed = patchUserSettingsSchema.safeParse(settingsBody);
+		if (!settingsParsed.success) {
+			return jsonError("Invalid user settings patch");
+		}
+		mergedSettingsPatch = settingsParsed.data;
+	}
+
+	const existing = await getOfflineUserSettings();
+	const existingSettings = parseUserSettingsJson(existing.settings);
+	const existingDismissed = parseDismissedUiJson(existing.dismissed_ui);
+
+	const mergedSettings = mergedSettingsPatch
+		? mergeUserSettingsJson(existingSettings, mergedSettingsPatch)
+		: existingSettings;
+	const mergedDismissed = mergedDismissedPatch
+		? mergeDismissedUiJson(existingDismissed, mergedDismissedPatch)
+		: existingDismissed;
+
+	const saved = await setOfflineUserSettings({
+		settings: mergedSettings,
+		dismissed_ui: mergedDismissed,
+	});
+
+	return jsonOk(buildOfflineUserSettingsResponse(saved));
+}
+
 async function offlineFetch(
 	input: RequestInfo | URL,
 	init: RequestInit,
@@ -98,7 +180,7 @@ async function offlineFetch(
 				return jsonOk(await getOfflineComposition(compositionId));
 			}
 			if (path === "/api/user-settings") {
-				return jsonOk(effectiveUserSettings({}));
+				return offlineGetUserSettings();
 			}
 		}
 
@@ -139,7 +221,7 @@ async function offlineFetch(
 
 		if (method === "PATCH") {
 			if (path === "/api/user-settings") {
-				return jsonOk(effectiveUserSettings({}));
+				return offlinePatchUserSettings(init);
 			}
 			if (path === "/api/dilutions") {
 				const body = parseJsonBody(init) as PatchOfflineDilutionInput;
@@ -164,7 +246,11 @@ async function offlineFetch(
 		}
 	} catch (err) {
 		const message =
-			err instanceof Error ? err.message : "Offline request failed";
+			err instanceof Error
+				? err.message
+				: typeof err === "string"
+					? err
+					: "Offline request failed";
 		return jsonError(message);
 	}
 
