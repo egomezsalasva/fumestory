@@ -87,7 +87,9 @@ export function AcademySectionView({
 		const scrollParent = getScrollParent(headerRef.current);
 
 		updateActiveUnit();
-		scrollParent.addEventListener("scroll", updateActiveUnit, { passive: true });
+		scrollParent.addEventListener("scroll", updateActiveUnit, {
+			passive: true,
+		});
 		window.addEventListener("resize", updateActiveUnit);
 		return () => {
 			scrollParent.removeEventListener("scroll", updateActiveUnit);

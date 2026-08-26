@@ -15,6 +15,11 @@ const config = defineConfig({
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
 		},
 	},
+	server: {
+		watch: {
+			ignored: ["**/src-tauri/**"],
+		},
+	},
 	plugins: [
 		devtools(),
 		nitro(),

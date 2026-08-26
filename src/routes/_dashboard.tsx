@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SignedIn } from "@neondatabase/neon-js/auth/react/ui";
 import SideNav from "@/components/sidenav/SideNav";
+import { isOffline } from "@/runtime";
 import "@/dashboard-ag-grid.css";
 import styles from "@/components/dashboard-layout/DashboardLayout.module.css";
 
@@ -9,8 +10,8 @@ export const Route = createFileRoute("/_dashboard")({
 });
 
 function DashboardLayout() {
-	return (
-		<SignedIn>
+	const shell = (
+		<>
 			<div className={styles.mobileBlocked}>
 				<div>
 					<div className={styles.mobileBlockedTitle}>Desktop Required</div>
@@ -25,6 +26,8 @@ function DashboardLayout() {
 					<Outlet />
 				</div>
 			</div>
-		</SignedIn>
+		</>
 	);
+
+	return isOffline() ? shell : <SignedIn>{shell}</SignedIn>;
 }

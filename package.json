@@ -13,7 +13,9 @@
     "check": "biome check",
     "db:dump": "dotenv -e .env -- sh -c 'pg_dump \"$VITE_DATABASE_URL\" --schema-only --no-owner --no-privileges --schema=public --schema=neon_auth --file=db/schema-latest.sql' && mkdir -p db/snapshots && cp db/schema-latest.sql db/snapshots/schema-$(date +%Y-%m-%d-%H%M).sql",
     "notes:audit": "tsx src/components/academy/utils/note-dot-styles-audit.ts",
-    "notes:audit:write": "tsx src/components/academy/utils/note-dot-styles-audit.ts --write"
+    "notes:audit:write": "tsx src/components/academy/utils/note-dot-styles-audit.ts --write",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
@@ -46,6 +48,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "@tanstack/devtools-vite": "^0.3.11",
+    "@tauri-apps/cli": "^2.11.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^22.10.2",

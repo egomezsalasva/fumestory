@@ -12,6 +12,7 @@ import {
 	useRouterState,
 } from "@tanstack/react-router";
 import { authClient } from "../../auth";
+import { isOffline } from "@/runtime";
 import appCss from "../styles.css?url";
 
 interface MyRouterContext {
@@ -89,6 +90,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
 	const { location } = useRouterState();
 	const path = location.pathname;
+	const offline = isOffline();
 
 	// Public pages: login/index and all /auth/* routes
 	const isPublic =
@@ -96,6 +98,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		path.startsWith("/auth/") ||
 		path.startsWith("/features") ||
 		path.startsWith("/try-academy");
+
+	const appShell = (
+		<div
+			style={{
+				position: "fixed",
+				inset: 0,
+				overflow: "hidden",
+			}}
+		>
+			<main id="main-content">{children}</main>
+		</div>
+	);
 
 	return (
 		<html lang="en">
@@ -107,24 +121,32 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					apiKey={import.meta.env.VITE_POSTHOG_PROJECT_TOKEN}
 					options={posthogOptions}
 				>
-					<NeonAuthUIProvider authClient={authClient}>
-						{isPublic ? (
+					{offline ? (
+						isPublic ? (
 							<main id="main-content">{children}</main>
 						) : (
-							<div
-								style={{
-									position: "fixed",
-									inset: 0,
-									overflow: "hidden",
-								}}
-							>
-								<SignedIn>
-									<main id="main-content">{children}</main>
-								</SignedIn>
-								<RedirectToSignIn />
-							</div>
-						)}
-					</NeonAuthUIProvider>
+							appShell
+						)
+					) : (
+						<NeonAuthUIProvider authClient={authClient}>
+							{isPublic ? (
+								<main id="main-content">{children}</main>
+							) : (
+								<div
+									style={{
+										position: "fixed",
+										inset: 0,
+										overflow: "hidden",
+									}}
+								>
+									<SignedIn>
+										<main id="main-content">{children}</main>
+									</SignedIn>
+									<RedirectToSignIn />
+								</div>
+							)}
+						</NeonAuthUIProvider>
+					)}
 				</PostHogProvider>
 				<Scripts />
 			</body>
