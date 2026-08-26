@@ -11,6 +11,7 @@ import { LabelInput } from "@/components/LabelInput";
 import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
 import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
+import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
@@ -76,6 +77,7 @@ function AddRawMaterial() {
 	const [materialNature, setMaterialNature] = useState("");
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
+	const [materialsLeft, setMaterialsLeft] = useState<number | null>(null);
 	const [selectedIfraStatus, setSelectedIfraStatus] =
 		useState<IfraStatus | null>(null);
 	const [isApplyingProposal, setIsApplyingProposal] = useState(false);
@@ -93,6 +95,20 @@ function AddRawMaterial() {
 	const [materialNatureEnabled, setMaterialNatureEnabled] = useState<
 		boolean | null
 	>(null);
+
+	const refreshUsage = useCallback(async () => {
+		if (!offline) return;
+		try {
+			const usage = await getOfflineUsage();
+			setMaterialsLeft(usage.materials.left);
+		} catch {
+			// ignore — chip is optional
+		}
+	}, [offline]);
+
+	useEffect(() => {
+		void refreshUsage();
+	}, [refreshUsage]);
 
 	const curatedMaterialMatch = useMemo(() => {
 		const fromName = findMaterialByName(name);
@@ -433,6 +449,7 @@ function AddRawMaterial() {
 			setSelectedIfraStatus(null);
 			notifyNavEligibilityUpdated({ hasRawMaterials: true });
 			setSuccessMessage("Raw material added successfully!");
+			void refreshUsage();
 		} catch {
 			setError(
 				"Network error: Failed to create raw material. Please try again.",
@@ -440,6 +457,17 @@ function AddRawMaterial() {
 			setSuccessMessage("");
 		}
 	};
+
+	const pageTitle = (
+		<span className="inline-flex items-center gap-3">
+			Raw Materials Inventory / Add Raw Material
+			{materialsLeft != null ? (
+				<span className="text-sm text-slate-400 tabular-nums font-normal">
+					{materialsLeft} left
+				</span>
+			) : null}
+		</span>
+	);
 
 	if (
 		isSidebarCollapsed === null ||
@@ -449,7 +477,7 @@ function AddRawMaterial() {
 	) {
 		return (
 			<DashboardLayout
-				title="Raw Materials Inventory / Add Raw Material"
+				title={pageTitle}
 				backButton={{ to: "/inventory" }}
 				agentToggle={!offline}
 				showCogButton={true}
@@ -461,7 +489,7 @@ function AddRawMaterial() {
 
 	return (
 		<DashboardLayout
-			title="Raw Materials Inventory / Add Raw Material"
+			title={pageTitle}
 			backButton={{ to: "/inventory" }}
 			agentToggle={!offline}
 			onAgentToggleClick={offline ? undefined : handleToggleSidebar}

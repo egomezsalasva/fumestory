@@ -99,6 +99,19 @@ export type SetOfflineUserSettingsInput = {
 	dismissed_ui: DismissedUiJson;
 };
 
+export type OfflineUsageBucket = {
+	used: number;
+	limit: number;
+	left: number;
+};
+
+export type OfflineUsage = {
+	materials: OfflineUsageBucket;
+	dilutions: OfflineUsageBucket;
+	compositions: OfflineUsageBucket;
+	mods: OfflineUsageBucket;
+};
+
 export function listOfflineCategories(): Promise<Category[]> {
 	return invoke<Category[]>("db_list_categories");
 }
@@ -169,6 +182,10 @@ export function patchOfflineComposition(
 	input: PatchOfflineCompositionInput,
 ): Promise<Composition | (Formula & { comment: string | null })> {
 	return invoke("db_patch_composition", { input });
+}
+
+export function getOfflineUsage(): Promise<OfflineUsage> {
+	return invoke<OfflineUsage>("db_get_usage");
 }
 
 export function getOfflineUserSettings(): Promise<OfflineAppSettingsRow> {

@@ -2,7 +2,9 @@ use rusqlite::OptionalExtension;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use super::{map_sqlite_error, open_db};
+use super::{
+	ensure_can_create_composition, ensure_can_create_mod, map_sqlite_error, open_db,
+};
 
 const BRIEF_MAX_LENGTH: usize = 8000;
 const COMMENT_MAX_LENGTH: usize = 2000;
@@ -263,6 +265,8 @@ pub fn db_create_composition(
 		.collect();
 
 	let conn = open_db(&app)?;
+	ensure_can_create_composition(&conn)?;
+	ensure_can_create_mod(&conn)?;
 	assert_dilutions_exist(&conn, &dilution_ids)?;
 
 	if let Some(ref lab) = label {
@@ -476,6 +480,7 @@ pub fn db_create_formula(
 		.collect();
 
 	let conn = open_db(&app)?;
+	ensure_can_create_mod(&conn)?;
 
 	let exists: bool = conn
 		.query_row(

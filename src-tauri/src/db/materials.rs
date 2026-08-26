@@ -4,7 +4,7 @@ use rusqlite::OptionalExtension;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use super::{map_sqlite_error, open_db};
+use super::{ensure_can_create_material, map_sqlite_error, open_db};
 
 const NEUTRAL_NOTE_COLOR: &str = "#94a3b8";
 
@@ -253,6 +253,7 @@ pub fn db_create_raw_material(
 	}
 
 	let conn = open_db(&app)?;
+	ensure_can_create_material(&conn)?;
 	let tx = conn.unchecked_transaction().map_err(map_sqlite_error)?;
 
 	tx.execute(

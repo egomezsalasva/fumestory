@@ -24,6 +24,41 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 - Curated sync: TS maps are source of truth → regen seed SQL on edit → apply to Neon manually; CI only verifies match
 - Later (optional): `user_settings.note_colors` overrides — resolve `override ?? notes.color` (do not mutate curated rows)
 
+### Pay-as-you-go (online + offline) — MVP
+Commercial model: **no subscription**. Free caps + €10 capacity packs.
+
+**Free caps**
+- 50 materials / 100 dilutions / 50 compositions / 100 mods
+- Archived compositions **count**; deletes free slots (when delete exists)
+- Agent token packs: later
+
+**Packs (~€10 each)**
+- +50 materials / +100 dilutions / +50 compositions / +100 mods
+- No expiry
+- Stacking UX: later
+- Restore entitlements / email magic link: later
+- Online↔offline shared wallet by email: **later** (use email as key in schema now; wire sync later)
+
+**Offline identity**
+- No `user_id` on local inventory rows (single-profile SQLite)
+- `offline_install_id` (UUID) on first launch → Neon `offline_installs` (install/download count)
+- Email = commercial identity (purchase + redeem)
+
+**MVP flow**
+1. Neon: `offline_installs`, `payg_codes`, `payg_entitlements` (by email)
+2. Redeem API: `{ email, code, install_id }` → one-time code → return extras
+3. Offline: cache entitlements locally; cap checks on create; “Enter code” (online once)
+4. Purchase → create code → email code (manual codes OK until Stripe)
+5. Online web caps: same free limits (can credit account directly in MVP)
+
+**Explicitly later (PAYG / offline shipping)**
+- Cross-app entitlement sync (same email)
+- Pack stacking UI, restore, agent tokens
+- Version notify (`latest.json` + in-app banner → latest download only)
+- Releases museum on marketing site (keep all builds early; prune later)
+- DB backup-before-migrate (copy sqlite → `.bak` before schema migrate)
+- Offline curated catalog from `data.ts` / dots; SQLite only stores `other` notes/categories
+
 ## Next
 
 ### Formula UI rounding (derived field only)

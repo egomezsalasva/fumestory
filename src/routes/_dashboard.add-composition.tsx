@@ -10,6 +10,7 @@ import { LabelInput } from "@/components/LabelInput";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { MarkdownBriefInput } from "@/components/MarkdownBriefInput";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
+import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
@@ -64,12 +65,27 @@ function AddComposition() {
 	const [formResetKey, setFormResetKey] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+	const [compositionsLeft, setCompositionsLeft] = useState<number | null>(null);
 
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
 	);
 	const [compositionBottleLabelEnabled, setCompositionBottleLabelEnabled] =
 		useState<boolean | null>(null);
+
+	const refreshUsage = useCallback(async () => {
+		if (!offline) return;
+		try {
+			const usage = await getOfflineUsage();
+			setCompositionsLeft(usage.compositions.left);
+		} catch {
+			// ignore — chip is optional
+		}
+	}, [offline]);
+
+	useEffect(() => {
+		void refreshUsage();
+	}, [refreshUsage]);
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -224,16 +240,28 @@ function AddComposition() {
 			notifyNavEligibilityUpdated({ hasCompositions: true });
 			setSuccess(true);
 			setIsSubmitting(false);
+			void refreshUsage();
 		} catch {
 			setError("An error occurred while creating the composition");
 			setIsSubmitting(false);
 		}
 	};
 
+	const pageTitle = (
+		<span className="inline-flex items-center gap-3">
+			Compositions / Add Composition
+			{compositionsLeft != null ? (
+				<span className="text-sm text-slate-400 tabular-nums font-normal">
+					{compositionsLeft} left
+				</span>
+			) : null}
+		</span>
+	);
+
 	if (isSidebarCollapsed === null || compositionBottleLabelEnabled === null) {
 		return (
 			<DashboardLayout
-				title="Compositions / Add Composition"
+				title={pageTitle}
 				backButton={{ to: "/compositions" }}
 				agentToggle={!offline}
 				showCogButton={true}
@@ -245,7 +273,7 @@ function AddComposition() {
 
 	return (
 		<DashboardLayout
-			title="Compositions / Add Composition"
+			title={pageTitle}
 			backButton={{ to: "/compositions" }}
 			agentToggle={!offline}
 			onAgentToggleClick={offline ? undefined : handleToggleSidebar}

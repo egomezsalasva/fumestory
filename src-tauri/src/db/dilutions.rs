@@ -2,7 +2,7 @@ use rusqlite::OptionalExtension;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use super::{map_sqlite_error, open_db};
+use super::{ensure_can_create_dilution, map_sqlite_error, open_db};
 
 #[derive(Serialize)]
 pub struct Dilution {
@@ -118,6 +118,7 @@ pub fn db_create_dilution(
 		.map(str::to_string);
 
 	let conn = open_db(&app)?;
+	ensure_can_create_dilution(&conn)?;
 
 	let exists: bool = conn
 		.query_row(

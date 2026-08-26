@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
+import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
@@ -44,6 +45,7 @@ function AddFormula() {
 	const [success, setSuccess] = useState(false);
 	const [hasSelectedAgentMod, setHasSelectedAgentMod] = useState(false);
 	const [hasUsedPreviousAutofill, setHasUsedPreviousAutofill] = useState(false);
+	const [modsLeft, setModsLeft] = useState<number | null>(null);
 
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
@@ -51,6 +53,20 @@ function AddFormula() {
 
 	const shouldHideAutofillButton =
 		hasSelectedAgentMod || hasUsedPreviousAutofill;
+
+	const refreshUsage = useCallback(async () => {
+		if (!offline) return;
+		try {
+			const usage = await getOfflineUsage();
+			setModsLeft(usage.mods.left);
+		} catch {
+			// ignore — chip is optional
+		}
+	}, [offline]);
+
+	useEffect(() => {
+		void refreshUsage();
+	}, [refreshUsage]);
 
 	const loadUserSettings = useCallback(() => {
 		let cancelled = false;
@@ -233,16 +249,28 @@ function AddFormula() {
 			setFormResetKey((k) => k + 1);
 			setSuccess(true);
 			setIsSubmitting(false);
+			void refreshUsage();
 		} catch {
 			setError("An error occurred while creating the mod");
 			setIsSubmitting(false);
 		}
 	};
 
+	const pageTitle = (
+		<span className="inline-flex items-center gap-3">
+			Compositions / Composition Details / Add Formula
+			{modsLeft != null ? (
+				<span className="text-sm text-slate-400 tabular-nums font-normal">
+					{modsLeft} left
+				</span>
+			) : null}
+		</span>
+	);
+
 	if (isSidebarCollapsed === null) {
 		return (
 			<DashboardLayout
-				title="Compositions / Composition Details / Add Formula"
+				title={pageTitle}
 				backButton={{
 					to: "/composition/$compositionId",
 					params: { compositionId },
@@ -257,7 +285,7 @@ function AddFormula() {
 
 	return (
 		<DashboardLayout
-			title="Compositions / Composition Details / Add Formula"
+			title={pageTitle}
 			backButton={{
 				to: "/composition/$compositionId",
 				params: { compositionId },

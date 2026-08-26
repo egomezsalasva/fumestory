@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DateTimeInput } from "@/components/DateTimeInput";
 import { NumberInput } from "@/components/NumberInput";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
+import { getOfflineUsage } from "@/offline/db";
+import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import {
 	notifyNavEligibilityUpdated,
@@ -34,6 +36,21 @@ function AddDilution() {
 
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
+	const [dilutionsLeft, setDilutionsLeft] = useState<number | null>(null);
+
+	const refreshUsage = async () => {
+		if (!isOffline()) return;
+		try {
+			const usage = await getOfflineUsage();
+			setDilutionsLeft(usage.dilutions.left);
+		} catch {
+			// ignore — chip is optional
+		}
+	};
+
+	useEffect(() => {
+		void refreshUsage();
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -91,6 +108,7 @@ function AddDilution() {
 			setDilutionDate("");
 			notifyNavEligibilityUpdated({ hasDilutions: true });
 			setSuccessMessage("Dilution added successfully!");
+			void refreshUsage();
 		} catch (error) {
 			setError("Network error: Failed to add dilution. Please try again.");
 			setSuccessMessage("");
@@ -99,7 +117,16 @@ function AddDilution() {
 
 	return (
 		<DashboardLayout
-			title="Raw Materials Inventory / Add Dilution"
+			title={
+				<span className="inline-flex items-center gap-3">
+					Raw Materials Inventory / Add Dilution
+					{dilutionsLeft != null ? (
+						<span className="text-sm text-slate-400 tabular-nums font-normal">
+							{dilutionsLeft} left
+						</span>
+					) : null}
+				</span>
+			}
 			backButton={{ to: "/inventory" }}
 		>
 			<div className={styles.formContainerWrapper}>
