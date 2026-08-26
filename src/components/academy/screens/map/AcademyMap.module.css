@@ -34,7 +34,7 @@
 	z-index: 10;
 	margin-bottom: 1.5rem;
 	padding-bottom: 0.25rem;
-	background: #070707;
+	background: var(--academy-sticky-bg, #070707);
 }
 
 .sectionCard {

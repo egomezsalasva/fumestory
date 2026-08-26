@@ -8,6 +8,21 @@ import { REPEATS_TO_MASTER, getSectionLessonProgress } from "../../curriculum";
 import { hexToRgba } from "@/utils/curated-category-colors";
 import styles from "./AcademyMap.module.css";
 
+function getScrollParent(el: HTMLElement | null): HTMLElement | Window {
+	let node = el?.parentElement ?? null;
+	while (node) {
+		const { overflowY } = getComputedStyle(node);
+		if (
+			(overflowY === "auto" || overflowY === "scroll") &&
+			node.scrollHeight > node.clientHeight
+		) {
+			return node;
+		}
+		node = node.parentElement;
+	}
+	return window;
+}
+
 type AcademyHomeProps = {
 	sections: CurriculumSection[];
 	onOpenSection: (sectionId: string) => void;
@@ -69,11 +84,13 @@ export function AcademySectionView({
 			setActiveUnitId((prev) => (prev === nextId ? prev : nextId));
 		};
 
+		const scrollParent = getScrollParent(headerRef.current);
+
 		updateActiveUnit();
-		window.addEventListener("scroll", updateActiveUnit, { passive: true });
+		scrollParent.addEventListener("scroll", updateActiveUnit, { passive: true });
 		window.addEventListener("resize", updateActiveUnit);
 		return () => {
-			window.removeEventListener("scroll", updateActiveUnit);
+			scrollParent.removeEventListener("scroll", updateActiveUnit);
 			window.removeEventListener("resize", updateActiveUnit);
 		};
 	}, [section]);
