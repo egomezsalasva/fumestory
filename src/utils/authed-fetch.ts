@@ -1,28 +1,36 @@
 import { authClient } from "../../auth";
 import {
 	createOfflineCategory,
+	createOfflineComposition,
 	createOfflineDilution,
+	createOfflineFormula,
 	createOfflineRawMaterial,
+	getOfflineComposition,
 	listOfflineCategories,
+	listOfflineCompositions,
 	listOfflineDilutions,
 	listOfflineNotes,
 	listOfflineRawMaterials,
+	patchOfflineComposition,
 	patchOfflineDilution,
+	type CreateOfflineCompositionInput,
 	type CreateOfflineDilutionInput,
 	type CreateOfflineRawMaterialInput,
+	type OfflineFormulaIngredient,
 	type PatchOfflineDilutionInput,
 } from "@/offline/db";
 import { isOffline } from "@/runtime";
+import type { CompositionStatus } from "@/routes/api.compositions";
 import { effectiveUserSettings } from "@/utils/user-settings";
 
-function requestPath(input: RequestInfo | URL): string {
+function requestUrl(input: RequestInfo | URL): URL {
 	if (typeof input === "string") {
-		return new URL(input, "http://local").pathname;
+		return new URL(input, "http://local");
 	}
 	if (input instanceof URL) {
-		return input.pathname;
+		return input;
 	}
-	return new URL(input.url).pathname;
+	return new URL(input.url);
 }
 
 function jsonOk(data: unknown, status = 200): Response {
@@ -47,12 +55,20 @@ function parseJsonBody(init: RequestInit): unknown {
 	throw new Error("Unsupported request body");
 }
 
+function parseCompositionId(path: string): number | null {
+	const match = path.match(/^\/api\/compositions\/(\d+)$/);
+	if (!match) return null;
+	const id = Number(match[1]);
+	return Number.isFinite(id) && id > 0 ? id : null;
+}
+
 async function offlineFetch(
 	input: RequestInfo | URL,
 	init: RequestInit,
 ): Promise<Response> {
 	const method = (init.method ?? "GET").toUpperCase();
-	const path = requestPath(input);
+	const url = requestUrl(input);
+	const path = url.pathname;
 
 	try {
 		if (method === "GET") {
@@ -67,6 +83,19 @@ async function offlineFetch(
 			}
 			if (path === "/api/dilutions") {
 				return jsonOk(await listOfflineDilutions());
+			}
+			if (path === "/api/compositions") {
+				const statusParam = url.searchParams.get("status") ?? "active";
+				if (statusParam !== "active" && statusParam !== "archived") {
+					return jsonError("Invalid status. Use active or archived.");
+				}
+				return jsonOk(
+					await listOfflineCompositions(statusParam as CompositionStatus),
+				);
+			}
+			const compositionId = parseCompositionId(path);
+			if (compositionId !== null) {
+				return jsonOk(await getOfflineComposition(compositionId));
 			}
 			if (path === "/api/user-settings") {
 				return jsonOk(effectiveUserSettings({}));
@@ -89,16 +118,48 @@ async function offlineFetch(
 				const body = parseJsonBody(init) as CreateOfflineDilutionInput;
 				return jsonOk(await createOfflineDilution(body), 201);
 			}
+			if (path === "/api/compositions") {
+				const body = parseJsonBody(init) as CreateOfflineCompositionInput;
+				return jsonOk(await createOfflineComposition(body), 201);
+			}
+			const compositionId = parseCompositionId(path);
+			if (compositionId !== null) {
+				const body = parseJsonBody(init) as {
+					ingredients?: OfflineFormulaIngredient[];
+				};
+				return jsonOk(
+					await createOfflineFormula({
+						composition_id: compositionId,
+						ingredients: body?.ingredients ?? [],
+					}),
+					201,
+				);
+			}
 		}
 
 		if (method === "PATCH") {
 			if (path === "/api/user-settings") {
-				// Offline settings persistence comes later; accept writes so forms don't fail.
 				return jsonOk(effectiveUserSettings({}));
 			}
 			if (path === "/api/dilutions") {
 				const body = parseJsonBody(init) as PatchOfflineDilutionInput;
 				return jsonOk(await patchOfflineDilution(body));
+			}
+			const compositionId = parseCompositionId(path);
+			if (compositionId !== null) {
+				const body = parseJsonBody(init) as {
+					status?: CompositionStatus;
+					formula_id?: number;
+					comment?: string | null;
+				};
+				return jsonOk(
+					await patchOfflineComposition({
+						composition_id: compositionId,
+						status: body?.status,
+						formula_id: body?.formula_id,
+						comment: body?.comment,
+					}),
+				);
 			}
 		}
 	} catch (err) {

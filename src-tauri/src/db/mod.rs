@@ -1,4 +1,5 @@
 mod catalog;
+mod compositions;
 mod dilutions;
 mod materials;
 
@@ -9,6 +10,10 @@ use rusqlite::Connection;
 use tauri::{AppHandle, Manager};
 
 pub use catalog::{db_create_category, db_list_categories, db_list_notes};
+pub use compositions::{
+	db_create_composition, db_create_formula, db_get_composition, db_list_compositions,
+	db_patch_composition,
+};
 pub use dilutions::{db_create_dilution, db_list_dilutions, db_patch_dilution};
 pub use materials::{db_create_raw_material, db_list_raw_materials};
 
@@ -34,6 +39,9 @@ pub(crate) fn map_sqlite_error(err: rusqlite::Error) -> String {
 		}
 		if msg.contains("notes_name") {
 			return "A note with this name already exists".into();
+		}
+		if msg.contains("compositions") {
+			return "A composition with this name already exists".into();
 		}
 		return "Unique constraint failed".into();
 	}
