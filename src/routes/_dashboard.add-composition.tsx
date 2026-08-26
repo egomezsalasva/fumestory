@@ -10,6 +10,7 @@ import { LabelInput } from "@/components/LabelInput";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { MarkdownBriefInput } from "@/components/MarkdownBriefInput";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
+import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
@@ -50,6 +51,7 @@ export const Route = createFileRoute("/_dashboard/add-composition")({
 });
 
 function AddComposition() {
+	const offline = isOffline();
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
 	const [type, setType] = useState<"trial" | "accord" | "perfume">("trial");
@@ -79,7 +81,8 @@ function AddComposition() {
 
 				if (!cancelled) {
 					setIsSidebarCollapsed(
-						res.ok && json?.data?.composition_agent_collapsed === true,
+						offline ||
+							(res.ok && json?.data?.composition_agent_collapsed === true),
 					);
 					setCompositionBottleLabelEnabled(
 						res.ok
@@ -89,7 +92,7 @@ function AddComposition() {
 				}
 			} catch {
 				if (!cancelled) {
-					setIsSidebarCollapsed(false);
+					setIsSidebarCollapsed(offline);
 					setCompositionBottleLabelEnabled(false);
 				}
 			}
@@ -100,7 +103,7 @@ function AddComposition() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [offline]);
 
 	useEffect(() => {
 		const cleanup = loadUserSettings();
@@ -112,7 +115,7 @@ function AddComposition() {
 	}, [loadUserSettings]);
 
 	const handleToggleSidebar = async () => {
-		if (isSidebarCollapsed === null) return;
+		if (offline || isSidebarCollapsed === null) return;
 
 		const next = !isSidebarCollapsed;
 		setIsSidebarCollapsed(next);
@@ -129,7 +132,7 @@ function AddComposition() {
 	};
 
 	const handleCloseSidebar = async () => {
-		if (isSidebarCollapsed === true) return;
+		if (offline || isSidebarCollapsed === true) return;
 		setIsSidebarCollapsed(true);
 		await authedFetch("/api/user-settings", {
 			method: "PATCH",
@@ -232,7 +235,7 @@ function AddComposition() {
 			<DashboardLayout
 				title="Compositions / Add Composition"
 				backButton={{ to: "/compositions" }}
-				agentToggle={true}
+				agentToggle={!offline}
 				showCogButton={true}
 			>
 				<></>
@@ -244,8 +247,8 @@ function AddComposition() {
 		<DashboardLayout
 			title="Compositions / Add Composition"
 			backButton={{ to: "/compositions" }}
-			agentToggle={true}
-			onAgentToggleClick={handleToggleSidebar}
+			agentToggle={!offline}
+			onAgentToggleClick={offline ? undefined : handleToggleSidebar}
 			showCogButton={true}
 			cogButtonHash="compositions-settings"
 			headerHints={[HEADER_HINT_IDS.COMPOSITION_BOTTLE_LABEL]}

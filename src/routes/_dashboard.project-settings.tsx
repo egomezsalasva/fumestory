@@ -508,35 +508,55 @@ function RouteComponent() {
 								</label>
 							</li>
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm ${
+										offline
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200 cursor-pointer"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
-										checked={!settings?.composition_agent_collapsed}
-										disabled={settings === null || saving}
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={
+											offline ? false : !settings?.composition_agent_collapsed
+										}
+										disabled={settings === null || saving || offline}
 										onChange={(e) => {
+											if (offline) return;
 											void patchUserSettings({
 												composition_agent_collapsed: !e.target.checked,
 											});
 										}}
 									/>
 									Show Compositions Agent
+									{offline ? " (online version only)" : ""}
 								</label>
 							</li>
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm ${
+										offline
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200 cursor-pointer"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
-										checked={!settings?.formula_mod_agent_collapsed}
-										disabled={settings === null || saving}
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={
+											offline ? false : !settings?.formula_mod_agent_collapsed
+										}
+										disabled={settings === null || saving || offline}
 										onChange={(e) => {
+											if (offline) return;
 											void patchUserSettings({
 												formula_mod_agent_collapsed: !e.target.checked,
 											});
 										}}
 									/>
 									Show Formula Mod Agent
+									{offline ? " (online version only)" : ""}
 								</label>
 							</li>
 						</ul>

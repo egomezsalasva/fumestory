@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
+import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { FormulaModAgentPanel } from "@/agent/ui/FormulaModAgentPanel";
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/_dashboard/add-formula/$compositionId")({
 });
 
 function AddFormula() {
+	const offline = isOffline();
 	const { compositionId } = Route.useParams();
 
 	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -60,12 +62,13 @@ function AddFormula() {
 
 				if (!cancelled) {
 					setIsSidebarCollapsed(
-						res.ok && json?.data?.formula_mod_agent_collapsed === true,
+						offline ||
+							(res.ok && json?.data?.formula_mod_agent_collapsed === true),
 					);
 				}
 			} catch {
 				if (!cancelled) {
-					setIsSidebarCollapsed(false);
+					setIsSidebarCollapsed(offline);
 				}
 			}
 		};
@@ -75,7 +78,7 @@ function AddFormula() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [offline]);
 
 	useEffect(() => {
 		const cleanup = loadUserSettings();
@@ -87,7 +90,7 @@ function AddFormula() {
 	}, [loadUserSettings]);
 
 	const handleToggleSidebar = async () => {
-		if (isSidebarCollapsed === null) return;
+		if (offline || isSidebarCollapsed === null) return;
 
 		const next = !isSidebarCollapsed;
 		setIsSidebarCollapsed(next);
@@ -104,7 +107,7 @@ function AddFormula() {
 	};
 
 	const handleCloseSidebar = async () => {
-		if (isSidebarCollapsed === true) return;
+		if (offline || isSidebarCollapsed === true) return;
 
 		setIsSidebarCollapsed(true);
 		await authedFetch("/api/user-settings", {
@@ -244,7 +247,7 @@ function AddFormula() {
 					to: "/composition/$compositionId",
 					params: { compositionId },
 				}}
-				agentToggle={true}
+				agentToggle={!offline}
 				showCogButton={true}
 			>
 				<></>
@@ -259,8 +262,8 @@ function AddFormula() {
 				to: "/composition/$compositionId",
 				params: { compositionId },
 			}}
-			agentToggle={true}
-			onAgentToggleClick={handleToggleSidebar}
+			agentToggle={!offline}
+			onAgentToggleClick={offline ? undefined : handleToggleSidebar}
 			showCogButton={true}
 			cogButtonHash="project-settings"
 		>
