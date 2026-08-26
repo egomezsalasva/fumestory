@@ -11,6 +11,7 @@ import { LabelInput } from "@/components/LabelInput";
 import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
 import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
+import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
@@ -58,6 +59,7 @@ type UserSettingsResponse = {
 };
 
 function AddRawMaterial() {
+	const offline = isOffline();
 	const [name, setName] = useState("");
 	const [label, setLabel] = useState("");
 	const [casNumber, setCasNumber] = useState("");
@@ -170,7 +172,8 @@ function AddRawMaterial() {
 
 				if (!cancelled) {
 					setIsSidebarCollapsed(
-						res.ok && json?.data?.raw_material_agent_collapsed === true,
+						offline ||
+							(res.ok && json?.data?.raw_material_agent_collapsed === true),
 					);
 					setBottleLabelEnabled(
 						res.ok ? (json.data?.bottle_label_enabled ?? false) : false,
@@ -184,7 +187,7 @@ function AddRawMaterial() {
 				}
 			} catch {
 				if (!cancelled) {
-					setIsSidebarCollapsed(false);
+					setIsSidebarCollapsed(offline);
 					setBottleLabelEnabled(false);
 					setCasNumberEnabled(false);
 					setMaterialNatureEnabled(false);
@@ -197,7 +200,7 @@ function AddRawMaterial() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [offline]);
 
 	useEffect(() => {
 		const cleanup = loadUserSettings();
@@ -209,7 +212,7 @@ function AddRawMaterial() {
 	}, [loadUserSettings]);
 
 	const handleToggleSidebar = async () => {
-		if (isSidebarCollapsed === null) return;
+		if (offline || isSidebarCollapsed === null) return;
 
 		const next = !isSidebarCollapsed;
 		setIsSidebarCollapsed(next);
@@ -226,7 +229,7 @@ function AddRawMaterial() {
 	};
 
 	const handleCloseSidebar = async () => {
-		if (isSidebarCollapsed === true) return;
+		if (offline || isSidebarCollapsed === true) return;
 		setIsSidebarCollapsed(true);
 		await authedFetch("/api/user-settings", {
 			method: "PATCH",
@@ -448,7 +451,7 @@ function AddRawMaterial() {
 			<DashboardLayout
 				title="Raw Materials Inventory / Add Raw Material"
 				backButton={{ to: "/inventory" }}
-				agentToggle={true}
+				agentToggle={!offline}
 				showCogButton={true}
 			>
 				<div className="dashboardSplitLayout" />
@@ -460,8 +463,8 @@ function AddRawMaterial() {
 		<DashboardLayout
 			title="Raw Materials Inventory / Add Raw Material"
 			backButton={{ to: "/inventory" }}
-			agentToggle={true}
-			onAgentToggleClick={handleToggleSidebar}
+			agentToggle={!offline}
+			onAgentToggleClick={offline ? undefined : handleToggleSidebar}
 			showCogButton={true}
 			cogButtonHash="raw-materials-settings"
 			headerHints={[
@@ -659,17 +662,19 @@ function AddRawMaterial() {
 						/>
 					)}
 				</div>
-				<div className="dashboardSplitSidebar">
-					<div className="dashboardSplitSidebarSticky">
-						<div className="dashboardSplitSidebarClip">
-							<RawMaterialAgentPanel
-								onApplyProposal={handleApplyProposal}
-								onAddNewMaterialClick={() => setSuccessMessage("")}
-								hidePanel={handleCloseSidebar}
-							/>
+				{!offline && (
+					<div className="dashboardSplitSidebar">
+						<div className="dashboardSplitSidebarSticky">
+							<div className="dashboardSplitSidebarClip">
+								<RawMaterialAgentPanel
+									onApplyProposal={handleApplyProposal}
+									onAddNewMaterialClick={() => setSuccessMessage("")}
+									hidePanel={handleCloseSidebar}
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</DashboardLayout>
 	);

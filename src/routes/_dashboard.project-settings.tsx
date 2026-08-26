@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
+import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
 import {
 	notifyUserSettingsUpdated,
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/_dashboard/project-settings")({
 });
 
 function RouteComponent() {
+	const offline = isOffline();
 	const [settings, setSettings] = useState<UserSettingsEffective | null>(null);
 	const [loadError, setLoadError] = useState<string | null>(null);
 	const [saveError, setSaveError] = useState<string | null>(null);
@@ -480,19 +482,29 @@ function RouteComponent() {
 						<div className="h-px w-full bg-slate-600 my-2" />
 						<ul className="mt-3 space-y-2">
 							<li>
-								<label className="inline-flex items-center text-sm text-slate-200 cursor-pointer">
+								<label
+									className={`inline-flex items-center text-sm ${
+										offline
+											? "cursor-not-allowed text-slate-500 opacity-70"
+											: "text-slate-200 cursor-pointer"
+									}`}
+								>
 									<input
 										type="checkbox"
-										className="mr-2"
-										checked={!settings?.raw_material_agent_collapsed}
-										disabled={settings === null || saving}
+										className="mr-2 disabled:cursor-not-allowed disabled:opacity-50"
+										checked={
+											offline ? false : !settings?.raw_material_agent_collapsed
+										}
+										disabled={settings === null || saving || offline}
 										onChange={(e) => {
+											if (offline) return;
 											void patchUserSettings({
 												raw_material_agent_collapsed: !e.target.checked,
 											});
 										}}
 									/>
 									Show Raw Materials Agent
+									{offline ? " (online version only)" : ""}
 								</label>
 							</li>
 							<li>

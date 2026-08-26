@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import MarketingHomePage from "@/components/home-page/MarketingHomePage";
+import { isOffline } from "@/runtime";
 
 const homeJsonLd = {
 	"@context": "https://schema.org",
@@ -13,6 +14,11 @@ const homeJsonLd = {
 };
 
 export const Route = createFileRoute("/")({
+	beforeLoad: () => {
+		if (isOffline()) {
+			throw redirect({ to: "/inventory" });
+		}
+	},
 	head: () => ({
 		scripts: [
 			{
