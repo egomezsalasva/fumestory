@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DateTimeInput } from "@/components/DateTimeInput";
 import { NumberInput } from "@/components/NumberInput";
+import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
+import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
 import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
@@ -37,6 +39,7 @@ function AddDilution() {
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [dilutionsLeft, setDilutionsLeft] = useState<number | null>(null);
+	const [capacityOpen, setCapacityOpen] = useState(false);
 
 	const refreshUsage = async () => {
 		if (!isOffline()) return;
@@ -115,16 +118,20 @@ function AddDilution() {
 		}
 	};
 
+	const isLimitError = error.toLowerCase().includes("capacity pack");
+
 	return (
 		<DashboardLayout
 			title={
 				<span className="inline-flex items-center gap-3">
 					Raw Materials Inventory / Add Dilution
-					{dilutionsLeft != null ? (
-						<span className="text-sm text-slate-400 tabular-nums font-normal">
-							{dilutionsLeft} left
-						</span>
-					) : null}
+					<OfflineCapacityLeft
+						kind="dilutions"
+						left={dilutionsLeft}
+						onRedeemed={() => {
+							void refreshUsage();
+						}}
+					/>
 				</span>
 			}
 			backButton={{ to: "/inventory" }}
@@ -190,12 +197,41 @@ function AddDilution() {
 						{/* Error Message */}
 						{error && (
 							<div className="px-4 py-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
-								{error}
+								{isLimitError ? (
+									<span className="inline-flex flex-wrap items-center gap-2">
+										<span>
+											{error.replace(
+												/\s*Buy a capacity pack to add more\.?/i,
+												"",
+											)}
+										</span>
+										<button
+											type="button"
+											onClick={() => setCapacityOpen(true)}
+											className="rounded border border-slate-600 px-2.5 py-1 text-sm font-medium text-slate-300 hover:border-slate-500 hover:bg-slate-700/50 hover:text-slate-100"
+											aria-label="Buy credits"
+										>
+											Buy Credits
+										</button>
+									</span>
+								) : (
+									error
+								)}
 							</div>
 						)}
 					</div>
 				</form>
 			</div>
+			{capacityOpen ? (
+				<PaygRedeemModal
+					kind="dilutions"
+					onClose={() => setCapacityOpen(false)}
+					onRedeemed={() => {
+						setError("");
+						void refreshUsage();
+					}}
+				/>
+			) : null}
 		</DashboardLayout>
 	);
 }

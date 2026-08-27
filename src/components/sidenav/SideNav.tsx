@@ -4,6 +4,7 @@ import {
 	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { authClient } from "../../../auth";
 import styles from "./SideNav.module.css";
 import ProfileIcon from "./svgs/ProfileIcon";
@@ -16,6 +17,7 @@ import CogIcon from "../svgs/CogIcon";
 import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
 import { useState, useEffect, useCallback } from "react";
+import { isOffline } from "@/runtime";
 import { USER_SETTINGS_UPDATED_EVENT } from "@/utils/user-settings";
 import {
 	loadNavEligibility,
@@ -103,6 +105,7 @@ const NavBodySectionItem: React.FC<{
 };
 
 const SideNav = () => {
+	const offline = isOffline();
 	const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 	const [eligibility, setEligibility] = useState<NavEligibility | null>(null);
 
@@ -149,6 +152,14 @@ const SideNav = () => {
 		await authClient.signOut();
 		navigate({ to: "/", replace: true });
 	};
+	const handleExitApp = async () => {
+		setIsAccountMenuOpen(false);
+		try {
+			await getCurrentWindow().close();
+		} catch {
+			// ignore if window API unavailable
+		}
+	};
 	const handleAccountMenuOpen = () => {
 		setIsAccountMenuOpen(true);
 	};
@@ -172,20 +183,40 @@ const SideNav = () => {
 					{isAccountMenuOpen && (
 						<div className={styles.accountMenu}>
 							<div className={styles.accountMenuSpace} />
+							{!offline && (
+								<Link
+									to="/account/$pathname"
+									params={{ pathname: "profile" }}
+									className={styles.accountMenuItem}
+									onClick={handleAccountMenuClose}
+								>
+									Account Settings
+								</Link>
+							)}
 							<Link
-								to="/account/$pathname"
-								params={{ pathname: "profile" }}
+								to="/usage"
 								className={styles.accountMenuItem}
 								onClick={handleAccountMenuClose}
 							>
-								Account Settings
+								Usage
 							</Link>
 							<div className={styles.accountMenuItemSeparator}>
 								<div className={styles.accountMenuItemSeparatorLine} />
 							</div>
-							<div className={styles.accountMenuItem} onClick={handleSignOut}>
-								Logout
-							</div>
+							{offline ? (
+								<div
+									className={styles.accountMenuItem}
+									onClick={() => {
+										void handleExitApp();
+									}}
+								>
+									Exit Fumestory
+								</div>
+							) : (
+								<div className={styles.accountMenuItem} onClick={handleSignOut}>
+									Logout
+								</div>
+							)}
 							<div className={styles.accountMenuSpace} />
 						</div>
 					)}

@@ -9,6 +9,8 @@ import { Select } from "@/components/Select";
 import { LabelInput } from "@/components/LabelInput";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
 import { MarkdownBriefInput } from "@/components/MarkdownBriefInput";
+import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
+import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
@@ -66,6 +68,7 @@ function AddComposition() {
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 	const [compositionsLeft, setCompositionsLeft] = useState<number | null>(null);
+	const [capacityOpen, setCapacityOpen] = useState(false);
 
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
@@ -247,14 +250,19 @@ function AddComposition() {
 		}
 	};
 
+	const isLimitError =
+		error != null && error.toLowerCase().includes("capacity pack");
+
 	const pageTitle = (
 		<span className="inline-flex items-center gap-3">
 			Compositions / Add Composition
-			{compositionsLeft != null ? (
-				<span className="text-sm text-slate-400 tabular-nums font-normal">
-					{compositionsLeft} left
-				</span>
-			) : null}
+			<OfflineCapacityLeft
+				kind="compositions"
+				left={compositionsLeft}
+				onRedeemed={() => {
+					void refreshUsage();
+				}}
+			/>
 		</span>
 	);
 
@@ -347,7 +355,26 @@ function AddComposition() {
 						)}
 						{error && (
 							<div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-								{error}
+								{isLimitError ? (
+									<span className="inline-flex flex-wrap items-center gap-2">
+										<span>
+											{error.replace(
+												/\s*Buy a capacity pack to add more\.?/i,
+												"",
+											)}
+										</span>
+										<button
+											type="button"
+											onClick={() => setCapacityOpen(true)}
+											className="rounded border border-slate-600 px-2.5 py-1 text-sm font-medium text-slate-300 hover:border-slate-500 hover:bg-slate-700/50 hover:text-slate-100"
+											aria-label="Buy credits"
+										>
+											Buy Credits
+										</button>
+									</span>
+								) : (
+									error
+								)}
 							</div>
 						)}
 					</form>
@@ -365,6 +392,16 @@ function AddComposition() {
 					</div>
 				</div>
 			</div>
+			{capacityOpen ? (
+				<PaygRedeemModal
+					kind="compositions"
+					onClose={() => setCapacityOpen(false)}
+					onRedeemed={() => {
+						setError(null);
+						void refreshUsage();
+					}}
+				/>
+			) : null}
 		</DashboardLayout>
 	);
 }

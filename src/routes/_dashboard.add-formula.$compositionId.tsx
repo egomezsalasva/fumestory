@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields";
+import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
+import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
 import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
@@ -46,6 +48,7 @@ function AddFormula() {
 	const [hasSelectedAgentMod, setHasSelectedAgentMod] = useState(false);
 	const [hasUsedPreviousAutofill, setHasUsedPreviousAutofill] = useState(false);
 	const [modsLeft, setModsLeft] = useState<number | null>(null);
+	const [capacityOpen, setCapacityOpen] = useState(false);
 
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
 		null,
@@ -256,14 +259,19 @@ function AddFormula() {
 		}
 	};
 
+	const isLimitError =
+		error != null && error.toLowerCase().includes("capacity pack");
+
 	const pageTitle = (
 		<span className="inline-flex items-center gap-3">
 			Compositions / Composition Details / Add Formula
-			{modsLeft != null ? (
-				<span className="text-sm text-slate-400 tabular-nums font-normal">
-					{modsLeft} left
-				</span>
-			) : null}
+			<OfflineCapacityLeft
+				kind="mods"
+				left={modsLeft}
+				onRedeemed={() => {
+					void refreshUsage();
+				}}
+			/>
 		</span>
 	);
 
@@ -355,7 +363,26 @@ function AddFormula() {
 
 						{error && (
 							<div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
-								{error}
+								{isLimitError ? (
+									<span className="inline-flex flex-wrap items-center gap-2">
+										<span>
+											{error.replace(
+												/\s*Buy a capacity pack to add more\.?/i,
+												"",
+											)}
+										</span>
+										<button
+											type="button"
+											onClick={() => setCapacityOpen(true)}
+											className="rounded border border-slate-600 px-2.5 py-1 text-sm font-medium text-slate-300 hover:border-slate-500 hover:bg-slate-700/50 hover:text-slate-100"
+											aria-label="Buy credits"
+										>
+											Buy Credits
+										</button>
+									</span>
+								) : (
+									error
+								)}
 							</div>
 						)}
 					</form>
@@ -374,6 +401,16 @@ function AddFormula() {
 					</div>
 				</div>
 			</div>
+			{capacityOpen ? (
+				<PaygRedeemModal
+					kind="mods"
+					onClose={() => setCapacityOpen(false)}
+					onRedeemed={() => {
+						setError(null);
+						void refreshUsage();
+					}}
+				/>
+			) : null}
 		</DashboardLayout>
 	);
 }

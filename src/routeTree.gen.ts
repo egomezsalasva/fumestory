@@ -24,6 +24,7 @@ import { Route as ApiDilutionsRouteImport } from './routes/api.dilutions'
 import { Route as ApiCompositionsRouteImport } from './routes/api.compositions'
 import { Route as ApiCategoriesRouteImport } from './routes/api.categories'
 import { Route as ApiAcademyProgressRouteImport } from './routes/api.academy-progress'
+import { Route as DashboardUsageRouteImport } from './routes/_dashboard.usage'
 import { Route as DashboardScentKnowledgeRouteImport } from './routes/_dashboard.scent-knowledge'
 import { Route as DashboardScentBlindTestRouteImport } from './routes/_dashboard.scent-blind-test'
 import { Route as DashboardProjectSettingsRouteImport } from './routes/_dashboard.project-settings'
@@ -35,6 +36,7 @@ import { Route as DashboardAddFeedbackRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.add-dilution'
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as DashboardAcademyRouteImport } from './routes/_dashboard.academy'
+import { Route as ApiPaygRedeemRouteImport } from './routes/api.payg.redeem'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
 import { Route as ApiAgentTextToGradientRouteImport } from './routes/api/agent/text-to-gradient'
 import { Route as ApiAgentResolveNotesRouteImport } from './routes/api/agent/resolve-notes'
@@ -120,6 +122,11 @@ const ApiAcademyProgressRoute = ApiAcademyProgressRouteImport.update({
   path: '/api/academy-progress',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardUsageRoute = DashboardUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardScentKnowledgeRoute = DashboardScentKnowledgeRouteImport.update({
   id: '/scent-knowledge',
   path: '/scent-knowledge',
@@ -175,6 +182,11 @@ const DashboardAcademyRoute = DashboardAcademyRouteImport.update({
   id: '/academy',
   path: '/academy',
   getParentRoute: () => DashboardRoute,
+} as any)
+const ApiPaygRedeemRoute = ApiPaygRedeemRouteImport.update({
+  id: '/api/payg/redeem',
+  path: '/api/payg/redeem',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCompositionsCompositionIdRoute =
   ApiCompositionsCompositionIdRouteImport.update({
@@ -247,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/usage': typeof DashboardUsageRoute
   '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
@@ -268,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
+  '/api/payg/redeem': typeof ApiPaygRedeemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -284,6 +298,7 @@ export interface FileRoutesByTo {
   '/project-settings': typeof DashboardProjectSettingsRoute
   '/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/usage': typeof DashboardUsageRoute
   '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
@@ -305,6 +320,7 @@ export interface FileRoutesByTo {
   '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
+  '/api/payg/redeem': typeof ApiPaygRedeemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -323,6 +339,7 @@ export interface FileRoutesById {
   '/_dashboard/project-settings': typeof DashboardProjectSettingsRoute
   '/_dashboard/scent-blind-test': typeof DashboardScentBlindTestRoute
   '/_dashboard/scent-knowledge': typeof DashboardScentKnowledgeRoute
+  '/_dashboard/usage': typeof DashboardUsageRoute
   '/api/academy-progress': typeof ApiAcademyProgressRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/compositions': typeof ApiCompositionsRouteWithChildren
@@ -344,6 +361,7 @@ export interface FileRoutesById {
   '/api/agent/resolve-notes': typeof ApiAgentResolveNotesRoute
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
+  '/api/payg/redeem': typeof ApiPaygRedeemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -362,6 +380,7 @@ export interface FileRouteTypes {
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
+    | '/usage'
     | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
@@ -383,6 +402,7 @@ export interface FileRouteTypes {
     | '/api/agent/resolve-notes'
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
+    | '/api/payg/redeem'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -399,6 +419,7 @@ export interface FileRouteTypes {
     | '/project-settings'
     | '/scent-blind-test'
     | '/scent-knowledge'
+    | '/usage'
     | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
@@ -420,6 +441,7 @@ export interface FileRouteTypes {
     | '/api/agent/resolve-notes'
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
+    | '/api/payg/redeem'
   id:
     | '__root__'
     | '/'
@@ -437,6 +459,7 @@ export interface FileRouteTypes {
     | '/_dashboard/project-settings'
     | '/_dashboard/scent-blind-test'
     | '/_dashboard/scent-knowledge'
+    | '/_dashboard/usage'
     | '/api/academy-progress'
     | '/api/categories'
     | '/api/compositions'
@@ -458,6 +481,7 @@ export interface FileRouteTypes {
     | '/api/agent/resolve-notes'
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
+    | '/api/payg/redeem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -481,6 +505,7 @@ export interface RootRouteChildren {
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
   ApiAgentResolveNotesRoute: typeof ApiAgentResolveNotesRoute
   ApiAgentTextToGradientRoute: typeof ApiAgentTextToGradientRoute
+  ApiPaygRedeemRoute: typeof ApiPaygRedeemRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -590,6 +615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAcademyProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard/usage': {
+      id: '/_dashboard/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof DashboardUsageRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/scent-knowledge': {
       id: '/_dashboard/scent-knowledge'
       path: '/scent-knowledge'
@@ -666,6 +698,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/academy'
       preLoaderRoute: typeof DashboardAcademyRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/api/payg/redeem': {
+      id: '/api/payg/redeem'
+      path: '/api/payg/redeem'
+      fullPath: '/api/payg/redeem'
+      preLoaderRoute: typeof ApiPaygRedeemRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/compositions/$compositionId': {
       id: '/api/compositions/$compositionId'
@@ -752,6 +791,7 @@ interface DashboardRouteChildren {
   DashboardProjectSettingsRoute: typeof DashboardProjectSettingsRoute
   DashboardScentBlindTestRoute: typeof DashboardScentBlindTestRoute
   DashboardScentKnowledgeRoute: typeof DashboardScentKnowledgeRoute
+  DashboardUsageRoute: typeof DashboardUsageRoute
   DashboardAccountPathnameRoute: typeof DashboardAccountPathnameRoute
   DashboardAddFormulaCompositionIdRoute: typeof DashboardAddFormulaCompositionIdRoute
   DashboardCompositionCompositionIdRoute: typeof DashboardCompositionCompositionIdRoute
@@ -770,6 +810,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProjectSettingsRoute: DashboardProjectSettingsRoute,
   DashboardScentBlindTestRoute: DashboardScentBlindTestRoute,
   DashboardScentKnowledgeRoute: DashboardScentKnowledgeRoute,
+  DashboardUsageRoute: DashboardUsageRoute,
   DashboardAccountPathnameRoute: DashboardAccountPathnameRoute,
   DashboardAddFormulaCompositionIdRoute: DashboardAddFormulaCompositionIdRoute,
   DashboardCompositionCompositionIdRoute:
@@ -815,6 +856,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
   ApiAgentResolveNotesRoute: ApiAgentResolveNotesRoute,
   ApiAgentTextToGradientRoute: ApiAgentTextToGradientRoute,
+  ApiPaygRedeemRoute: ApiPaygRedeemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

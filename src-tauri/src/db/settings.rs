@@ -51,10 +51,12 @@ fn table_column_names(conn: &rusqlite::Connection) -> Result<Vec<String>, String
 	let mut stmt = conn
 		.prepare("PRAGMA table_info(app_settings)")
 		.map_err(map_sqlite_error)?;
-	stmt.query_map([], |row| row.get::<_, String>(1))
+	let names = stmt
+		.query_map([], |row| row.get::<_, String>(1))
 		.map_err(map_sqlite_error)?
 		.collect::<Result<Vec<_>, _>>()
-		.map_err(map_sqlite_error)
+		.map_err(map_sqlite_error)?;
+	Ok(names)
 }
 
 fn ensure_column(
