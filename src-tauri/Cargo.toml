@@ -1,10 +1,10 @@
 [package]
-name = "app"
+name = "Fumestory"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Fumestory"
+authors = ["Fumestory"]
+license = "MIT"
+repository = "https://github.com/fumestory/fumestory"
 edition = "2021"
 rust-version = "1.77.2"
 
