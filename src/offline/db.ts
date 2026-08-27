@@ -116,6 +116,22 @@ export type OfflineInstallId = {
 	offline_install_id: string;
 };
 
+export type OfflineEntitlements = {
+	email: string | null;
+	extras_materials: number;
+	extras_dilutions: number;
+	extras_compositions: number;
+	extras_mods: number;
+};
+
+export type SetOfflineEntitlementsInput = {
+	email?: string | null;
+	extras_materials: number;
+	extras_dilutions: number;
+	extras_compositions: number;
+	extras_mods: number;
+};
+
 export function listOfflineCategories(): Promise<Category[]> {
 	return invoke<Category[]>("db_list_categories");
 }
@@ -194,6 +210,12 @@ export function getOfflineUsage(): Promise<OfflineUsage> {
 
 export function getOfflineInstallId(): Promise<OfflineInstallId> {
 	return invoke<OfflineInstallId>("db_get_install_id");
+}
+
+export function setOfflineEntitlements(
+	input: SetOfflineEntitlementsInput,
+): Promise<OfflineEntitlements> {
+	return invoke<OfflineEntitlements>("db_set_entitlements", { input });
 }
 
 export function getOfflineUserSettings(): Promise<OfflineAppSettingsRow> {

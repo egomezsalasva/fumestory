@@ -147,6 +147,11 @@ CREATE TABLE app_settings (
   settings TEXT NOT NULL DEFAULT '{}',
   dismissed_ui TEXT NOT NULL DEFAULT '{}',
   offline_install_id TEXT,
+  payg_email TEXT,
+  extras_materials INTEGER NOT NULL DEFAULT 0,
+  extras_dilutions INTEGER NOT NULL DEFAULT 0,
+  extras_compositions INTEGER NOT NULL DEFAULT 0,
+  extras_mods INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -2,6 +2,7 @@ use rusqlite::Connection;
 use serde::Serialize;
 use tauri::AppHandle;
 
+use super::settings::read_entitlements;
 use super::{map_sqlite_error, open_db};
 
 pub const FREE_MATERIALS: i64 = 50;
@@ -14,18 +15,17 @@ fn count(conn: &Connection, sql: &str) -> Result<i64, String> {
 		.map_err(map_sqlite_error)
 }
 
-/// Extras from redeemed packs (0 until PAYG entitlements are wired).
-fn extras_materials(_conn: &Connection) -> i64 {
-	0
+fn extras_materials(conn: &Connection) -> Result<i64, String> {
+	Ok(read_entitlements(conn)?.extras_materials)
 }
-fn extras_dilutions(_conn: &Connection) -> i64 {
-	0
+fn extras_dilutions(conn: &Connection) -> Result<i64, String> {
+	Ok(read_entitlements(conn)?.extras_dilutions)
 }
-fn extras_compositions(_conn: &Connection) -> i64 {
-	0
+fn extras_compositions(conn: &Connection) -> Result<i64, String> {
+	Ok(read_entitlements(conn)?.extras_compositions)
 }
-fn extras_mods(_conn: &Connection) -> i64 {
-	0
+fn extras_mods(conn: &Connection) -> Result<i64, String> {
+	Ok(read_entitlements(conn)?.extras_mods)
 }
 
 fn bucket(used: i64, limit: i64) -> UsageBucket {
@@ -57,26 +57,26 @@ pub fn db_get_usage(app: AppHandle) -> Result<Usage, String> {
 	Ok(Usage {
 		materials: bucket(
 			count(&conn, "SELECT COUNT(*) FROM raw_materials")?,
-			FREE_MATERIALS + extras_materials(&conn),
+			FREE_MATERIALS + extras_materials(&conn)?,
 		),
 		dilutions: bucket(
 			count(&conn, "SELECT COUNT(*) FROM dilutions")?,
-			FREE_DILUTIONS + extras_dilutions(&conn),
+			FREE_DILUTIONS + extras_dilutions(&conn)?,
 		),
 		compositions: bucket(
 			count(&conn, "SELECT COUNT(*) FROM compositions")?,
-			FREE_COMPOSITIONS + extras_compositions(&conn),
+			FREE_COMPOSITIONS + extras_compositions(&conn)?,
 		),
 		mods: bucket(
 			count(&conn, "SELECT COUNT(*) FROM formulas")?,
-			FREE_MODS + extras_mods(&conn),
+			FREE_MODS + extras_mods(&conn)?,
 		),
 	})
 }
 
 pub fn ensure_can_create_material(conn: &Connection) -> Result<(), String> {
 	let used = count(conn, "SELECT COUNT(*) FROM raw_materials")?;
-	let limit = FREE_MATERIALS + extras_materials(conn);
+	let limit = FREE_MATERIALS + extras_materials(conn)?;
 	if used >= limit {
 		return Err(format!(
 			"Material limit reached ({used}/{limit}). Buy a capacity pack to add more."
@@ -87,7 +87,7 @@ pub fn ensure_can_create_material(conn: &Connection) -> Result<(), String> {
 
 pub fn ensure_can_create_dilution(conn: &Connection) -> Result<(), String> {
 	let used = count(conn, "SELECT COUNT(*) FROM dilutions")?;
-	let limit = FREE_DILUTIONS + extras_dilutions(conn);
+	let limit = FREE_DILUTIONS + extras_dilutions(conn)?;
 	if used >= limit {
 		return Err(format!(
 			"Dilution limit reached ({used}/{limit}). Buy a capacity pack to add more."
@@ -99,7 +99,7 @@ pub fn ensure_can_create_dilution(conn: &Connection) -> Result<(), String> {
 pub fn ensure_can_create_composition(conn: &Connection) -> Result<(), String> {
 	// Archived compositions still count.
 	let used = count(conn, "SELECT COUNT(*) FROM compositions")?;
-	let limit = FREE_COMPOSITIONS + extras_compositions(conn);
+	let limit = FREE_COMPOSITIONS + extras_compositions(conn)?;
 	if used >= limit {
 		return Err(format!(
 			"Composition limit reached ({used}/{limit}). Buy a capacity pack to add more."
@@ -110,7 +110,7 @@ pub fn ensure_can_create_composition(conn: &Connection) -> Result<(), String> {
 
 pub fn ensure_can_create_mod(conn: &Connection) -> Result<(), String> {
 	let used = count(conn, "SELECT COUNT(*) FROM formulas")?;
-	let limit = FREE_MODS + extras_mods(conn);
+	let limit = FREE_MODS + extras_mods(conn)?;
 	if used >= limit {
 		return Err(format!(
 			"Formula (mod) limit reached ({used}/{limit}). Buy a capacity pack to add more."
