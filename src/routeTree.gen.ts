@@ -36,6 +36,7 @@ import { Route as DashboardAddFeedbackRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.add-dilution'
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as DashboardAcademyRouteImport } from './routes/_dashboard.academy'
+import { Route as ApiPaygUsageRouteImport } from './routes/api.payg.usage'
 import { Route as ApiPaygRedeemRouteImport } from './routes/api.payg.redeem'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
 import { Route as ApiAgentTextToGradientRouteImport } from './routes/api/agent/text-to-gradient'
@@ -183,6 +184,11 @@ const DashboardAcademyRoute = DashboardAcademyRouteImport.update({
   path: '/academy',
   getParentRoute: () => DashboardRoute,
 } as any)
+const ApiPaygUsageRoute = ApiPaygUsageRouteImport.update({
+  id: '/api/payg/usage',
+  path: '/api/payg/usage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaygRedeemRoute = ApiPaygRedeemRouteImport.update({
   id: '/api/payg/redeem',
   path: '/api/payg/redeem',
@@ -282,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
+  '/api/payg/usage': typeof ApiPaygUsageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -321,6 +328,7 @@ export interface FileRoutesByTo {
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
+  '/api/payg/usage': typeof ApiPaygUsageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/api/agent/text-to-gradient': typeof ApiAgentTextToGradientRoute
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
+  '/api/payg/usage': typeof ApiPaygUsageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
+    | '/api/payg/usage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
+    | '/api/payg/usage'
   id:
     | '__root__'
     | '/'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/api/agent/text-to-gradient'
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
+    | '/api/payg/usage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -506,6 +518,7 @@ export interface RootRouteChildren {
   ApiAgentResolveNotesRoute: typeof ApiAgentResolveNotesRoute
   ApiAgentTextToGradientRoute: typeof ApiAgentTextToGradientRoute
   ApiPaygRedeemRoute: typeof ApiPaygRedeemRoute
+  ApiPaygUsageRoute: typeof ApiPaygUsageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -699,6 +712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAcademyRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/api/payg/usage': {
+      id: '/api/payg/usage'
+      path: '/api/payg/usage'
+      fullPath: '/api/payg/usage'
+      preLoaderRoute: typeof ApiPaygUsageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/payg/redeem': {
       id: '/api/payg/redeem'
       path: '/api/payg/redeem'
@@ -857,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentResolveNotesRoute: ApiAgentResolveNotesRoute,
   ApiAgentTextToGradientRoute: ApiAgentTextToGradientRoute,
   ApiPaygRedeemRoute: ApiPaygRedeemRoute,
+  ApiPaygUsageRoute: ApiPaygUsageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

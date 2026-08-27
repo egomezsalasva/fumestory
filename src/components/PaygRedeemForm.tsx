@@ -3,12 +3,14 @@ import {
 	redeemPaygCode,
 	type RedeemPaygCodeResult,
 } from "@/offline/redeemPaygCode";
+import { isOffline } from "@/runtime";
 
 type PaygRedeemFormProps = {
 	onRedeemed?: (result: RedeemPaygCodeResult) => void;
 };
 
 export function PaygRedeemForm({ onRedeemed }: PaygRedeemFormProps) {
+	const offline = isOffline();
 	const [email, setEmail] = useState("");
 	const [code, setCode] = useState("");
 	const [busy, setBusy] = useState(false);
@@ -22,7 +24,11 @@ export function PaygRedeemForm({ onRedeemed }: PaygRedeemFormProps) {
 		setBusy(true);
 		try {
 			const result = await redeemPaygCode({ email, code });
-			setSuccess("Redeemed. Capacity updated on this device.");
+			setSuccess(
+				offline
+					? "Redeemed. Capacity updated on this device."
+					: "Redeemed. Capacity updated for this account.",
+			);
 			setCode("");
 			onRedeemed?.(result);
 		} catch (err) {

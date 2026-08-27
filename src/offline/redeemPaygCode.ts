@@ -3,6 +3,7 @@ import {
 	setOfflineEntitlements,
 	type OfflineEntitlements,
 } from "@/offline/db";
+import { isOffline } from "@/runtime";
 
 export type RedeemPaygCodeInput = {
 	email: string;
@@ -35,16 +36,22 @@ export async function redeemPaygCode(
 		throw new Error("Email and code are required");
 	}
 
-	const { offline_install_id } = await getOfflineInstallId();
+	const offline = isOffline();
+	const body: {
+		email: string;
+		code: string;
+		install_id?: string;
+	} = { email, code };
+
+	if (offline) {
+		const { offline_install_id } = await getOfflineInstallId();
+		body.install_id = offline_install_id;
+	}
 
 	const response = await fetch("/api/payg/redeem", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			email,
-			code,
-			install_id: offline_install_id,
-		}),
+		body: JSON.stringify(body),
 	});
 
 	const json = (await response.json()) as RedeemApiSuccess | RedeemApiError;
@@ -54,6 +61,16 @@ export async function redeemPaygCode(
 				? json.error
 				: "Failed to redeem code";
 		throw new Error(message);
+	}
+
+	if (!offline) {
+		return {
+			email: json.data.email,
+			extras_materials: json.data.extras_materials,
+			extras_dilutions: json.data.extras_dilutions,
+			extras_compositions: json.data.extras_compositions,
+			extras_mods: json.data.extras_mods,
+		};
 	}
 
 	return setOfflineEntitlements({

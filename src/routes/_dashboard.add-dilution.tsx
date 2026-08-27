@@ -5,9 +5,8 @@ import { NumberInput } from "@/components/NumberInput";
 import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
 import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { RawMaterialAutocomplete } from "@/components/RawMaterialAutocomplete";
-import { getOfflineUsage } from "@/offline/db";
-import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
+import { getPaygUsage } from "@/utils/get-payg-usage";
 import {
 	notifyNavEligibilityUpdated,
 	requireNavRoute,
@@ -42,9 +41,8 @@ function AddDilution() {
 	const [capacityOpen, setCapacityOpen] = useState(false);
 
 	const refreshUsage = async () => {
-		if (!isOffline()) return;
 		try {
-			const usage = await getOfflineUsage();
+			const usage = await getPaygUsage();
 			setDilutionsLeft(usage.dilutions.left);
 		} catch {
 			// ignore — chip is optional

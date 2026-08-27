@@ -13,9 +13,9 @@ import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
 import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
 import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
-import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
+import { getPaygUsage } from "@/utils/get-payg-usage";
 import type { RawMaterialProposal } from "@/agent/schemas/rawMaterialProposal";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import styles from "@/components/Form.module.css";
@@ -100,14 +100,13 @@ function AddRawMaterial() {
 	>(null);
 
 	const refreshUsage = useCallback(async () => {
-		if (!offline) return;
 		try {
-			const usage = await getOfflineUsage();
+			const usage = await getPaygUsage();
 			setMaterialsLeft(usage.materials.left);
 		} catch {
 			// ignore — chip is optional
 		}
-	}, [offline]);
+	}, []);
 
 	useEffect(() => {
 		void refreshUsage();

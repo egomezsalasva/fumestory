@@ -12,9 +12,9 @@ import { MarkdownBriefInput } from "@/components/MarkdownBriefInput";
 import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
 import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
-import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
+import { getPaygUsage } from "@/utils/get-payg-usage";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { CompositionAgentPanel } from "@/agent/ui/CompositionAgentPanel";
 import styles from "@/components/Form.module.css";
@@ -77,14 +77,13 @@ function AddComposition() {
 		useState<boolean | null>(null);
 
 	const refreshUsage = useCallback(async () => {
-		if (!offline) return;
 		try {
-			const usage = await getOfflineUsage();
+			const usage = await getPaygUsage();
 			setCompositionsLeft(usage.compositions.left);
 		} catch {
 			// ignore — chip is optional
 		}
-	}, [offline]);
+	}, []);
 
 	useEffect(() => {
 		void refreshUsage();

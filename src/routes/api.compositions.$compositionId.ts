@@ -3,6 +3,11 @@ import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import type { Composition, CompositionStatus } from "@/routes/api.compositions";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
+import {
+	getEmailForUserId,
+	getOnlinePaygUsage,
+	limitReachedMessage,
+} from "@/utils/payg-limits";
 
 const COMMENT_MAX_LENGTH = 2000;
 
@@ -157,6 +162,24 @@ export const Route = createFileRoute("/api/compositions/$compositionId")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
+
+					const email = await getEmailForUserId(client, currentUserId);
+					if (!email) {
+						return jsonResponse({ error: "User email not found" }, 404);
+					}
+					const usage = await getOnlinePaygUsage(client, currentUserId, email);
+					if (usage.mods.left <= 0) {
+						return jsonResponse(
+							{
+								error: limitReachedMessage(
+									"mods",
+									usage.mods.used,
+									usage.mods.limit,
+								),
+							},
+							403,
+						);
+					}
 
 					const match = new URL(request.url).pathname.match(
 						/\/api\/compositions\/(\d+)$/,

@@ -44,20 +44,30 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 - `offline_install_id` (UUID) on first launch → Neon `offline_installs` (install/download count)
 - Email = commercial identity (purchase + redeem)
 
-**MVP flow**
-1. Neon: `offline_installs`, `payg_codes`, `payg_entitlements` (by email)
-2. Redeem API: `{ email, code, install_id }` → one-time code → return extras
-3. Offline: cache entitlements locally; cap checks on create; “Enter code” (online once)
-4. Purchase → create code → email code (manual codes OK until Stripe)
-5. Online web caps: same free limits (can credit account directly in MVP)
+**Shared redeem API**
+- One endpoint for both clients: `POST /api/payg/redeem`
+- Online web: same-origin `/api/payg/redeem`
+- Offline packaged: `VITE_CLOUD_API_BASE` + `/api/payg/redeem`
+- Offline dev: relative `/api/...` via Vite (`tauri:dev:offline`)
+- Totals = `SUM` of redeemed `payg_codes` (no separate entitlements table)
 
-**Explicitly later (PAYG / offline shipping)**
+**Done**
+- [x] Neon: `offline_installs`, `payg_codes` (026)
+- [x] Redeem API + offline local extras cache + cap checks
+- [x] Offline UI: “N left”, Buy Credits modal, Usage page, limit-error CTA
+- [x] Online PAYG: `payg-limits` + create-route caps; `GET /api/payg/usage`; Usage + redeem (cloud-safe); add-page chips via `getPaygUsage`
+
+**Launch sequence (agreed)**
+1. [x] **Online PAYG first** — same free caps + redeem UI on cloud; uses existing `POST /api/payg/redeem`. Manual codes OK until Stripe.
+2. **← next: Point packaged offline at that host** — `VITE_CLOUD_API_BASE` (or equivalent); same redeem endpoint.
+3. **Finish offline shipping** — DB backup-before-migrate; version notify (`latest.json` + banner); offline curated catalog as needed for v1.
+4. **Marketing** — Pricing page + releases museum (can overlap with 3).
+5. **Launch downloadable offline app** — installer + update channel.
+
+**Defer**
 - Cross-app entitlement sync (same email)
-- Pack stacking UI, restore, agent tokens
-- Version notify (`latest.json` + in-app banner → latest download only)
-- Releases museum on marketing site (keep all builds early; prune later)
-- DB backup-before-migrate (copy sqlite → `.bak` before schema migrate)
-- Offline curated catalog from `data.ts` / dots; SQLite only stores `other` notes/categories
+- Pack stacking UI, restore magic link, agent token packs
+- Stripe Checkout (after manual codes work end-to-end)
 
 ## Next
 

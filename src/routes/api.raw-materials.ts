@@ -13,6 +13,11 @@ import {
 	validateBottleLabelFormat,
 } from "@/utils/bottle-labels";
 import { NEUTRAL_CATEGORY_COLOR } from "@/utils/curated-category-colors";
+import {
+	getEmailForUserId,
+	getOnlinePaygUsage,
+	limitReachedMessage,
+} from "@/utils/payg-limits";
 
 export type RawMaterial = {
 	id: number;
@@ -196,6 +201,25 @@ export const Route = createFileRoute("/api/raw-materials")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
+
+					const email = await getEmailForUserId(client, currentUserId);
+					if (!email) {
+						return jsonResponse({ error: "User email not found" }, 404);
+					}
+					const usage = await getOnlinePaygUsage(client, currentUserId, email);
+					if (usage.materials.left <= 0) {
+						return jsonResponse(
+							{
+								error: limitReachedMessage(
+									"materials",
+									usage.materials.used,
+									usage.materials.limit,
+								),
+							},
+							403,
+						);
+					}
+
 					const body = await request.json();
 					const {
 						label,

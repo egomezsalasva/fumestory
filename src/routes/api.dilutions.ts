@@ -2,6 +2,11 @@ import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
+import {
+	getEmailForUserId,
+	getOnlinePaygUsage,
+	limitReachedMessage,
+} from "@/utils/payg-limits";
 
 export type Dilution = {
 	id: number;
@@ -76,6 +81,25 @@ export const Route = createFileRoute("/api/dilutions")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
+
+					const email = await getEmailForUserId(client, currentUserId);
+					if (!email) {
+						return jsonResponse({ error: "User email not found" }, 404);
+					}
+					const usage = await getOnlinePaygUsage(client, currentUserId, email);
+					if (usage.dilutions.left <= 0) {
+						return jsonResponse(
+							{
+								error: limitReachedMessage(
+									"dilutions",
+									usage.dilutions.used,
+									usage.dilutions.limit,
+								),
+							},
+							403,
+						);
+					}
+
 					const body = await request.json();
 					const {
 						raw_material_id,

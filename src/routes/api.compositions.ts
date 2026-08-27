@@ -11,6 +11,11 @@ import {
 } from "@/utils/bottle-labels";
 import { createFileRoute } from "@tanstack/react-router";
 import { requireCurrentUserId } from "@/utils/current-user";
+import {
+	getEmailForUserId,
+	getOnlinePaygUsage,
+	limitReachedMessage,
+} from "@/utils/payg-limits";
 
 export type CompositionStatus = "active" | "archived";
 
@@ -112,6 +117,36 @@ export const Route = createFileRoute("/api/compositions")({
 					const auth = requireCurrentUserId(request);
 					if (auth.errorResponse) return auth.errorResponse;
 					const currentUserId = auth.userId!;
+
+					const email = await getEmailForUserId(client, currentUserId);
+					if (!email) {
+						return jsonResponse({ error: "User email not found" }, 404);
+					}
+					const usage = await getOnlinePaygUsage(client, currentUserId, email);
+					if (usage.compositions.left <= 0) {
+						return jsonResponse(
+							{
+								error: limitReachedMessage(
+									"compositions",
+									usage.compositions.used,
+									usage.compositions.limit,
+								),
+							},
+							403,
+						);
+					}
+					if (usage.mods.left <= 0) {
+						return jsonResponse(
+							{
+								error: limitReachedMessage(
+									"mods",
+									usage.mods.used,
+									usage.mods.limit,
+								),
+							},
+							403,
+						);
+					}
 
 					const body = await request.json();
 					const {

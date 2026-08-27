@@ -4,9 +4,9 @@ import { FormulaIngredientsFields } from "@/components/FormulaIngredientsFields"
 import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
 import { PaygRedeemModal } from "@/components/PaygRedeemModal";
 import { type Ingredient } from "@/hooks/useFormulaIngredients";
-import { getOfflineUsage } from "@/offline/db";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
+import { getPaygUsage } from "@/utils/get-payg-usage";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { FormulaModAgentPanel } from "@/agent/ui/FormulaModAgentPanel";
 import styles from "@/components/Form.module.css";
@@ -58,14 +58,13 @@ function AddFormula() {
 		hasSelectedAgentMod || hasUsedPreviousAutofill;
 
 	const refreshUsage = useCallback(async () => {
-		if (!offline) return;
 		try {
-			const usage = await getOfflineUsage();
+			const usage = await getPaygUsage();
 			setModsLeft(usage.mods.left);
 		} catch {
 			// ignore — chip is optional
 		}
-	}, [offline]);
+	}, []);
 
 	useEffect(() => {
 		void refreshUsage();
