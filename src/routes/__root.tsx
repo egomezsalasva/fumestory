@@ -5,7 +5,7 @@ import {
 } from "@neondatabase/neon-js/auth/react/ui";
 import { PostHogProvider } from "posthog-js/react";
 import type { QueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
 	HeadContent,
 	Scripts,
@@ -93,12 +93,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const { location } = useRouterState();
 	const path = location.pathname;
 	const offline = isOffline();
+	const [offlineDbError, setOfflineDbError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!offline) return;
-		void getOfflineInstallId().catch(() => {
-			// install id is best-effort until redeem/analytics need it
-		});
+		void getOfflineInstallId()
+			.then(() => {
+				setOfflineDbError(null);
+			})
+			.catch((err: unknown) => {
+				const message =
+					err instanceof Error
+						? err.message
+						: typeof err === "string"
+							? err
+							: "Failed to open the local database.";
+				setOfflineDbError(message);
+			});
 	}, [offline]);
 
 	// Public pages: login/index and all /auth/* routes
@@ -108,6 +119,28 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		path.startsWith("/features") ||
 		path.startsWith("/try-academy");
 
+	const offlineDbBanner =
+		offline && offlineDbError ? (
+			<div
+				role="alert"
+				className="fixed inset-x-0 top-0 z-100 border-b border-red-500/50 bg-red-950 px-4 py-3 text-sm text-red-100"
+			>
+				<div className="mx-auto flex max-w-3xl items-start justify-between gap-3">
+					<p>
+						<span className="font-medium">Database update problem. </span>
+						{offlineDbError}
+					</p>
+					<button
+						type="button"
+						onClick={() => setOfflineDbError(null)}
+						className="shrink-0 rounded border border-red-400/40 px-2 py-0.5 text-xs text-red-100 hover:bg-red-900/60"
+					>
+						Dismiss
+					</button>
+				</div>
+			</div>
+		) : null;
+
 	const appShell = (
 		<div
 			style={{
@@ -116,6 +149,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				overflow: "hidden",
 			}}
 		>
+			{offlineDbBanner}
 			<main id="main-content">{children}</main>
 		</div>
 	);
@@ -132,7 +166,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				>
 					{offline ? (
 						isPublic ? (
-							<main id="main-content">{children}</main>
+							<>
+								{offlineDbBanner}
+								<main id="main-content">{children}</main>
+							</>
 						) : (
 							appShell
 						)

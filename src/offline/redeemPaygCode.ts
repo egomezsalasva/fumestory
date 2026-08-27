@@ -48,7 +48,12 @@ export async function redeemPaygCode(
 		body.install_id = offline_install_id;
 	}
 
-	const response = await fetch("/api/payg/redeem", {
+	const redeemUrl =
+		offline && !import.meta.env.DEV
+			? "https://fumestory.com/api/payg/redeem"
+			: "/api/payg/redeem";
+
+	const response = await fetch(redeemUrl, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(body),

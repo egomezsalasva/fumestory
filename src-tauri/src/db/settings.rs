@@ -75,7 +75,7 @@ fn ensure_column(
 	Ok(())
 }
 
-fn ensure_app_settings_columns(conn: &rusqlite::Connection) -> Result<(), String> {
+pub(crate) fn ensure_app_settings_columns(conn: &rusqlite::Connection) -> Result<(), String> {
 	let names = table_column_names(conn)?;
 	ensure_column(conn, &names, "offline_install_id", "TEXT")?;
 	ensure_column(conn, &names, "payg_email", "TEXT")?;

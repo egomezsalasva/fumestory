@@ -46,9 +46,8 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 
 **Shared redeem API**
 - One endpoint for both clients: `POST /api/payg/redeem`
-- Online web: same-origin `/api/payg/redeem`
-- Offline packaged: `VITE_CLOUD_API_BASE` + `/api/payg/redeem`
-- Offline dev: relative `/api/...` via Vite (`tauri:dev:offline`)
+- Online web + offline-dev: same-origin / relative `/api/payg/redeem`
+- Packaged offline: hardcoded `https://fumestory.com/api/payg/redeem`
 - Totals = `SUM` of redeemed `payg_codes` (no separate entitlements table)
 
 **Done**
@@ -56,11 +55,13 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 - [x] Redeem API + offline local extras cache + cap checks
 - [x] Offline UI: “N left”, Buy Credits modal, Usage page, limit-error CTA
 - [x] Online PAYG: `payg-limits` + create-route caps; `GET /api/payg/usage`; Usage + redeem (cloud-safe); add-page chips via `getPaygUsage`
+- [x] Packaged offline redeem URL → `https://fumestory.com/api/payg/redeem`
+- [x] Offline DB backup-before-migrate (keep 1 backup; restore + error on migrate failure)
 
 **Launch sequence (agreed)**
 1. [x] **Online PAYG first** — same free caps + redeem UI on cloud; uses existing `POST /api/payg/redeem`. Manual codes OK until Stripe.
-2. **← next: Point packaged offline at that host** — `VITE_CLOUD_API_BASE` (or equivalent); same redeem endpoint.
-3. **Finish offline shipping** — DB backup-before-migrate; version notify (`latest.json` + banner); offline curated catalog as needed for v1.
+2. [x] **Point packaged offline at that host** — hardcoded prod redeem URL in `redeemPaygCode`.
+3. **← next: Finish offline shipping** — version notify (`latest.json` + banner); offline curated catalog as needed for v1. (DB backup-before-migrate done.)
 4. **Marketing** — Pricing page + releases museum (can overlap with 3).
 5. **Launch downloadable offline app** — installer + update channel.
 
@@ -68,6 +69,14 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 - Cross-app entitlement sync (same email)
 - Pack stacking UI, restore magic link, agent token packs
 - Stripe Checkout (after manual codes work end-to-end)
+- Packaged-offline CORS / Tauri allowlist if desktop `fetch` to fumestory.com is blocked
+- **Offline paid-tier enforcement (privacy-preserving)** — v1 trusts local SQLite (`extras_*` editable by a tech user). Later:
+  - Under free caps: fully offline, no phone-home
+  - On **insert only**, if local count would exceed free caps: require online check (or valid signed entitlement) using email + install id
+  - Source of truth for paid extras = **server** (or signed payload), not local `extras_*` (local cache for UI only)
+  - Do **not** upload inventory/formulas — only “am I allowed this insert?”
+  - If offline and already at free cap: block insert with “go online to use paid capacity”
+  - Optional: signed entitlement blob from redeem/refresh for short offline paid use
 
 ## Next
 
