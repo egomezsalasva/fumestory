@@ -29,6 +29,8 @@ pub struct RawMaterial {
 struct CreateNoteInput {
 	name: String,
 	color: Option<String>,
+	#[serde(rename = "isNew")]
+	is_new: Option<bool>,
 }
 
 #[derive(Deserialize)]
@@ -94,6 +96,47 @@ fn normalize_label(value: &Option<String>) -> Result<Option<String>, String> {
 	Ok(Some(upper))
 }
 
+fn resolve_other_note_color(
+	tx: &rusqlite::Transaction<'_>,
+	note_name: &str,
+	fallback: Option<&str>,
+) -> Result<Option<String>, String> {
+	let existing: Option<String> = tx
+		.query_row(
+			"
+			SELECT color
+			FROM notes
+			WHERE name = ?1 AND kind = 'other'
+			LIMIT 1
+			",
+			[note_name],
+			|row| row.get(0),
+		)
+		.optional()
+		.map_err(map_sqlite_error)?;
+
+	if let Some(color) = existing {
+		return Ok(Some(color));
+	}
+
+	let color = fallback
+		.map(str::trim)
+		.filter(|c| !c.is_empty())
+		.unwrap_or(NEUTRAL_NOTE_COLOR)
+		.to_string();
+
+	tx.execute(
+		"
+		INSERT INTO notes (name, kind, color)
+		VALUES (?1, 'other', ?2)
+		",
+		rusqlite::params![note_name, color],
+	)
+	.map_err(map_sqlite_error)?;
+
+	Ok(Some(color))
+}
+
 #[tauri::command]
 pub fn db_list_raw_materials(app: AppHandle) -> Result<Vec<RawMaterial>, String> {
 	let conn = open_db(&app)?;
@@ -152,11 +195,13 @@ pub fn db_list_raw_materials(app: AppHandle) -> Result<Vec<RawMaterial>, String>
 		let mut note_stmt = conn
 			.prepare(
 				"
-				SELECT n.name, n.color
+				SELECT rmn.note_name, n.color
 				FROM raw_material_notes rmn
-				JOIN notes n ON n.id = rmn.note_id
+				LEFT JOIN notes n
+				  ON n.name = rmn.note_name
+				 AND n.kind = 'other'
 				WHERE rmn.raw_material_id = ?1
-				ORDER BY n.name
+				ORDER BY rmn.note_name
 				",
 			)
 			.map_err(map_sqlite_error)?;
@@ -285,48 +330,39 @@ pub fn db_create_raw_material(
 			return Err("Invalid notes payload".into());
 		}
 
-		let existing: Option<(i64, Option<String>)> = tx
-			.query_row(
-				"
-				SELECT id, color
-				FROM notes
-				WHERE name = ?1
-				ORDER BY CASE WHEN kind = 'curated' THEN 0 ELSE 1 END
-				LIMIT 1
-				",
-				[&note_name],
-				|row| Ok((row.get(0)?, row.get(1)?)),
-			)
-			.optional()
-			.map_err(map_sqlite_error)?;
-
-		let (note_id, note_color) = if let Some((id, color)) = existing {
-			(id, color)
+		let is_new = note.is_new.unwrap_or(false);
+		let note_color = if is_new {
+			resolve_other_note_color(&tx, &note_name, note.color.as_deref())?
 		} else {
-			let color = note
-				.color
-				.as_deref()
-				.map(str::trim)
-				.filter(|c| !c.is_empty())
-				.unwrap_or(NEUTRAL_NOTE_COLOR)
-				.to_string();
-			tx.execute(
-				"
-				INSERT INTO notes (name, kind, color)
-				VALUES (?1, 'other', ?2)
-				",
-				rusqlite::params![note_name, color],
-			)
-			.map_err(map_sqlite_error)?;
-			(tx.last_insert_rowid(), Some(color))
+			let existing_other: Option<String> = tx
+				.query_row(
+					"
+					SELECT color
+					FROM notes
+					WHERE name = ?1 AND kind = 'other'
+					LIMIT 1
+					",
+					[&note_name],
+					|row| row.get(0),
+				)
+				.optional()
+				.map_err(map_sqlite_error)?;
+
+			existing_other.or_else(|| {
+				note.color
+					.as_deref()
+					.map(str::trim)
+					.filter(|c| !c.is_empty())
+					.map(str::to_string)
+			})
 		};
 
 		tx.execute(
 			"
-			INSERT OR IGNORE INTO raw_material_notes (raw_material_id, note_id)
+			INSERT OR IGNORE INTO raw_material_notes (raw_material_id, note_name)
 			VALUES (?1, ?2)
 			",
-			rusqlite::params![raw_id, note_id],
+			rusqlite::params![raw_id, note_name],
 		)
 		.map_err(map_sqlite_error)?;
 

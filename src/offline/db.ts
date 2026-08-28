@@ -1,4 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
+import {
+	getNoteDotStyle,
+	NOTE_DOT_STYLES,
+} from "@/components/academy/utils/note-dot-styles";
 import type { Category } from "@/routes/api.categories";
 import type {
 	Composition,
@@ -132,26 +136,53 @@ export type SetOfflineEntitlementsInput = {
 	extras_mods: number;
 };
 
+function enrichRawMaterialNoteColors(material: RawMaterial): RawMaterial {
+	const note_colors = { ...material.note_colors };
+	for (const note of material.notes) {
+		if (!note_colors[note]) {
+			note_colors[note] = getNoteDotStyle(note);
+		}
+	}
+	return { ...material, note_colors };
+}
+
 export function listOfflineCategories(): Promise<Category[]> {
 	return invoke<Category[]>("db_list_categories");
 }
 
-export function listOfflineNotes(): Promise<Note[]> {
-	return invoke<Note[]>("db_list_notes");
+export async function listOfflineNotes(): Promise<Note[]> {
+	const otherNotes = await invoke<Note[]>("db_list_notes");
+	const otherNames = new Set(otherNotes.map((note) => note.name));
+
+	const curated: Note[] = Object.keys(NOTE_DOT_STYLES)
+		.sort((a, b) => a.localeCompare(b))
+		.filter((name) => !otherNames.has(name))
+		.map((name, index) => ({
+			id: -(index + 1),
+			name,
+			kind: "curated" as const,
+			color: getNoteDotStyle(name),
+		}));
+
+	return [...curated, ...otherNotes];
 }
 
-export function listOfflineRawMaterials(): Promise<RawMaterial[]> {
-	return invoke<RawMaterial[]>("db_list_raw_materials");
+export async function listOfflineRawMaterials(): Promise<RawMaterial[]> {
+	const materials = await invoke<RawMaterial[]>("db_list_raw_materials");
+	return materials.map(enrichRawMaterialNoteColors);
 }
 
 export function createOfflineCategory(name: string): Promise<Category> {
 	return invoke<Category>("db_create_category", { name });
 }
 
-export function createOfflineRawMaterial(
+export async function createOfflineRawMaterial(
 	input: CreateOfflineRawMaterialInput,
 ): Promise<RawMaterial> {
-	return invoke<RawMaterial>("db_create_raw_material", { input });
+	const material = await invoke<RawMaterial>("db_create_raw_material", {
+		input,
+	});
+	return enrichRawMaterialNoteColors(material);
 }
 
 export function listOfflineDilutions(): Promise<Dilution[]> {

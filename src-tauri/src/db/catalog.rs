@@ -57,11 +57,9 @@ pub fn db_list_notes(app: AppHandle) -> Result<Vec<Note>, String> {
 			"
 			SELECT id, name, kind, color
 			FROM notes
-			WHERE kind = 'curated'
-			   OR (kind = 'other' AND color IS NOT NULL)
-			ORDER BY
-				CASE WHEN kind = 'curated' THEN 0 ELSE 1 END,
-				name
+			WHERE kind = 'other'
+			  AND color IS NOT NULL
+			ORDER BY name
 			",
 		)
 		.map_err(map_sqlite_error)?;

@@ -1,6 +1,7 @@
 -- Fumestory offline (SQLite) — dashboard only, single profile, no auth.
 -- No owner_id / neon_auth / roadmap / paywall.
--- Curated catalog seeded separately (seed-curated.sql).
+-- Curated category families seeded separately (seed-curated.sql).
+-- Curated notes/materials ship in the app bundle (NOTE_DOT_STYLES, data.ts).
 PRAGMA foreign_keys = ON;
 
 -- ---------------------------------------------------------------------------
@@ -58,8 +59,9 @@ CREATE UNIQUE INDEX raw_materials_label_uidx
 CREATE TABLE raw_material_notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   raw_material_id INTEGER NOT NULL REFERENCES raw_materials(id) ON DELETE CASCADE,
-  note_id INTEGER NOT NULL REFERENCES notes(id),
-  UNIQUE (raw_material_id, note_id)
+  note_name TEXT NOT NULL COLLATE NOCASE,
+  UNIQUE (raw_material_id, note_name),
+  CHECK (note_name = lower(note_name))
 );
 
 CREATE TABLE dilutions (
