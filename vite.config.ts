@@ -9,6 +9,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { nitro } from "nitro/vite";
 // import neon from './neon-vite-plugin.ts'
 
+const offline = process.env.VITE_APP_RUNTIME === "offline";
+
 const config = defineConfig({
 	resolve: {
 		alias: {
@@ -29,7 +31,19 @@ const config = defineConfig({
 			projects: ["./tsconfig.json"],
 		}),
 		tailwindcss(),
-		tanstackStart(),
+		tanstackStart(
+			offline
+				? {
+						spa: {
+							enabled: true,
+							prerender: {
+								outputPath: "/index.html",
+								crawlLinks: false,
+							},
+						},
+					}
+				: undefined,
+		),
 		viteReact(),
 	],
 });
