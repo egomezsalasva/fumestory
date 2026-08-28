@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { getClient } from "@/db";
-import { getErrorDetails, jsonResponse, noClientResponse } from "@/utils/api";
+import { corsJsonResponse, getErrorDetails } from "@/utils/api";
 
 const redeemBodySchema = z.object({
 	email: z.string().trim().email(),
@@ -28,18 +28,20 @@ export const Route = createFileRoute("/api/payg/redeem")({
 			POST: async ({ request }) => {
 				try {
 					const client = await getClient();
-					if (!client) return noClientResponse;
+					if (!client) {
+						return corsJsonResponse({ error: "Database not configured" }, 500);
+					}
 
 					let raw: unknown;
 					try {
 						raw = await request.json();
 					} catch {
-						return jsonResponse({ error: "Invalid JSON body" }, 400);
+						return corsJsonResponse({ error: "Invalid JSON body" }, 400);
 					}
 
 					const parsed = redeemBodySchema.safeParse(raw);
 					if (!parsed.success) {
-						return jsonResponse(
+						return corsJsonResponse(
 							{
 								error: "Invalid redeem request",
 								details: parsed.error.flatten(),
@@ -66,20 +68,19 @@ export const Route = createFileRoute("/api/payg/redeem")({
 					const rows = lookupTx[0] as PaygCodeRow[];
 					const existing = rows[0];
 					if (!existing) {
-						return jsonResponse({ error: "Invalid code" }, 404);
+						return corsJsonResponse({ error: "Invalid code" }, 404);
 					}
 					if (existing.email !== email) {
-						return jsonResponse(
+						return corsJsonResponse(
 							{ error: "Code is not valid for this email" },
 							403,
 						);
 					}
 					if (existing.redeemed_at) {
-						return jsonResponse({ error: "Code already redeemed" }, 409);
+						return corsJsonResponse({ error: "Code already redeemed" }, 409);
 					}
 
 					const redeemQueries = [
-						// Atomic claim: only succeeds if still unredeemed for this email.
 						{
 							sql: `
 								UPDATE payg_codes
@@ -124,7 +125,7 @@ export const Route = createFileRoute("/api/payg/redeem")({
 
 					const claimed = redeemTx[0] as Array<{ code: string }>;
 					if (!claimed[0]) {
-						return jsonResponse({ error: "Code already redeemed" }, 409);
+						return corsJsonResponse({ error: "Code already redeemed" }, 409);
 					}
 
 					const totals = (redeemTx[1] as ExtrasRow[])[0] ?? {
@@ -134,7 +135,7 @@ export const Route = createFileRoute("/api/payg/redeem")({
 						extras_mods: 0,
 					};
 
-					return jsonResponse(
+					return corsJsonResponse(
 						{
 							success: true,
 							data: {
@@ -148,7 +149,7 @@ export const Route = createFileRoute("/api/payg/redeem")({
 						200,
 					);
 				} catch (error) {
-					return jsonResponse(
+					return corsJsonResponse(
 						{
 							error: "Failed to redeem code",
 							details: getErrorDetails(error),

@@ -5,6 +5,18 @@ export function jsonResponse(data: unknown, status: number): Response {
 	});
 }
 
+const PAYG_CORS_ORIGIN = "https://tauri.localhost";
+
+export function corsJsonResponse(data: unknown, status: number): Response {
+	return new Response(JSON.stringify(data), {
+		status,
+		headers: {
+			"Content-Type": "application/json",
+			"Access-Control-Allow-Origin": PAYG_CORS_ORIGIN,
+		},
+	});
+}
+
 export function getErrorDetails(error: unknown): string {
 	return error instanceof Error ? error.message : "Unknown error";
 }
