@@ -19,19 +19,24 @@ const MarketingHeroSection = ({
 				Organized
 			</h1>
 			<div className={styles.buttonContainer}>
-				{isLoggedIn ? (
-					<Link to="/inventory" className={styles.buttonHero}>
-						Dashboard
+				<div className={styles.buttonRowPrimary}>
+					{isLoggedIn ? (
+						<Link to="/inventory" className={styles.buttonHero}>
+							Dashboard
+						</Link>
+					) : (
+						<Link
+							to="/auth/$pathname"
+							params={{ pathname: "sign-up" }}
+							className={styles.buttonHero}
+						>
+							Get Started
+						</Link>
+					)}
+					<Link to="/download-releases" className={styles.buttonHero}>
+						Download
 					</Link>
-				) : (
-					<Link
-						to="/auth/$pathname"
-						params={{ pathname: "sign-up" }}
-						className={styles.buttonHero}
-					>
-						Get Started
-					</Link>
-				)}
+				</div>
 				<Link to="/features" resetScroll className={styles.buttonSecondaryHero}>
 					See Features
 				</Link>

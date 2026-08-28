@@ -20,7 +20,8 @@ const RELEASES: Release[] = [
 		date: null,
 		notes: ["Initial offline desktop release."],
 		downloads: {
-			macos: null,
+			macos:
+				"https://github.com/egomezsalasva/fumestory/releases/download/v0.1.0/Fumestory-mac.zip",
 			windows: null,
 		},
 	},
@@ -150,10 +151,7 @@ function DownloadReleasesPage() {
 						<div className={styles.featureImage}>
 							<div className={styles.featureContent}>
 								<h3>Latest — v{latest.version}</h3>
-								<p>
-									macOS and Windows installers will appear here when v
-									{latest.version} ships.
-								</p>
+								<p>macOS is available now. Windows installer coming soon.</p>
 								<div
 									style={{
 										display: "flex",

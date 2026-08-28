@@ -320,6 +320,13 @@
 
 .buttonContainer {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+.buttonRowPrimary {
+	display: flex;
 	gap: 1rem;
 	@media (max-width: 768px) {
 		flex-direction: column;
