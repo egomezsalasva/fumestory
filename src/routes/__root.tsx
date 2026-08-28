@@ -117,6 +117,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		path === "/" ||
 		path.startsWith("/auth/") ||
 		path.startsWith("/features") ||
+		path.startsWith("/download-releases") ||
 		path.startsWith("/try-academy");
 
 	const offlineDbBanner =

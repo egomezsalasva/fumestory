@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TryAcademyRouteImport } from './routes/try-academy'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as DownloadReleasesRouteImport } from './routes/download-releases'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
@@ -57,6 +58,11 @@ const TryAcademyRoute = TryAcademyRouteImport.update({
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadReleasesRoute = DownloadReleasesRouteImport.update({
+  id: '/download-releases',
+  path: '/download-releases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -252,6 +258,7 @@ const DashboardAccountPathnameRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
   '/try-academy': typeof TryAcademyRoute
   '/academy': typeof DashboardAcademyRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
   '/try-academy': typeof TryAcademyRoute
   '/academy': typeof DashboardAcademyRoute
@@ -334,6 +342,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
   '/try-academy': typeof TryAcademyRoute
   '/_dashboard/academy': typeof DashboardAcademyRoute
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/download-releases'
     | '/features'
     | '/try-academy'
     | '/academy'
@@ -416,6 +426,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/download-releases'
     | '/features'
     | '/try-academy'
     | '/academy'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_dashboard'
+    | '/download-releases'
     | '/features'
     | '/try-academy'
     | '/_dashboard/academy'
@@ -499,6 +511,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  DownloadReleasesRoute: typeof DownloadReleasesRoute
   FeaturesRoute: typeof FeaturesRoute
   TryAcademyRoute: typeof TryAcademyRoute
   ApiAcademyProgressRoute: typeof ApiAcademyProgressRoute
@@ -535,6 +548,13 @@ declare module '@tanstack/react-router' {
       path: '/features'
       fullPath: '/features'
       preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download-releases': {
+      id: '/download-releases'
+      path: '/download-releases'
+      fullPath: '/download-releases'
+      preLoaderRoute: typeof DownloadReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_dashboard': {
@@ -858,6 +878,7 @@ const ApiCompositionsRouteWithChildren = ApiCompositionsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  DownloadReleasesRoute: DownloadReleasesRoute,
   FeaturesRoute: FeaturesRoute,
   TryAcademyRoute: TryAcademyRoute,
   ApiAcademyProgressRoute: ApiAcademyProgressRoute,
