@@ -19,7 +19,7 @@ const MarketingHeroSection = ({
 				Organized
 			</h1>
 			<div className={styles.buttonContainer}>
-				<div className={styles.buttonRowPrimary}>
+				<div className={styles.buttonColumn}>
 					{isLoggedIn ? (
 						<Link to="/inventory" className={styles.buttonHero}>
 							Dashboard
@@ -33,13 +33,14 @@ const MarketingHeroSection = ({
 							Get Started
 						</Link>
 					)}
-					<Link to="/download-releases" className={styles.buttonHero}>
+					<span className={styles.buttonLabel}>multi-device, AI agents</span>
+				</div>
+				<div className={styles.buttonColumn}>
+					<Link to="/download-releases" className={styles.buttonSecondaryHero}>
 						Download
 					</Link>
+					<span className={styles.buttonLabel}>offline, no AI agents</span>
 				</div>
-				<Link to="/features" resetScroll className={styles.buttonSecondaryHero}>
-					See Features
-				</Link>
 			</div>
 		</div>
 	);
