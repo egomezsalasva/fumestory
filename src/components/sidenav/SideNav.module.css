@@ -1,11 +1,26 @@
 .container {
+	position: relative;
 	background-color: #070707;
+	height: 100vh;
 	min-height: 100vh;
-	min-width: 15.25rem;
 	min-width: 15rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	overflow: hidden;
+}
+
+.updateBannerOverlay {
+	position: absolute;
+	bottom: 1.5rem;
+	left: 0;
+	right: 0;
+	z-index: 5;
+	pointer-events: none;
+}
+
+.updateBannerOverlay > * {
+	pointer-events: auto;
 }
 
 .navHeader {
@@ -14,6 +29,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 1.5rem;
+	flex-shrink: 0;
 }
 
 .logo {
@@ -87,6 +103,11 @@
 	color: #ffffff;
 }
 
+.navFooter {
+	flex-shrink: 0;
+	width: 100%;
+}
+
 .navFooterSection {
 	padding: 0 0.75rem;
 }
@@ -131,7 +152,7 @@
 		lch(0 0 0 / 0.125) 0px 2px 5px,
 		lch(0 0 0 / 0.125) 0px 1px 1px;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	z-index: 2;
+	z-index: 10;
 }
 
 .accountMenuSpace {

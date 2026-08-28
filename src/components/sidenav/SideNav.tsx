@@ -17,6 +17,7 @@ import CogIcon from "../svgs/CogIcon";
 import StarIcon from "./svgs/StarIcon";
 import UpcomingFeaturesIcon from "./svgs/UpcomingFeaturesIcon";
 import { useState, useEffect, useCallback } from "react";
+import { OfflineUpdateBanner } from "@/components/OfflineUpdateBanner";
 import { isOffline } from "@/runtime";
 import { USER_SETTINGS_UPDATED_EVENT } from "@/utils/user-settings";
 import {
@@ -366,6 +367,11 @@ const SideNav = () => {
 					</div> */}
 				</div>
 			</div>
+			{offline ? (
+				<div className={styles.updateBannerOverlay}>
+					<OfflineUpdateBanner />
+				</div>
+			) : null}
 		</header>
 	);
 };
