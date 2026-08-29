@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useSearch,
+} from "@tanstack/react-router";
+import { z } from "zod";
 import DashboardLayout from "@/components/dashboard-layout/DashboardLayout";
 import { PaygRedeemForm } from "@/components/PaygRedeemForm";
 import {
@@ -9,7 +14,12 @@ import {
 import { isOffline } from "@/runtime";
 import { getPaygUsage, type PaygUsageSnapshot } from "@/utils/get-payg-usage";
 
+const usageSearchSchema = z.object({
+	checkout: z.enum(["success", "cancel"]).optional(),
+});
+
 export const Route = createFileRoute("/_dashboard/usage")({
+	validateSearch: usageSearchSchema,
 	head: () => ({
 		meta: [
 			{ title: "Fumestory | Usage" },
@@ -32,9 +42,12 @@ const USAGE_ROWS: {
 
 function UsagePage() {
 	const offline = isOffline();
+	const navigate = useNavigate();
+	const { checkout } = useSearch({ from: "/_dashboard/usage" });
 	const [usage, setUsage] = useState<PaygUsageSnapshot | null>(null);
 	const [usageError, setUsageError] = useState<string | null>(null);
 	const [buyKind, setBuyKind] = useState<PaygCapacityKind | null>(null);
+	const [checkoutNotice, setCheckoutNotice] = useState(false);
 
 	const refreshUsage = useCallback(async () => {
 		try {
@@ -49,9 +62,35 @@ function UsagePage() {
 		void refreshUsage();
 	}, [refreshUsage]);
 
+	useEffect(() => {
+		if (checkout !== "success") return;
+
+		setCheckoutNotice(true);
+		void navigate({ to: "/usage", search: {}, replace: true });
+
+		let cancelled = false;
+		const delays = [0, 1500, 4000];
+		for (const ms of delays) {
+			window.setTimeout(() => {
+				if (!cancelled) void refreshUsage();
+			}, ms);
+		}
+
+		return () => {
+			cancelled = true;
+		};
+	}, [checkout, navigate, refreshUsage]);
+
 	return (
 		<DashboardLayout title="Usage">
 			<div className="w-full max-w-170 mx-auto space-y-6">
+				{checkoutNotice ? (
+					<div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-100">
+						Payment received. Credits update in a moment — refresh if limits
+						haven’t changed yet.
+					</div>
+				) : null}
+
 				<div className="rounded-lg border border-slate-700 bg-slate-800 p-6">
 					<h2 className="mb-4 text-lg font-medium text-white">Usage</h2>
 					{!offline && usage?.email ? (

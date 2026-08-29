@@ -38,6 +38,8 @@ import { Route as DashboardAddFeedbackRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.add-dilution'
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as DashboardAcademyRouteImport } from './routes/_dashboard.academy'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe.webhook'
+import { Route as ApiStripeCheckoutRouteImport } from './routes/api.stripe.checkout'
 import { Route as ApiPaygUsageRouteImport } from './routes/api.payg.usage'
 import { Route as ApiPaygRedeemRouteImport } from './routes/api.payg.redeem'
 import { Route as ApiCompositionsCompositionIdRouteImport } from './routes/api.compositions.$compositionId'
@@ -196,6 +198,16 @@ const DashboardAcademyRoute = DashboardAcademyRouteImport.update({
   path: '/academy',
   getParentRoute: () => DashboardRoute,
 } as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStripeCheckoutRoute = ApiStripeCheckoutRouteImport.update({
+  id: '/api/stripe/checkout',
+  path: '/api/stripe/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaygUsageRoute = ApiPaygUsageRouteImport.update({
   id: '/api/payg/usage',
   path: '/api/payg/usage',
@@ -303,6 +315,8 @@ export interface FileRoutesByFullPath {
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
+  '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -345,6 +359,8 @@ export interface FileRoutesByTo {
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
+  '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -389,6 +405,8 @@ export interface FileRoutesById {
   '/api/compositions/$compositionId': typeof ApiCompositionsCompositionIdRoute
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
+  '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -433,6 +451,8 @@ export interface FileRouteTypes {
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
     | '/api/payg/usage'
+    | '/api/stripe/checkout'
+    | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -475,6 +495,8 @@ export interface FileRouteTypes {
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
     | '/api/payg/usage'
+    | '/api/stripe/checkout'
+    | '/api/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -518,6 +540,8 @@ export interface FileRouteTypes {
     | '/api/compositions/$compositionId'
     | '/api/payg/redeem'
     | '/api/payg/usage'
+    | '/api/stripe/checkout'
+    | '/api/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -545,6 +569,8 @@ export interface RootRouteChildren {
   ApiAgentTextToGradientRoute: typeof ApiAgentTextToGradientRoute
   ApiPaygRedeemRoute: typeof ApiPaygRedeemRoute
   ApiPaygUsageRoute: typeof ApiPaygUsageRoute
+  ApiStripeCheckoutRoute: typeof ApiStripeCheckoutRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -752,6 +778,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAcademyRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/stripe/checkout': {
+      id: '/api/stripe/checkout'
+      path: '/api/stripe/checkout'
+      fullPath: '/api/stripe/checkout'
+      preLoaderRoute: typeof ApiStripeCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/payg/usage': {
       id: '/api/payg/usage'
       path: '/api/payg/usage'
@@ -920,6 +960,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAgentTextToGradientRoute: ApiAgentTextToGradientRoute,
   ApiPaygRedeemRoute: ApiPaygRedeemRoute,
   ApiPaygUsageRoute: ApiPaygUsageRoute,
+  ApiStripeCheckoutRoute: ApiStripeCheckoutRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

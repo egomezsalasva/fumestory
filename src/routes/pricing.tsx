@@ -1,8 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	useNavigate,
+	useSearch,
+} from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { z } from "zod";
 import { authClient } from "auth";
 import MarketingHeaderSection from "@/components/home-page/sections/MarketingHeaderSection";
 import homeStyles from "@/components/home-page/MarketingHomePage.module.css";
 import styles from "@/components/pricing/PricingPage.module.css";
+import { startStripeCheckout } from "@/utils/start-stripe-checkout";
 
 const pricingJsonLd = {
 	"@context": "https://schema.org",
@@ -22,7 +30,7 @@ const FREE_CREDITS = [
 
 const CREDIT_PACKS = [
 	{
-		id: "raw-materials-dilutions",
+		id: "raw-materials",
 		lines: ["50 Raw Materials", "+", "50 Dilutions"],
 		price: "10€",
 	},
@@ -32,7 +40,7 @@ const CREDIT_PACKS = [
 		price: "10€",
 	},
 	{
-		id: "compositions-mods",
+		id: "compositions",
 		lines: ["50 Compositions", "+", "50 Formula Mods"],
 		price: "10€",
 	},
@@ -43,7 +51,12 @@ const CREDIT_PACKS = [
 	},
 ] as const;
 
+const pricingSearchSchema = z.object({
+	checkout: z.enum(["success", "cancel"]).optional(),
+});
+
 export const Route = createFileRoute("/pricing")({
+	validateSearch: pricingSearchSchema,
 	head: () => ({
 		meta: [
 			{ title: "Fumestory Pricing | Pay as you go" },
@@ -89,6 +102,27 @@ export const Route = createFileRoute("/pricing")({
 function PricingPage() {
 	const { data } = authClient.useSession();
 	const isLoggedIn = !!data?.session;
+	const navigate = useNavigate();
+	const { checkout } = useSearch({ from: "/pricing" });
+	const [checkoutPackId, setCheckoutPackId] = useState<string | null>(null);
+	const [cancelled, setCancelled] = useState(false);
+
+	useEffect(() => {
+		if (checkout !== "cancel") return;
+		setCancelled(true);
+		void navigate({ to: "/pricing", search: {}, replace: true });
+	}, [checkout, navigate]);
+
+	const handleBuy = async (packId: string) => {
+		try {
+			setCheckoutPackId(packId);
+			await startStripeCheckout(packId);
+		} catch (error) {
+			console.error(error);
+			setCheckoutPackId(null);
+			window.alert(error instanceof Error ? error.message : "Checkout failed");
+		}
+	};
 
 	return (
 		<div className={homeStyles.container} id="pricing">
@@ -102,6 +136,13 @@ function PricingPage() {
 						monthly bill.
 					</p>
 				</section>
+
+				{cancelled ? (
+					<p className={styles.cancelNotice}>
+						Checkout cancelled. No charge was made — you can buy credits
+						anytime.
+					</p>
+				) : null}
 
 				<section className={styles.section}>
 					<div className={styles.freeGrid}>
@@ -117,8 +158,8 @@ function PricingPage() {
 						These free credits let you try Fumestory. Need to onboard an
 						existing inventory? <br />
 						Reach out to{" "}
-						<a href="mailto:info@fumestory.com">info@fumestory.com</a> to redeem
-						more onboarding credits for free.
+						<a href="mailto:credits@fumestory.com">credits@fumestory.com</a> to
+						redeem more onboarding credits for free.
 					</p>
 				</section>
 
@@ -134,9 +175,16 @@ function PricingPage() {
 								<hr className={styles.packDivider} />
 								<p className={styles.packPrice}>{pack.price}</p>
 								{isLoggedIn ? (
-									<Link to="/usage" className={styles.buyButton}>
-										Buy Credits
-									</Link>
+									<button
+										type="button"
+										className={styles.buyButton}
+										disabled={checkoutPackId !== null}
+										onClick={() => void handleBuy(pack.id)}
+									>
+										{checkoutPackId === pack.id
+											? "Redirecting…"
+											: "Buy Credits"}
+									</button>
 								) : (
 									<Link
 										to="/auth/$pathname"

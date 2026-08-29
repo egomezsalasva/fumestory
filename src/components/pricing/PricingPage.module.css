@@ -165,6 +165,20 @@
 	text-decoration: none;
 }
 
+.cancelNotice {
+	width: 100%;
+	max-width: 40rem;
+	margin: 0 auto 1.5rem;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgba(245, 247, 250, 0.25);
+	background: rgba(245, 247, 250, 0.06);
+	color: #f5f7fa;
+	font-family: "Aspekta";
+	font-size: 0.95rem;
+	text-align: center;
+}
+
 @media (max-width: 1024px) {
 	.freeGrid,
 	.packsGrid {
