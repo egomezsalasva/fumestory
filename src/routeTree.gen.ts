@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TryAcademyRouteImport } from './routes/try-academy'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DownloadReleasesRouteImport } from './routes/download-releases'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
@@ -53,6 +54,11 @@ import { Route as DashboardAccountPathnameRouteImport } from './routes/_dashboar
 const TryAcademyRoute = TryAcademyRouteImport.update({
   id: '/try-academy',
   path: '/try-academy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeaturesRoute = FeaturesRouteImport.update({
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
+  '/pricing': typeof PricingRoute
   '/try-academy': typeof TryAcademyRoute
   '/academy': typeof DashboardAcademyRoute
   '/add-composition': typeof DashboardAddCompositionRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
+  '/pricing': typeof PricingRoute
   '/try-academy': typeof TryAcademyRoute
   '/academy': typeof DashboardAcademyRoute
   '/add-composition': typeof DashboardAddCompositionRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/download-releases': typeof DownloadReleasesRoute
   '/features': typeof FeaturesRoute
+  '/pricing': typeof PricingRoute
   '/try-academy': typeof TryAcademyRoute
   '/_dashboard/academy': typeof DashboardAcademyRoute
   '/_dashboard/add-composition': typeof DashboardAddCompositionRoute
@@ -387,6 +396,7 @@ export interface FileRouteTypes {
     | '/'
     | '/download-releases'
     | '/features'
+    | '/pricing'
     | '/try-academy'
     | '/academy'
     | '/add-composition'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/'
     | '/download-releases'
     | '/features'
+    | '/pricing'
     | '/try-academy'
     | '/academy'
     | '/add-composition'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/_dashboard'
     | '/download-releases'
     | '/features'
+    | '/pricing'
     | '/try-academy'
     | '/_dashboard/academy'
     | '/_dashboard/add-composition'
@@ -513,6 +525,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DownloadReleasesRoute: typeof DownloadReleasesRoute
   FeaturesRoute: typeof FeaturesRoute
+  PricingRoute: typeof PricingRoute
   TryAcademyRoute: typeof TryAcademyRoute
   ApiAcademyProgressRoute: typeof ApiAcademyProgressRoute
   ApiCategoriesRoute: typeof ApiCategoriesRoute
@@ -541,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/try-academy'
       fullPath: '/try-academy'
       preLoaderRoute: typeof TryAcademyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/features': {
@@ -880,6 +900,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   DownloadReleasesRoute: DownloadReleasesRoute,
   FeaturesRoute: FeaturesRoute,
+  PricingRoute: PricingRoute,
   TryAcademyRoute: TryAcademyRoute,
   ApiAcademyProgressRoute: ApiAcademyProgressRoute,
   ApiCategoriesRoute: ApiCategoriesRoute,

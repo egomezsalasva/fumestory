@@ -2,6 +2,7 @@ import { authClient } from "../../../auth";
 import MarketingHeaderSection from "./sections/MarketingHeaderSection";
 import MarketingHeroSection from "./sections/MarketingHeroSection";
 import MarketingInterfaceSection from "./sections/MarketingInterfaceSection";
+import MarketingJourneySection from "./sections/MarketingJourneySection";
 import MarketingFeaturesSection from "./sections/MarketingFeaturesSection";
 import MarketingRoadmapSection from "./sections/MarketingRoadmapSection";
 import styles from "./MarketingHomePage.module.css";
@@ -18,6 +19,7 @@ const MarketingHomePage = () => {
 				<MarketingHeroSection isLoggedIn={isLoggedIn} styles={styles} />
 				<MarketingInterfaceSection styles={styles} />
 				<MarketingMissionSection styles={styles} />
+				<MarketingJourneySection />
 				<MarketingFeaturesSection styles={styles} />
 				<MarketingRoadmapSection styles={styles} isLoggedIn={isLoggedIn} />
 			</div>

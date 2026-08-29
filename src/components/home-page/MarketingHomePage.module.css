@@ -381,7 +381,7 @@ button.link {
 }
 
 .contentHero {
-	margin: 7rem auto 9rem;
+	margin: 7rem auto 8rem;
 	padding: 0 var(--mobile-side);
 	display: flex;
 	flex-direction: column;
@@ -555,7 +555,7 @@ button.link {
 
 .featuresContainer {
 	margin: 0 5.25rem;
-	padding-top: 12rem;
+	padding-top: 10rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

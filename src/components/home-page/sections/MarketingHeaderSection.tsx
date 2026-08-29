@@ -110,7 +110,7 @@ const MarketingHeaderSection = ({
 									Features
 								</Link>
 								<Link to="/download-releases" className={styles.linkSub}>
-									Releases
+									Download
 								</Link>
 							</>
 						) : null}

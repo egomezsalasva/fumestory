@@ -14,7 +14,7 @@ type PaygRedeemModalProps = {
 };
 
 // TODO: real URLs
-const PRICING_PAGE_URL = "#pricing";
+const PRICING_PAGE_URL = "/pricing";
 const STRIPE_CHECKOUT_URL = "#stripe-checkout";
 
 const PACK_BY_KIND: Record<
