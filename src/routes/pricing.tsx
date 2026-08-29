@@ -118,7 +118,7 @@ function PricingPage() {
 						existing inventory? <br />
 						Reach out to{" "}
 						<a href="mailto:info@fumestory.com">info@fumestory.com</a> to redeem
-						onboarding credits for free.
+						more onboarding credits for free.
 					</p>
 				</section>
 
