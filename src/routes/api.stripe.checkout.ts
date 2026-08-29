@@ -13,14 +13,13 @@ import {
 
 const bodySchema = z.object({
 	packId: z.string().trim().min(1),
+	email: z.string().trim().email().optional(),
 	cancelPath: z
 		.string()
 		.trim()
 		.regex(/^\/(?!\/)/, "cancelPath must be a relative path")
 		.optional(),
 });
-
-const CHECKOUT_CONTACT_EMAIL = "credits@fumestory.com";
 
 function withCheckoutCancelQuery(path: string) {
 	return `${path}${path.includes("?") ? "&" : "?"}checkout=cancel`;
@@ -74,10 +73,14 @@ export const Route = createFileRoute("/api/stripe/checkout")({
 						return jsonResponse({ error: "Database not configured" }, 500);
 					}
 
-					const email = await getEmailForUserId(client, userId);
-					if (!email) {
+					const accountEmail = await getEmailForUserId(client, userId);
+					if (!accountEmail) {
 						return jsonResponse({ error: "User email not found" }, 404);
 					}
+
+					const email = (
+						parsed.data.email?.trim().toLowerCase() || accountEmail
+					).toLowerCase();
 
 					const origin = new URL(request.url).origin;
 					const cancelPath = parsed.data.cancelPath ?? "/pricing";
@@ -86,7 +89,7 @@ export const Route = createFileRoute("/api/stripe/checkout")({
 					const session = await stripe.checkout.sessions.create({
 						mode: "payment",
 						payment_method_types: ["card"],
-						customer_email: CHECKOUT_CONTACT_EMAIL,
+						customer_email: email,
 						client_reference_id: userId,
 						line_items: [{ price: priceId, quantity: 1 }],
 						success_url: `${origin}/usage?checkout=success`,

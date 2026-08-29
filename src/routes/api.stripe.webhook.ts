@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getClient } from "@/db";
 import { getErrorDetails, jsonResponse } from "@/utils/api";
+import {
+	paygCodeFromCheckoutSession,
+	sendCreditsIssuedEmail,
+} from "@/utils/send-credits-issued-email";
 import { getStripe, isStripePackId, STRIPE_PACKS } from "@/utils/stripe";
 
 export const Route = createFileRoute("/api/stripe/webhook")({
@@ -59,15 +63,16 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 				}
 
 				const extras = STRIPE_PACKS[packId].extras;
-				const code = session.id; // cs_… — unique + idempotent
+				const code = paygCodeFromCheckoutSession(session.id);
 
 				const client = await getClient();
 				if (!client) {
 					return jsonResponse({ error: "Database not configured" }, 500);
 				}
 
+				let inserted = false;
 				try {
-					await client.transaction((txn) => [
+					const tx = await client.transaction((txn) => [
 						txn.query(
 							`
 							INSERT INTO payg_codes (
@@ -81,6 +86,7 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 							)
 							VALUES ($1, $2, $3, $4, $5, $6, now())
 							ON CONFLICT (code) DO NOTHING
+							RETURNING code
 							`,
 							[
 								code,
@@ -92,6 +98,7 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 							],
 						),
 					]);
+					inserted = ((tx[0] as Array<{ code: string }>) ?? []).length > 0;
 				} catch (error) {
 					return jsonResponse(
 						{
@@ -100,6 +107,23 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 						},
 						500,
 					);
+				}
+
+				if (inserted) {
+					try {
+						await sendCreditsIssuedEmail({
+							to: email,
+							packId,
+							code,
+							autoRedeemed: true,
+						});
+					} catch (error) {
+						// Credits already granted; don't fail the webhook forever.
+						console.error(
+							"Failed to send credits email:",
+							getErrorDetails(error),
+						);
+					}
 				}
 
 				return jsonResponse({ received: true }, 200);
