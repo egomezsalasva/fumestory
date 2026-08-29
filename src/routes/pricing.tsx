@@ -1,6 +1,5 @@
 import {
 	createFileRoute,
-	Link,
 	useNavigate,
 	useSearch,
 } from "@tanstack/react-router";
@@ -174,26 +173,14 @@ function PricingPage() {
 								</div>
 								<hr className={styles.packDivider} />
 								<p className={styles.packPrice}>{pack.price}</p>
-								{isLoggedIn ? (
-									<button
-										type="button"
-										className={styles.buyButton}
-										disabled={checkoutPackId !== null}
-										onClick={() => void handleBuy(pack.id)}
-									>
-										{checkoutPackId === pack.id
-											? "Redirecting…"
-											: "Buy Credits"}
-									</button>
-								) : (
-									<Link
-										to="/auth/$pathname"
-										params={{ pathname: "sign-up" }}
-										className={styles.buyButton}
-									>
-										Buy Credits
-									</Link>
-								)}
+								<button
+									type="button"
+									className={styles.buyButton}
+									disabled={checkoutPackId !== null}
+									onClick={() => void handleBuy(pack.id)}
+								>
+									{checkoutPackId === pack.id ? "Redirecting…" : "Buy Credits"}
+								</button>
 							</article>
 						))}
 					</div>

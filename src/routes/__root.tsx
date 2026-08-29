@@ -119,7 +119,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		path.startsWith("/features") ||
 		path.startsWith("/download-releases") ||
 		path.startsWith("/pricing") ||
-		path.startsWith("/try-academy");
+		path.startsWith("/try-academy") ||
+		path.startsWith("/checkout");
 
 	const offlineDbBanner =
 		offline && offlineDbError ? (

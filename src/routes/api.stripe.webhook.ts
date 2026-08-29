@@ -54,14 +54,24 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 				}
 
 				const packId = session.metadata?.packId?.trim() ?? "";
-				const email = session.metadata?.email?.trim().toLowerCase() ?? "";
+				const email = (
+					session.customer_details?.email ??
+					session.customer_email ??
+					session.metadata?.email ??
+					""
+				)
+					.trim()
+					.toLowerCase();
+
 				if (!isStripePackId(packId) || !email) {
 					return jsonResponse(
-						{ error: "Missing packId or email in session metadata" },
+						{ error: "Missing packId or buyer email on session" },
 						400,
 					);
 				}
 
+				const userId = session.metadata?.userId?.trim() || "";
+				const autoRedeem = Boolean(userId);
 				const extras = STRIPE_PACKS[packId].extras;
 				const code = paygCodeFromCheckoutSession(session.id);
 
@@ -74,7 +84,8 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 				try {
 					const tx = await client.transaction((txn) => [
 						txn.query(
-							`
+							autoRedeem
+								? `
 							INSERT INTO payg_codes (
 								code,
 								email,
@@ -85,6 +96,19 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 								redeemed_at
 							)
 							VALUES ($1, $2, $3, $4, $5, $6, now())
+							ON CONFLICT (code) DO NOTHING
+							RETURNING code
+							`
+								: `
+							INSERT INTO payg_codes (
+								code,
+								email,
+								extras_materials,
+								extras_dilutions,
+								extras_compositions,
+								extras_mods
+							)
+							VALUES ($1, $2, $3, $4, $5, $6)
 							ON CONFLICT (code) DO NOTHING
 							RETURNING code
 							`,
@@ -115,10 +139,9 @@ export const Route = createFileRoute("/api/stripe/webhook")({
 							to: email,
 							packId,
 							code,
-							autoRedeemed: true,
+							autoRedeemed: autoRedeem,
 						});
 					} catch (error) {
-						// Credits already granted; don't fail the webhook forever.
 						console.error(
 							"Failed to send credits email:",
 							getErrorDetails(error),

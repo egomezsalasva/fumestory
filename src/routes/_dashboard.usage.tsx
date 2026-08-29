@@ -15,7 +15,7 @@ import { isOffline } from "@/runtime";
 import { getPaygUsage, type PaygUsageSnapshot } from "@/utils/get-payg-usage";
 
 const usageSearchSchema = z.object({
-	checkout: z.enum(["success", "cancel"]).optional(),
+	session_id: z.string().min(1).optional(),
 });
 
 export const Route = createFileRoute("/_dashboard/usage")({
@@ -40,14 +40,32 @@ const USAGE_ROWS: {
 	{ key: "mods", label: "Formula mods", kind: "mods" },
 ];
 
+type CheckoutNotice = "success" | "pending";
+
+async function fetchCheckoutAutoRedeemed(sessionId: string): Promise<boolean> {
+	const res = await fetch(
+		`/api/stripe/checkout-session?session_id=${encodeURIComponent(sessionId)}`,
+	);
+	const json = (await res.json()) as {
+		data?: { autoRedeemed?: boolean };
+		error?: string;
+	};
+	if (!res.ok || !json.data) {
+		throw new Error(json.error ?? "Could not verify purchase");
+	}
+	return Boolean(json.data.autoRedeemed);
+}
+
 function UsagePage() {
 	const offline = isOffline();
 	const navigate = useNavigate();
-	const { checkout } = useSearch({ from: "/_dashboard/usage" });
+	const { session_id: sessionId } = useSearch({ from: "/_dashboard/usage" });
 	const [usage, setUsage] = useState<PaygUsageSnapshot | null>(null);
 	const [usageError, setUsageError] = useState<string | null>(null);
 	const [buyKind, setBuyKind] = useState<PaygCapacityKind | null>(null);
-	const [checkoutNotice, setCheckoutNotice] = useState(false);
+	const [checkoutNotice, setCheckoutNotice] = useState<CheckoutNotice | null>(
+		null,
+	);
 
 	const refreshUsage = useCallback(async () => {
 		try {
@@ -63,31 +81,65 @@ function UsagePage() {
 	}, [refreshUsage]);
 
 	useEffect(() => {
-		if (checkout !== "success") return;
-
-		setCheckoutNotice(true);
-		void navigate({ to: "/usage", search: {}, replace: true });
+		if (!sessionId) return;
 
 		let cancelled = false;
-		const delays = [0, 1500, 4000];
-		for (const ms of delays) {
-			window.setTimeout(() => {
-				if (!cancelled) void refreshUsage();
-			}, ms);
-		}
+
+		void (async () => {
+			const check = async () => {
+				try {
+					return await fetchCheckoutAutoRedeemed(sessionId);
+				} catch {
+					return false;
+				}
+			};
+
+			await new Promise((r) => setTimeout(r, 1000));
+			if (cancelled) return;
+
+			if (await check()) {
+				if (cancelled) return;
+				setCheckoutNotice("success");
+				void navigate({ to: "/usage", search: {}, replace: true });
+				void refreshUsage();
+				return;
+			}
+
+			if (cancelled) return;
+			setCheckoutNotice("pending");
+			void navigate({ to: "/usage", search: {}, replace: true });
+			void refreshUsage();
+
+			for (let i = 0; i < 14; i++) {
+				await new Promise((r) => setTimeout(r, 1000));
+				if (cancelled) return;
+				if (await check()) {
+					if (cancelled) return;
+					setCheckoutNotice("success");
+					void refreshUsage();
+					return;
+				}
+			}
+		})();
 
 		return () => {
 			cancelled = true;
 		};
-	}, [checkout, navigate, refreshUsage]);
+	}, [sessionId, navigate, refreshUsage]);
 
 	return (
 		<DashboardLayout title="Usage">
 			<div className="w-full max-w-170 mx-auto space-y-6">
-				{checkoutNotice ? (
+				{checkoutNotice === "success" ? (
 					<div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-100">
-						Payment received. Credits update in a moment — refresh if limits
-						haven’t changed yet.
+						Credits applied to your account.
+					</div>
+				) : null}
+				{checkoutNotice === "pending" ? (
+					<div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-100">
+						Payment received. Credits can take up to a minute. If they don't
+						appear, redeem with the email and code we gave you. You should have
+						this code in an email from credits@fumestory.com.
 					</div>
 				) : null}
 

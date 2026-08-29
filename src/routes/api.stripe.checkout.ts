@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { getClient } from "@/db";
-import { getErrorDetails, jsonResponse } from "@/utils/api";
-import { requireCurrentUserId } from "@/utils/current-user";
+import { corsJsonResponse, getErrorDetails, jsonResponse } from "@/utils/api";
 import { getEmailForUserId } from "@/utils/payg-limits";
 import {
 	getStripe,
@@ -13,7 +12,6 @@ import {
 
 const bodySchema = z.object({
 	packId: z.string().trim().min(1),
-	email: z.string().trim().email().optional(),
 	cancelPath: z
 		.string()
 		.trim()
@@ -21,98 +19,138 @@ const bodySchema = z.object({
 		.optional(),
 });
 
+const CORS_HEADERS = {
+	"Access-Control-Allow-Origin": "https://tauri.localhost",
+	"Access-Control-Allow-Methods": "POST, OPTIONS",
+	"Access-Control-Allow-Headers": "Content-Type, x-user-id",
+};
+
 function withCheckoutCancelQuery(path: string) {
 	return `${path}${path.includes("?") ? "&" : "?"}checkout=cancel`;
+}
+
+function respond(data: unknown, status: number, useCors: boolean) {
+	return useCors ? corsJsonResponse(data, status) : jsonResponse(data, status);
 }
 
 export const Route = createFileRoute("/api/stripe/checkout")({
 	server: {
 		handlers: {
+			OPTIONS: async () =>
+				new Response(null, {
+					status: 204,
+					headers: CORS_HEADERS,
+				}),
 			POST: async ({ request }) => {
+				const useCors =
+					request.headers.get("Origin") === "https://tauri.localhost";
 				try {
-					const auth = requireCurrentUserId(request);
-					if (auth.errorResponse) return auth.errorResponse;
-					const userId = auth.userId!;
-
 					let raw: unknown;
 					try {
 						raw = await request.json();
 					} catch {
-						return jsonResponse({ error: "Invalid JSON body" }, 400);
+						return respond({ error: "Invalid JSON body" }, 400, useCors);
 					}
 
 					const parsed = bodySchema.safeParse(raw);
 					if (!parsed.success) {
-						return jsonResponse(
+						return respond(
 							{
 								error: "Invalid checkout request",
 								details: parsed.error.flatten(),
 							},
 							400,
+							useCors,
 						);
 					}
 
 					const { packId } = parsed.data;
 					if (!isStripePackId(packId)) {
-						return jsonResponse({ error: "Unknown pack" }, 400);
+						return respond({ error: "Unknown pack" }, 400, useCors);
 					}
 
 					const priceId = getStripePriceId(packId);
 					if (!priceId) {
-						return jsonResponse(
+						return respond(
 							{
 								error: "Stripe price not configured",
 								details: `Missing ${STRIPE_PACKS[packId].priceEnv}`,
 							},
 							500,
+							useCors,
 						);
 					}
 
-					const client = await getClient();
-					if (!client) {
-						return jsonResponse({ error: "Database not configured" }, 500);
-					}
-
-					const accountEmail = await getEmailForUserId(client, userId);
-					if (!accountEmail) {
-						return jsonResponse({ error: "User email not found" }, 404);
-					}
-
-					const email = (
-						parsed.data.email?.trim().toLowerCase() || accountEmail
-					).toLowerCase();
-
+					const userId = request.headers.get("x-user-id")?.trim() || undefined;
 					const origin = new URL(request.url).origin;
 					const cancelPath = parsed.data.cancelPath ?? "/pricing";
 					const stripe = getStripe();
 
+					let customerId: string | undefined;
+					if (userId) {
+						const client = await getClient();
+						if (!client) {
+							return respond(
+								{ error: "Database not configured" },
+								500,
+								useCors,
+							);
+						}
+						const email = await getEmailForUserId(client, userId);
+						if (!email) {
+							return respond({ error: "User email not found" }, 404, useCors);
+						}
+
+						// Existing Customer with email → Checkout email is prefilled + locked
+						const existing = await stripe.customers.list({
+							email,
+							limit: 1,
+						});
+						if (existing.data[0]) {
+							customerId = existing.data[0].id;
+							await stripe.customers.update(customerId, {
+								metadata: { userId },
+							});
+						} else {
+							const created = await stripe.customers.create({
+								email,
+								metadata: { userId },
+							});
+							customerId = created.id;
+						}
+					}
+
 					const session = await stripe.checkout.sessions.create({
 						mode: "payment",
 						payment_method_types: ["card"],
-						customer_email: email,
+						...(customerId ? { customer: customerId } : {}), // guest/offline: no customer → editable email field
 						client_reference_id: userId,
 						line_items: [{ price: priceId, quantity: 1 }],
-						success_url: `${origin}/usage?checkout=success`,
+						success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
 						cancel_url: `${origin}${withCheckoutCancelQuery(cancelPath)}`,
 						metadata: {
 							packId,
-							userId,
-							email,
+							...(userId ? { userId } : {}),
 						},
 					});
 
 					if (!session.url) {
-						return jsonResponse({ error: "Checkout session missing URL" }, 500);
+						return respond(
+							{ error: "Checkout session missing URL" },
+							500,
+							useCors,
+						);
 					}
 
-					return jsonResponse({ success: true, url: session.url }, 200);
+					return respond({ success: true, url: session.url }, 200, useCors);
 				} catch (error) {
-					return jsonResponse(
+					return respond(
 						{
 							error: "Failed to create checkout session",
 							details: getErrorDetails(error),
 						},
 						500,
+						useCors,
 					);
 				}
 			},

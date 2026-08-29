@@ -34,6 +34,7 @@
     "@tanstack/react-start": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
     "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-opener": "~2.5.4",
     "ag-grid-community": "^35.0.1",
     "ag-grid-react": "^35.0.1",
     "ai": "^6.0.116",

@@ -15,6 +15,7 @@ import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DownloadReleasesRouteImport } from './routes/download-releases'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiUserSettingsRouteImport } from './routes/api.user-settings'
 import { Route as ApiScentBlindTestsRouteImport } from './routes/api.scent-blind-tests'
@@ -39,6 +40,7 @@ import { Route as DashboardAddDilutionRouteImport } from './routes/_dashboard.ad
 import { Route as DashboardAddCompositionRouteImport } from './routes/_dashboard.add-composition'
 import { Route as DashboardAcademyRouteImport } from './routes/_dashboard.academy'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe.webhook'
+import { Route as ApiStripeCheckoutSessionRouteImport } from './routes/api.stripe.checkout-session'
 import { Route as ApiStripeCheckoutRouteImport } from './routes/api.stripe.checkout'
 import { Route as ApiPaygUsageRouteImport } from './routes/api.payg.usage'
 import { Route as ApiPaygRedeemRouteImport } from './routes/api.payg.redeem'
@@ -80,6 +82,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
@@ -203,6 +210,12 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   path: '/api/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStripeCheckoutSessionRoute =
+  ApiStripeCheckoutSessionRouteImport.update({
+    id: '/api/stripe/checkout-session',
+    path: '/api/stripe/checkout-session',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiStripeCheckoutRoute = ApiStripeCheckoutRouteImport.update({
   id: '/api/stripe/checkout',
   path: '/api/stripe/checkout',
@@ -303,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
@@ -316,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
   '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/checkout-session': typeof ApiStripeCheckoutSessionRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -347,6 +362,7 @@ export interface FileRoutesByTo {
   '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/account/$pathname': typeof DashboardAccountPathnameRoute
   '/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
@@ -360,6 +376,7 @@ export interface FileRoutesByTo {
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
   '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/checkout-session': typeof ApiStripeCheckoutSessionRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
@@ -393,6 +410,7 @@ export interface FileRoutesById {
   '/api/scent-blind-tests': typeof ApiScentBlindTestsRoute
   '/api/user-settings': typeof ApiUserSettingsRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/_dashboard/account/$pathname': typeof DashboardAccountPathnameRoute
   '/_dashboard/add-formula/$compositionId': typeof DashboardAddFormulaCompositionIdRoute
   '/_dashboard/composition/$compositionId': typeof DashboardCompositionCompositionIdRoute
@@ -406,6 +424,7 @@ export interface FileRoutesById {
   '/api/payg/redeem': typeof ApiPaygRedeemRoute
   '/api/payg/usage': typeof ApiPaygUsageRoute
   '/api/stripe/checkout': typeof ApiStripeCheckoutRoute
+  '/api/stripe/checkout-session': typeof ApiStripeCheckoutSessionRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRouteTypes {
@@ -439,6 +458,7 @@ export interface FileRouteTypes {
     | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
+    | '/checkout/success'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
     | '/composition/$compositionId'
@@ -452,6 +472,7 @@ export interface FileRouteTypes {
     | '/api/payg/redeem'
     | '/api/payg/usage'
     | '/api/stripe/checkout'
+    | '/api/stripe/checkout-session'
     | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -483,6 +504,7 @@ export interface FileRouteTypes {
     | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
+    | '/checkout/success'
     | '/account/$pathname'
     | '/add-formula/$compositionId'
     | '/composition/$compositionId'
@@ -496,6 +518,7 @@ export interface FileRouteTypes {
     | '/api/payg/redeem'
     | '/api/payg/usage'
     | '/api/stripe/checkout'
+    | '/api/stripe/checkout-session'
     | '/api/stripe/webhook'
   id:
     | '__root__'
@@ -528,6 +551,7 @@ export interface FileRouteTypes {
     | '/api/scent-blind-tests'
     | '/api/user-settings'
     | '/auth/$pathname'
+    | '/checkout/success'
     | '/_dashboard/account/$pathname'
     | '/_dashboard/add-formula/$compositionId'
     | '/_dashboard/composition/$compositionId'
@@ -541,6 +565,7 @@ export interface FileRouteTypes {
     | '/api/payg/redeem'
     | '/api/payg/usage'
     | '/api/stripe/checkout'
+    | '/api/stripe/checkout-session'
     | '/api/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -562,6 +587,7 @@ export interface RootRouteChildren {
   ApiScentBlindTestsRoute: typeof ApiScentBlindTestsRoute
   ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   AuthPathnameRoute: typeof AuthPathnameRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   ApiAgentCompositionChatRoute: typeof ApiAgentCompositionChatRoute
   ApiAgentFormulaModChatRoute: typeof ApiAgentFormulaModChatRoute
   ApiAgentRawMaterialChatRoute: typeof ApiAgentRawMaterialChatRoute
@@ -570,6 +596,7 @@ export interface RootRouteChildren {
   ApiPaygRedeemRoute: typeof ApiPaygRedeemRoute
   ApiPaygUsageRoute: typeof ApiPaygUsageRoute
   ApiStripeCheckoutRoute: typeof ApiStripeCheckoutRoute
+  ApiStripeCheckoutSessionRoute: typeof ApiStripeCheckoutSessionRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
@@ -615,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/$pathname': {
@@ -785,6 +819,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stripe/checkout-session': {
+      id: '/api/stripe/checkout-session'
+      path: '/api/stripe/checkout-session'
+      fullPath: '/api/stripe/checkout-session'
+      preLoaderRoute: typeof ApiStripeCheckoutSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/stripe/checkout': {
       id: '/api/stripe/checkout'
       path: '/api/stripe/checkout'
@@ -953,6 +994,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiScentBlindTestsRoute: ApiScentBlindTestsRoute,
   ApiUserSettingsRoute: ApiUserSettingsRoute,
   AuthPathnameRoute: AuthPathnameRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
   ApiAgentCompositionChatRoute: ApiAgentCompositionChatRoute,
   ApiAgentFormulaModChatRoute: ApiAgentFormulaModChatRoute,
   ApiAgentRawMaterialChatRoute: ApiAgentRawMaterialChatRoute,
@@ -961,6 +1003,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaygRedeemRoute: ApiPaygRedeemRoute,
   ApiPaygUsageRoute: ApiPaygUsageRoute,
   ApiStripeCheckoutRoute: ApiStripeCheckoutRoute,
+  ApiStripeCheckoutSessionRoute: ApiStripeCheckoutSessionRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport

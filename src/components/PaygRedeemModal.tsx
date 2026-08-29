@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PaygRedeemForm } from "@/components/PaygRedeemForm";
 import type { RedeemPaygCodeResult } from "@/offline/redeemPaygCode";
-import { isOffline } from "@/runtime";
 import { startStripeCheckout } from "@/utils/start-stripe-checkout";
 import type { StripePackId } from "@/utils/stripe";
 
@@ -69,16 +68,8 @@ export function PaygRedeemModal({
 	const handleBuy = async () => {
 		try {
 			setBuying(true);
-			if (isOffline()) {
-				window.open(
-					"https://fumestory.com/pricing",
-					"_blank",
-					"noopener,noreferrer",
-				);
-				setBuying(false);
-				return;
-			}
 			await startStripeCheckout(pack.stripePackId);
+			setBuying(false);
 		} catch (error) {
 			console.error(error);
 			setBuying(false);
