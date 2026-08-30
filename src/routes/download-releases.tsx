@@ -24,8 +24,9 @@ const RELEASES: Release[] = [
 		url: "https://github.com/egomezsalasva/fumestory/releases/tag/v0.1.0",
 		downloads: {
 			macos:
-				"https://github.com/egomezsalasva/fumestory/releases/download/v0.1.0/Fumestory-mac.zip",
-			windows: null,
+				"https://github.com/egomezsalasva/fumestory/releases/download/v0.1.0/fumestory-mac-v0.1.0.dmg",
+			windows:
+				"https://github.com/egomezsalasva/fumestory/releases/download/v0.1.0/fumestory-windows-v0.1.0.exe",
 		},
 	},
 ];

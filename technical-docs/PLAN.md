@@ -5,71 +5,27 @@ Living doc. Update as priorities change. Prefer short items here; link out for l
 ## Now
 
 ### Olfactory notes — curated vs other
-- Same `notes` table: `kind` (`curated` | `other`), `owner_id`, `color` (CSS: `#hex` or `linear-gradient(...)`)
-- Curated: seed from `NOTE_DOT_STYLES`; encyclopedia/academy keep reading that client map
-- Inventory: note dots from DB `notes.color` (not `NOTE_DOT_STYLES` at runtime)
-- Materials `other`: color required when creating (picker / agent gradient); feedback `other`: color stays optional (`null`)
-- Autocomplete: curated first; freeform → `other` (exact match only in the picker; no musky→musk there)
-- Agent apply (`/api/agent/resolve-notes`): LLM normalize + catalog match (musky→musk; lightly floral stays); new notes colored via `textToCssGradient`
-- Shared tool: `textToCssGradient` + `POST /api/agent/text-to-gradient` (wire into add-material color picker next)
-- Agent category: `suggestedCategory` constrained to `CURATED_CATEGORY_NAMES` (TS); apply matches curated parents exact-only
-- Keep one FK for feedback / raw_material notes joins
-- [x] DB: schema (019), seed (020), rempoint + partial uniques (021), RLS (022)
-- [x] Inventory/raw-materials: return note `color` from DB; dots use DB
-- [x] Notes API: list curated (+ own other with color); create `other` on material/feedback submit; `set_config`
-- [x] Agent: resolve-notes + text-to-gradient; curated category enum + prompt; apply waits for resolve + loading UI
-- [x] Encyclopedia/academy: local `NOTE_DOT_STYLES` for speed
+- Model in place: `notes.kind` (`curated` | `other`), DB colors for inventory dots; academy/encyclopedia still use local `NOTE_DOT_STYLES`
+- Agent resolve-notes + text-to-gradient API exist
 - [ ] Color picker: suggest gradient via `/api/agent/text-to-gradient`
 - [ ] CI: TS ↔ seed sync for curated categories (`CURATED_CATEGORY_NAMES` vs 017) and notes (`NOTE_DOT_STYLES` vs 020); check only, do not write DB
 - Curated sync: TS maps are source of truth → regen seed SQL on edit → apply to Neon manually; CI only verifies match
 - Later (optional): `user_settings.note_colors` overrides — resolve `override ?? notes.color` (do not mutate curated rows)
 
-### Pay-as-you-go (online + offline) — MVP
-Commercial model: **no subscription**. Free caps + €10 capacity packs.
+### Pay-as-you-go (online + offline)
+Commercial model: **no subscription**. Free caps + €10 capacity packs. Online Stripe + redeem + emails shipped. Offline: redeem works; buy via browser.
 
-**Free caps**
-- 50 materials / 100 dilutions / 50 compositions / 100 mods
-- Archived compositions **count**; deletes free slots (when delete exists)
-- Agent token packs: later
+**Shipping leftovers**
+- [ ] Finish offline shipping — Windows installer (CI seed sqlite); Mac zip/update channel as needed
+- [ ] Offline curated catalog polish if still needed for v1
 
-**Packs (~€10 each)**
-- +50 materials / +100 dilutions / +50 compositions / +100 mods
-- No expiry
-- Stacking UX: later
-- Restore entitlements / email magic link: later
-- Online↔offline shared wallet by email: **later** (use email as key in schema now; wire sync later)
-
-**Offline identity**
-- No `user_id` on local inventory rows (single-profile SQLite)
-- `offline_install_id` (UUID) on first launch → Neon `offline_installs` (install/download count)
-- Email = commercial identity (purchase + redeem)
-
-**Shared redeem API**
-- One endpoint for both clients: `POST /api/payg/redeem`
-- Online web + offline-dev: same-origin / relative `/api/payg/redeem`
-- Packaged offline: hardcoded `https://fumestory.com/api/payg/redeem`
-- Totals = `SUM` of redeemed `payg_codes` (no separate entitlements table)
-
-**Done**
-- [x] Neon: `offline_installs`, `payg_codes` (026)
-- [x] Redeem API + offline local extras cache + cap checks
-- [x] Offline UI: “N left”, Buy Credits modal, Usage page, limit-error CTA
-- [x] Online PAYG: `payg-limits` + create-route caps; `GET /api/payg/usage`; Usage + redeem (cloud-safe); add-page chips via `getPaygUsage`
-- [x] Packaged offline redeem URL → `https://fumestory.com/api/payg/redeem`
-- [x] Offline DB backup-before-migrate (keep 1 backup; restore + error on migrate failure)
-
-**Launch sequence (agreed)**
-1. [x] **Online PAYG first** — same free caps + redeem UI on cloud; uses existing `POST /api/payg/redeem`. Manual codes OK until Stripe.
-2. [x] **Point packaged offline at that host** — hardcoded prod redeem URL in `redeemPaygCode`.
-3. **← next: Finish offline shipping** — version notify (`latest.json` + banner); offline curated catalog as needed for v1. (DB backup-before-migrate done.)
-4. **Marketing** — Pricing page + releases museum (can overlap with 3).
-5. **Launch downloadable offline app** — installer + update channel.
+**Current offline buy UX**
+- Hide **Buy Pack** in packaged offline; **View Pricing Packs** opens `https://fumestory.com/pricing`; redeem in-app
 
 **Defer**
 - Cross-app entitlement sync (same email)
 - Pack stacking UI, restore magic link, agent token packs
-- Stripe Checkout (after manual codes work end-to-end)
-- Packaged-offline CORS / Tauri allowlist if desktop `fetch` to fumestory.com is blocked
+- **Offline in-app Stripe Checkout** — Buy Pack via Tauri `openUrl` to Stripe fails (opener allowlist / long checkout URLs). Keep browser pricing for now; revisit later (short bounce, allowlist, or stay browser-only)
 - **Offline paid-tier enforcement (privacy-preserving)** — v1 trusts local SQLite (`extras_*` editable by a tech user). Later:
   - Under free caps: fully offline, no phone-home
   - On **insert only**, if local count would exceed free caps: require online check (or valid signed entitlement) using email + install id
@@ -94,6 +50,7 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 
 ### Compositions list — status tabs
 - [ ] Add status on `compositions`: `wip` | `finished` | `archived` (default `wip`)
+  - Note: DB already has `active` | `archived` (024); align naming or extend
 - [ ] Tabs on `/compositions`: WIP | Finished | Archived
 - [ ] Actions: move between statuses (e.g. Mark finished, Archive, Restore to WIP)
 - [ ] API: filter by status; PATCH to update status
@@ -146,14 +103,6 @@ Commercial model: **no subscription**. Free caps + €10 capacity packs.
 - [ ] Trial local scan: `npx @openai/codex-security scan .`
 - [ ] Review findings (auth, API routes, RLS, env)
 - Later: CI advisory job with `OPENAI_API_KEY` (advisory-only first)
-
-## Done
-
-### Olfactory family — curated + other (016–018)
-- Model: `categories.kind` / `parent_id` / `owner_id`; colors via client defaults + `user_settings.category_colors`
-- Seed: 18 curated families; subs under resinous / balsamic
-- API: curated parents list; create `other` only; `set_config` + RLS (018)
-- UI: inventory/composition family tint + pie rollup; add-material select curated or Other (name + color)
 
 ## Related docs
 
