@@ -20,6 +20,20 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Create offline seed database
+        shell: pwsh
+        run: |
+          python -c @"
+          import sqlite3
+          from pathlib import Path
+          db = Path('src-tauri/db/fumestory-offline.sqlite')
+          conn = sqlite3.connect(db)
+          conn.executescript(Path('src-tauri/db/schema.sql').read_text(encoding='utf-8'))
+          conn.executescript(Path('src-tauri/db/seed-curated.sql').read_text(encoding='utf-8'))
+          conn.close()
+          print(f'created {db} ({db.stat().st_size} bytes)')
+          "@
+
       - name: Build offline desktop
         env:
           VITE_APP_RUNTIME: offline
