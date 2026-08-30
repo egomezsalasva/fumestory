@@ -19,7 +19,7 @@ const MarketingHomePage = () => {
 				<MarketingHeroSection isLoggedIn={isLoggedIn} styles={styles} />
 				<MarketingInterfaceSection styles={styles} />
 				<MarketingMissionSection styles={styles} />
-				<MarketingJourneySection />
+				{/* <MarketingJourneySection /> */}
 				<MarketingFeaturesSection styles={styles} />
 				<MarketingRoadmapSection styles={styles} isLoggedIn={isLoggedIn} />
 			</div>
