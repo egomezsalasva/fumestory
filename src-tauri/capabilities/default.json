@@ -13,8 +13,7 @@
 		{
 			"identifier": "opener:allow-open-url",
 			"allow": [
-				{ "url": "https://checkout.stripe.com/**" },
-				{ "url": "https://*.stripe.com/**" }
+				{ "url": "https://fumestory.com/**" }
 			]
 		}
 	]

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { PaygRedeemForm } from "@/components/PaygRedeemForm";
 import type { RedeemPaygCodeResult } from "@/offline/redeemPaygCode";
+import { isOffline } from "@/runtime";
 import { startStripeCheckout } from "@/utils/start-stripe-checkout";
 import type { StripePackId } from "@/utils/stripe";
 
@@ -64,6 +66,7 @@ export function PaygRedeemModal({
 }: PaygRedeemModalProps) {
 	const pack = PACK_BY_KIND[kind];
 	const [buying, setBuying] = useState(false);
+	const offline = isOffline();
 
 	const handleBuy = async () => {
 		try {
@@ -74,6 +77,17 @@ export function PaygRedeemModal({
 			console.error(error);
 			setBuying(false);
 			window.alert(error instanceof Error ? error.message : "Checkout failed");
+		}
+	};
+
+	const handleViewPricing = async () => {
+		onClose();
+		try {
+			await openUrl("https://fumestory.com/pricing");
+		} catch (error) {
+			window.alert(
+				error instanceof Error ? error.message : "Could not open pricing",
+			);
 		}
 	};
 
@@ -117,21 +131,33 @@ export function PaygRedeemModal({
 							Adds {pack.extras} {pack.unit}
 						</p>
 						<div className="mt-4 flex flex-col gap-2">
-							<button
-								type="button"
-								disabled={buying}
-								onClick={() => void handleBuy()}
-								className="inline-flex items-center justify-center rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900 disabled:opacity-60"
-							>
-								{buying ? "Redirecting…" : "Buy Pack"}
-							</button>
-							<Link
-								to="/pricing"
-								className="inline-flex items-center justify-center rounded-md border border-slate-500 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700/50"
-								onClick={onClose}
-							>
-								View Pricing Packs
-							</Link>
+							{offline ? null : (
+								<button
+									type="button"
+									disabled={buying}
+									onClick={() => void handleBuy()}
+									className="inline-flex items-center justify-center rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900 disabled:opacity-60"
+								>
+									{buying ? "Redirecting…" : "Buy Pack"}
+								</button>
+							)}
+							{offline ? (
+								<button
+									type="button"
+									className="inline-flex items-center justify-center rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900"
+									onClick={() => void handleViewPricing()}
+								>
+									View Pricing Packs
+								</button>
+							) : (
+								<Link
+									to="/pricing"
+									className="inline-flex items-center justify-center rounded-md border border-slate-500 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700/50"
+									onClick={onClose}
+								>
+									View Pricing Packs
+								</Link>
+							)}
 						</div>
 					</div>
 
