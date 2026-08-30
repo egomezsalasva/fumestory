@@ -443,6 +443,9 @@ function App() {
 						sortable: true,
 						resizable: true,
 					}}
+					enableCellTextSelection={true}
+					ensureDomOrder={true}
+					suppressCellFocus={true}
 					pagination={true}
 					paginationPageSize={200}
 					paginationPageSizeSelector={[50, 100, 200, 500]}

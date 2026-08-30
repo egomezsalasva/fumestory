@@ -12,6 +12,11 @@ import { IfraStatusLabel } from "@/components/ifra/IfraStatusLabel";
 import { IfraRuleModal } from "@/components/ifra/IfraRuleModal";
 import { OfflineCapacityLeft } from "@/components/OfflineCapacityLeft";
 import { PaygRedeemModal } from "@/components/PaygRedeemModal";
+import {
+	CuratedMaterialSearchModal,
+	SearchFieldButton,
+	type CuratedMaterialSearchMode,
+} from "@/components/CuratedMaterialSearchModal";
 import { RawMaterialAgentPanel } from "@/agent/ui/RawMaterialAgentPanel";
 import { isOffline } from "@/runtime";
 import { authedFetch } from "@/utils/authed-fetch";
@@ -61,6 +66,79 @@ type UserSettingsResponse = {
 	error?: string;
 };
 
+function mapMaterialNoteType(
+	noteType: MaterialRecord["noteType"],
+): "High" | "Mid(Heart)" | "Base" | "" {
+	if (noteType === "high") return "High";
+	if (noteType === "mid(heart)") return "Mid(Heart)";
+	if (noteType === "base") return "Base";
+	return "";
+}
+
+function collectMaterialNoteNames(material: MaterialRecord): string[] {
+	const seen = new Set<string>();
+	const names: string[] = [];
+	for (const source of material.sources ?? []) {
+		for (const note of source.data.notes ?? []) {
+			const trimmed = note.trim();
+			const key = trimmed.toLowerCase();
+			if (!key || seen.has(key)) continue;
+			seen.add(key);
+			names.push(trimmed);
+		}
+	}
+	return names;
+}
+
+async function resolveNotesFromCatalog(
+	names: string[],
+): Promise<SelectedNote[]> {
+	if (names.length === 0) return [];
+
+	try {
+		const notesRes = await authedFetch("/api/agent/resolve-notes", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ names }),
+		});
+		const notesData = await notesRes.json();
+		if (notesRes.ok && notesData.success && Array.isArray(notesData.data)) {
+			return notesData.data as SelectedNote[];
+		}
+	} catch {
+		// fall through
+	}
+
+	try {
+		const res = await authedFetch("/api/notes");
+		const json = await res.json();
+		const available = (
+			json.success && Array.isArray(json.data) ? json.data : []
+		) as SelectedNote[];
+		return names.map((name) => {
+			const match = available.find(
+				(n) => n.name.toLowerCase() === name.toLowerCase(),
+			);
+			if (match) {
+				return {
+					name: match.name,
+					kind: match.kind,
+					color: match.color,
+					isNew: false,
+				};
+			}
+			return {
+				name: name.toLowerCase(),
+				kind: "other" as const,
+				color: null,
+				isNew: true,
+			};
+		});
+	} catch {
+		return [];
+	}
+}
+
 function AddRawMaterial() {
 	const offline = isOffline();
 	const [name, setName] = useState("");
@@ -84,6 +162,8 @@ function AddRawMaterial() {
 	const [selectedIfraStatus, setSelectedIfraStatus] =
 		useState<IfraStatus | null>(null);
 	const [isApplyingProposal, setIsApplyingProposal] = useState(false);
+	const [searchMode, setSearchMode] =
+		useState<CuratedMaterialSearchMode | null>(null);
 
 	// null = loading settings, true/false = resolved preference
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean | null>(
@@ -340,6 +420,53 @@ function AddRawMaterial() {
 		}
 	};
 
+	const applyCuratedMaterial = async (
+		material: MaterialRecord,
+		pickedName: string,
+		pickedCas: string,
+	) => {
+		setName(pickedName);
+		if (casNumberEnabled) {
+			setCasNumber(pickedCas === "No CAS" ? "" : pickedCas);
+		}
+		setNoteType(mapMaterialNoteType(material.noteType));
+		setError("");
+		setSearchMode(null);
+		setIsApplyingProposal(true);
+
+		const noteNames = collectMaterialNoteNames(material);
+		const familyKey = material.olfactiveFamily?.[0]?.trim().toLowerCase() ?? "";
+
+		try {
+			const [nextNotes, categoriesRes] = await Promise.all([
+				resolveNotesFromCatalog(noteNames),
+				authedFetch("/api/categories"),
+			]);
+			setNotes(nextNotes);
+
+			const categoriesData = await categoriesRes.json();
+			if (
+				familyKey &&
+				categoriesRes.ok &&
+				categoriesData.success &&
+				Array.isArray(categoriesData.data)
+			) {
+				const match = (
+					categoriesData.data as { id: number; name: string }[]
+				).find((c) => c.name.toLowerCase() === familyKey);
+				if (match) {
+					setCategoryIsOther(false);
+					setSelectedCategoryId(match.id);
+					setOtherCategoryName("");
+				}
+			}
+		} catch {
+			// keep name / CAS / note type even if category/notes fail
+		} finally {
+			setIsApplyingProposal(false);
+		}
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
@@ -525,29 +652,43 @@ function AddRawMaterial() {
 						}`}
 					>
 						<div className="space-y-4">
-							<div>
-								<TextInput
-									label="Name"
-									value={name}
-									onChange={(value) => {
-										setName(value);
-										setError("");
-									}}
-									placeholder="e.g. Ambroxan"
-									required
+							<div className="flex items-end gap-2">
+								<div className="min-w-0 flex-1">
+									<TextInput
+										label="Name"
+										value={name}
+										onChange={(value) => {
+											setName(value);
+											setError("");
+										}}
+										placeholder="e.g. Ambroxan"
+										required
+									/>
+								</div>
+								<SearchFieldButton
+									label="Search by name"
+									onClick={() => setSearchMode("name")}
 								/>
 							</div>
 
 							{casNumberEnabled && (
-								<TextInput
-									label="CAS Number"
-									value={casNumber}
-									onChange={(value) => {
-										setCasNumber(value);
-										setError("");
-									}}
-									placeholder="e.g. 6790-58-5"
-								/>
+								<div className="flex items-end gap-2">
+									<div className="min-w-0 flex-1">
+										<TextInput
+											label="CAS Number"
+											value={casNumber}
+											onChange={(value) => {
+												setCasNumber(value);
+												setError("");
+											}}
+											placeholder="e.g. 6790-58-5"
+										/>
+									</div>
+									<SearchFieldButton
+										label="Search by CAS"
+										onClick={() => setSearchMode("cas")}
+									/>
+								</div>
 							)}
 
 							{ifraStatuses.length > 0 && (
@@ -714,6 +855,16 @@ function AddRawMaterial() {
 							onClose={() => setSelectedIfraStatus(null)}
 						/>
 					)}
+
+					{searchMode ? (
+						<CuratedMaterialSearchModal
+							mode={searchMode}
+							onClose={() => setSearchMode(null)}
+							onSelect={(material, pickedName, pickedCas) => {
+								void applyCuratedMaterial(material, pickedName, pickedCas);
+							}}
+						/>
+					) : null}
 				</div>
 				{!offline && (
 					<div className="dashboardSplitSidebar">
